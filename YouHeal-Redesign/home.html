@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YOU HEAL · Biomagnetic pair therapy in Queens, NY</title>
+<meta name="description" content="Biomagnetic pair therapy with Sandra Villafane in Astoria, Queens, or remotely. Non-invasive, clothes on. Trained in the lineage of Dr. Isaac Goiz Durán and Quantum Biomagnetism.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .hero-figure .hero-field{position:absolute;inset:-25% -70%;width:240%;height:150%;z-index:0}
+  .hero-figure svg{position:relative;z-index:1}
+  .hero-caption{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);z-index:2;white-space:nowrap;font-size:var(--fs-0);color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:rgba(7,11,15,.7);backdrop-filter:blur(6px)}
+  .hero-caption b{color:var(--gold-2);font-weight:600}
+  .reasons{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:900px){.reasons{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.reasons{grid-template-columns:1fr}}
+  .reason{border:1px solid var(--line-soft);border-radius:var(--r-md);padding:18px 20px;display:flex;gap:14px;align-items:flex-start}
+  .reason .dot{width:10px;height:10px;border-radius:50%;margin-top:8px;flex:none;background:var(--gold)}
+  .reason b{display:block;font-family:var(--font-display);font-size:1.35rem;font-weight:500;line-height:1.1}
+  .reason span{font-size:var(--fs-0);color:var(--ink-2)}
+  .quote-big{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.3;max-width:28ch;margin:0 auto 18px;text-align:center}
+</style>
+</head>
+<body data-title="nav.home">
+<header id="site-header"></header>
+
+<!-- HERO: the living atlas is the first thing you see -->
+<section class="hero">
+  <canvas id="hero-bg" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div>
+      <h1 class="rise" data-i18n="home.h1">Your body is a field. We help it find its balance.</h1>
+      <p class="lead rise d1" data-i18n="home.lead">Biomagnetic pair therapy uses paired magnets, placed on specific points with your clothes on, to support the body's own regulation. Sessions with Sandra Villafane in Astoria, Queens, or from anywhere through a remote session.</p>
+      <div class="row rise d2">
+        <a class="btn btn-primary btn-lg" href="about.html#book" data-i18n="common.book">Book a session</a>
+        <a class="btn btn-outline btn-lg" href="atlas.html" data-i18n="common.explore">Explore the atlas</a>
+      </div>
+      <div class="hero-stats rise d3">
+        <div><b>1988</b><span data-i18n="home.stat1">first biomagnetic pair, Dr. Goiz</span></div>
+        <div><b>60–90</b><span data-i18n="home.stat2">minutes per session</span></div>
+        <div><b>2</b><span data-i18n="home.stat3">ways to meet: in person or remote</span></div>
+        <div><b>0</b><span data-i18n="home.stat4">needles, no undressing</span></div>
+      </div>
+    </div>
+    <div class="hero-figure" id="hero-figure">
+      <canvas class="hero-field" id="hero-field" aria-hidden="true"></canvas>
+      <div id="hero-body"></div>
+      <div class="hero-caption"><b id="hero-field-name"></b> <span id="hero-field-sub"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- THREE WAYS TO BEGIN -->
+<section class="section">
+  <div class="wrap">
+    <div class="field-rule"></div>
+    <div class="split" style="align-items:end;margin-bottom:36px">
+      <h2 data-i18n="home.ways.h2">Three ways to begin</h2>
+      <p class="lead" style="margin:0" data-i18n="home.ways.lead">Choose the path that fits your life. Every path starts with the same conversation: what your body has been telling you, and what balance would look like for you.</p>
+    </div>
+    <div class="pathway-cards">
+      <article class="pathway">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <h3 data-i18n="home.p1.h">In person, in Astoria</h3>
+        <p data-i18n="home.p1.p">A full scan and pair placement on the table, clothes and shoes on. The most complete way to experience the work, and the best first session.</p>
+        <span class="meta" data-i18n="home.p1.m">Queens, NY 11103 · 60 to 90 minutes</span>
+        <a class="btn btn-outline btn-sm" href="pathways.html#inperson" data-i18n="common.learn">Learn more</a>
+      </article>
+      <article class="pathway">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></div>
+        <h3 data-i18n="home.p2.h">Remote, from wherever you are</h3>
+        <p data-i18n="home.p2.p">The same protocol, guided over video while you rest at home. Sandra scans and balances using the remote methods taught in Quantum Biomagnetism.</p>
+        <span class="meta" data-i18n="home.p2.m">Video call · 45 to 75 minutes · any time zone</span>
+        <a class="btn btn-outline btn-sm" href="pathways.html#remote" data-i18n="common.learn">Learn more</a>
+      </article>
+      <article class="pathway">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3v8a5 5 0 0 0 10 0V3"/><path d="M7 3h3v5H7zM14 3h3v5h-3z"/></svg></div>
+        <h3 data-i18n="home.p3.h">Magnets for home</h3>
+        <p data-i18n="home.p3.p">Therapeutic-grade magnet pairs with a short guide, so what you learn in session can continue at home between visits.</p>
+        <span class="meta" data-i18n="home.p3.m">Kits from a single pair to a practitioner set</span>
+        <a class="btn btn-outline btn-sm" href="shop.html" data-i18n="home.p3.btn">See the kits</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT A SESSION FEELS LIKE -->
+<section class="section-tight">
+  <div class="wrap">
+    <div class="split rev">
+      <div class="panel panel-gold">
+        <div class="feel">
+          <div><b data-i18n="home.feel1.h">Warmth</b><span data-i18n="home.feel1.p">Many people notice gentle heat or tingling where a pair is placed.</span></div>
+          <div><b data-i18n="home.feel2.h">Deep rest</b><span data-i18n="home.feel2.p">The room is quiet and dim. Most clients drift toward sleep while the pairs hold.</span></div>
+          <div><b data-i18n="home.feel3.h">Release</b><span data-i18n="home.feel3.p">A long exhale, a lighter walk out the door. Hydrate well afterward.</span></div>
+        </div>
+      </div>
+      <div>
+        <h2 data-i18n="home.feel.h2">What a session feels like</h2>
+        <p class="lead" data-i18n="home.feel.lead">You lie down fully dressed. Sandra scans the body point by point, watching for the leg-length response that signals a pair, then places magnets in pairs and lets them work for about twenty minutes at a time.</p>
+        <a class="btn btn-aqua" href="lab.html" data-i18n="home.feel.btn">Walk through a session in the Lab</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LINEAGE -->
+<section class="section">
+  <div class="wrap">
+    <div class="field-rule"></div>
+    <h2 class="center" data-i18n="home.lineage.h2">Two founders, one lineage</h2>
+    <p class="lead center" style="margin:0 auto 36px" data-i18n="home.lineage.lead">Sandra trained in the medical biomagnetism developed by Dr. Isaac Goiz Durán and continues her studies in the quantum approach of Dr. Avelino Hervás. Both live in every session.</p>
+    <div class="lineage">
+      <div class="node goiz"><b>Dr. Isaac Goiz Durán</b><span data-i18n="home.lineage.goiz">Medical Biomagnetism · the biomagnetic pair, Mexico, 1988</span></div>
+      <svg class="arc" viewBox="0 0 40 20" aria-hidden="true"><path d="M2 18 C 10 2, 30 2, 38 18" fill="none" stroke="currentColor"/></svg>
+      <div class="node hervas"><b>Dr. Avelino Hervás</b><span data-i18n="home.lineage.hervas">Quantum Biomagnetism · energetic and emotional layers, Spain, 2014</span></div>
+      <svg class="arc" viewBox="0 0 40 20" aria-hidden="true"><path d="M2 18 C 10 2, 30 2, 38 18" fill="none" stroke="currentColor"/></svg>
+      <div class="node you"><b>Sandra Villafane</b><span data-i18n="home.lineage.you">YOU HEAL · certified practitioner, Astoria, Queens</span></div>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:28px">
+      <a class="btn btn-outline" href="history.html" data-i18n="home.lineage.btn">Read the history</a>
+      <a class="btn btn-ghost" href="science.html" data-i18n="home.lineage.btn2">See the science and references</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY PEOPLE COME -->
+<section class="section-tight">
+  <div class="wrap">
+    <h2 data-i18n="home.why.h2">Why people come</h2>
+    <p class="lead" data-i18n="home.why.lead">These are the areas clients most often ask for support with. Biomagnetism complements your medical care; it does not replace it.</p>
+    <div class="reasons" id="reasons"></div>
+  </div>
+</section>
+
+<!-- STORY HIGHLIGHT -->
+<section class="section">
+  <div class="wrap">
+    <div class="field-rule"></div>
+    <p class="quote-big" data-i18n="home.quote">“I walked in tense and tired, and walked out feeling like my body had finally exhaled.”</p>
+    <p class="center dim small" data-i18n="home.quote.who">M. R., Astoria · in-person sessions · sample testimonial for the prototype</p>
+    <div class="row" style="justify-content:center;margin-top:20px"><a class="btn btn-outline" href="stories.html" data-i18n="home.quote.btn">More client stories</a></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-tight">
+  <div class="wrap">
+    <div class="split" style="align-items:start">
+      <div>
+        <h2 data-i18n="home.faq.h2">Questions people ask first</h2>
+        <p class="lead" data-i18n="home.faq.lead">If yours is not here, call or message Sandra. Spanish and English both welcome.</p>
+        <a class="btn btn-primary" href="about.html#book" data-i18n="common.book">Book a session</a>
+      </div>
+      <div class="faq">
+        <details><summary data-i18n="home.faq1.q">Is it safe?</summary><p data-i18n="home.faq1.a">Sessions use static magnets on the surface of the body, over clothing. People with a pacemaker, implanted defibrillator or insulin pump, and those who are pregnant, should talk with Sandra before booking. Keep taking any medication your doctor prescribes.</p></details>
+        <details><summary data-i18n="home.faq2.q">Do I undress?</summary><p data-i18n="home.faq2.a">No. You stay fully dressed, shoes on. Wear something comfortable and empty your pockets of phones, keys and cards.</p></details>
+        <details><summary data-i18n="home.faq3.q">How many sessions will I need?</summary><p data-i18n="home.faq3.a">Many people start with a series of three, spaced one to two weeks apart, then continue as needed. Sandra will suggest a rhythm after your first scan.</p></details>
+        <details><summary data-i18n="home.faq4.q">Does a remote session work the same way?</summary><p data-i18n="home.faq4.a">The protocol is the same; the scanning is done through the remote techniques taught in Quantum Biomagnetism while you rest at home on a video call. Many clients alternate remote and in-person visits.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-tight">
+  <div class="wrap">
+    <div class="cta-band">
+      <canvas id="cta-field" aria-hidden="true"></canvas>
+      <h2 data-i18n="home.cta.h2">Ready to feel the difference?</h2>
+      <p data-i18n="home.cta.p">Reserve your first session in Astoria or online. Reply usually within one business day.</p>
+      <div class="row">
+        <a class="btn btn-primary btn-lg" href="about.html#book" data-i18n="common.book">Book a session</a>
+        <a class="btn btn-outline btn-lg" href="tel:+18889268114" data-i18n="common.call">Call 888-926-8114</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="site-footer"></footer>
+
+<script>
+window.YH_DICT = {
+  'home.h1':   ['Your body is a field. We help it find its balance.','Tu cuerpo es un campo. Ayudamos a que recupere su equilibrio.'],
+  'home.lead': ['Biomagnetic pair therapy uses paired magnets, placed on specific points with your clothes on, to support the body\'s own regulation. Sessions with Sandra Villafane in Astoria, Queens, or from anywhere through a remote session.',
+                'La terapia del par biomagnético usa imanes en pares, ubicados en puntos específicos y con la ropa puesta, para apoyar la autorregulación del cuerpo. Sesiones con Sandra Villafane en Astoria, Queens, o desde cualquier lugar a distancia.'],
+  'home.stat1':['first biomagnetic pair, Dr. Goiz','primer par biomagnético, Dr. Goiz'],
+  'home.stat2':['minutes per session','minutos por sesión'],
+  'home.stat3':['ways to meet: in person or remote','formas de atenderte: presencial o a distancia'],
+  'home.stat4':['needles, no undressing','agujas; no necesitas desvestirte'],
+  'home.ways.h2':['Three ways to begin','Tres formas de empezar'],
+  'home.ways.lead':['Choose the path that fits your life. Every path starts with the same conversation: what your body has been telling you, and what balance would look like for you.',
+                    'Elige el camino que se ajuste a tu vida. Todos empiezan con la misma conversación: qué te ha estado diciendo tu cuerpo y cómo sería el equilibrio para ti.'],
+  'home.p1.h':['In person, in Astoria','Presencial, en Astoria'],
+  'home.p1.p':['A full scan and pair placement on the table, clothes and shoes on. The most complete way to experience the work, and the best first session.',
+               'Rastreo completo y colocación de pares en la camilla, con ropa y zapatos puestos. La forma más completa de vivir la terapia y la mejor primera sesión.'],
+  'home.p1.m':['Queens, NY 11103 · 60 to 90 minutes','Queens, NY 11103 · 60 a 90 minutos'],
+  'home.p2.h':['Remote, from wherever you are','A distancia, desde donde estés'],
+  'home.p2.p':['The same protocol, guided over video while you rest at home. Sandra scans and balances using the remote methods taught in Quantum Biomagnetism.',
+               'El mismo protocolo, guiado por videollamada mientras descansas en casa. Sandra rastrea y equilibra con los métodos a distancia del Biomagnetismo Cuántico.'],
+  'home.p2.m':['Video call · 45 to 75 minutes · any time zone','Videollamada · 45 a 75 minutos · cualquier zona horaria'],
+  'home.p3.h':['Magnets for home','Imanes para la casa'],
+  'home.p3.p':['Therapeutic-grade magnet pairs with a short guide, so what you learn in session can continue at home between visits.',
+               'Pares de imanes de grado terapéutico con una guía corta, para que lo aprendido en sesión continúe en casa entre visitas.'],
+  'home.p3.m':['Kits from a single pair to a practitioner set','Kits desde un par hasta el set de practicante'],
+  'home.p3.btn':['See the kits','Ver los kits'],
+  'home.feel1.h':['Warmth','Calor'],
+  'home.feel1.p':['Many people notice gentle heat or tingling where a pair is placed.','Muchas personas sienten un calor suave u hormigueo donde se ubica un par.'],
+  'home.feel2.h':['Deep rest','Descanso profundo'],
+  'home.feel2.p':['The room is quiet and dim. Most clients drift toward sleep while the pairs hold.','La sala es silenciosa y con luz tenue. La mayoría se queda dormida mientras los pares actúan.'],
+  'home.feel3.h':['Release','Liberación'],
+  'home.feel3.p':['A long exhale, a lighter walk out the door. Hydrate well afterward.','Una exhalación larga y un paso más liviano al salir. Hidrátate bien después.'],
+  'home.feel.h2':['What a session feels like','Cómo se siente una sesión'],
+  'home.feel.lead':['You lie down fully dressed. Sandra scans the body point by point, watching for the leg-length response that signals a pair, then places magnets in pairs and lets them work for about twenty minutes at a time.',
+                    'Te acuestas con la ropa puesta. Sandra rastrea el cuerpo punto por punto, observando la respuesta del acortamiento de pierna que señala un par, y luego coloca los imanes en pares y los deja actuar unos veinte minutos.'],
+  'home.feel.btn':['Walk through a session in the Lab','Recorre una sesión en el Lab'],
+  'home.lineage.h2':['Two founders, one lineage','Dos fundadores, un mismo linaje'],
+  'home.lineage.lead':['Sandra trained in the medical biomagnetism developed by Dr. Isaac Goiz Durán and continues her studies in the quantum approach of Dr. Avelino Hervás. Both live in every session.',
+                       'Sandra se formó en el biomagnetismo médico del Dr. Isaac Goiz Durán y continúa sus estudios en el enfoque cuántico del Dr. Avelino Hervás. Ambos están presentes en cada sesión.'],
+  'home.lineage.goiz':['Medical Biomagnetism · the biomagnetic pair, Mexico, 1988','Biomagnetismo Médico · el par biomagnético, México, 1988'],
+  'home.lineage.hervas':['Quantum Biomagnetism · energetic and emotional layers, Spain, 2014','Biomagnetismo Cuántico · capas energética y emocional, España, 2014'],
+  'home.lineage.you':['YOU HEAL · certified practitioner, Astoria, Queens','YOU HEAL · terapeuta certificada, Astoria, Queens'],
+  'home.lineage.btn':['Read the history','Lee la historia'],
+  'home.lineage.btn2':['See the science and references','Mira la ciencia y las referencias'],
+  'home.why.h2':['Why people come','Por qué vienen las personas'],
+  'home.why.lead':['These are the areas clients most often ask for support with. Biomagnetism complements your medical care; it does not replace it.',
+                   'Estas son las áreas en las que más piden apoyo nuestros clientes. El biomagnetismo complementa tu atención médica; no la reemplaza.'],
+  'home.quote':['“I walked in tense and tired, and walked out feeling like my body had finally exhaled.”','“Entré tensa y cansada, y salí sintiendo que mi cuerpo por fin había exhalado.”'],
+  'home.quote.who':['M. R., Astoria · in-person sessions · sample testimonial for the prototype','M. R., Astoria · sesiones presenciales · testimonio de muestra para el prototipo'],
+  'home.quote.btn':['More client stories','Más historias de clientes'],
+  'home.faq.h2':['Questions people ask first','Lo primero que preguntan'],
+  'home.faq.lead':['If yours is not here, call or message Sandra. Spanish and English both welcome.','Si la tuya no está aquí, llama o escríbele a Sandra. En español o en inglés.'],
+  'home.faq1.q':['Is it safe?','¿Es seguro?'],
+  'home.faq1.a':['Sessions use static magnets on the surface of the body, over clothing. People with a pacemaker, implanted defibrillator or insulin pump, and those who are pregnant, should talk with Sandra before booking. Keep taking any medication your doctor prescribes.',
+                 'Las sesiones usan imanes estáticos sobre la superficie del cuerpo, encima de la ropa. Si tienes marcapasos, desfibrilador implantado o bomba de insulina, o estás en embarazo, habla con Sandra antes de agendar. Continúa con los medicamentos que te indique tu médico.'],
+  'home.faq2.q':['Do I undress?','¿Tengo que desvestirme?'],
+  'home.faq2.a':['No. You stay fully dressed, shoes on. Wear something comfortable and empty your pockets of phones, keys and cards.','No. Permaneces con toda la ropa y los zapatos puestos. Usa algo cómodo y saca del bolsillo el celular, las llaves y las tarjetas.'],
+  'home.faq3.q':['How many sessions will I need?','¿Cuántas sesiones necesito?'],
+  'home.faq3.a':['Many people start with a series of three, spaced one to two weeks apart, then continue as needed. Sandra will suggest a rhythm after your first scan.','Muchas personas empiezan con una serie de tres, con una o dos semanas entre cada una, y luego continúan según lo necesiten. Sandra te sugerirá un ritmo después del primer rastreo.'],
+  'home.faq4.q':['Does a remote session work the same way?','¿Una sesión a distancia funciona igual?'],
+  'home.faq4.a':['The protocol is the same; the scanning is done through the remote techniques taught in Quantum Biomagnetism while you rest at home on a video call. Many clients alternate remote and in-person visits.','El protocolo es el mismo; el rastreo se hace con las técnicas a distancia del Biomagnetismo Cuántico mientras descansas en casa en videollamada. Muchos clientes alternan sesiones a distancia y presenciales.'],
+  'home.cta.h2':['Ready to feel the difference?','¿Lista o listo para sentir la diferencia?'],
+  'home.cta.p':['Reserve your first session in Astoria or online. Reply usually within one business day.','Reserva tu primera sesión en Astoria o en línea. Respondemos normalmente en un día hábil.']
+};
+</script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/body.js"></script>
+<script>
+(function(){
+  /* hero field + figure */
+  YH.field(document.getElementById('hero-bg'), {dipoles:[{x:.72,y:.5,scale:1.6,lines:9,squash:1.3}], particles:40, alpha:.08});
+  YH.field(document.getElementById('hero-field'), {dipoles:[{x:.5,y:.5,scale:.85,lines:12,squash:1.05}], particles:50, alpha:.16});
+  const holder = document.getElementById('hero-body');
+  holder.innerHTML = YH.bodySVG({id:'hero-svg'});
+  const svg = document.getElementById('hero-svg');
+
+  const SETS = [
+    {name:{en:'Hormonal field',es:'Campo hormonal'}, sub:{en:'endocrine balance',es:'equilibrio endocrino'},
+     pairs:[{id:'a',a:'hypothalamus',b:'pituitary'},{id:'b',a:'thyroid',b:'adrenalL'},{id:'c',a:'pancreas',b:'ovaryR'}]},
+    {name:{en:'Digestive field',es:'Campo digestivo'}, sub:{en:'assimilation and gut health',es:'asimilación y salud intestinal'},
+     pairs:[{id:'a',a:'liver',b:'liverP'},{id:'b',a:'stomach',b:'pylorus'},{id:'c',a:'colonR',b:'colonL'}]},
+    {name:{en:'Pain and structure',es:'Dolor y estructura'}, sub:{en:'joints, spine, inflammation',es:'articulaciones, columna, inflamación'},
+     pairs:[{id:'a',a:'hipR',b:'hipL'},{id:'b',a:'kneeR',b:'kneeL'},{id:'c',a:'shoulderR',b:'shoulderL'}]},
+    {name:{en:'Immune field',es:'Campo inmune'}, sub:{en:'the first pair: thymus and rectum, 1988',es:'el primer par: timo y recto, 1988'},
+     pairs:[{id:'a',a:'thymus',b:'rectum'},{id:'b',a:'spleen',b:'spleenP'},{id:'c',a:'lungR',b:'lungL'}]}
+  ];
+  let i = 0;
+  function show(){
+    const s = SETS[i % SETS.length];
+    YH.renderPairs(svg, s.pairs.map(p=>Object.assign({active:true},p)));
+    document.getElementById('hero-field-name').textContent = YH.L(s.name);
+    document.getElementById('hero-field-sub').textContent = YH.L(s.sub);
+  }
+  show();
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(()=>{ i++; show(); }, 4200);
+  document.addEventListener('yh:lang', show);
+  svg.addEventListener('click', ()=> location.href='atlas.html');
+
+  /* why people come */
+  const REASONS = [
+    {en:['Energy and sleep','Waking unrefreshed, afternoon crashes, restless nights.'], es:['Energía y sueño','Despertar sin descanso, bajones de tarde, noches inquietas.']},
+    {en:['Digestion','Bloating, reflux, irregular rhythm, food that no longer sits well.'], es:['Digestión','Hinchazón, reflujo, ritmo irregular, comidas que ya no caen bien.']},
+    {en:['Stress and mood','A nervous system that never quite switches off.'], es:['Estrés y ánimo','Un sistema nervioso que nunca termina de apagarse.']},
+    {en:['Pain and tension','Back, neck, joints, old injuries that keep talking.'], es:['Dolor y tensión','Espalda, cuello, articulaciones, lesiones viejas que siguen hablando.']},
+    {en:['Hormonal cycles','Cycle changes, thyroid questions, perimenopause.'], es:['Ciclos hormonales','Cambios en el ciclo, dudas de tiroides, perimenopausia.']},
+    {en:['Recovery and immunity','Feeling run-down, slow to bounce back, frequent colds.'], es:['Recuperación e inmunidad','Sentirse agotado, recuperarse lento, resfriados frecuentes.']}
+  ];
+  function reasons(){
+    document.getElementById('reasons').innerHTML = REASONS.map(r => { const t = r[YH.lang]||r.en; return `<div class="reason"><i class="dot"></i><div><b>${t[0]}</b><span>${t[1]}</span></div></div>`; }).join('');
+  }
+  reasons(); document.addEventListener('yh:lang', reasons);
+
+  YH.field(document.getElementById('cta-field'), {dipoles:[{x:.5,y:1.1,scale:1.3,lines:8,squash:1.8}], particles:20, alpha:.14});
+})();
+</script>
+</body>
+</html>

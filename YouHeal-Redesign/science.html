@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Science · YOU HEAL</title>
+<meta name="description" content="How biomagnetic pair therapy is explained by practitioners, what peer-reviewed research says about static magnets, and the references behind both.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .model{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+  @media (max-width:900px){.model{grid-template-columns:1fr}}
+  .pair-demo{position:relative;aspect-ratio:1/1;max-width:420px;margin:0 auto;width:100%}
+  .pair-demo svg{width:100%;height:100%}
+  .pair-demo .lbl{font-family:var(--font-body);font-size:11px;fill:var(--ink-2);letter-spacing:.06em}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 8px}
+  @media (max-width:800px){.tiers{grid-template-columns:1fr}}
+  .tier{border-radius:var(--r-md);padding:18px 20px;border:1px solid var(--line-soft)}
+  .tier b{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .tier.a b{color:var(--aqua)}.tier.b b{color:var(--gold)}.tier.c b{color:var(--north)}
+  .tier span{font-size:var(--fs-0);color:var(--ink-2)}
+  .ev h3 a{color:inherit}
+  .ev .ref{font-size:.75rem;color:var(--gold-2);margin-left:6px;vertical-align:super}
+  .honest{border-left:2px solid var(--aqua);padding:4px 0 4px 20px}
+  .honest p{margin:0 0 10px;color:var(--ink-2)}
+</style>
+</head>
+<body data-title="nav.science">
+<header id="site-header"></header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="crumb"><a href="home.html" data-i18n="common.home">Home</a> › <span data-i18n="nav.science">Science</span></p>
+      <h1 data-i18n="sci.h1">The science, told straight</h1>
+      <p class="lead" data-i18n="sci.lead">We separate three things that often get mixed together: the laboratory physics of magnetism and the body, the clinical research on static magnets, and the practitioner model behind the biomagnetic pair. Every claim below carries a reference you can look up.</p>
+      <div class="tiers">
+        <div class="tier a"><b data-i18n="sci.tier.a">Measured</b><span data-i18n="sci.tier.a.p">Established laboratory findings, replicated for decades.</span></div>
+        <div class="tier b"><b data-i18n="sci.tier.b">Mixed evidence</b><span data-i18n="sci.tier.b.p">Clinical trials with results in both directions.</span></div>
+        <div class="tier c"><b data-i18n="sci.tier.c">Practitioner model</b><span data-i18n="sci.tier.c.p">How the method explains itself. Useful, not yet proven in controlled trials.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PRACTITIONER MODEL -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <div class="model">
+        <div>
+          <span class="chip" style="margin-bottom:12px"><i class="pole pole-n" style="margin:0;width:8px;height:8px;box-shadow:none"></i> <span data-i18n="sci.tier.c">Practitioner model</span></span>
+          <h2 data-i18n="sci.model.h2">How the pair is explained</h2>
+          <p class="muted" data-i18n="sci.model.p1">In Dr. Goiz's model, a dysfunction shows up as two points on the body whose local pH has drifted in opposite directions: one slightly acidic, one slightly alkaline. The two points are said to resonate with each other, and placing a magnet of the opposite polarity on each is proposed to bring both back toward neutral.</p>
+          <p class="muted" data-i18n="sci.model.p2">The scan reads the body's response to a magnet held at each point. When a point is active, the practitioner observes a brief change in apparent leg length, the sign Dr. Goiz adopted from earlier reports. Drag the slider to see the idea.</p>
+          <input class="ph-input" id="ph" type="range" min="0" max="100" value="50" aria-label="pH balance demo">
+          <div class="ph-scale"><span class="thumb" id="ph-thumb" style="left:50%"></span></div>
+          <div class="ph-ticks"><span data-i18n="sci.acid">acidic</span><span>pH 7</span><span data-i18n="sci.alk">alkaline</span></div>
+          <div class="ph-read">
+            <div><span class="small dim" data-i18n="sci.pointA">Point A</span><br><b id="ph-a">7.0</b></div>
+            <div class="serif" style="font-size:1.6rem;color:var(--gold)">⇄</div>
+            <div style="text-align:right"><span class="small dim" data-i18n="sci.pointB">Point B</span><br><b id="ph-b">7.0</b></div>
+          </div>
+          <p class="small dim" id="ph-state" style="margin-top:10px"></p>
+        </div>
+        <div class="pair-demo">
+          <svg viewBox="0 0 400 400" aria-hidden="true">
+            <defs><radialGradient id="gN" cx="50%" cy="50%"><stop offset="0" stop-color="#F0715A" stop-opacity=".7"/><stop offset="1" stop-color="#F0715A" stop-opacity="0"/></radialGradient>
+            <radialGradient id="gS" cx="50%" cy="50%"><stop offset="0" stop-color="#5B8DEF" stop-opacity=".7"/><stop offset="1" stop-color="#5B8DEF" stop-opacity="0"/></radialGradient></defs>
+            <g id="demo-lines" fill="none" stroke="#D4AF6A" stroke-opacity=".35"></g>
+            <circle id="glowA" cx="110" cy="200" r="70" fill="url(#gN)"/>
+            <circle id="glowB" cx="290" cy="200" r="70" fill="url(#gS)"/>
+            <rect x="92" y="186" width="36" height="28" rx="6" fill="#F0715A"/><text class="lbl" x="110" y="204" text-anchor="middle" fill="#120d04" font-weight="700">N</text>
+            <rect x="272" y="186" width="36" height="28" rx="6" fill="#5B8DEF"/><text class="lbl" x="290" y="204" text-anchor="middle" fill="#F3EEE3" font-weight="700">S</text>
+            <text class="lbl" x="110" y="250" text-anchor="middle" data-i18n="sci.pointA">Point A</text>
+            <text class="lbl" x="290" y="250" text-anchor="middle" data-i18n="sci.pointB">Point B</text>
+            <text class="lbl" x="200" y="370" text-anchor="middle" data-i18n="sci.demo.cap">one pair · two magnets · opposite faces</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVIDENCE -->
+  <section class="section">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <h2 data-i18n="sci.ev.h2">What the research says</h2>
+      <p class="lead" style="margin-bottom:28px" data-i18n="sci.ev.lead">Ordered from most to least established. Numbers link to the reference list.</p>
+      <div id="evidence"></div>
+    </div>
+  </section>
+
+  <!-- HONESTY -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="split" style="align-items:start">
+        <div>
+          <h2 data-i18n="sci.hon.h2">How we talk about results</h2>
+        </div>
+        <div class="honest">
+          <p data-i18n="sci.hon.p1">Sandra is not a medical doctor and does not diagnose, treat, cure or prevent disease. Nothing on this site replaces your physician's advice or the medication they prescribe.</p>
+          <p data-i18n="sci.hon.p2">What clients report after sessions is real to them and worth sharing, and it is also not a clinical trial. We tell you both.</p>
+          <p data-i18n="sci.hon.p3">If a claim on this site ever reads stronger than the evidence above, write to us and we will correct it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <h2 data-i18n="sci.refs.h2">References</h2>
+      <ol class="refs" id="refs"></ol>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2 data-i18n="sci.cta.h2">See it from the table, not the page</h2>
+        <p data-i18n="sci.cta.p">The best way to understand the pair is to feel a session. Walk through one in the Lab, or book your first visit.</p>
+        <div class="row"><a class="btn btn-aqua" href="lab.html" data-i18n="nav.lab">The Lab</a><a class="btn btn-primary" href="about.html#book" data-i18n="common.book">Book a session</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script>
+window.YH_DICT = {
+  'sci.h1':['The science, told straight','La ciencia, contada sin rodeos'],
+  'sci.lead':['We separate three things that often get mixed together: the laboratory physics of magnetism and the body, the clinical research on static magnets, and the practitioner model behind the biomagnetic pair. Every claim below carries a reference you can look up.',
+              'Separamos tres cosas que suelen mezclarse: la física de laboratorio del magnetismo y el cuerpo, la investigación clínica sobre imanes estáticos y el modelo de los terapeutas detrás del par biomagnético. Cada afirmación lleva una referencia que puedes consultar.'],
+  'sci.tier.a':['Measured','Medido'],
+  'sci.tier.a.p':['Established laboratory findings, replicated for decades.','Hallazgos de laboratorio establecidos, replicados durante décadas.'],
+  'sci.tier.b':['Mixed evidence','Evidencia mixta'],
+  'sci.tier.b.p':['Clinical trials with results in both directions.','Ensayos clínicos con resultados en ambas direcciones.'],
+  'sci.tier.c':['Practitioner model','Modelo de los terapeutas'],
+  'sci.tier.c.p':['How the method explains itself. Useful, not yet proven in controlled trials.','Cómo se explica el método a sí mismo. Útil, aún no probado en ensayos controlados.'],
+  'sci.model.h2':['How the pair is explained','Cómo se explica el par'],
+  'sci.model.p1':['In Dr. Goiz\'s model, a dysfunction shows up as two points on the body whose local pH has drifted in opposite directions: one slightly acidic, one slightly alkaline. The two points are said to resonate with each other, and placing a magnet of the opposite polarity on each is proposed to bring both back toward neutral.',
+                  'En el modelo del Dr. Goiz, una disfunción aparece como dos puntos del cuerpo cuyo pH local se ha desviado en direcciones opuestas: uno levemente ácido, otro levemente alcalino. Se dice que los dos puntos resuenan entre sí, y se propone que colocar un imán de polaridad opuesta en cada uno los devuelve hacia lo neutro.'],
+  'sci.model.p2':['The scan reads the body\'s response to a magnet held at each point. When a point is active, the practitioner observes a brief change in apparent leg length, the sign Dr. Goiz adopted from earlier reports. Drag the slider to see the idea.',
+                  'El rastreo lee la respuesta del cuerpo a un imán sostenido en cada punto. Cuando un punto está activo, la terapeuta observa un cambio breve en la longitud aparente de las piernas, el signo que el Dr. Goiz adoptó de informes anteriores. Mueve el control para ver la idea.'],
+  'sci.acid':['acidic','ácido'],
+  'sci.alk':['alkaline','alcalino'],
+  'sci.pointA':['Point A','Punto A'],
+  'sci.pointB':['Point B','Punto B'],
+  'sci.demo.cap':['one pair · two magnets · opposite faces','un par · dos imanes · caras opuestas'],
+  'sci.state.bal':['Balanced: both points near neutral. This is the state the pair is meant to restore.','Equilibrado: ambos puntos cerca de lo neutro. Este es el estado que el par busca restaurar.'],
+  'sci.state.off':['Distorted: one point acidic, the other alkaline. In the model, this is where a pair is found during the scan.','Distorsionado: un punto ácido, el otro alcalino. En el modelo, aquí es donde se encuentra un par durante el rastreo.'],
+  'sci.ev.h2':['What the research says','Qué dice la investigación'],
+  'sci.ev.lead':['Ordered from most to least established. Numbers link to the reference list.','Ordenado de lo más a lo menos establecido. Los números llevan a la lista de referencias.'],
+  'sci.hon.h2':['How we talk about results','Cómo hablamos de los resultados'],
+  'sci.hon.p1':['Sandra is not a medical doctor and does not diagnose, treat, cure or prevent disease. Nothing on this site replaces your physician\'s advice or the medication they prescribe.',
+                'Sandra no es médica y no diagnostica, trata, cura ni previene enfermedades. Nada en este sitio reemplaza el consejo de tu médico ni los medicamentos que te recete.'],
+  'sci.hon.p2':['What clients report after sessions is real to them and worth sharing, and it is also not a clinical trial. We tell you both.',
+                'Lo que los clientes cuentan después de sus sesiones es real para ellos y vale la pena compartirlo, y tampoco es un ensayo clínico. Te decimos las dos cosas.'],
+  'sci.hon.p3':['If a claim on this site ever reads stronger than the evidence above, write to us and we will correct it.',
+                'Si alguna afirmación de este sitio suena más fuerte que la evidencia de arriba, escríbenos y la corregimos.'],
+  'sci.refs.h2':['References','Referencias'],
+  'sci.cta.h2':['See it from the table, not the page','Míralo desde la camilla, no desde la página'],
+  'sci.cta.p':['The best way to understand the pair is to feel a session. Walk through one in the Lab, or book your first visit.',
+               'La mejor forma de entender el par es sentir una sesión. Recorre una en el Lab o agenda tu primera visita.']
+};
+</script>
+<script src="assets/js/main.js"></script>
+<script>
+(function(){
+  const EV = [
+    {lvl:'a', refs:[1,2,3], h:{en:'The body produces magnetic fields',es:'El cuerpo produce campos magnéticos'},
+     p:{en:'The heart\'s magnetic field was first recorded in 1963 and the brain\'s in 1968. Magnetocardiography and magnetoencephalography are now routine research tools. This is the strict scientific meaning of "biomagnetism", and it is settled.',
+        es:'El campo magnético del corazón se registró por primera vez en 1963 y el del cerebro en 1968. La magnetocardiografía y la magnetoencefalografía son hoy herramientas de investigación habituales. Este es el sentido científico estricto de "biomagnetismo", y está establecido.'}},
+    {lvl:'a', refs:[4], h:{en:'Static fields far stronger than any therapy magnet are used safely every day',es:'Campos estáticos mucho más fuertes que cualquier imán terapéutico se usan con seguridad todos los días'},
+     p:{en:'MRI scanners expose people to fields of 1.5 to 3 tesla, thousands of times stronger than a therapy magnet, with a well-documented safety record. Therapy magnets on the skin carry no comparable risk for people without implanted electronic devices.',
+        es:'Los equipos de resonancia magnética exponen a las personas a campos de 1,5 a 3 teslas, miles de veces más fuertes que un imán terapéutico, con un historial de seguridad bien documentado. Los imanes terapéuticos sobre la piel no implican un riesgo comparable en personas sin dispositivos electrónicos implantados.'}},
+    {lvl:'b', refs:[5,6,7], h:{en:'Some controlled trials of static magnets report less pain',es:'Algunos ensayos controlados con imanes estáticos reportan menos dolor'},
+     p:{en:'A double-blind pilot in postpolio patients (1997) found larger pain reductions with active 300–500 gauss magnets than with placebo. A multicenter trial in diabetic neuropathy (2003) and a trial of magnetic bracelets in osteoarthritis (2004) reported modest benefits with open questions about blinding.',
+        es:'Un piloto doble ciego en pacientes pospolio (1997) encontró mayores reducciones del dolor con imanes activos de 300–500 gauss que con placebo. Un ensayo multicéntrico en neuropatía diabética (2003) y uno con pulseras magnéticas en artrosis (2004) reportaron beneficios modestos, con dudas abiertas sobre el cegamiento.'}},
+    {lvl:'b', refs:[8,9,10], h:{en:'Pooled analyses do not show an effect beyond placebo',es:'Los análisis agrupados no muestran un efecto más allá del placebo'},
+     p:{en:'A 2007 meta-analysis of randomized trials in CMAJ found no significant difference between static magnets and placebo for pain. A 2009 review noted that most trials did not report magnet strength, size or distance well enough to be repeated. The honest summary: promising single studies, no consistent pooled effect.',
+        es:'Un metaanálisis de 2007 en CMAJ no encontró diferencia significativa entre imanes estáticos y placebo para el dolor. Una revisión de 2009 señaló que la mayoría de los ensayos no reportaron bien la fuerza, el tamaño ni la distancia del imán como para repetirlos. Resumen honesto: estudios individuales prometedores, sin un efecto agrupado consistente.'}},
+    {lvl:'c', refs:[11,12,13], h:{en:'The biomagnetic pair itself has practitioner literature, not controlled trials',es:'El par biomagnético tiene literatura de terapeutas, no ensayos controlados'},
+     p:{en:'Dr. Goiz\'s books describe the method and its catalog; recent practitioner papers document scanning methodology; a Spanish doctoral thesis examined the pair and raised the placebo question. No randomized trial has yet tested the pair against a sham procedure. We teach the model because it guides the session, and we say plainly that it is a model.',
+        es:'Los libros del Dr. Goiz describen el método y su catálogo; artículos recientes de terapeutas documentan la metodología de rastreo; una tesis doctoral española examinó el par y planteó la pregunta del placebo. Ningún ensayo aleatorizado ha probado aún el par contra un procedimiento simulado. Enseñamos el modelo porque guía la sesión, y decimos con claridad que es un modelo.'}},
+    {lvl:'c', refs:[14], h:{en:'Quantum Biomagnetism is a practice framework, not quantum physics',es:'El Biomagnetismo Cuántico es un marco de práctica, no física cuántica'},
+     p:{en:'Dr. Hervás uses "quantum" to name the energetic and emotional layers his school adds to the pair. It does not refer to measurements in quantum mechanics. We use the name because it is the name of the training, and we describe it as what it is.',
+        es:'El Dr. Hervás usa "cuántico" para nombrar las capas energética y emocional que su escuela agrega al par. No se refiere a mediciones de la mecánica cuántica. Usamos el nombre porque es el nombre de la formación, y lo describimos como lo que es.'}}
+  ];
+  const REFS = [
+    'Baule GM, McFee R. Detection of the magnetic field of the heart. <b>American Heart Journal</b>. 1963;66:95–96.',
+    'Cohen D. Magnetoencephalography: evidence of magnetic fields produced by alpha-rhythm currents. <b>Science</b>. 1968;161(3843):784–786.',
+    'Cohen D. Magnetoencephalography: detection of the brain\'s electrical activity with a superconducting magnetometer. <b>Science</b>. 1972;175(4022):664–666.',
+    'Schenck JF. Safety of strong, static magnetic fields. <b>Journal of Magnetic Resonance Imaging</b>. 2000;12(1):2–19.',
+    'Vallbona C, Hazlewood CF, Jurida G. Response of pain to static magnetic fields in postpolio patients: a double-blind pilot study. <b>Archives of Physical Medicine and Rehabilitation</b>. 1997;78(11):1200–1203.',
+    'Weintraub MI, Wolfe GI, Barohn RA, et al. Static magnetic field therapy for symptomatic diabetic neuropathy: a randomized, double-blind, placebo-controlled trial. <b>Archives of Physical Medicine and Rehabilitation</b>. 2003;84(5):736–746.',
+    'Harlow T, Greaves C, White A, Brown L, Hart A, Ernst E. Randomised controlled trial of magnetic bracelets for relieving pain in osteoarthritis of the hip and knee. <b>BMJ</b>. 2004;329(7480):1450–1454.',
+    'Pittler MH, Brown EM, Ernst E. Static magnets for reducing pain: systematic review and meta-analysis of randomized trials. <b>CMAJ</b>. 2007;177(7):736–742.',
+    'Colbert AP, Wahbeh H, Harling N, et al. Static magnetic field therapy: a critical review of treatment parameters. <b>Evidence-Based Complementary and Alternative Medicine</b>. 2009;6(2):133–139.',
+    'Markov MS. Magnetic field therapy: a review. <b>Electromagnetic Biology and Medicine</b>. 2007;26(1):1–23.',
+    'Goiz Durán I. <b>El Par Biomagnético</b>. Mexico; 1995, with later editions. The founding description of the method and its pair catalog.',
+    'Medicinal Biomagnetism: Level 1 and Level 2 biomagnetic pairs scanning methodology. <b>Revista FT</b> (Brazil); 2024. Practitioner literature.',
+    'De Juan González de Castejón E. Doctoral thesis on the biomagnetic pair. <b>Universidad de Alcalá</b>, Spain (repository: ebuah.uah.es).',
+    'Hervás A. Biomagnetismo Quántico: una terapia del futuro. Interviews and course materials, <b>Escuela Internacional de Biomagnetismo Quántico</b>, 2014 onward.'
+  ];
+  function render(){
+    document.getElementById('evidence').innerHTML = EV.map(e => `
+      <div class="ev"><div class="lvl ${e.lvl}">${YH.t('sci.tier.'+e.lvl)}</div>
+      <div><h3>${YH.L(e.h)}<span class="ref">${e.refs.map(r=>`<a href="#ref-${r}">${r}</a>`).join(', ')}</span></h3><p>${YH.L(e.p)}</p></div></div>`).join('');
+    document.getElementById('refs').innerHTML = REFS.map((r,i)=>`<li id="ref-${i+1}"><span>${r}</span></li>`).join('');
+    phUpdate();
+  }
+  /* pH demo */
+  const ph = document.getElementById('ph');
+  function phUpdate(){
+    const v = +ph.value, off = (v-50)/50;           // -1..1
+    const a = (7 - off*2.2).toFixed(1), b = (7 + off*2.2).toFixed(1);
+    document.getElementById('ph-a').textContent = a; document.getElementById('ph-b').textContent = b;
+    document.getElementById('ph-thumb').style.left = v+'%';
+    const mag = Math.abs(off);
+    document.getElementById('glowA').setAttribute('r', 40+mag*60); document.getElementById('glowB').setAttribute('r', 40+mag*60);
+    document.getElementById('ph-state').textContent = YH.t(mag<.15 ? 'sci.state.bal' : 'sci.state.off');
+    let lines=''; const n=6;
+    for(let i=1;i<=n;i++){ const bow = 20+i*22*(0.4+mag*0.6); lines += `<path d="M110,200 C110,${200-bow} 290,${200-bow} 290,200"/><path d="M110,200 C110,${200+bow} 290,${200+bow} 290,200"/>`; }
+    document.getElementById('demo-lines').innerHTML = lines;
+  }
+  ph.addEventListener('input', phUpdate);
+  document.addEventListener('yh:lang', render); render();
+})();
+</script>
+</body>
+</html>

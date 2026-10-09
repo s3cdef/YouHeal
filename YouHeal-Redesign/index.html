@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YOU HEAL · Choose your language / Elige tu idioma</title>
+<meta name="description" content="YOU HEAL — Biomagnetic pair therapy with Sandra Villafane. Choose English or Español.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .gate .lang-note{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px;font-size:var(--fs-0);color:var(--ink-3)}
+  .gate .bilingual{display:grid;gap:4px}
+  .gate .bilingual span:last-child{color:var(--ink-3);font-size:.85em}
+  .gate .saved{margin-top:26px}
+</style>
+</head>
+<body>
+<main class="gate">
+  <canvas id="gate-field" aria-hidden="true"></canvas>
+  <div class="inner">
+    <div class="brand" id="gate-brand"></div>
+    <h1 class="bilingual"><span>Welcome to YOU HEAL</span><span>Bienvenido a YOU HEAL</span></h1>
+    <p class="sub">Biomagnetic pair therapy with Sandra Villafane<br><span class="dim">Terapia del par biomagnético con Sandra Villafane</span></p>
+
+    <div class="choices">
+      <button class="choice" type="button" data-lang="en" aria-label="Continue in English">
+        <i class="pole pole-n" aria-hidden="true"></i>
+        <b>English</b>
+        <span>Sessions, atlas and guide in English.</span>
+        <small>Astoria, Queens · Remote sessions worldwide</small>
+      </button>
+      <button class="choice" type="button" data-lang="es" aria-label="Continuar en español">
+        <i class="pole pole-s" aria-hidden="true"></i>
+        <b>Español</b>
+        <span>Sesiones, atlas y guía en español.</span>
+        <small>Astoria, Queens · Sesiones a distancia en todo el mundo</small>
+      </button>
+    </div>
+
+    <p class="saved hidden" id="saved"></p>
+    <p class="foot">Non-invasive · Clothes on · In person or remote<br><span>No invasivo · Con la ropa puesta · Presencial o a distancia</span></p>
+  </div>
+</main>
+
+<script src="assets/js/main.js"></script>
+<script>
+  document.getElementById('gate-brand').innerHTML = YH.mark(44) + '<span><span class="word">YOU HEAL</span></span>';
+  YH.field(document.getElementById('gate-field'), {dipoles:[{x:.5,y:.5,scale:1.15,lines:16,squash:1.25}], particles:90, alpha:.18});
+  document.querySelectorAll('.choice').forEach(b => b.addEventListener('click', () => {
+    YH.setLang(b.dataset.lang);
+    location.href = 'home.html';
+  }));
+  if(YH.hasLang){
+    const s = document.getElementById('saved');
+    s.classList.remove('hidden');
+    s.innerHTML = YH.lang === 'es'
+      ? '<a class="btn btn-outline btn-sm" href="home.html">Continuar en español</a>'
+      : '<a class="btn btn-outline btn-sm" href="home.html">Continue in English</a>';
+  }
+</script>
+</body>
+</html>

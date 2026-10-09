@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Lab · A session, step by step · YOU HEAL</title>
+<meta name="description" content="An interactive walk-through of a biomagnetic pair session with Sandra: conversation, scan, pairs, bioenergetic layer and integration, in person or remote.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .lab-mode{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+  .lab-scene .body-svg{position:static;max-height:none;width:auto;height:auto}
+  .lab-scene text{font-family:var(--font-body);fill:var(--ink-2);font-size:11px;letter-spacing:.06em}
+  .lab-scene .scene-body .silhouette{stroke-opacity:.9}
+  .lab-scene.remote .scene-body .silhouette{stroke:var(--aqua)}
+  .lab-scene.remote .scene-body .skeleton{stroke:var(--aqua)}
+  .checklist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .checklist li{display:flex;gap:12px;align-items:flex-start;color:var(--ink-2);font-size:var(--fs-1)}
+  .checklist li::before{content:"";width:18px;height:18px;border-radius:50%;border:1px solid var(--gold);flex:none;margin-top:3px;background:radial-gradient(circle at center,var(--gold) 0 3px,transparent 3.5px)}
+  .after{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:800px){.after{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-title="nav.lab">
+<header id="site-header"></header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="crumb"><a href="home.html" data-i18n="common.home">Home</a> › <span data-i18n="nav.lab">The Lab</span></p>
+      <h1 data-i18n="lab.h1">A session, step by step</h1>
+      <p class="lead" data-i18n="lab.lead">Press play and watch a session unfold on Sandra's table, or step through it at your own pace. Switch to remote to see how the same session happens from home.</p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="lab-mode">
+        <div class="path-toggle" role="group" aria-label="Session mode">
+          <button type="button" data-mode="inperson" aria-pressed="true" data-i18n="lab.mode.ip">In person</button>
+          <button type="button" data-mode="remote" aria-pressed="false" data-i18n="lab.mode.rm">Remote</button>
+        </div>
+        <span class="small dim" id="mode-note"></span>
+      </div>
+
+      <div class="lab">
+        <div>
+          <div class="lab-scene" id="scene">
+            <div class="lab-hud"><span id="hud-step"></span><span><b id="hud-clock">00:00</b> <span data-i18n="lab.hud.min">session clock</span></span></div>
+            <svg viewBox="0 0 800 500" aria-hidden="true">
+              <defs>
+                <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1217"/><stop offset="1" stop-color="#111B22"/></linearGradient>
+                <radialGradient id="lamp" cx="50%" cy="0%" r="70%"><stop offset="0" stop-color="#F1D9A3" stop-opacity=".16"/><stop offset="1" stop-color="#F1D9A3" stop-opacity="0"/></radialGradient>
+                <radialGradient id="qglow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#63D6C5" stop-opacity=".35"/><stop offset="1" stop-color="#63D6C5" stop-opacity="0"/></radialGradient>
+              </defs>
+              <rect width="800" height="500" fill="url(#floor)"/>
+              <rect width="800" height="500" fill="url(#lamp)"/>
+              <!-- room hints -->
+              <g class="fade" id="room">
+                <path d="M60 470 H740" stroke="#D4AF6A" stroke-opacity=".25"/>
+                <path d="M690 150 v-60 h-20" stroke="#D4AF6A" stroke-opacity=".3" fill="none"/><circle cx="670" cy="90" r="5" fill="#F1D9A3" fill-opacity=".8"/>
+                <!-- water glass -->
+                <g id="glass" class="fade off"><path d="M600 430 h22 l-3 34 h-16 z" fill="none" stroke="#63D6C5" stroke-opacity=".8"/><path d="M603 446 h16" stroke="#63D6C5" stroke-opacity=".5"/></g>
+              </g>
+              <!-- table -->
+              <g id="table">
+                <rect x="130" y="372" width="520" height="16" rx="6" fill="#111B22" stroke="#D4AF6A" stroke-opacity=".45"/>
+                <path d="M160 388 v70 M620 388 v70 M150 458 h20 M610 458 h20" stroke="#D4AF6A" stroke-opacity=".35"/>
+                <rect x="140" y="150" width="500" height="222" rx="14" fill="#0B1217" stroke="#D4AF6A" stroke-opacity=".35"/>
+              </g>
+              <!-- video frame (remote) -->
+              <g id="video" class="fade off"><rect x="126" y="136" width="528" height="252" rx="18" fill="none" stroke="#63D6C5" stroke-opacity=".6" stroke-dasharray="6 6"/><circle cx="640" cy="150" r="5" fill="#F0715A"/><text x="630" y="154" text-anchor="end" fill="#63D6C5">REC</text></g>
+              <!-- client body (top-down), head left -->
+              <g id="client" class="fade" transform="translate(160,350) rotate(-90) scale(0.5)"></g>
+              <!-- reference line + feet -->
+              <g id="feet" class="fade off">
+                <path d="M604 205 v110" stroke="#F1D9A3" stroke-opacity=".5" stroke-dasharray="3 4"/>
+                <path class="leg-r" id="foot-r" d="M604 256 v16" stroke="#F0715A" stroke-width="3"/>
+                <path d="M604 228 v16" stroke="#5B8DEF" stroke-width="3"/>
+                <text id="foot-lbl" x="620" y="300" fill="#F0715A" opacity="0"></text>
+              </g>
+              <!-- scanning wand -->
+              <g id="wand" class="scan-wand off" transform="translate(250,250)">
+                <circle r="16" fill="#D4AF6A" fill-opacity=".12" stroke="#D4AF6A"/><circle r="5" fill="#F0715A"/>
+                <path d="M0 -16 v-40" stroke="#D4AF6A" stroke-opacity=".8"/><circle cy="-62" r="7" fill="none" stroke="#D4AF6A"/>
+              </g>
+              <!-- magnets -->
+              <g id="magnets"></g>
+              <!-- quantum layer -->
+              <g id="qlayer" class="qtable off">
+                <ellipse cx="385" cy="250" rx="300" ry="150" fill="url(#qglow)"/>
+                <ellipse cx="385" cy="250" rx="140" ry="70" fill="none" stroke="#63D6C5" stroke-opacity=".35" stroke-dasharray="2 6"/>
+                <ellipse cx="385" cy="250" rx="200" ry="100" fill="none" stroke="#63D6C5" stroke-opacity=".3" stroke-dasharray="2 6"/>
+                <ellipse cx="385" cy="250" rx="260" ry="130" fill="none" stroke="#63D6C5" stroke-opacity=".22" stroke-dasharray="2 6"/>
+              </g>
+              <!-- quantum table glyph (remote) -->
+              <g id="qtable" class="qtable off" transform="translate(672,300)">
+                <rect x="0" y="0" width="100" height="100" fill="none" stroke="#63D6C5" stroke-opacity=".7"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#63D6C5" stroke-opacity=".5"/><circle cx="50" cy="50" r="25" fill="none" stroke="#63D6C5" stroke-opacity=".5"/><circle cx="50" cy="50" r="10" fill="none" stroke="#63D6C5" stroke-opacity=".5"/>
+                <path d="M50 0v100M0 50h100" stroke="#63D6C5" stroke-opacity=".35"/>
+                <circle cx="50" cy="50" r="3" fill="#F1D9A3"/>
+                <text x="50" y="118" text-anchor="middle" fill="#63D6C5" data-i18n="lab.qtable">quantum table</text>
+                <g id="witness"><rect x="12" y="-56" width="76" height="44" rx="6" fill="#0B1217" stroke="#63D6C5" stroke-opacity=".6"/><circle cx="30" cy="-34" r="8" fill="none" stroke="#F1D9A3" stroke-opacity=".8"/><path d="M46 -40 h32 M46 -30 h24" stroke="#F1D9A3" stroke-opacity=".6"/></g>
+              </g>
+              <!-- practitioner -->
+              <g id="sandra" transform="translate(395,66)">
+                <circle r="16" fill="none" stroke="#D4AF6A"/><path d="M-26 44 C-26 20 26 20 26 44" fill="none" stroke="#D4AF6A"/>
+                <text y="66" text-anchor="middle" fill="#D4AF6A">Sandra</text>
+              </g>
+            </svg>
+            <div class="lab-progress"><i id="progress"></i></div>
+          </div>
+          <div class="lab-narr">
+            <h3 id="narr-h"></h3>
+            <p class="muted" id="narr-p"></p>
+            <div class="lab-controls">
+              <button class="btn btn-primary" type="button" id="play"><svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg><span data-i18n="lab.play">Play the session</span></button>
+              <button class="btn btn-outline" type="button" id="prev" data-i18n="lab.prev">Back</button>
+              <button class="btn btn-outline" type="button" id="next" data-i18n="lab.next">Next step</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <ol class="lab-steps" id="steps"></ol>
+          <div class="panel" style="margin-top:20px">
+            <h4 data-i18n="lab.feel.h">What you may feel</h4>
+            <div class="feel">
+              <div><b data-i18n="home.feel1.h">Warmth</b><span data-i18n="home.feel1.p">Many people notice gentle heat or tingling where a pair is placed.</span></div>
+              <div><b data-i18n="home.feel2.h">Deep rest</b><span data-i18n="home.feel2.p">The room is quiet and dim. Most clients drift toward sleep while the pairs hold.</span></div>
+              <div><b data-i18n="home.feel3.h">Release</b><span data-i18n="home.feel3.p">A long exhale, a lighter walk out the door. Hydrate well afterward.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <div class="grid grid-2">
+        <div class="panel panel-gold">
+          <h3 data-i18n="lab.prep.h">Before you come</h3>
+          <ul class="checklist">
+            <li data-i18n="lab.prep.1">Wear comfortable clothes. You will not undress.</li>
+            <li data-i18n="lab.prep.2">Empty your pockets: phone, keys, cards. Magnets and cards do not mix.</li>
+            <li data-i18n="lab.prep.3">Drink water during the day. Eat lightly in the hour before.</li>
+            <li data-i18n="lab.prep.4">Tell Sandra about pacemakers, implanted devices, insulin pumps or pregnancy before booking.</li>
+            <li data-i18n="lab.prep.5">Keep taking any medication your doctor prescribes.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 data-i18n="lab.after.h">After the session</h3>
+          <div class="feel">
+            <div><b data-i18n="lab.after1.h">Water</b><span data-i18n="lab.after1.p">Two or three extra glasses through the evening.</span></div>
+            <div><b data-i18n="lab.after2.h">Rest</b><span data-i18n="lab.after2.p">A slow evening helps the work settle. Skip heavy training that day.</span></div>
+            <div><b data-i18n="lab.after3.h">Notice</b><span data-i18n="lab.after3.p">Write down what changes over the next three days. It guides the next scan.</span></div>
+          </div>
+          <div class="row" style="margin-top:22px"><a class="btn btn-primary" href="about.html#book" data-i18n="common.book">Book a session</a><a class="btn btn-outline" href="pathways.html" data-i18n="lab.paths">Compare in person and remote</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script>
+window.YH_DICT = {
+  'lab.h1':['A session, step by step','Una sesión, paso a paso'],
+  'lab.lead':['Press play and watch a session unfold on Sandra\'s table, or step through it at your own pace. Switch to remote to see how the same session happens from home.',
+              'Dale play y mira cómo se desarrolla una sesión en la camilla de Sandra, o avanza a tu ritmo. Cambia a distancia para ver cómo ocurre la misma sesión desde casa.'],
+  'lab.mode.ip':['In person','Presencial'],
+  'lab.mode.rm':['Remote','A distancia'],
+  'lab.hud.min':['session clock','reloj de sesión'],
+  'lab.qtable':['quantum table','mesa cuántica'],
+  'lab.play':['Play the session','Reproducir la sesión'],
+  'lab.pause':['Pause','Pausar'],
+  'lab.prev':['Back','Atrás'],
+  'lab.next':['Next step','Siguiente paso'],
+  'lab.feel.h':['What you may feel','Lo que puedes sentir'],
+  'lab.prep.h':['Before you come','Antes de venir'],
+  'lab.prep.1':['Wear comfortable clothes. You will not undress.','Usa ropa cómoda. No te vas a desvestir.'],
+  'lab.prep.2':['Empty your pockets: phone, keys, cards. Magnets and cards do not mix.','Vacía los bolsillos: celular, llaves, tarjetas. Los imanes y las tarjetas no se llevan bien.'],
+  'lab.prep.3':['Drink water during the day. Eat lightly in the hour before.','Toma agua durante el día. Come liviano en la hora anterior.'],
+  'lab.prep.4':['Tell Sandra about pacemakers, implanted devices, insulin pumps or pregnancy before booking.','Cuéntale a Sandra sobre marcapasos, dispositivos implantados, bombas de insulina o embarazo antes de agendar.'],
+  'lab.prep.5':['Keep taking any medication your doctor prescribes.','Continúa con los medicamentos que te indique tu médico.'],
+  'lab.after.h':['After the session','Después de la sesión'],
+  'lab.after1.h':['Water','Agua'],'lab.after1.p':['Two or three extra glasses through the evening.','Dos o tres vasos extra durante la tarde y la noche.'],
+  'lab.after2.h':['Rest','Descanso'],'lab.after2.p':['A slow evening helps the work settle. Skip heavy training that day.','Una tarde tranquila ayuda a que el trabajo se asiente. Evita el entrenamiento pesado ese día.'],
+  'lab.after3.h':['Notice','Observa'],'lab.after3.p':['Write down what changes over the next three days. It guides the next scan.','Anota qué cambia en los próximos tres días. Orienta el siguiente rastreo.'],
+  'lab.paths':['Compare in person and remote','Compara presencial y a distancia'],
+  'lab.foot':['right leg shortens','la pierna derecha se acorta'],
+  'lab.note.ip':['Top-down view of the table. Magnets shown over clothing.','Vista desde arriba de la camilla. Imanes mostrados sobre la ropa.'],
+  'lab.note.rm':['You at home on video; Sandra works the witness over the quantum table.','Tú en casa por video; Sandra trabaja el testigo sobre la mesa cuántica.']
+};
+</script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/body.js"></script>
+<script>
+(function(){
+  const scene = document.getElementById('scene');
+  const client = document.getElementById('client');
+  client.innerHTML = `<g class="body-svg scene-body"><ellipse class="silhouette" cx="200" cy="70" rx="40" ry="50"/><path class="silhouette" d="${YH.bodyPath()}"/><g class="bones">${YH.skeleton()}</g></g>`;
+
+  /* body (400x900) -> scene coords */
+  const P = YH.POINTS, S = (k) => ({x: 160 + 0.5*P[k].y, y: 350 - 0.5*P[k].x});
+  const PAIRS = [['thymus','rectum'],['hipR','hipL'],['kneeR','kneeL']];
+  const SCAN_PATH = ['templeR','thyroid','thymus','heart','liver','stomach','pancreas','navel','bladder','hipR','kneeR','ankleR'];
+  const ACTIVE = new Set(['thymus','hipR','kneeR']);
+
+  const STEPS = {
+    inperson: [
+      {t:10,h:{en:'Conversation',es:'Conversación'},p:{en:'You sit with Sandra and talk through what brought you in, your history and what balance would look like for you. Nothing is placed yet.',es:'Te sientas con Sandra y conversan sobre qué te trajo, tu historia y cómo sería el equilibrio para ti. Todavía no se coloca nada.'}},
+      {t:2,h:{en:'On the table',es:'En la camilla'},p:{en:'You lie face-up, clothes and shoes on. Pockets empty, a light blanket if you like. The room is dim and quiet.',es:'Te acuestas boca arriba, con ropa y zapatos. Bolsillos vacíos, una cobija liviana si quieres. La sala está en penumbra y en silencio.'}},
+      {t:18,h:{en:'The scan',es:'El rastreo'},p:{en:'Sandra holds a magnet at one point after another and watches your feet. When a point is active, the right leg appears to shorten for a moment. That point and its partner become a pair.',es:'Sandra sostiene un imán en un punto tras otro y observa tus pies. Cuando un punto está activo, la pierna derecha parece acortarse un momento. Ese punto y su pareja se convierten en un par.'}},
+      {t:22,h:{en:'Pairs hold',es:'Los pares actúan'},p:{en:'Each pair the scan found gets two magnets, north face on one point and south face on the other. They stay for fifteen to twenty-five minutes. Most people fall asleep.',es:'Cada par que encontró el rastreo recibe dos imanes, cara norte en un punto y cara sur en el otro. Se mantienen de quince a veinticinco minutos. La mayoría se duerme.'}},
+      {t:10,h:{en:'Bioenergetic layer',es:'Capa bioenergética'},p:{en:'In a specialized session, Sandra scans the emotional and energetic layer, the extension Dr. Goiz called Bioenergetics and Dr. Hervás developed further.',es:'En una sesión especializada, Sandra rastrea la capa emocional y energética, la extensión que el Dr. Goiz llamó Bioenergética y que el Dr. Hervás desarrolló más.'}},
+      {t:6,h:{en:'Integration',es:'Integración'},p:{en:'Magnets come off. You sit up slowly, drink water, and Sandra tells you what she found and suggests a rhythm for the next sessions.',es:'Se retiran los imanes. Te sientas despacio, tomas agua y Sandra te cuenta qué encontró y te sugiere un ritmo para las próximas sesiones.'}}
+    ],
+    remote: [
+      {t:10,h:{en:'Conversation on video',es:'Conversación por video'},p:{en:'Same conversation, on a call. You have already sent a recent photo and your date of birth: the witness Sandra will work with.',es:'La misma conversación, por llamada. Ya enviaste una foto reciente y tu fecha de nacimiento: el testigo con el que Sandra trabajará.'}},
+      {t:2,h:{en:'Lie down at home',es:'Acuéstate en casa'},p:{en:'You lie down somewhere quiet with the camera on. Sandra places the witness on the quantum table.',es:'Te acuestas en un lugar tranquilo con la cámara encendida. Sandra ubica el testigo sobre la mesa cuántica.'}},
+      {t:15,h:{en:'Remote scan',es:'Rastreo a distancia'},p:{en:'Sandra scans the witness over the quantum table, the distance method of Quantum Biomagnetism, and tells you which pairs come up.',es:'Sandra rastrea el testigo sobre la mesa cuántica, el método a distancia del Biomagnetismo Cuántico, y te dice qué pares aparecen.'}},
+      {t:20,h:{en:'Pairs hold',es:'Los pares actúan'},p:{en:'Pairs are placed on the witness and held. If you have a home kit, Sandra may guide you to place one pair on yourself.',es:'Los pares se colocan en el testigo y se mantienen. Si tienes un kit en casa, Sandra puede guiarte para colocar un par sobre ti.'}},
+      {t:10,h:{en:'Quantum layer',es:'Capa cuántica'},p:{en:'Energetic axes and emotional memory are read on the same table. This layer is built into the remote method.',es:'Los ejes energéticos y la memoria emocional se leen en la misma mesa. Esta capa está integrada en el método a distancia.'}},
+      {t:6,h:{en:'Integration',es:'Integración'},p:{en:'A short debrief, water, and a written summary by email within the day.',es:'Un cierre corto, agua y un resumen escrito por correo el mismo día.'}}
+    ]
+  };
+
+  let mode='inperson', step=0, playing=false, timer=null, scanTimer=null, clock=0;
+  const $ = id => document.getElementById(id);
+  const magnets = $('magnets');
+
+  function magnetMarkup(k, pol){ const s=S(k), post=P[k].posterior; return `<g class="magnet" transform="translate(${s.x},${s.y})"><rect x="-9" y="-9" width="18" height="18" rx="4" fill="${post?'none':(pol==='n'?'#F0715A':'#5B8DEF')}" stroke="${pol==='n'?'#F0715A':'#5B8DEF'}" stroke-width="${post?2:0}"/><text y="4" text-anchor="middle" fill="${post?(pol==='n'?'#F0715A':'#5B8DEF'):'#070B0F'}" font-weight="700">${pol.toUpperCase()}</text></g>`; }
+
+  function renderSteps(){
+    const st = STEPS[mode];
+    $('steps').innerHTML = st.map((s,i)=>`<li><button type="button" data-step="${i}" aria-current="${i===step?'step':'false'}"><span class="n">${i+1}</span><span><b>${YH.L(s.h)}</b><small>${s.t} min</small></span><span class="t">${cum(i)}</span></button></li>`).join('');
+    $('mode-note').textContent = YH.t(mode==='remote'?'lab.note.rm':'lab.note.ip');
+    $('play').querySelector('span').textContent = YH.t(playing?'lab.pause':'lab.play');
+  }
+  function cum(i){ let m=0; for(let j=0;j<i;j++) m+=STEPS[mode][j].t; return String(m).padStart(2,'0')+':00'; }
+
+  function show(){
+    const st = STEPS[mode], s = st[step];
+    $('narr-h').textContent = YH.L(s.h); $('narr-p').textContent = YH.L(s.p);
+    $('hud-step').textContent = (step+1)+' / '+st.length+' · '+YH.L(s.h);
+    $('progress').style.width = ((step+1)/st.length*100)+'%';
+    let m=0; for(let j=0;j<step;j++) m+=st[j].t; clock=m; $('hud-clock').textContent = String(m).padStart(2,'0')+':00';
+    document.querySelectorAll('#steps button').forEach(b=>b.setAttribute('aria-current', +b.dataset.step===step?'step':'false'));
+
+    const remote = mode==='remote';
+    scene.classList.toggle('remote', remote);
+    $('video').classList.toggle('off', !remote);
+    $('qtable').classList.toggle('off', !remote || step<1);
+    $('client').classList.toggle('off', step<1);
+    $('feet').classList.toggle('off', remote || step!==2);
+    $('wand').classList.toggle('off', step!==2);
+    $('qlayer').classList.toggle('off', step!==4);
+    $('glass').classList.toggle('off', step!==5);
+    $('sandra').setAttribute('transform', remote && step>0 ? 'translate(722,196)' : 'translate(395,66)');
+    clearInterval(scanTimer); $('foot-r').classList.remove('short'); $('foot-lbl').setAttribute('opacity',0);
+    if(step===2) runScan(); else if(step===3||step===4){ magnets.innerHTML = PAIRS.map(([a,b])=> remote ? '' : magnetMarkup(a,'n')+magnetMarkup(b,'s')).join(''); if(remote) magnets.innerHTML = PAIRS.map((p,i)=>`<g class="magnet" transform="translate(${690+i*14},${330+i*8})"><rect x="-6" y="-6" width="12" height="12" rx="3" fill="#F0715A"/><rect x="6" y="-6" width="12" height="12" rx="3" fill="#5B8DEF"/></g>`).join(''); }
+    else magnets.innerHTML='';
+  }
+  function runScan(){
+    let i=0; const remote = mode==='remote';
+    function tick(){
+      const k = SCAN_PATH[i % SCAN_PATH.length];
+      if(remote){ $('wand').setAttribute('transform', `translate(${690+ (i%4)*20},${340 + ((i>>2)%3)*20})`); }
+      else {
+        const s=S(k); $('wand').setAttribute('transform', `translate(${s.x},${s.y})`);
+        const hit = ACTIVE.has(k); $('foot-r').classList.toggle('short', hit); $('foot-lbl').setAttribute('opacity', hit?1:0); $('foot-lbl').textContent = YH.t('lab.foot');
+        if(hit) magnets.innerHTML += `<g class="magnet"><circle cx="${s.x}" cy="${s.y}" r="10" fill="none" stroke="#F1D9A3" stroke-opacity=".8"/></g>`;
+      }
+      i++;
+    }
+    magnets.innerHTML=''; tick(); scanTimer = setInterval(tick, 900);
+  }
+  function go(n){ step = Math.max(0, Math.min(STEPS[mode].length-1, n)); show(); }
+  function play(){
+    playing = !playing; renderSteps();
+    clearInterval(timer);
+    if(playing){ if(step===STEPS[mode].length-1) go(0); timer = setInterval(()=>{ if(step>=STEPS[mode].length-1){ playing=false; renderSteps(); clearInterval(timer); return; } go(step+1); }, 5200); }
+  }
+  $('play').addEventListener('click', play);
+  $('next').addEventListener('click', ()=>go(step+1));
+  $('prev').addEventListener('click', ()=>go(step-1));
+  $('steps').addEventListener('click', e=>{ const b=e.target.closest('[data-step]'); if(b) go(+b.dataset.step); });
+  document.querySelectorAll('.path-toggle button').forEach(b=>b.addEventListener('click', ()=>{
+    mode = b.dataset.mode; document.querySelectorAll('.path-toggle button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+    playing=false; clearInterval(timer); step=0; renderSteps(); show();
+  }));
+  document.addEventListener('yh:lang', ()=>{ renderSteps(); show(); });
+  renderSteps(); show();
+})();
+</script>
+</body>
+</html>

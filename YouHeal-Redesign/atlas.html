@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Body Atlas · YOU HEAL</title>
+<meta name="description" content="Interactive atlas of biomagnetic pairs: explore fields, pairs and points in Medical Biomagnetism (Goiz) and Quantum Biomagnetism (Hervás).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .body-svg:not(.quantum) .rings{display:none}
+  .atlas-top{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;padding:32px 0 8px}
+  .atlas-top h1{font-size:clamp(2.2rem,4vw,3.2rem);margin:0}
+  .atlas-top p{margin:4px 0 0;color:var(--ink-2);max-width:60ch}
+  .realm-note{font-size:var(--fs-0);color:var(--ink-3);margin:-8px 0 18px}
+  .crumbs{display:flex;gap:6px;align-items:center;font-size:var(--fs-0);color:var(--ink-3);margin-bottom:14px;flex-wrap:wrap}
+  .crumbs b{color:var(--ink);font-weight:600}
+  .crumbs i{font-style:normal;color:var(--gold)}
+  .detail-h{font-size:1.9rem;margin:8px 0 4px}
+  .detail-focus{color:var(--gold-2);font-family:var(--font-display);font-size:1.2rem;font-style:italic}
+  .detail-text{color:var(--ink-2);font-size:var(--fs-1);margin:12px 0}
+  .related{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 18px}
+  .related button{border:1px solid var(--line-soft);background:transparent;border-radius:999px;padding:4px 10px;font-size:.75rem;color:var(--ink-2);cursor:pointer}
+  .related button:hover{border-color:var(--gold);color:var(--gold-2)}
+  .stage-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-size:.75rem;color:var(--ink-3);white-space:nowrap}
+  .atlas-legend{display:flex;gap:28px;flex-wrap:wrap;align-items:center;padding:20px 0;border-top:1px solid var(--line-soft);margin-top:10px}
+  .pt-note{font-size:var(--fs-0);color:var(--ink-2);border-left:2px solid var(--gold);padding-left:10px;margin-top:12px}
+</style>
+</head>
+<body data-title="nav.atlas">
+<header id="site-header"></header>
+
+<main class="wrap">
+  <div class="atlas-top">
+    <div>
+      <h1 data-i18n="atlas.h1">Virtual atlas of biomagnetic pairs</h1>
+      <p data-i18n="atlas.lead">Choose a field, then a pair, then a point. Switch realms to see how Quantum Biomagnetism layers over the medical catalog.</p>
+    </div>
+    <div class="legend">
+      <div><i class="pole pole-n"></i><b data-i18n="common.north">North pole (+)</b><span data-i18n="common.northsub"></span></div>
+      <div><i class="pole pole-s"></i><b data-i18n="common.south">South pole (−)</b><span data-i18n="common.southsub"></span></div>
+      <div><i class="pole-line"></i><b data-i18n="common.fieldline">Biomagnetic field line</b><span data-i18n="common.posterior">Ring = posterior point</span></div>
+    </div>
+  </div>
+
+  <div class="atlas" id="atlas">
+    <aside class="atlas-side">
+      <div class="realm-switch" role="group" aria-label="Realm">
+        <button type="button" data-realm="medical" aria-pressed="true"><i class="pole pole-n" style="margin:0;width:8px;height:8px;box-shadow:none"></i><span data-i18n="atlas.realm.medical">Goiz · Medical</span></button>
+        <button type="button" data-realm="quantum" aria-pressed="false"><i class="pole" style="margin:0;width:8px;height:8px;background:var(--aqua)"></i><span data-i18n="atlas.realm.quantum">Hervás · Quantum</span></button>
+      </div>
+      <p class="realm-note" id="realm-note"></p>
+      <ul class="field-list" id="field-list"></ul>
+    </aside>
+
+    <section class="atlas-stage" aria-label="Body atlas stage">
+      <canvas id="atlas-field" aria-hidden="true"></canvas>
+      <div id="atlas-body" style="height:100%;display:grid;place-items:center"></div>
+      <span class="stage-hint" data-i18n="atlas.hint">Click any point to open its pair</span>
+    </section>
+
+    <aside class="atlas-detail">
+      <div class="panel panel-gold" id="detail">
+        <p class="detail-empty" data-i18n="atlas.empty">Select a field to begin.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="atlas-legend">
+    <span class="small dim" data-i18n="atlas.note">The pairs shown are illustrative examples of how practitioners describe the Goiz catalog and the Hervás quantum layer. The pairs placed in your session come from the scan, not from this map.</span>
+  </div>
+
+  <section class="section-tight">
+    <div class="grid grid-3">
+      <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M12 4v16"/></svg></div><h4 data-i18n="atlas.how1.h">One pair, two poles</h4><p data-i18n="atlas.how1.p">Each pair joins two points. The north face of one magnet goes on one point, the south face of the other on its partner, and the pair holds for 15 to 25 minutes.</p></div>
+      <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4v16M18 4v16M6 12h12"/></svg></div><h4 data-i18n="atlas.how2.h">Found by the scan, not by symptom</h4><p data-i18n="atlas.how2.p">Sandra tests points one by one and watches the legs for the shortening response. The body selects the pairs; the atlas only shows the territory.</p></div>
+      <div class="feature"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></div><h4 data-i18n="atlas.how3.h">Two realms, one body</h4><p data-i18n="atlas.how3.p">The medical realm maps organs. The quantum realm, from Dr. Hervás, adds axes and emotional memory and makes remote work possible.</p></div>
+    </div>
+    <div class="row" style="margin-top:28px">
+      <a class="btn btn-primary" href="about.html#book" data-i18n="common.book">Book a session</a>
+      <a class="btn btn-outline" href="lab.html" data-i18n="atlas.lab">See a session step by step</a>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script>
+window.YH_DICT = {
+  'atlas.h1':['Virtual atlas of biomagnetic pairs','Atlas virtual de pares biomagnéticos'],
+  'atlas.lead':['Choose a field, then a pair, then a point. Switch realms to see how Quantum Biomagnetism layers over the medical catalog.',
+                'Elige un campo, luego un par y luego un punto. Cambia de reino para ver cómo el Biomagnetismo Cuántico se superpone al catálogo médico.'],
+  'atlas.realm.medical':['Goiz · Medical','Goiz · Médico'],
+  'atlas.realm.quantum':['Hervás · Quantum','Hervás · Cuántico'],
+  'atlas.hint':['Click any point to open its pair','Toca cualquier punto para abrir su par'],
+  'atlas.empty':['Select a field to begin.','Selecciona un campo para empezar.'],
+  'atlas.note':['The pairs shown are illustrative examples of how practitioners describe the Goiz catalog and the Hervás quantum layer. The pairs placed in your session come from the scan, not from this map.',
+                'Los pares mostrados son ejemplos ilustrativos de cómo los terapeutas describen el catálogo de Goiz y la capa cuántica de Hervás. Los pares de tu sesión salen del rastreo, no de este mapa.'],
+  'atlas.how1.h':['One pair, two poles','Un par, dos polos'],
+  'atlas.how1.p':['Each pair joins two points. The north face of one magnet goes on one point, the south face of the other on its partner, and the pair holds for 15 to 25 minutes.',
+                  'Cada par une dos puntos. La cara norte de un imán va en un punto, la cara sur del otro en su pareja, y el par se mantiene de 15 a 25 minutos.'],
+  'atlas.how2.h':['Found by the scan, not by symptom','Lo encuentra el rastreo, no el síntoma'],
+  'atlas.how2.p':['Sandra tests points one by one and watches the legs for the shortening response. The body selects the pairs; the atlas only shows the territory.',
+                  'Sandra prueba los puntos uno por uno y observa en las piernas la respuesta de acortamiento. El cuerpo elige los pares; el atlas solo muestra el territorio.'],
+  'atlas.how3.h':['Two realms, one body','Dos reinos, un solo cuerpo'],
+  'atlas.how3.p':['The medical realm maps organs. The quantum realm, from Dr. Hervás, adds axes and emotional memory and makes remote work possible.',
+                  'El reino médico mapea órganos. El reino cuántico, del Dr. Hervás, agrega ejes y memoria emocional y hace posible el trabajo a distancia.'],
+  'atlas.lab':['See a session step by step','Mira una sesión paso a paso'],
+  'atlas.pairs':['pairs mapped','pares mapeados'],
+  'atlas.field':['Field','Campo'],
+  'atlas.pair':['Pair','Par'],
+  'atlas.point':['Point','Punto'],
+  'atlas.on':['on','en'],
+  'atlas.related':['Related fields','Campos relacionados'],
+  'atlas.insession':['In a session','En la sesión'],
+  'atlas.posteriorNote':['One or both points are posterior: magnets are slipped under the body while you lie face-up.',
+                         'Uno o ambos puntos son posteriores: los imanes se ubican debajo del cuerpo mientras estás boca arriba.'],
+  'atlas.ptnote':['You selected the point','Seleccionaste el punto']
+};
+</script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/body.js"></script>
+<script src="assets/js/atlas.js"></script>
+<script>
+(function(){
+  const atlas = document.getElementById('atlas');
+  const holder = document.getElementById('atlas-body');
+  holder.innerHTML = YH.bodySVG({id:'atlas-svg'});
+  const svg = document.getElementById('atlas-svg');
+  const canvas = YH.field(document.getElementById('atlas-field'), {dipoles:[{x:.5,y:.1,scale:.5,lines:7,squash:1.5},{x:.5,y:.33,scale:.55,lines:7,squash:1.6},{x:.5,y:.52,scale:.55,lines:7,squash:1.6},{x:.5,y:.75,scale:.5,lines:6,squash:1.5}], particles:36, alpha:.12});
+
+  let realm='medical', fieldId=null, pairId=null, pointId=null;
+  const T = YH.t, L = YH.L;
+  const fields = () => YH.FIELDS.filter(f => realm==='medical' ? f.realm==='medical' : true);
+  const field  = () => YH.FIELDS.find(f=>f.id===fieldId);
+  const pair   = () => field() && field().pairs.find(p=>p.id===pairId);
+
+  function renderFields(){
+    document.getElementById('realm-note').textContent = L(YH.REALMS[realm].note);
+    document.getElementById('field-list').innerHTML = fields().map(f => `
+      <li><button type="button" data-field="${f.id}" aria-pressed="${f.id===fieldId}">
+        <span class="f-ico">${f.icon}</span>
+        <span><b>${L(f.name)}</b><small>${f.realm==='quantum' ? L(f.tag) : f.pairs.length+' '+T('atlas.pairs')}</small></span>
+      </button></li>`).join('');
+  }
+  function renderBody(){
+    const f = field();
+    svg.classList.toggle('quantum', realm==='quantum');
+    if(!f){ YH.renderPairs(svg, []); return; }
+    YH.renderPairs(svg, f.pairs.map(p => Object.assign({}, p, {active: p.id===pairId})), {labels:false});
+  }
+  function renderDetail(){
+    const f = field(), p = pair(), d = document.getElementById('detail');
+    if(!f){ d.innerHTML = `<p class="detail-empty">${T('atlas.empty')}</p>`; return; }
+    const crumbs = `<div class="crumbs"><span>${T('atlas.field')}: <b>${L(f.name)}</b></span>${p?`<i>›</i><span>${T('atlas.pair')}: <b>${L(p.name)}</b></span>`:''}${pointId?`<i>›</i><span>${T('atlas.point')}: <b>${L(YH.POINTS[pointId])}</b></span>`:''}</div>`;
+    const realmChip = `<span class="chip ${realm==='quantum'?'aqua':''}">${L(YH.REALMS[f.realm].name)}</span>`;
+    if(!p){
+      d.innerHTML = `${crumbs}${realmChip}<h2 class="detail-h">${L(f.name)}</h2><p class="detail-focus">${L(f.tag)}</p><p class="detail-text">${L(f.desc)}</p>
+        <ul class="pair-list">${f.pairs.map(pp=>`<li><button type="button" data-pair="${pp.id}"><span class="pp"><i class="n"></i><i class="s"></i></span><span>${L(pp.name)}<small>${L(pp.focus)}</small></span></button></li>`).join('')}</ul>`;
+      return;
+    }
+    const A = YH.POINTS[p.a], B = YH.POINTS[p.b];
+    const posterior = (A.posterior || B.posterior) ? `<p class="pt-note">${T('atlas.posteriorNote')}</p>` : '';
+    const ptNote = pointId ? `<p class="pt-note">${T('atlas.ptnote')} <b>${L(YH.POINTS[pointId])}</b>.</p>` : '';
+    const related = YH.FIELDS.filter(x => x.id!==f.id && (realm==='quantum' || x.realm==='medical')).slice(0,4)
+      .map(x=>`<button type="button" data-field="${x.id}">${L(x.name)}</button>`).join('');
+    d.innerHTML = `${crumbs}${realmChip}
+      <h2 class="detail-h">${L(p.name)}</h2>
+      <p class="detail-focus">${L(p.focus)}</p>
+      <div class="polarity-row">
+        <div class="n"><span class="pole pole-n"></span>${T('common.north')}<b>${L(A)}</b></div>
+        <div class="s"><span class="pole pole-s"></span>${T('common.south')}<b>${L(B)}</b></div>
+      </div>
+      <p class="detail-text">${L(p.detail)}</p>
+      ${posterior}${ptNote}
+      <h4 style="margin:16px 0 6px">${T('atlas.related')}</h4>
+      <div class="related">${related}</div>
+      <div class="row"><a class="btn btn-primary btn-sm" href="about.html#book">${T('common.book')}</a><button type="button" class="btn btn-ghost btn-sm" data-back="1">← ${L(f.name)}</button></div>`;
+  }
+  function renderAll(){ atlas.classList.toggle('quantum', realm==='quantum'); renderFields(); renderBody(); renderDetail(); }
+
+  document.addEventListener('click', e => {
+    const rb = e.target.closest('.realm-switch button');
+    if(rb){ realm = rb.dataset.realm; document.querySelectorAll('.realm-switch button').forEach(b=>b.setAttribute('aria-pressed', b===rb));
+      canvas.restyle({color: realm==='quantum' ? '#63D6C5' : '#D4AF6A'});
+      if(field() && realm==='medical' && field().realm==='quantum'){ fieldId=null; pairId=null; pointId=null; }
+      renderAll(); return; }
+    const fb = e.target.closest('[data-field]');
+    if(fb){ fieldId = fb.dataset.field; pairId=null; pointId=null; renderAll(); return; }
+    const pb = e.target.closest('[data-pair]');
+    if(pb){ pairId = pb.dataset.pair; pointId = pb.dataset.point || null; renderBody(); renderDetail(); return; }
+    const bb = e.target.closest('[data-back]');
+    if(bb){ pairId=null; pointId=null; renderBody(); renderDetail(); }
+  });
+  svg.addEventListener('keydown', e => { if((e.key==='Enter'||e.key===' ') && e.target.closest('.pt')){ e.preventDefault(); e.target.closest('.pt').click(); } });
+  document.addEventListener('yh:lang', renderAll);
+
+  /* deep link: atlas.html#field or #field/pair */
+  const h = location.hash.replace('#','').split('/');
+  if(h[0] && YH.FIELDS.some(f=>f.id===h[0])){ fieldId=h[0]; if(YH.FIELDS.find(f=>f.id===h[0]).realm==='quantum') realm='quantum'; if(h[1]) pairId=h[1]; }
+  else fieldId = 'hormonal';
+  if(realm==='quantum'){ document.querySelectorAll('.realm-switch button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.realm==='quantum')); canvas.restyle({color:'#63D6C5'}); }
+  renderAll();
+})();
+</script>
+</body>
+</html>

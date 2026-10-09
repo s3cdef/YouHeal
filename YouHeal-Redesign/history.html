@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>History of Biomagnetism · YOU HEAL</title>
+<meta name="description" content="From the first measurements of the body's magnetic field to Dr. Goiz's biomagnetic pair (1988) and Dr. Hervás's Quantum Biomagnetism (2014).">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .era-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0 48px}
+  @media (max-width:860px){.era-strip{grid-template-columns:repeat(2,1fr)}}
+  .era{border:1px solid var(--line-soft);border-radius:var(--r-md);padding:16px 18px}
+  .era b{display:block;font-family:var(--font-display);font-size:2rem;font-weight:500;line-height:1}
+  .era span{font-size:var(--fs-0);color:var(--ink-2)}
+  .era.science b{color:var(--ink-2)}.era.goiz b{color:var(--north)}.era.hervas b{color:var(--aqua)}.era.youheal b{color:var(--gold-2)}
+</style>
+</head>
+<body data-title="nav.history">
+<header id="site-header"></header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="crumb"><a href="home.html" data-i18n="common.home">Home</a> › <span data-i18n="nav.history">History</span></p>
+      <h1 data-i18n="hist.h1">A short history of biomagnetism</h1>
+      <p class="lead" data-i18n="hist.lead">Two threads run through this story. One is laboratory science: the body produces magnetic fields that instruments can measure. The other is a therapeutic practice born in Mexico in 1988 and extended in Spain in 2014. YOU HEAL stands on the second thread and is honest about the first.</p>
+      <div class="era-strip">
+        <div class="era science"><b>1963</b><span data-i18n="hist.era1">The heart's magnetic field is measured for the first time.</span></div>
+        <div class="era goiz"><b>1988</b><span data-i18n="hist.era2">Dr. Isaac Goiz Durán identifies the first biomagnetic pair.</span></div>
+        <div class="era hervas"><b>2014</b><span data-i18n="hist.era3">Dr. Avelino Hervás founds Quantum Biomagnetism.</span></div>
+        <div class="era youheal"><b data-i18n="hist.era4y">Today</b><span data-i18n="hist.era4">Sandra Villafane brings both lineages to Astoria, Queens.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="timeline-filter" id="tl-filter" role="group" aria-label="Filter timeline">
+        <button type="button" data-track="all" aria-pressed="true" data-i18n="hist.f.all">All</button>
+        <button type="button" data-track="science" aria-pressed="false" data-i18n="hist.f.science">Laboratory science</button>
+        <button type="button" data-track="goiz" aria-pressed="false" data-i18n="hist.f.goiz">Dr. Goiz · Medical</button>
+        <button type="button" data-track="hervas" aria-pressed="false" data-i18n="hist.f.hervas">Dr. Hervás · Quantum</button>
+        <button type="button" data-track="youheal" aria-pressed="false">YOU HEAL</button>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <h2 data-i18n="hist.realms.h2">The two realms, side by side</h2>
+      <p class="lead" style="margin-bottom:32px" data-i18n="hist.realms.lead">Sandra was certified in the medical method and continues to train in the quantum approach. Here is how the two differ and where they meet.</p>
+      <div class="realms">
+        <article class="realm goiz">
+          <svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 10v16a10 10 0 0 0 20 0V10" fill="none" stroke="#F0715A" stroke-width="3"/><path d="M14 10h6v8h-6zM28 10h6v8h-6z" fill="#F0715A"/></svg>
+          <h3 data-i18n="hist.goiz.h">Medical Biomagnetism</h3>
+          <p class="who" data-i18n="hist.goiz.who">Dr. Isaac Goiz Durán · Mexico · 1988</p>
+          <ul id="goiz-list"></ul>
+          <a class="btn btn-outline btn-sm" href="atlas.html#immune/thy-rec" data-i18n="hist.goiz.btn">See the first pair in the atlas</a>
+        </article>
+        <article class="realm hervas">
+          <svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="#63D6C5" stroke-width="1.5"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(-60 24 24)"/></g><circle cx="24" cy="24" r="3" fill="#63D6C5"/></svg>
+          <h3 data-i18n="hist.hervas.h">Quantum Biomagnetism</h3>
+          <p class="who" data-i18n="hist.hervas.who">Dr. Avelino Hervás · Spain · 2014</p>
+          <ul id="hervas-list"></ul>
+          <a class="btn btn-outline btn-sm" href="atlas.html#axes" data-i18n="hist.hervas.btn">See the quantum layer in the atlas</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2 data-i18n="hist.cta.h2">Curious about what the research says?</h2>
+        <p data-i18n="hist.cta.p">The science page separates what is measured, what is mixed and what is still practitioner knowledge, with references you can look up.</p>
+        <div class="row"><a class="btn btn-primary" href="science.html" data-i18n="hist.cta.btn">Read the science</a><a class="btn btn-outline" href="about.html#book" data-i18n="common.book">Book a session</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script>
+window.YH_DICT = {
+  'hist.h1':['A short history of biomagnetism','Una breve historia del biomagnetismo'],
+  'hist.lead':['Two threads run through this story. One is laboratory science: the body produces magnetic fields that instruments can measure. The other is a therapeutic practice born in Mexico in 1988 and extended in Spain in 2014. YOU HEAL stands on the second thread and is honest about the first.',
+               'Dos hilos recorren esta historia. Uno es la ciencia de laboratorio: el cuerpo produce campos magnéticos que los instrumentos pueden medir. El otro es una práctica terapéutica nacida en México en 1988 y ampliada en España en 2014. YOU HEAL se apoya en el segundo hilo y es honesto con el primero.'],
+  'hist.era1':['The heart\'s magnetic field is measured for the first time.','Se mide por primera vez el campo magnético del corazón.'],
+  'hist.era2':['Dr. Isaac Goiz Durán identifies the first biomagnetic pair.','El Dr. Isaac Goiz Durán identifica el primer par biomagnético.'],
+  'hist.era3':['Dr. Avelino Hervás founds Quantum Biomagnetism.','El Dr. Avelino Hervás funda el Biomagnetismo Cuántico.'],
+  'hist.era4y':['Today','Hoy'],
+  'hist.era4':['Sandra Villafane brings both lineages to Astoria, Queens.','Sandra Villafane trae ambos linajes a Astoria, Queens.'],
+  'hist.f.all':['All','Todo'],
+  'hist.f.science':['Laboratory science','Ciencia de laboratorio'],
+  'hist.f.goiz':['Dr. Goiz · Medical','Dr. Goiz · Médico'],
+  'hist.f.hervas':['Dr. Hervás · Quantum','Dr. Hervás · Cuántico'],
+  'hist.realms.h2':['The two realms, side by side','Los dos reinos, lado a lado'],
+  'hist.realms.lead':['Sandra was certified in the medical method and continues to train in the quantum approach. Here is how the two differ and where they meet.',
+                      'Sandra se certificó en el método médico y sigue formándose en el enfoque cuántico. Así se diferencian y así se encuentran.'],
+  'hist.goiz.h':['Medical Biomagnetism','Biomagnetismo Médico'],
+  'hist.goiz.who':['Dr. Isaac Goiz Durán · Mexico · 1988','Dr. Isaac Goiz Durán · México · 1988'],
+  'hist.goiz.btn':['See the first pair in the atlas','Ver el primer par en el atlas'],
+  'hist.hervas.h':['Quantum Biomagnetism','Biomagnetismo Cuántico'],
+  'hist.hervas.who':['Dr. Avelino Hervás · Spain · 2014','Dr. Avelino Hervás · España · 2014'],
+  'hist.hervas.btn':['See the quantum layer in the atlas','Ver la capa cuántica en el atlas'],
+  'hist.cta.h2':['Curious about what the research says?','¿Quieres saber qué dice la investigación?'],
+  'hist.cta.p':['The science page separates what is measured, what is mixed and what is still practitioner knowledge, with references you can look up.',
+                'La página de ciencia separa lo que está medido, lo que es mixto y lo que sigue siendo conocimiento de terapeutas, con referencias que puedes consultar.'],
+  'hist.cta.btn':['Read the science','Lee la ciencia']
+};
+</script>
+<script src="assets/js/main.js"></script>
+<script>
+(function(){
+  const ITEMS = [
+    {y:'1963',track:'science',h:{en:'The heart\'s field is detected',es:'Se detecta el campo del corazón'},
+     p:{en:'Baule and McFee record the magnetic field of the human heart with induction coils: the first magnetocardiogram. The body, it turns out, is faintly magnetic.',
+        es:'Baule y McFee registran el campo magnético del corazón humano con bobinas de inducción: el primer magnetocardiograma. El cuerpo, resulta, es levemente magnético.'}},
+    {y:'1968',track:'science',h:{en:'The brain\'s field is measured',es:'Se mide el campo del cerebro'},
+     p:{en:'David Cohen measures magnetic fields from the brain\'s alpha rhythm, founding magnetoencephalography. Superconducting SQUID sensors make it practical in 1970.',
+        es:'David Cohen mide los campos magnéticos del ritmo alfa del cerebro y funda la magnetoencefalografía. Los sensores superconductores SQUID lo hacen práctico en 1970.'}},
+    {y:'1980s',track:'science',h:{en:'A leg-length observation',es:'Una observación en las piernas'},
+     p:{en:'Dr. Richard Broeringmeyer, described by practitioners as a physician who worked with astronauts, reports that a magnet held over the body can change the apparent length of the legs. Goiz later builds his scan on this sign. The original report is hard to source; we present it as practitioner history.',
+        es:'El Dr. Richard Broeringmeyer, descrito por los terapeutas como un médico que trabajó con astronautas, reporta que un imán sobre el cuerpo puede cambiar la longitud aparente de las piernas. Goiz construye su rastreo sobre este signo. El informe original es difícil de ubicar; lo presentamos como historia de la práctica.'}},
+    {y:'1988',track:'goiz',h:{en:'The first biomagnetic pair',es:'El primer par biomagnético'},
+     p:{en:'In Mexico, Dr. Isaac Goiz Durán identifies the thymus–rectum pair while working with a patient, and proposes that pairs of points with opposite polarity can be balanced with magnets. He names the method Medical Biomagnetism.',
+        es:'En México, el Dr. Isaac Goiz Durán identifica el par timo–recto mientras atiende a un paciente, y propone que pares de puntos con polaridad opuesta pueden equilibrarse con imanes. Llama al método Biomagnetismo Médico.'}},
+    {y:'1990s',track:'goiz',h:{en:'The catalog grows',es:'Crece el catálogo'},
+     p:{en:'Goiz publishes El Par Biomagnético and trains practitioners across Latin America, Spain and the United States. Pairs are organized into Level 1 and Level 2 catalogs, read through the leg-length response.',
+        es:'Goiz publica El Par Biomagnético y forma terapeutas en Latinoamérica, España y Estados Unidos. Los pares se organizan en catálogos de Nivel 1 y Nivel 2, leídos con la respuesta de acortamiento de pierna.'}},
+    {y:'2000s',track:'goiz',h:{en:'Bioenergetics',es:'Bioenergética'},
+     p:{en:'Goiz extends the method into Bioenergetics, which works with the emotional and energetic dimension and uses the practitioner\'s own body as a reference during the scan. This is the "specialized bioenergetic pair" Sandra also offers.',
+        es:'Goiz amplía el método hacia la Bioenergética, que trabaja la dimensión emocional y energética y usa el cuerpo del terapeuta como referencia durante el rastreo. Es el "par bioenergético especializado" que Sandra también ofrece.'}},
+    {y:'2009',track:'goiz',h:{en:'A public demonstration in Spain',es:'Una demostración pública en España'},
+     p:{en:'Goiz and physician Raymond Hilu run a widely shared demonstration in Marbella with about two hundred participants. Practitioners cite it often; critics point out it was not a controlled trial. Both are true.',
+        es:'Goiz y el médico Raymond Hilu realizan en Marbella una demostración muy difundida con unas doscientas personas. Los terapeutas la citan con frecuencia; los críticos señalan que no fue un ensayo controlado. Ambas cosas son ciertas.'}},
+    {y:'2014',track:'hervas',h:{en:'Quantum Biomagnetism is founded',es:'Nace el Biomagnetismo Cuántico'},
+     p:{en:'In Spain, Dr. Avelino Hervás, trained in the biomagnetic pair, founds Biomagnetismo Quántico. It keeps Goiz\'s pairs and adds energetic fields, cellular memory and the emotional and mental layers, taught through the Escuela Internacional BQ in three levels.',
+        es:'En España, el Dr. Avelino Hervás, formado en el par biomagnético, funda el Biomagnetismo Quántico. Conserva los pares de Goiz y agrega campos energéticos, memoria celular y las capas emocional y mental, enseñado en la Escuela Internacional BQ en tres niveles.'}},
+    {y:'2020s',track:'hervas',h:{en:'Remote work and the quantum table',es:'Trabajo a distancia y mesa cuántica'},
+     p:{en:'Quantum Biomagnetism formalizes remote scanning and balancing, using a witness for the client and the "quantum table" as a working map. Online training spreads the method across Latin America and the Spanish-speaking United States.',
+        es:'El Biomagnetismo Cuántico formaliza el rastreo y el equilibrio a distancia, con un testigo del cliente y la "mesa cuántica" como mapa de trabajo. La formación en línea extiende el método por Latinoamérica y el Estados Unidos hispanohablante.'}},
+    {y:'2021',track:'goiz',h:{en:'Dr. Goiz passes away',es:'Fallece el Dr. Goiz'},
+     p:{en:'Dr. Isaac Goiz Durán dies in Mexico. His research center and the practitioners he certified, Sandra among them, carry the method forward.',
+        es:'El Dr. Isaac Goiz Durán fallece en México. Su centro de investigación y los terapeutas que certificó, Sandra entre ellos, continúan el método.'}},
+    {y:'Today',track:'youheal',h:{en:'YOU HEAL in Astoria, Queens',es:'YOU HEAL en Astoria, Queens'},
+     p:{en:'Sandra Villafane, certified in Medical Biomagnetism in the Goiz lineage and trained in the quantum approach, offers in-person sessions in Queens and remote sessions anywhere, in English and Spanish.',
+        es:'Sandra Villafane, certificada en Biomagnetismo Médico en el linaje Goiz y formada en el enfoque cuántico, ofrece sesiones presenciales en Queens y a distancia en cualquier lugar, en inglés y español.'}}
+  ];
+  const GOIZ = [
+    {en:'The biomagnetic pair: two points, one north face and one south face, held 15 to 25 minutes.',es:'El par biomagnético: dos puntos, una cara norte y una cara sur, durante 15 a 25 minutos.'},
+    {en:'Model of local pH distortion (acid and alkaline poles) that the pair is said to neutralize.',es:'Modelo de distorsión local del pH (polos ácido y alcalino) que el par busca neutralizar.'},
+    {en:'Scan read through the leg-length response, point by point, with the client dressed.',es:'Rastreo leído con la respuesta de acortamiento de pierna, punto por punto, con el cliente vestido.'},
+    {en:'Level 1 and Level 2 pair catalogs; Bioenergetics for the emotional layer.',es:'Catálogos de pares Nivel 1 y Nivel 2; Bioenergética para la capa emocional.'},
+    {en:'Always in person, on the table.',es:'Siempre presencial, en la camilla.'}
+  ];
+  const HERVAS = [
+    {en:'Keeps the Goiz pair as its base and adds energetic axes and energy centers.',es:'Conserva el par de Goiz como base y agrega ejes energéticos y centros de energía.'},
+    {en:'Works three levels together: physical, energetic, and emotional-mental, including cellular memory.',es:'Trabaja tres niveles a la vez: físico, energético y emocional-mental, incluida la memoria celular.'},
+    {en:'Introduces the quantum table as a working map and witness-based remote scanning.',es:'Introduce la mesa cuántica como mapa de trabajo y el rastreo a distancia con testigo.'},
+    {en:'Taught in three levels through the Escuela Internacional de Biomagnetismo Quántico.',es:'Se enseña en tres niveles a través de la Escuela Internacional de Biomagnetismo Quántico.'},
+    {en:'In person or remote.',es:'Presencial o a distancia.'}
+  ];
+  let track='all';
+  function render(){
+    const items = ITEMS.filter(i => track==='all' || i.track===track);
+    document.getElementById('timeline').innerHTML = items.map((i,idx)=>`
+      <div class="t-item ${idx%2?'right':'left'} ${i.track}">
+        <div class="t-card"><div class="t-track">${i.track==='youheal' ? 'YOU HEAL' : YH.t('hist.f.'+i.track)}</div><h3>${YH.L(i.h)}</h3><p>${YH.L(i.p)}</p></div>
+        <div class="t-year"><span>${i.y==='Today'?YH.t('hist.era4y'):i.y}</span></div>
+      </div>`).join('');
+    document.getElementById('goiz-list').innerHTML = GOIZ.map(x=>`<li>${YH.L(x)}</li>`).join('');
+    document.getElementById('hervas-list').innerHTML = HERVAS.map(x=>`<li>${YH.L(x)}</li>`).join('');
+  }
+  document.getElementById('tl-filter').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    track = b.dataset.track; document.querySelectorAll('#tl-filter button').forEach(x=>x.setAttribute('aria-pressed', x===b)); render();
+  });
+  document.addEventListener('yh:lang', render); render();
+})();
+</script>
+</body>
+</html>

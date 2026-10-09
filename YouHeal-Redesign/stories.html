@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Client stories · YOU HEAL</title>
+<meta name="description" content="What clients say after biomagnetic pair sessions with Sandra, in person in Queens and remotely.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .stories{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:1000px){.stories{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:640px){.stories{grid-template-columns:1fr}}
+  .filter{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 26px}
+  .filter button{border:1px solid var(--line-soft);background:transparent;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--ink-2);font-size:var(--fs-0)}
+  .filter button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-2)}
+  .social{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:760px){.social{grid-template-columns:1fr}}
+  .social a{display:grid;gap:6px;border:1px solid var(--line-soft);border-radius:var(--r-md);padding:18px;color:var(--ink)}
+  .social a:hover{border-color:var(--gold)}
+  .social b{font-family:var(--font-display);font-size:1.4rem;font-weight:500}
+  .social span{font-size:var(--fs-0);color:var(--ink-3)}
+</style>
+</head>
+<body data-title="nav.stories">
+<header id="site-header"></header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="crumb"><a href="home.html" data-i18n="common.home">Home</a> › <span data-i18n="nav.stories">Stories</span></p>
+      <h1 data-i18n="st.h1">What people say afterward</h1>
+      <p class="lead" data-i18n="st.lead">Every story here is an individual experience, shared with permission. They are not medical claims, and your experience will be your own.</p>
+      <div class="sample-note" data-i18n="st.sample">Prototype note: the six stories below are sample placeholders written to show the layout. Replace them with client-approved quotes before launch.</div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="filter" id="filter">
+        <button type="button" data-f="all" aria-pressed="true" data-i18n="st.f.all">All</button>
+        <button type="button" data-f="inperson" aria-pressed="false" data-i18n="st.f.ip">In person</button>
+        <button type="button" data-f="remote" aria-pressed="false" data-i18n="st.f.rm">Remote</button>
+      </div>
+      <div class="stories" id="stories"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <div class="split" style="align-items:start">
+        <div>
+          <h2 data-i18n="st.share.h2">Share your story</h2>
+          <p class="muted" data-i18n="st.share.p">If a session changed something for you, a few lines help someone who is still deciding. Sandra will ask before publishing and will use initials unless you prefer your name.</p>
+          <div class="social" style="margin-top:22px">
+            <a href="https://instagram.com/youheal.us" target="_blank" rel="noopener"><b>Instagram</b><span>@youheal.us</span></a>
+            <a href="https://tiktok.com/@youheal" target="_blank" rel="noopener"><b>TikTok</b><span>@youheal</span></a>
+            <a href="mailto:youheal.us@gmail.com?subject=My%20story"><b data-i18n="st.email">Email</b><span>youheal.us@gmail.com</span></a>
+          </div>
+        </div>
+        <form class="form panel" id="story-form">
+          <div class="two">
+            <label><span data-i18n="st.f.name">Name or initials</span><input name="name" required></label>
+            <label><span data-i18n="st.f.where">Neighborhood or city</span><input name="where"></label>
+          </div>
+          <label><span data-i18n="st.f.path">Session type</span>
+            <select name="path"><option value="inperson" data-i18n="st.f.ip">In person</option><option value="remote" data-i18n="st.f.rm">Remote</option></select></label>
+          <label><span data-i18n="st.f.story">Your story</span><textarea name="story" required></textarea></label>
+          <label class="small muted" style="grid-auto-flow:column;align-items:start;gap:10px"><input type="checkbox" required style="width:auto"> <span data-i18n="st.f.consent">I agree that Sandra may publish this with my initials after checking with me.</span></label>
+          <button class="btn btn-primary" type="submit" data-i18n="st.f.send">Send my story</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script>
+window.YH_DICT = {
+  'st.h1':['What people say afterward','Lo que la gente cuenta después'],
+  'st.lead':['Every story here is an individual experience, shared with permission. They are not medical claims, and your experience will be your own.',
+             'Cada historia es una experiencia individual, compartida con permiso. No son afirmaciones médicas, y tu experiencia será la tuya.'],
+  'st.sample':['Prototype note: the six stories below are sample placeholders written to show the layout. Replace them with client-approved quotes before launch.',
+               'Nota del prototipo: las seis historias de abajo son ejemplos escritos para mostrar el diseño. Reemplázalas con testimonios aprobados por los clientes antes del lanzamiento.'],
+  'st.f.all':['All','Todas'],'st.f.ip':['In person','Presencial'],'st.f.rm':['Remote','A distancia'],
+  'st.share.h2':['Share your story','Comparte tu historia'],
+  'st.share.p':['If a session changed something for you, a few lines help someone who is still deciding. Sandra will ask before publishing and will use initials unless you prefer your name.',
+                'Si una sesión cambió algo para ti, unas líneas ayudan a alguien que todavía está decidiendo. Sandra te consultará antes de publicar y usará iniciales a menos que prefieras tu nombre.'],
+  'st.email':['Email','Correo'],
+  'st.f.name':['Name or initials','Nombre o iniciales'],'st.f.where':['Neighborhood or city','Barrio o ciudad'],'st.f.path':['Session type','Tipo de sesión'],'st.f.story':['Your story','Tu historia'],
+  'st.f.consent':['I agree that Sandra may publish this with my initials after checking with me.','Acepto que Sandra publique esto con mis iniciales después de confirmarlo conmigo.'],
+  'st.f.send':['Send my story','Enviar mi historia'],
+  'st.sent':['Opening your email app with the story ready to send.','Abriendo tu correo con la historia lista para enviar.']
+};
+</script>
+<script src="assets/js/main.js"></script>
+<script>
+(function(){
+  const S = [
+    {i:'M',who:'M. R.',where:'Astoria',path:'inperson',q:{en:'I walked in tense and tired, and walked out feeling like my body had finally exhaled. I slept nine hours that night.',es:'Entré tensa y cansada, y salí sintiendo que mi cuerpo por fin había exhalado. Esa noche dormí nueve horas.'}},
+    {i:'J',who:'J. P.',where:'Jackson Heights',path:'inperson',q:{en:'I was skeptical about the leg thing until I saw it happen on my own feet. Three sessions in, my digestion is the calmest it has been in years.',es:'Era escéptico con lo de la pierna hasta que lo vi en mis propios pies. Tres sesiones después, mi digestión está más tranquila que en años.'}},
+    {i:'L',who:'L. G.',where:'Bogotá',path:'remote',q:{en:'My mother in Queens sees Sandra in person; I do my sessions from Bogotá on video. Same calm afterward, same notes by email. It feels like one practice, not two.',es:'Mi mamá en Queens ve a Sandra en persona; yo hago mis sesiones desde Bogotá por video. La misma calma después, las mismas notas por correo. Se siente como una sola práctica, no dos.'}},
+    {i:'A',who:'A. T.',where:'Long Island City',path:'inperson',q:{en:'Clothes on, no needles, and she explains every pair as she places it. I finally understood what my body was doing with stress.',es:'Con la ropa puesta, sin agujas, y explica cada par mientras lo coloca. Por fin entendí qué hacía mi cuerpo con el estrés.'}},
+    {i:'D',who:'D. V.',where:'Miami',path:'remote',q:{en:'I booked a remote session for my knee before a trip. I cannot prove what did it, but I walked the whole week without the brace.',es:'Agendé una sesión a distancia para mi rodilla antes de un viaje. No puedo probar qué fue, pero caminé toda la semana sin la rodillera.'}},
+    {i:'C',who:'C. M.',where:'Sunnyside',path:'inperson',q:{en:'The starter pair at home keeps the work going between visits. Twenty minutes on the couch and my afternoon crash is gone.',es:'El par inicial en casa mantiene el trabajo entre visitas. Veinte minutos en el sofá y mi bajón de la tarde desaparece.'}}
+  ];
+  let f='all';
+  function render(){
+    document.getElementById('stories').innerHTML = S.filter(s=>f==='all'||s.path===f).map(s=>`
+      <article class="story"><span class="path">${YH.t(s.path==='remote'?'st.f.rm':'st.f.ip')}</span>
+        <q>${YH.L(s.q)}</q>
+        <div class="who"><i>${s.i}</i><div><b>${s.who}</b>${s.where}</div></div>
+      </article>`).join('');
+  }
+  document.getElementById('filter').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; f=b.dataset.f; document.querySelectorAll('#filter button').forEach(x=>x.setAttribute('aria-pressed',x===b)); render(); });
+  document.getElementById('story-form').addEventListener('submit', e=>{
+    e.preventDefault(); const d = new FormData(e.target);
+    const body = `${d.get('name')} · ${d.get('where')} · ${d.get('path')}%0D%0A%0D%0A${encodeURIComponent(d.get('story'))}`;
+    YH.toast(YH.t('st.sent'));
+    location.href = `mailto:youheal.us@gmail.com?subject=${encodeURIComponent('My story for YOU HEAL')}&body=${body}`;
+  });
+  document.addEventListener('yh:lang', render); render();
+})();
+</script>
+</body>
+</html>

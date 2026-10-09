@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pathways · In person or remote · YOU HEAL</title>
+<meta name="description" content="Two ways to work with Sandra: in-person biomagnetic pair sessions in Astoria, Queens, or remote sessions from anywhere using Quantum Biomagnetism methods.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .path-hero{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
+  @media (max-width:860px){.path-hero{grid-template-columns:1fr}}
+  .path-card{border-radius:var(--r-lg);padding:30px;border:1px solid var(--line-soft);position:relative;overflow:hidden;display:grid;gap:12px;align-content:start;cursor:pointer;transition:border-color .2s,transform .2s var(--ease)}
+  .path-card:hover{transform:translateY(-2px)}
+  .path-card[aria-pressed="true"]{border-color:var(--gold)}
+  .path-card.remote[aria-pressed="true"]{border-color:var(--aqua)}
+  .path-card.inperson{background:linear-gradient(160deg,rgba(212,175,106,.12),transparent 60%)}
+  .path-card.remote{background:linear-gradient(160deg,rgba(99,214,197,.12),transparent 60%)}
+  .path-card h2{font-size:2.2rem;margin:0}
+  .path-card .meta{color:var(--ink-3);font-size:var(--fs-0)}
+  .path-card p{color:var(--ink-2);margin:0}
+  .path-card .price{font-family:var(--font-display);font-size:2rem;color:var(--gold-2);line-height:1}
+  .path-card .price small{display:block;font-family:var(--font-body);font-size:.7rem;color:var(--ink-3);letter-spacing:.08em;margin-top:4px}
+  .pane{display:none}.pane.on{display:block}
+  .witness{display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center;border:1px solid var(--aqua-dim);border-radius:var(--r-md);padding:18px;background:var(--aqua-faint)}
+  @media (max-width:560px){.witness{grid-template-columns:1fr}}
+  .witness svg{width:100%;height:auto}
+  .packages{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:860px){.packages{grid-template-columns:1fr}}
+  .pkg{border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px;display:grid;gap:8px;align-content:start}
+  .pkg.best{border-color:var(--gold)}
+  .pkg h3{margin:0;font-size:1.5rem}
+  .pkg .price{font-family:var(--font-display);font-size:2rem;color:var(--gold-2)}
+  .pkg ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:var(--fs-0)}
+  .pkg .btn{justify-self:start;margin-top:8px}
+  .pkg .best-tag{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+</style>
+</head>
+<body data-title="nav.pathways">
+<header id="site-header"></header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="crumb"><a href="home.html" data-i18n="common.home">Home</a> › <span data-i18n="nav.pathways">Pathways</span></p>
+      <h1 data-i18n="pw.h1">Two ways to meet Sandra</h1>
+      <p class="lead" data-i18n="pw.lead">The protocol is the same in both. What changes is where your body is while the work happens: on the table in Astoria, or at home on a video call while Sandra works through the remote methods of Quantum Biomagnetism.</p>
+
+      <div class="path-hero" role="group" aria-label="Choose a pathway">
+        <button class="path-card inperson" type="button" data-path="inperson" aria-pressed="true" id="inperson">
+          <span class="chip"><i class="pole pole-n" style="margin:0;width:8px;height:8px;box-shadow:none"></i> <span data-i18n="pw.ip.chip">In person</span></span>
+          <h2 data-i18n="pw.ip.h2">On the table in Astoria</h2>
+          <p data-i18n="pw.ip.p">Full scan with the leg-length response, pairs placed by hand, the quiet of a dedicated room. The most complete session and the recommended first visit.</p>
+          <span class="meta" data-i18n="pw.ip.meta">Queens, NY 11103 · 60 to 90 minutes · clothes and shoes on</span>
+          <span class="price">$150<small data-i18n="pw.sample">sample pricing · set before launch</small></span>
+        </button>
+        <button class="path-card remote" type="button" data-path="remote" aria-pressed="false" id="remote">
+          <span class="chip aqua"><i class="pole" style="margin:0;width:8px;height:8px;background:var(--aqua)"></i> <span data-i18n="pw.rm.chip">Remote</span></span>
+          <h2 data-i18n="pw.rm.h2">At home, anywhere</h2>
+          <p data-i18n="pw.rm.p">You rest at home on a video call. Sandra scans and balances through a witness and the quantum table, the distance methods taught by Dr. Hervás. Ideal between in-person visits or when travel is hard.</p>
+          <span class="meta" data-i18n="pw.rm.meta">Video call · 45 to 75 minutes · any time zone · English or Spanish</span>
+          <span class="price">$120<small data-i18n="pw.sample">sample pricing · set before launch</small></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANES -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="pane on" id="pane-inperson">
+        <div class="split" style="align-items:start">
+          <div>
+            <h2 data-i18n="pw.ip.how.h2">How an in-person session goes</h2>
+            <p class="muted" data-i18n="pw.ip.how.p">Arrive a few minutes early. There is water, a quiet room, and no need to change clothes.</p>
+            <a class="btn btn-outline" href="lab.html" data-i18n="pw.lab">Walk through it in the Lab</a>
+          </div>
+          <ol class="steps">
+            <li><div><b data-i18n="pw.ip.s1.h">Conversation</b><p data-i18n="pw.ip.s1.p">What brought you in, your history, and what balance would look like. About ten minutes.</p></div></li>
+            <li><div><b data-i18n="pw.ip.s2.h">Scan</b><p data-i18n="pw.ip.s2.p">You lie face-up, dressed, shoes on. Sandra tests points with a magnet and watches your legs for the shortening response. Fifteen to twenty minutes.</p></div></li>
+            <li><div><b data-i18n="pw.ip.s3.h">Pairs</b><p data-i18n="pw.ip.s3.p">Magnets are placed on each pair the scan found and left to work for fifteen to twenty-five minutes. Most people doze.</p></div></li>
+            <li><div><b data-i18n="pw.ip.s4.h">Bioenergetic layer</b><p data-i18n="pw.ip.s4.p">If you chose the specialized session, an emotional and energetic scan follows, using the practitioner as reference.</p></div></li>
+            <li><div><b data-i18n="pw.ip.s5.h">Integration</b><p data-i18n="pw.ip.s5.p">Magnets come off, you drink water, and Sandra suggests a rhythm for the next sessions.</p></div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-remote">
+        <div class="split" style="align-items:start">
+          <div>
+            <h2 data-i18n="pw.rm.how.h2">How a remote session goes</h2>
+            <p class="muted" data-i18n="pw.rm.how.p">Quantum Biomagnetism works at a distance through a witness: your name, date of birth and a recent photo stand in for your body on Sandra's table while you rest at home.</p>
+            <div class="witness">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><rect x="8" y="8" width="104" height="104" fill="none" stroke="#63D6C5" stroke-opacity=".6"/><circle cx="60" cy="60" r="44" fill="none" stroke="#63D6C5" stroke-opacity=".5"/><circle cx="60" cy="60" r="28" fill="none" stroke="#63D6C5" stroke-opacity=".5"/><circle cx="60" cy="60" r="12" fill="none" stroke="#63D6C5" stroke-opacity=".5"/><path d="M60 8v104M8 60h104M20 20l80 80M100 20l-80 80" stroke="#63D6C5" stroke-opacity=".3"/><circle cx="60" cy="60" r="3" fill="#F1D9A3"/></svg>
+              <div><b data-i18n="pw.rm.w.h">The quantum table</b><p class="small muted" style="margin:6px 0 0" data-i18n="pw.rm.w.p">A working map used in Dr. Hervás's method. Sandra scans the witness over the table and places pairs on it, following the same catalog used in person.</p></div>
+            </div>
+          </div>
+          <ol class="steps">
+            <li><div><b data-i18n="pw.rm.s1.h">Before the call</b><p data-i18n="pw.rm.s1.p">You send a recent photo and your date of birth. Find a quiet place to lie down with your phone or laptop nearby.</p></div></li>
+            <li><div><b data-i18n="pw.rm.s2.h">Conversation</b><p data-i18n="pw.rm.s2.p">The same ten-minute conversation, on video.</p></div></li>
+            <li><div><b data-i18n="pw.rm.s3.h">Remote scan</b><p data-i18n="pw.rm.s3.p">You rest with the camera on. Sandra works through the witness and the quantum table and tells you what she finds.</p></div></li>
+            <li><div><b data-i18n="pw.rm.s4.h">Pairs hold</b><p data-i18n="pw.rm.s4.p">Pairs are placed on the witness and held. You stay lying down; many people fall asleep here too.</p></div></li>
+            <li><div><b data-i18n="pw.rm.s5.h">Integration</b><p data-i18n="pw.rm.s5.p">A short debrief, water, and the plan for next time. A written summary arrives by email.</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <h2 data-i18n="pw.cmp.h2">Side by side</h2>
+      <table class="compare">
+        <thead><tr><th></th><th data-i18n="pw.ip.chip">In person</th><th data-i18n="pw.rm.chip">Remote</th></tr></thead>
+        <tbody id="cmp"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PACKAGES -->
+  <section class="section">
+    <div class="wrap">
+      <div class="field-rule"></div>
+      <h2 data-i18n="pw.pk.h2">Choose your rhythm</h2>
+      <p class="lead" style="margin-bottom:28px" data-i18n="pw.pk.lead">Most people feel the clearest change over a short series. Prices below are placeholders for the prototype.</p>
+      <div class="packages">
+        <div class="pkg"><h3 data-i18n="pw.pk1.h">First session</h3><span class="price">$150</span><ul><li data-i18n="pw.pk1.l1">In person, 60 to 90 minutes</li><li data-i18n="pw.pk1.l2">Full scan and pairs</li><li data-i18n="pw.pk1.l3">Written notes afterward</li></ul><a class="btn btn-outline btn-sm" href="about.html#book" data-i18n="common.book">Book a session</a></div>
+        <div class="pkg best"><span class="best-tag" data-i18n="pw.pk.best">Most chosen</span><h3 data-i18n="pw.pk2.h">Series of three</h3><span class="price">$400</span><ul><li data-i18n="pw.pk2.l1">Three sessions, one to two weeks apart</li><li data-i18n="pw.pk2.l2">Mix in person and remote as you like</li><li data-i18n="pw.pk2.l3">Message support between sessions</li></ul><a class="btn btn-primary btn-sm" href="about.html#book" data-i18n="pw.pk2.btn">Start the series</a></div>
+        <div class="pkg"><h3 data-i18n="pw.pk3.h">Remote session</h3><span class="price">$120</span><ul><li data-i18n="pw.pk3.l1">Video call, 45 to 75 minutes</li><li data-i18n="pw.pk3.l2">Witness and quantum table</li><li data-i18n="pw.pk3.l3">Summary by email</li></ul><a class="btn btn-outline btn-sm" href="about.html#book" data-i18n="common.book">Book a session</a></div>
+      </div>
+      <p class="small dim" style="margin-top:14px" data-i18n="pw.sample">sample pricing · set before launch</p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2 data-i18n="pw.cta.h2">Not sure which path fits?</h2>
+        <p data-i18n="pw.cta.p">Call or write. A five-minute conversation is usually enough to choose, and there is no charge for it.</p>
+        <div class="row"><a class="btn btn-primary" href="tel:+18889268114" data-i18n="common.call">Call 888-926-8114</a><a class="btn btn-outline" href="about.html#book" data-i18n="common.book">Book a session</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script>
+window.YH_DICT = {
+  'pw.h1':['Two ways to meet Sandra','Dos formas de encontrarte con Sandra'],
+  'pw.lead':['The protocol is the same in both. What changes is where your body is while the work happens: on the table in Astoria, or at home on a video call while Sandra works through the remote methods of Quantum Biomagnetism.',
+             'El protocolo es el mismo en ambas. Lo que cambia es dónde está tu cuerpo mientras ocurre el trabajo: en la camilla en Astoria, o en casa en videollamada mientras Sandra trabaja con los métodos a distancia del Biomagnetismo Cuántico.'],
+  'pw.ip.chip':['In person','Presencial'],
+  'pw.ip.h2':['On the table in Astoria','En la camilla, en Astoria'],
+  'pw.ip.p':['Full scan with the leg-length response, pairs placed by hand, the quiet of a dedicated room. The most complete session and the recommended first visit.',
+             'Rastreo completo con la respuesta de acortamiento de pierna, pares colocados a mano, el silencio de una sala dedicada. La sesión más completa y la primera visita recomendada.'],
+  'pw.ip.meta':['Queens, NY 11103 · 60 to 90 minutes · clothes and shoes on','Queens, NY 11103 · 60 a 90 minutos · con ropa y zapatos puestos'],
+  'pw.rm.chip':['Remote','A distancia'],
+  'pw.rm.h2':['At home, anywhere','En casa, donde estés'],
+  'pw.rm.p':['You rest at home on a video call. Sandra scans and balances through a witness and the quantum table, the distance methods taught by Dr. Hervás. Ideal between in-person visits or when travel is hard.',
+             'Descansas en casa en videollamada. Sandra rastrea y equilibra a través de un testigo y la mesa cuántica, los métodos a distancia que enseña el Dr. Hervás. Ideal entre visitas presenciales o cuando viajar es difícil.'],
+  'pw.rm.meta':['Video call · 45 to 75 minutes · any time zone · English or Spanish','Videollamada · 45 a 75 minutos · cualquier zona horaria · español o inglés'],
+  'pw.sample':['sample pricing · set before launch','precio de muestra · defínelo antes del lanzamiento'],
+  'pw.lab':['Walk through it in the Lab','Recórrela en el Lab'],
+  'pw.ip.how.h2':['How an in-person session goes','Cómo es una sesión presencial'],
+  'pw.ip.how.p':['Arrive a few minutes early. There is water, a quiet room, and no need to change clothes.','Llega unos minutos antes. Hay agua, una sala tranquila y no necesitas cambiarte de ropa.'],
+  'pw.ip.s1.h':['Conversation','Conversación'],'pw.ip.s1.p':['What brought you in, your history, and what balance would look like. About ten minutes.','Qué te trajo, tu historia y cómo sería el equilibrio para ti. Unos diez minutos.'],
+  'pw.ip.s2.h':['Scan','Rastreo'],'pw.ip.s2.p':['You lie face-up, dressed, shoes on. Sandra tests points with a magnet and watches your legs for the shortening response. Fifteen to twenty minutes.','Te acuestas boca arriba, vestido y con zapatos. Sandra prueba los puntos con un imán y observa en tus piernas la respuesta de acortamiento. Quince a veinte minutos.'],
+  'pw.ip.s3.h':['Pairs','Pares'],'pw.ip.s3.p':['Magnets are placed on each pair the scan found and left to work for fifteen to twenty-five minutes. Most people doze.','Se colocan imanes en cada par que encontró el rastreo y se dejan actuar de quince a veinticinco minutos. La mayoría se adormece.'],
+  'pw.ip.s4.h':['Bioenergetic layer','Capa bioenergética'],'pw.ip.s4.p':['If you chose the specialized session, an emotional and energetic scan follows, using the practitioner as reference.','Si elegiste la sesión especializada, sigue un rastreo emocional y energético, usando a la terapeuta como referencia.'],
+  'pw.ip.s5.h':['Integration','Integración'],'pw.ip.s5.p':['Magnets come off, you drink water, and Sandra suggests a rhythm for the next sessions.','Se retiran los imanes, tomas agua y Sandra te sugiere un ritmo para las próximas sesiones.'],
+  'pw.rm.how.h2':['How a remote session goes','Cómo es una sesión a distancia'],
+  'pw.rm.how.p':['Quantum Biomagnetism works at a distance through a witness: your name, date of birth and a recent photo stand in for your body on Sandra\'s table while you rest at home.',
+                 'El Biomagnetismo Cuántico trabaja a distancia a través de un testigo: tu nombre, fecha de nacimiento y una foto reciente representan tu cuerpo en la mesa de Sandra mientras descansas en casa.'],
+  'pw.rm.w.h':['The quantum table','La mesa cuántica'],
+  'pw.rm.w.p':['A working map used in Dr. Hervás\'s method. Sandra scans the witness over the table and places pairs on it, following the same catalog used in person.',
+               'Un mapa de trabajo del método del Dr. Hervás. Sandra rastrea el testigo sobre la mesa y coloca los pares en ella, siguiendo el mismo catálogo que en persona.'],
+  'pw.rm.s1.h':['Before the call','Antes de la llamada'],'pw.rm.s1.p':['You send a recent photo and your date of birth. Find a quiet place to lie down with your phone or laptop nearby.','Envías una foto reciente y tu fecha de nacimiento. Busca un lugar tranquilo para acostarte con el celular o el computador cerca.'],
+  'pw.rm.s2.h':['Conversation','Conversación'],'pw.rm.s2.p':['The same ten-minute conversation, on video.','La misma conversación de diez minutos, por video.'],
+  'pw.rm.s3.h':['Remote scan','Rastreo a distancia'],'pw.rm.s3.p':['You rest with the camera on. Sandra works through the witness and the quantum table and tells you what she finds.','Descansas con la cámara encendida. Sandra trabaja con el testigo y la mesa cuántica y te cuenta lo que encuentra.'],
+  'pw.rm.s4.h':['Pairs hold','Los pares actúan'],'pw.rm.s4.p':['Pairs are placed on the witness and held. You stay lying down; many people fall asleep here too.','Los pares se colocan en el testigo y se mantienen. Sigues acostado; muchas personas también se duermen aquí.'],
+  'pw.rm.s5.h':['Integration','Integración'],'pw.rm.s5.p':['A short debrief, water, and the plan for next time. A written summary arrives by email.','Un cierre corto, agua y el plan para la próxima. Un resumen escrito llega por correo.'],
+  'pw.cmp.h2':['Side by side','Lado a lado'],
+  'pw.pk.h2':['Choose your rhythm','Elige tu ritmo'],
+  'pw.pk.lead':['Most people feel the clearest change over a short series. Prices below are placeholders for the prototype.','La mayoría siente el cambio más claro en una serie corta. Los precios de abajo son de muestra para el prototipo.'],
+  'pw.pk.best':['Most chosen','La más elegida'],
+  'pw.pk1.h':['First session','Primera sesión'],'pw.pk1.l1':['In person, 60 to 90 minutes','Presencial, 60 a 90 minutos'],'pw.pk1.l2':['Full scan and pairs','Rastreo completo y pares'],'pw.pk1.l3':['Written notes afterward','Notas escritas al finalizar'],
+  'pw.pk2.h':['Series of three','Serie de tres'],'pw.pk2.l1':['Three sessions, one to two weeks apart','Tres sesiones, con una o dos semanas entre cada una'],'pw.pk2.l2':['Mix in person and remote as you like','Combina presencial y a distancia como prefieras'],'pw.pk2.l3':['Message support between sessions','Acompañamiento por mensaje entre sesiones'],'pw.pk2.btn':['Start the series','Empieza la serie'],
+  'pw.pk3.h':['Remote session','Sesión a distancia'],'pw.pk3.l1':['Video call, 45 to 75 minutes','Videollamada, 45 a 75 minutos'],'pw.pk3.l2':['Witness and quantum table','Testigo y mesa cuántica'],'pw.pk3.l3':['Summary by email','Resumen por correo'],
+  'pw.cta.h2':['Not sure which path fits?','¿No sabes cuál camino te conviene?'],
+  'pw.cta.p':['Call or write. A five-minute conversation is usually enough to choose, and there is no charge for it.','Llama o escribe. Una conversación de cinco minutos suele bastar para decidir, y no tiene costo.']
+};
+</script>
+<script src="assets/js/main.js"></script>
+<script>
+(function(){
+  const ROWS = [
+    {k:{en:'Where',es:'Dónde'}, a:{en:'Studio in Astoria, Queens (11103)',es:'Consultorio en Astoria, Queens (11103)'}, b:{en:'Your home, on video',es:'Tu casa, por video'}},
+    {k:{en:'Length',es:'Duración'}, a:{en:'60 to 90 minutes',es:'60 a 90 minutos'}, b:{en:'45 to 75 minutes',es:'45 a 75 minutos'}},
+    {k:{en:'Scan',es:'Rastreo'}, a:{en:'Leg-length response, point by point on your body',es:'Respuesta de acortamiento, punto por punto en tu cuerpo'}, b:{en:'Witness over the quantum table (Hervás method)',es:'Testigo sobre la mesa cuántica (método Hervás)'}},
+    {k:{en:'Magnets',es:'Imanes'}, a:{en:'Placed on you, over clothing',es:'Colocados en ti, sobre la ropa'}, b:{en:'Placed on the witness; optional home kit on yourself',es:'Colocados en el testigo; kit en casa opcional sobre ti'}},
+    {k:{en:'Bioenergetic / quantum layer',es:'Capa bioenergética / cuántica'}, a:{en:'Yes, on request',es:'Sí, a solicitud'}, b:{en:'Yes, built into the method',es:'Sí, integrada en el método'}},
+    {k:{en:'Best for',es:'Ideal para'}, a:{en:'First visits, structural and pain fields',es:'Primeras visitas, campos estructural y de dolor'}, b:{en:'Follow-ups, travel, family abroad, emotional work',es:'Seguimientos, viajes, familia en el exterior, trabajo emocional'}},
+    {k:{en:'Languages',es:'Idiomas'}, a:{en:'English and Spanish',es:'Español e inglés'}, b:{en:'English and Spanish',es:'Español e inglés'}},
+    {k:{en:'Sample price',es:'Precio de muestra'}, a:{en:'$150',es:'$150'}, b:{en:'$120',es:'$120'}}
+  ];
+  function render(){
+    document.getElementById('cmp').innerHTML = ROWS.map(r=>`<tr><td>${YH.L(r.k)}</td><td>${YH.L(r.a)}</td><td class="on">${YH.L(r.b)}</td></tr>`).join('');
+  }
+  function select(p){
+    document.querySelectorAll('.path-card').forEach(c=>c.setAttribute('aria-pressed', c.dataset.path===p));
+    document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('on', x.id==='pane-'+p));
+  }
+  document.querySelectorAll('.path-card').forEach(c=>c.addEventListener('click', ()=>select(c.dataset.path)));
+  const h = location.hash.replace('#',''); if(h==='remote'||h==='inperson') select(h);
+  document.addEventListener('yh:lang', render); render();
+})();
+</script>
+</body>
+</html>
