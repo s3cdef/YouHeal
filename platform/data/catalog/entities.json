@@ -14261,7 +14261,7 @@
     "id": "esofago-de-barrett",
     "name": {
       "es": "Esófago de Barrett",
-      "en": "Barrett's oesophagus"
+      "en": "Barrett's esophagus"
     },
     "kind": "condition",
     "classification": "bacteria",
@@ -34001,7 +34001,7 @@
     "id": "streptococcus-beta-hemolitico",
     "name": {
       "es": "Streptococcus Beta Hemolítico",
-      "en": "Beta-haemolytic Streptococcus"
+      "en": "Beta-hemolytic Streptococcus"
     },
     "kind": "pathogen",
     "classification": "bacteria",
@@ -37168,7 +37168,7 @@
     "id": "tumor-en-abdomen",
     "name": {
       "es": "Tumor en Abdomen",
-      "en": "Abdominal tumour"
+      "en": "Abdominal tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37196,7 +37196,7 @@
     "id": "tumor-en-cabeza",
     "name": {
       "es": "Tumor en Cabeza",
-      "en": "Head tumour"
+      "en": "Head tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37224,7 +37224,7 @@
     "id": "tumor-en-columna",
     "name": {
       "es": "Tumor en Columna",
-      "en": "Spinal tumour"
+      "en": "Spinal tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37252,7 +37252,7 @@
     "id": "tumor-en-extremidades",
     "name": {
       "es": "Tumor en Extremidades",
-      "en": "Limb tumour"
+      "en": "Limb tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37280,7 +37280,7 @@
     "id": "tumor-en-pelvis",
     "name": {
       "es": "Tumor en Pelvis",
-      "en": "Pelvic tumour"
+      "en": "Pelvic tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37312,7 +37312,7 @@
     "id": "tumor-en-torax",
     "name": {
       "es": "Tumor en Tórax",
-      "en": "Thoracic tumour"
+      "en": "Thoracic tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37340,7 +37340,7 @@
     "id": "tumor-hipofisiario",
     "name": {
       "es": "Tumor Hipofisiario",
-      "en": "Pituitary tumour"
+      "en": "Pituitary tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37373,7 +37373,7 @@
     "id": "tumor-intracraneal",
     "name": {
       "es": "Tumor Intracraneal",
-      "en": "Intracranial tumour"
+      "en": "Intracranial tumor"
     },
     "kind": "condition",
     "classification": "complex",
@@ -37832,7 +37832,7 @@
     "id": "varices-esofagicas",
     "name": {
       "es": "Várices Esofágicas",
-      "en": "Oesophageal varices"
+      "en": "Esophageal varices"
     },
     "kind": "condition",
     "classification": "special",

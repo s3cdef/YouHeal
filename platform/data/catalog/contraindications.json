@@ -803,7 +803,7 @@
     "number": 43,
     "text": {
       "es": "Paciente politraumatizado sin compromiso hemodinámico",
-      "en": "Polytrauma without haemodynamic compromise"
+      "en": "Polytrauma without hemodynamic compromise"
     },
     "source": {
       "doc": "goiz-n1",
@@ -1183,7 +1183,7 @@
     "number": 17,
     "text": {
       "es": "Hemorragia masiva",
-      "en": "Massive haemorrhage"
+      "en": "Massive hemorrhage"
     },
     "source": {
       "doc": "goiz-n1",
@@ -1857,7 +1857,7 @@
     "number": 52,
     "text": {
       "es": "Paciente politraumatizado con compromiso hemodinámico",
-      "en": "Polytrauma with haemodynamic compromise"
+      "en": "Polytrauma with hemodynamic compromise"
     },
     "source": {
       "doc": "goiz-n1",
@@ -1876,7 +1876,7 @@
     "number": 53,
     "text": {
       "es": "Estados hemodinámicos alterados",
-      "en": "Altered haemodynamic states"
+      "en": "Altered hemodynamic states"
     },
     "source": {
       "doc": "goiz-n1",

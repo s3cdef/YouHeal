@@ -154,7 +154,7 @@ const ABBR_EN = {
   D: 'Right', I: 'Left', C: 'Central', S: 'Superior', Inf: 'Inferior', Lat: 'Lateral', A: 'Anterior', P: 'Posterior', IVU: 'Urinary tract infection (UTI)',
   IRA: 'Acute respiratory infection', SIDA: 'Acquired immunodeficiency syndrome (AIDS)', VIH: 'Human immunodeficiency virus (HIV)', 'E. Coli': 'Escherichia coli',
   HTLV: 'Human T-lymphotropic virus', EM: 'Multiple sclerosis', MT: 'Upper (thoracic) limbs', MP: 'Lower (pelvic) limbs', 'Enf.': 'Disease', Pb: 'Probable',
-  ITS: 'Sexually transmitted infection (STI)', AH1N1: 'Influenza A (H1N1)', EP: 'Pulmonary oedema', EPOC: 'Chronic obstructive pulmonary disease (COPD)',
+  ITS: 'Sexually transmitted infection (STI)', AH1N1: 'Influenza A (H1N1)', EP: 'Pulmonary edema', EPOC: 'Chronic obstructive pulmonary disease (COPD)',
   CUCI: 'Chronic non-specific ulcerative colitis', EPI: 'Pelvic inflammatory disease (PID)', TB: 'Tuberculosis', DM: 'Diabetes mellitus', Temp: 'Temperature',
   FC: 'Heart rate', FR: 'Respiratory rate', TA: 'Blood pressure', EVC: 'Cerebrovascular event (stroke)', lpm: 'beats per minute', rpm: 'breaths per minute',
   mmHg: 'millimetres of mercury', mg: 'milligrams', dl: 'decilitres', 'º C': 'degrees Celsius', TDAH: 'Attention-deficit/hyperactivity disorder (ADHD)',

@@ -1,6 +1,6 @@
 {
   "version": "2026.10.0",
-  "generatedAt": "2026-10-21T13:39:01.814Z",
+  "generatedAt": "2026-10-21T16:07:37.488Z",
   "generator": "importer/run.js (poppler pdftotext -bbox-layout)",
   "counts": {
     "sources": 5,
@@ -19,14 +19,14 @@
   },
   "sha256": {
     "sources.json": "39d4f69795c3f557a630ae5c0757c75d38f489445877482a1742555d4e70d6ce",
-    "points.json": "86e830175095695bd2143ea1bbc2bb6f5292ec0ac43677aaefe6ec3d920c1dde",
-    "pairs.json": "6836fc250b85d9c8c770a11dfd33e34952ca12faa3c601aca115d5a6fc0c4e99",
-    "entities.json": "ba6761577318ea9912c10f9fe5e35f8186a3cdb072e935ce7d5db9d37fdd34fb",
-    "protocols.json": "9b25fc287f05c9c998af080d51a6995dac3a77a4d760decb7a68fb72bff2db90",
+    "points.json": "197f5fa08f527e63b4c78d6c3290df4df96f38349e8c12f3ffc06c6961e6d822",
+    "pairs.json": "b7d50a47d0d17e74f17df041e21b27e9d76b51d0e7fe59e6797aa262876dab70",
+    "entities.json": "54a621d813983574096d2844d30fee0da75fd27f21cab5ab1641269f13e72df4",
+    "protocols.json": "75813258f524ae347d95554b1c27c082c8dbdb2356c504d7dfca989613342d54",
     "symptoms.json": "d7dbfa228c2ab86bab6e57a7c9a1a828932e59fc7e1fa0e3e1d942d78621387a",
-    "contraindications.json": "a89f6005686d3e2db7578202ee3a285126db9a73d77b4fb1cfff87704bea03bc",
+    "contraindications.json": "fc1201f08601490d4404a1c78ba6a920af2545c4a85fed39c21997723d985c2d",
     "recommendations.json": "4bce5c329f61c3c3117b000653bc3039900799ee6884501bc0b63ff548e2316d",
-    "glossary.json": "622260b5192f7c1034b0e115e32bbdf0a00400966197bc17ae66158e080726f2"
+    "glossary.json": "b01b932a4efbaaaef0e179584333b067324666cac0fb6ca3e56ffecf55fa30f1"
   },
   "sources": {
     "goiz-n1": "7143f3cb5ba6927889f5fc51b1d7453203ac4dfc560e4a77e2e5a63627b6c3f8",

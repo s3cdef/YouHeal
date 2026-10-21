@@ -21,7 +21,7 @@ for (const { key, node } of localizedFields(CAT)) {
   const h = srcHash(node.es);
   baseline[key] = { text: node.es, hash: h };
   const old = prev[key];
-  if (old && old.srcHash === h && old.text) mirror[key] = old;                       // keep current translation
+  if (old && old.srcHash === h && old.text && old.status !== 'curated') mirror[key] = old; // keep machine/reviewed translation
   else if (node[target]) mirror[key] = { text: node[target], srcHash: h, status: 'curated' };
   else mirror[key] = { text: null, srcHash: h, status: old?.text ? 'stale' : 'missing', ...(old?.text ? { previous: old.text } : {}) };
 }

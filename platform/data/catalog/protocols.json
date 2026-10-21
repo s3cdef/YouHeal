@@ -4588,7 +4588,7 @@
     "number": 59,
     "name": {
       "es": "Edema Pulmonar",
-      "en": "Pulmonary oedema"
+      "en": "Pulmonary edema"
     },
     "items": [
       {
@@ -5026,7 +5026,7 @@
     "number": 75,
     "name": {
       "es": "Esófago de Barret",
-      "en": "Barrett's oesophagus"
+      "en": "Barrett's esophagus"
     },
     "items": [
       {
@@ -6173,7 +6173,7 @@
     "number": 106,
     "name": {
       "es": "Leucemia",
-      "en": "Leukaemia"
+      "en": "Leukemia"
     },
     "items": [
       {
@@ -7189,7 +7189,7 @@
     "number": 140,
     "name": {
       "es": "Reflujo Gastroesofágico",
-      "en": "Gastro-oesophageal reflux"
+      "en": "Gastro-esophageal reflux"
     },
     "items": [
       {
@@ -8037,7 +8037,7 @@
     "number": 165,
     "name": {
       "es": "Tumores cerebrales",
-      "en": "Brain tumours"
+      "en": "Brain tumors"
     },
     "items": [
       {

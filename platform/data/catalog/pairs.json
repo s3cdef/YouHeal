@@ -6324,7 +6324,7 @@
     "level": 1,
     "name": {
       "es": "Hiato Esofágico – Esófago (I)",
-      "en": "Oesophageal hiatus – Oesophagus (L)"
+      "en": "Esophageal hiatus – Esophagus (L)"
     },
     "tracking": {
       "point": "hiato-esofagico",
@@ -7062,7 +7062,7 @@
     "level": 1,
     "name": {
       "es": "Hiato Esofágico – Testículo (D)",
-      "en": "Oesophageal hiatus – Testicle (R)"
+      "en": "Esophageal hiatus – Testicle (R)"
     },
     "tracking": {
       "point": "hiato-esofagico",
@@ -10596,7 +10596,7 @@
     "level": 1,
     "name": {
       "es": "Esófago (I) – Esófago (D)",
-      "en": "Oesophagus (L) – Oesophagus (R)"
+      "en": "Esophagus (L) – Esophagus (R)"
     },
     "tracking": {
       "point": "esofago",
@@ -11834,7 +11834,7 @@
     "level": 1,
     "name": {
       "es": "Esófago (I) – Vejiga",
-      "en": "Oesophagus (L) – Urinary bladder"
+      "en": "Esophagus (L) – Urinary bladder"
     },
     "tracking": {
       "point": "esofago",
@@ -25296,7 +25296,7 @@
     "level": 0,
     "name": {
       "es": "Bronquio – Esófago",
-      "en": "Bronchus – Oesophagus"
+      "en": "Bronchus – Esophagus"
     },
     "tracking": {
       "point": "bronquio",
@@ -27638,7 +27638,7 @@
     "level": 0,
     "name": {
       "es": "Clítoris – Hiato Esofágico",
-      "en": "Clitoris – Oesophageal hiatus"
+      "en": "Clitoris – Esophageal hiatus"
     },
     "tracking": {
       "point": "clitoris",
@@ -30555,7 +30555,7 @@
     "level": 0,
     "name": {
       "es": "Esófago – Duodeno",
-      "en": "Oesophagus – Duodenum"
+      "en": "Esophagus – Duodenum"
     },
     "tracking": {
       "point": "esofago",
@@ -30591,7 +30591,7 @@
     "level": 0,
     "name": {
       "es": "Esófago – Hiato Esofágico",
-      "en": "Oesophagus – Oesophageal hiatus"
+      "en": "Esophagus – Esophageal hiatus"
     },
     "tracking": {
       "point": "esofago",
@@ -30630,7 +30630,7 @@
     "level": 0,
     "name": {
       "es": "Esófago – Píloro",
-      "en": "Oesophagus – Pylorus"
+      "en": "Esophagus – Pylorus"
     },
     "tracking": {
       "point": "esofago",
@@ -30663,7 +30663,7 @@
     "level": 0,
     "name": {
       "es": "Esófago – Subclavia",
-      "en": "Oesophagus – Subclavian artery"
+      "en": "Esophagus – Subclavian artery"
     },
     "tracking": {
       "point": "esofago",
@@ -31432,7 +31432,7 @@
     "level": 0,
     "name": {
       "es": "Hiato Esofágico – Hiato Esofágico",
-      "en": "Oesophageal hiatus – Oesophageal hiatus"
+      "en": "Esophageal hiatus – Esophageal hiatus"
     },
     "tracking": {
       "point": "hiato-esofagico",
@@ -31468,7 +31468,7 @@
     "level": 0,
     "name": {
       "es": "Hiato Esofágico – Lengua",
-      "en": "Oesophageal hiatus – Tongue"
+      "en": "Esophageal hiatus – Tongue"
     },
     "tracking": {
       "point": "hiato-esofagico",
@@ -31504,7 +31504,7 @@
     "level": 0,
     "name": {
       "es": "Hiato Esofágico – Vagina (D)",
-      "en": "Oesophageal hiatus – Vagina (R)"
+      "en": "Esophageal hiatus – Vagina (R)"
     },
     "tracking": {
       "point": "hiato-esofagico",
@@ -34864,7 +34864,7 @@
     "level": 0,
     "name": {
       "es": "Ojo – Esófago",
-      "en": "Eye – Oesophagus"
+      "en": "Eye – Esophagus"
     },
     "tracking": {
       "point": "ojo",
@@ -39767,7 +39767,7 @@
     "level": 0,
     "name": {
       "es": "Subclavia – Esófago",
-      "en": "Subclavian artery – Oesophagus"
+      "en": "Subclavian artery – Esophagus"
     },
     "tracking": {
       "point": "subclavia",
@@ -41213,7 +41213,7 @@
     "level": 0,
     "name": {
       "es": "Testículo (D) – Hiato Esofágico",
-      "en": "Testicle (R) – Oesophageal hiatus"
+      "en": "Testicle (R) – Esophageal hiatus"
     },
     "tracking": {
       "point": "testiculo",
@@ -42263,7 +42263,7 @@
     "level": 0,
     "name": {
       "es": "Vagina (D) – Hiato Esofágico",
-      "en": "Vagina (R) – Oesophageal hiatus"
+      "en": "Vagina (R) – Esophageal hiatus"
     },
     "tracking": {
       "point": "vagina",
@@ -42524,7 +42524,7 @@
     "level": 0,
     "name": {
       "es": "Vejiga – Esófago",
-      "en": "Urinary bladder – Oesophagus"
+      "en": "Urinary bladder – Esophagus"
     },
     "tracking": {
       "point": "vejiga",

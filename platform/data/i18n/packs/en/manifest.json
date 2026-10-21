@@ -7,12 +7,12 @@
   "baseline": "es",
   "catalog": {
     "fields": 6290,
-    "translated": 2907,
+    "translated": 3806,
     "curated": 2907,
-    "machine": 0,
+    "machine": 899,
     "reviewed": 0,
-    "missing": 3383,
+    "missing": 2484,
     "stale": 0,
-    "sha256": "32385add64bbfc9002457115fac81a576a46a672759f3cc0434461d1d52cb8a5"
+    "sha256": "77c6a2e185c9cd9347619b1d0ac76f304934764b739f67beababaa3e003deb61"
   }
 }
