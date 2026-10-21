@@ -16,31 +16,36 @@ function cssString(s) { return `"${String(s).replace(/\\/g, '\\\\').replace(/"/g
 
 export async function renderReport({ main, params }) {
   mount(main, el('div.page', skeleton(10)));
+  // Report language (CONTRACT §5/§9.4): the server picks the default (signed language for final reports, else the
+  // patient's preferred language) and localizes on ?locale=; a final report in another language comes back as a
+  // translation (translationOf = signed language, same hash) and is clearly marked as such.
+  const chosen = reportLocales.get(params.id);
+  const fetchReport = (locale) => api.get(`/sessions/${encodeURIComponent(params.id)}/report`, locale ? { locale } : null);
   let rep; let core;
-  try { [rep, core] = await Promise.all([api.get(`/sessions/${encodeURIComponent(params.id)}/report`), loadCore()]); } catch (err) {
+  try { [rep, core] = await Promise.all([fetchReport(isLocale(chosen) ? chosen : null), loadCore()]); } catch (err) {
     // Auditors may only open signed (final/amended) reports.
     if (err.status === 403 && !can.clinical()) { mount(main, el('div.page', alertBox({ tone: 'info', ic: 'lock', title: t('report.auditorOnlyFinalTitle'), children: [el('p', t('report.auditorOnlyFinal'))] }), el('a.btn.btn-secondary', { href: '#/settings/audit' }, icon('arrowLeft', { size: 18 }), t('common.back')))); return null; }
     mount(main, el('div.page', errorPanel(err, () => renderReport({ main, params })))); return null;
   }
 
-  // Report language (CONTRACT §9.4): defaults to the signed language for final reports, else the patient's
-  // preferred language. Showing a signed report in another language is clearly marked as a translation.
   const status0 = String(rep.status || 'DRAFT').toLowerCase();
-  const signedLocale = status0 !== 'draft' ? (rep.reportLocale || rep.locale || null) : null;
-  let preferred = (rep.patient && rep.patient.preferredLanguage) || null;
-  if (!preferred && status0 === 'draft' && rep.patient && rep.patient.id && can.patients() && rep.patient.preferredLanguage === undefined) {
-    try { preferred = (await api.get(`/patients/${encodeURIComponent(rep.patient.id)}`)).preferredLanguage || null; } catch { /* keep default */ }
-  }
-  const wanted = reportLocales.get(params.id) || signedLocale || preferred || (state.org && state.org.defaultLocale) || getLocale();
+  const signedLocaleOf = (r) => r.translationOf || (status0 !== 'draft' ? r.reportLocale || null : null);
+  let signedLocale = signedLocaleOf(rep);
   const uiLocale = getLocale();
-  let rl = isLocale(wanted) && (await ensureLocale(wanted)) ? wanted : getLocale();
+  const wanted = rep.reportLocale || chosen || (rep.patient && rep.patient.preferredLanguage) || (state.org && state.org.defaultLocale) || uiLocale;
+  let rl = isLocale(wanted) && (await ensureLocale(wanted)) ? wanted : uiLocale;
   let imageSlots = null;
   const imagesReady = loadImages();
   paintIn(rl);
 
   async function switchTo(v) {
+    if (v === rl) return;
     if (!(await ensureLocale(v))) { toast(t('errors.languagePackUnavailable'), { tone: 'warn' }); return; }
-    reportLocales.set(params.id, v); rl = v; paintIn(rl);
+    let next;
+    try { next = await fetchReport(v); } catch (err) { toast(errorMessage(err), { tone: 'error' }); return; }
+    reportLocales.set(params.id, v);
+    rep = next; signedLocale = signedLocaleOf(rep) || signedLocale; rl = v;
+    paintIn(rl);
   }
   function paintIn(locale) {
     inLocale(locale, () => paint(locale));

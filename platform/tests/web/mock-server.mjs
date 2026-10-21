@@ -635,10 +635,19 @@ R('POST', '/sessions/:id/amend', 'clinical', (c) => {
 R('GET', '/sessions/:id/report', 'report', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
   if (c.user.role === 'auditor' && s.status === 'draft') return err(c.res, 403, 'FORBIDDEN', 'Auditors can only open signed reports');
+  const q = c.query.locale || null;
+  if (q && !packs.has(q)) return err(c.res, 400, 'VALIDATION', 'Unsupported report language', { locale: `must be one of: ${[...packs.keys()].join(', ')}` });
   audit(c.user, 'report.read', s.id);
-  if (s.status === 'draft') return send(c.res, 200, { ...assembleReport(s), hash: null, integrity: null, supersededBy: s.supersededBy });
+  const availableLocales = [...packs.keys()];
+  if (s.status === 'draft') {
+    const pt = db.patients.find((p) => p.id === s.patientId);
+    const reportLocale = q || [pt?.preferredLanguage, db.org.defaultLocale, 'es'].find((l) => l && packs.has(l));
+    return send(c.res, 200, { ...assembleReport(s), reportLocale, availableLocales, hash: null, integrity: null, supersededBy: s.supersededBy });
+  }
   const integrity = sha256(s.snapshot) === s.reportSha256 ? 'verified' : 'mismatch';
-  send(c.res, 200, { ...JSON.parse(s.snapshot), hash: { sha256: s.reportSha256, short: s.reportSha256.slice(0, 16), algorithm: 'sha256', canonicalization: 'json-sorted-keys' }, integrity, supersededBy: s.supersededBy });
+  const snap = JSON.parse(s.snapshot);
+  const translationOf = q && snap.reportLocale && q !== snap.reportLocale ? snap.reportLocale : null;
+  send(c.res, 200, { ...snap, ...(translationOf ? { reportLocale: q, translationOf } : {}), availableLocales, hash: { sha256: s.reportSha256, short: s.reportSha256.slice(0, 16), algorithm: 'sha256', canonicalization: 'json-sorted-keys' }, integrity, supersededBy: s.supersededBy });
 });
 R('PUT', '/sessions/:id/report/images', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');

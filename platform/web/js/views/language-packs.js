@@ -20,9 +20,9 @@ function normRow(r) {
   return {
     key: r.key,
     baseline: r.baseline ?? r.source ?? r.es ?? '',
-    text: r.text ?? r.translation ?? r.staleText ?? '',
+    text: r.text ?? r.translation ?? r.staleText ?? r.packText ?? '',
     status: r.status || (r.text ? 'curated' : 'missing'),
-    override: !!(r.override || r.overridden || r.status === 'reviewed'),
+    override: !!(r.override || r.overridden),
     editedAt: r.editedAt || r.updatedAt || null,
   };
 }
@@ -34,7 +34,7 @@ export async function renderLanguagePacks(panel) {
   const mirrors = packs.filter((p) => p.role !== 'baseline');
   const coverage = new Map();
   await Promise.all(mirrors.map(async (p) => {
-    try { coverage.set(p.locale, await api.get(`/i18n/packs/${encodeURIComponent(p.locale)}/coverage`, { limit: 0 })); } catch { coverage.set(p.locale, null); }
+    try { coverage.set(p.locale, await api.get(`/i18n/packs/${encodeURIComponent(p.locale)}/coverage`, { limit: 1 })); } catch { coverage.set(p.locale, null); }
   }));
 
   const cards = el('div.lp-cards', packs.map((p) => packCard(p, coverage.get(p.locale))));
@@ -77,7 +77,8 @@ function packCard(p, cov) {
 function reviewPanel(root, mirrors, coverage) {
   const locSel = select(mirrors.map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, lang: p.locale })), { id: 'lp-locale' });
   const firstCov = coverage.get(mirrors[0].locale);
-  const startStatus = firstCov && (firstCov.byStatus?.stale || firstCov.stale?.length) ? 'stale' : 'missing';
+  const by0 = (firstCov && firstCov.byStatus) || {};
+  const startStatus = by0.stale ? 'stale' : by0.missing ? 'missing' : '';
   const statusSel = select([{ value: '', label: t('langpacks.allStatuses') }, ...STATUSES.map((s) => ({ value: s, label: t(`langpacks.status.${s}`), selected: s === startStatus }))], { id: 'lp-status' });
   const q = input({ type: 'search', id: 'lp-q', placeholder: t('langpacks.searchPlaceholder'), autocomplete: 'off' });
   const list = el('div.lp-list', { aria: { live: 'polite' } });

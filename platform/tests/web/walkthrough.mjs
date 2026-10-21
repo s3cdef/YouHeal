@@ -83,6 +83,50 @@ async function waitViewer(page) {
   await page.waitForTimeout(800);
 }
 
+// ---- language leak check (CONTRACT §9.4) ----
+// Every visible text node / aria-label / title / placeholder / alt is judged against the language of its nearest
+// [lang] ancestor (the page is <html lang=ui>; Spanish-baseline fallbacks carry lang="es"; the report paper carries
+// the report language). A node leaks when it is exactly a UI string of the other pack, or when it contains more
+// function words of the other language than of its own. Fictitious user-entered data is excluded.
+const PACKS = path.resolve(__dirname, '../../data/i18n/packs');
+function packValues(locale) {
+  const out = []; const walk = (o) => { for (const v of Object.values(o)) { if (v && typeof v === 'object') walk(v); else if (typeof v === 'string') out.push(v); } };
+  walk(JSON.parse(fs.readFileSync(path.join(PACKS, locale, 'ui.json'), 'utf8'))); return out;
+}
+const UI_EN = packValues('en'); const UI_ES = packValues('es');
+const exclusive = (a, b) => { const sb = new Set(b); return [...new Set(a)].filter((v) => !sb.has(v) && !v.includes('{') && /\p{L}{3,}/u.test(v) && v.length < 80); };
+const ONLY_EN = exclusive(UI_EN, UI_ES); const ONLY_ES = exclusive(UI_ES, UI_EN);
+const USER_TEXT = ['Heavy legs', 'Follow-up: leg circulation', 'Gastritis, bloating', 'Low-back pain', 'night cramps', 'Demo record', 'Demo Clinic', 'Dr. Alex Demo', 'Jane Sample', 'Mary Example', 'John Demo', 'Ana Prueba', 'Robert Testcase', 'example.test', 'clinic.test'];
+async function checkLeaks(page, label, problems) {
+  const flags = await page.evaluate(({ onlyEn, onlyEs, user }) => {
+    const EN = new Set(['the', 'and', 'with', 'of', 'for', 'your', 'this', 'that', 'from', 'are', 'is', 'was', 'will', 'been', 'have', 'has', 'to', 'on', 'at', 'by', 'after', 'before', 'into', 'than', 'you', 'or', 'be', 'it', 'its', 'which', 'there', 'were', 'not', 'yet']);
+    const ES = new Set(['el', 'la', 'los', 'las', 'del', 'de', 'con', 'para', 'por', 'una', 'unos', 'unas', 'que', 'y', 'es', 'en', 'se', 'su', 'sus', 'al', 'más', 'sin', 'pero', 'como', 'este', 'esta', 'son', 'está', 'les', 'ya', 'o', 'u']);
+    const sets = { en: new Set(onlyEn), es: new Set(onlyEs) };
+    const out = [];
+    const where = (el) => { const parts = []; for (let n = el; n && n !== document.body && parts.length < 3; n = n.parentElement) parts.unshift(n.tagName.toLowerCase() + (n.className && typeof n.className === 'string' ? '.' + n.className.trim().split(/\s+/).slice(0, 2).join('.') : '')); return parts.join(' > '); };
+    const judge = (text, el, kind) => {
+      const tx = text.replace(/\s+/g, ' ').trim(); if (!tx || !/\p{L}{2,}/u.test(tx)) return;
+      if (user.some((u) => tx.includes(u))) return;
+      const lang = ((el.closest('[lang]') || document.documentElement).getAttribute('lang') || 'en').slice(0, 2);
+      const other = lang === 'es' ? 'en' : 'es';
+      const words = tx.toLowerCase().match(/\p{L}+/gu) || [];
+      const own = words.filter((w) => (lang === 'es' ? ES : EN).has(w)).length;
+      const foreign = words.filter((w) => (lang === 'es' ? EN : ES).has(w)).length;
+      if (sets[other].has(tx) || (foreign && foreign > own)) out.push(`${kind} [lang=${lang}] "${tx.slice(0, 90)}" @ ${where(el)}`);
+    };
+    const skip = (el) => el.closest('script, style, code, kbd, .mono, .badge-es, [data-leak-ok], .lp-src-text, .lp-key, textarea, .toast');
+    const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = tw.nextNode(); n; n = tw.nextNode()) { const el = n.parentElement; if (el && !skip(el)) judge(n.nodeValue, el, 'text'); }
+    for (const el of document.body.querySelectorAll('[aria-label], [title], [placeholder], img[alt]')) {
+      if (skip(el)) continue;
+      for (const a of ['aria-label', 'title', 'placeholder', 'alt']) if (el.hasAttribute(a)) judge(el.getAttribute(a), el, a);
+    }
+    return [...new Set(out)].slice(0, 25);
+  }, { onlyEn: ONLY_EN, onlyEs: ONLY_ES, user: USER_TEXT });
+  for (const f of flags) problems.push(`[${label}] language leak: ${f}`);
+  console.log(`  🔤 ${label}: ${flags.length ? `${flags.length} leak(s)` : 'no language leaks'}`);
+}
+
 const ADMIN = { org: 'YOU HEAL Demo Clinic', name: 'Dr. Alex Demo', email: 'admin@clinic.test', password: 'Magnets-align-at-528hz' };
 const PATIENT = { first: 'Jane', last: 'Sample', dob: '1980-01-01' };
 
@@ -213,6 +257,7 @@ async function main() {
   await page.locator('.side-org-logo img').waitFor();
   await page.locator('.toast-close').evaluateAll((bs) => bs.forEach((b) => b.click()));
   await shot(page, '06-dashboard', { wait: 400 }); // re-shot with the clinic logo in the sidebar
+  await checkLeaks(page, 'en dashboard', problems);
 
   // 5. create patient
   await page.getByRole('link', { name: 'New patient' }).first().click();
@@ -221,6 +266,7 @@ async function main() {
   await page.getByLabel('Date of birth').fill(PATIENT.dob);
   await page.getByLabel('Sex').selectOption('female');
   await page.getByLabel('Phone').fill('(718) 555-0199');
+  if (!(await page.getByLabel('Preferred language').count())) problems.push('[desktop] patient form: no Preferred language select');
   await shot(page, '07-patient-form');
   await page.getByRole('button', { name: 'Create patient' }).click();
 
@@ -258,6 +304,7 @@ async function main() {
   await page.keyboard.press('j'); await page.keyboard.press('f');
   await page.waitForTimeout(600);
   await shot(page, '11-scan-findings');
+  await checkLeaks(page, 'en scan', problems);
   // point via the accessible point list fallback
   await page.getByRole('button', { name: 'Point list' }).click();
   await page.locator('.point-list .pl-btn').filter({ hasText: /Liver|Hígado/ }).first().click();
@@ -304,6 +351,7 @@ async function main() {
   const fin = page.locator('dialog[open]');
   await fin.locator('#attest').check();
   await fin.getByLabel('Confirm with your password').fill(ADMIN.password);
+  if (!(await fin.getByLabel('Report language').count())) problems.push('[desktop] finalize: no Report language select');
   await shot(page, '15-finalize');
   await fin.getByRole('button', { name: 'Sign and finalize' }).click();
 
@@ -315,6 +363,16 @@ async function main() {
   await page.pdf({ path: path.join(ART, 'report.pdf'), format: 'Letter', preferCSSPageSize: true, printBackground: true });
   console.log('  📄 report.pdf');
   await page.emulateMedia({ media: 'screen' });
+  await checkLeaks(page, 'en report', problems);
+  const reportUrl = page.url();
+  // the signed report shown in the other language is marked as a translation (paper + screen notice)
+  await page.locator('.report-lang .seg', { hasText: 'ES' }).click();
+  await page.locator('article.report[data-ready="true"] .rpt-translation').waitFor({ timeout: 30000 });
+  await shot(page, '16b-report-translation', { full: true });
+  await checkLeaks(page, 'en ui / es report', problems);
+  await page.locator('.report-lang .seg', { hasText: 'EN' }).click();
+  await page.locator('article.report[data-ready="true"]').waitFor({ timeout: 30000 });
+  if (await page.locator('.rpt-translation').count()) problems.push('[desktop] report: translation notice shown for the signed language');
 
   // 11. other views (demo data seeded by the mock)
   await page.goto(`${base}/#/patients`);
@@ -333,6 +391,7 @@ async function main() {
   await page.locator('tbody tr').first().click();
   await page.locator('dialog[open] .pair-detail').waitFor();
   await shot(page, '21-catalog-pair-sheet');
+  await checkLeaks(page, 'en pair sheet', problems);
   await page.keyboard.press('Escape');
   await page.goto(`${base}/#/catalog/protocols?open=app-19-circulacion-de-piernas`);
   await page.locator('.proto-pairs').waitFor();
@@ -347,6 +406,30 @@ async function main() {
   await page.goto(`${base}/#/settings/clinic`);
   await page.locator('#pol-neg').waitFor();
   await shot(page, '24-settings-clinic');
+  // Settings → Language packs: coverage, review list, inline edit (override) + revert
+  await page.goto(`${base}/#/settings/languages`);
+  await page.locator('.lp-card').first().waitFor();
+  await page.locator('.lp-row, .lp-list .empty').first().waitFor({ timeout: 20000 }).catch(() => {});
+  const lpRow = page.locator('.lp-row').first();
+  if (await lpRow.count()) {
+    const key = await lpRow.getAttribute('data-key');
+    const ta = lpRow.locator('textarea');
+    const cur = (await ta.inputValue()) || 'Reviewed translation';
+    await ta.fill(cur.trim());
+    await lpRow.getByRole('button', { name: 'Save translation' }).click();
+    await page.getByText('Translation saved').waitFor();
+    // the saved key is now an override: find it again (it may have left a status-filtered list) and revert
+    await page.locator('#lp-status').selectOption('reviewed');
+    const edited = page.locator(`.lp-row[data-key="${key}"]`);
+    await edited.waitFor({ timeout: 10000 });
+    await shot(page, '28-language-packs', { full: true });
+    await checkLeaks(page, 'en language packs', problems);
+    await edited.getByRole('button', { name: 'Revert to pack' }).click();
+    await page.locator('dialog[open]').getByRole('button', { name: 'Revert to pack' }).click();
+    await page.getByText('Reverted to the pack translation').waitFor();
+  } else {
+    await shot(page, '28-language-packs', { full: true });
+  }
   // dark mode
   await page.goto(`${base}/#/`);
   await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
@@ -355,13 +438,66 @@ async function main() {
   const sessionUrl = await (async () => { await page.goto(`${base}/#/`); await page.locator('.list-row-link').first().waitFor(); return page.locator('.list-row-link[href^="#/sessions/"]:not([href$="/report"])').first().getAttribute('href'); })();
   if (sessionUrl) { await page.goto(`${base}/${sessionUrl}`); await page.locator('.scan-bar').waitFor(); await waitViewer(page); await shot(page, '26-scan-dark'); }
   await page.evaluate(() => { document.documentElement.dataset.theme = 'light'; });
-  // Spanish
-  await page.goto(`${base}/#/catalog/pairs`);
+  // ================================================================ Spanish pass (UI language = es)
+  console.log('Spanish (es)');
+  await page.goto(`${base}/#/`);
+  await page.locator('.dash-grid .card').first().waitFor();
   await page.locator('.side-prefs .seg', { hasText: 'ES' }).click();
+  await page.waitForFunction(() => document.documentElement.lang === 'es');
+  await page.locator('.dash-grid .card').first().waitFor();
+  await shot(page, '40-es-dashboard');
+  await checkLeaks(page, 'es dashboard', problems);
+  if (sessionUrl) {
+    await page.goto(`${base}/${sessionUrl}`);
+    await page.locator('.scan-bar').waitFor(); await page.locator('.ck-item').first().waitFor(); await waitViewer(page);
+    await shot(page, '41-es-scan');
+    await checkLeaks(page, 'es scan', problems);
+    await page.getByRole('button', { name: 'Lista de puntos' }).click();
+    await page.locator('.point-list .pl-btn').filter({ hasText: /Hígado/ }).first().click();
+    await page.locator('.point-drawer .pa-toggle').first().waitFor();
+    if (!(await page.locator('.point-drawer .pa-toggle[aria-expanded="true"]').count())) await page.locator('.point-drawer .pa-toggle').first().click();
+    await page.locator('.point-drawer .pair-detail').first().waitFor();
+    await page.locator('.stage-toolbar .seg').nth(1).click(); await page.locator('.stage-toolbar .seg').nth(0).click();
+    await page.waitForTimeout(1800);
+    await shot(page, '42-es-point-drawer');
+    await checkLeaks(page, 'es point drawer', problems);
+    await page.keyboard.press('Escape');
+  }
+  await page.goto(`${base}/#/catalog/pairs`);
   await page.locator('tbody tr').first().waitFor();
   await page.waitForTimeout(400);
   await shot(page, '27-catalog-es');
+  await checkLeaks(page, 'es catalog', problems);
+  await page.locator('tbody tr').first().click();
+  await page.locator('dialog[open] .pair-detail').waitFor();
+  await shot(page, '43-es-pair-detail');
+  await checkLeaks(page, 'es pair detail', problems);
+  await page.keyboard.press('Escape');
+  await page.goto(`${base}/#/catalog/protocols/app-19-circulacion-de-piernas/card`);
+  await page.locator('.pc-img img').first().waitFor({ timeout: 20000 }).catch(() => {});
+  await shot(page, '44-es-protocol-card');
+  await checkLeaks(page, 'es protocol card', problems);
+  // the report signed in English, viewed in a Spanish UI: defaults to the signed language; switch to Spanish → translation
+  await page.goto(reportUrl);
+  await page.locator('article.report[data-ready="true"]').waitFor({ timeout: 30000 });
+  await checkLeaks(page, 'es ui / en report', problems);
+  await page.locator('.report-lang .seg', { hasText: 'ES' }).click();
+  await page.locator('article.report[data-ready="true"] .rpt-translation').waitFor({ timeout: 30000 });
+  await shot(page, '45-es-report', { full: true });
+  await checkLeaks(page, 'es report', problems);
+  await page.emulateMedia({ media: 'print' });
+  await page.pdf({ path: path.join(ART, 'report-es-translation.pdf'), format: 'Letter', preferCSSPageSize: true, printBackground: true });
+  await page.emulateMedia({ media: 'screen' });
+  console.log('  📄 report-es-translation.pdf');
+  await page.goto(`${base}/#/settings/languages`);
+  await page.locator('.lp-card').first().waitFor();
+  await page.waitForTimeout(600);
+  await shot(page, '46-es-language-packs');
+  await checkLeaks(page, 'es language packs', problems);
+  // back to English (the preference is saved on the account, so the tablet session follows it)
   await page.locator('.side-prefs .seg', { hasText: 'EN' }).click();
+  await page.waitForFunction(() => document.documentElement.lang === 'en');
+  await page.waitForTimeout(500);
   const storageCookies = await ctx.storageState();
 
   // ================================================================ tablet 1024×768
