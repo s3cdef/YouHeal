@@ -307,13 +307,13 @@ export function buildBody(opts = {}) {
   const S = (p, k) => prims.push({ ...p, k, op: 1 }); // smooth subtraction
 
   // ---------------- torso (loft along y, front = +z, soft super-ellipse) ---
-  const Y0 = 0.79, Y1 = 1.505;
+  const Y0 = 0.825, Y1 = 1.505;
   const T = (y, w, f, b, off) => [(y - Y0) / (Y1 - Y0), w, f, b, off];
   U(loft([0, Y0, 0], [0, Y1, 0], [0, 0, 1], [
-    T(0.800, 0.030, 0.025, 0.030, -0.012),
-    T(0.825, 0.070 * hp, 0.055, 0.065, -0.014),
-    T(0.860, 0.125 * hp, 0.078, 0.090, -0.016),
-    T(0.910, 0.150 * hp, 0.088, 0.098, -0.015),
+    T(0.825, 0.030, 0.025, 0.035, -0.014),
+    T(0.845, 0.085 * hp, 0.062, 0.075, -0.016),
+    T(0.880, 0.130 * hp, 0.084, 0.093, -0.016),
+    T(0.925, 0.150 * hp, 0.092, 0.098, -0.014),
     T(0.970, 0.145 * hp, 0.090, 0.090, -0.010),
     T(1.025, 0.143 * (hp + wa) / 2, 0.090, 0.082, -0.002),
     T(1.075, 0.142 * wa, 0.089, 0.078, 0.003),
@@ -328,6 +328,7 @@ export function buildBody(opts = {}) {
   ], 2.25), 0);
 
   U(ellipsoid([0, 1.030, 0.032], [0.100 * wa, 0.100, 0.056]), 0.05);              // abdomen
+  U(ellipsoid([0, 0.862, 0.040], [0.058, 0.050, 0.036]), 0.04);                    // pubic region (smooth, mannequin)
   U(ellipsoid([0, 1.235, 0.022], [0.138 * sh, 0.105, 0.085]), 0.05);              // rib cage
   const pc = 0.6 + 0.4 * P.chest;
   U(ellipsoid([0.068 * sh, 1.320, 0.078], [0.066 * sh, 0.046 * pc + 0.008, 0.034 * pc], [0, 0, -0.25]), 0.03); // pectoral
@@ -393,9 +394,9 @@ export function buildBody(opts = {}) {
   const uCalf = chainU(legA, legB, [knee[0], 0.36, 0]);
   U(chainLoft([legA, knee, legB], [0, 0, 1], [
     [0.00, 0.035 * lm, 0.035 * lm, 0.035 * lm, 0, 0.030],
-    [0.06, 0.068 * lm, 0.068 * lm, 0.072 * lm, 0, 0.016],
-    [0.13, 0.088 * lm, 0.087 * lm, 0.090 * lm, 0, 0.010],
-    [0.20, 0.084 * lm, 0.083 * lm, 0.081 * lm, 0.004, 0.006],
+    [0.06, 0.068 * lm, 0.060 * lm, 0.072 * lm, 0, 0.016],
+    [0.13, 0.088 * lm, 0.076 * lm, 0.090 * lm, 0, 0.010],
+    [0.20, 0.084 * lm, 0.081 * lm, 0.081 * lm, 0.004, 0.006],
     [0.34, 0.073 * lm, 0.073 * lm, 0.068 * lm, 0.004, 0.002],
     [uKn - 0.08, 0.057 * lm, 0.059 * lm, 0.054 * lm],
     [uKn - 0.02, 0.051 * lm, 0.055 * lm, 0.050 * lm],
@@ -486,8 +487,9 @@ export function buildBody(opts = {}) {
     }
     return d;
   };
+  const FOLD2 = 0.006 * 0.006;
   const fullSdf = (x, y, z) => {
-    x = x < 0 ? -x : x;
+    x = sqrt(x * x + FOLD2);
     const d = combineIdx(groups[0], null, groups[0].n, x, y, z);
     const dh = combineIdx(groups[1], null, groups[1].n, x, y, z);
     return dh === Infinity ? d : d === Infinity ? dh : smin(d, dh, HEAD_K);
@@ -496,7 +498,7 @@ export function buildBody(opts = {}) {
   const bounds = [-0.53, -0.004, -0.17, 0.53, 1.78, 0.235];
   const G = 0.03, gx0 = 0, gy0 = bounds[1], gz0 = bounds[2];
   const GX = Math.ceil(bounds[3] / G), GY = Math.ceil((bounds[4] - gy0) / G), GZ = Math.ceil((bounds[5] - gz0) / G);
-  const hd = G * Math.sqrt(3) / 2, margin = 0.01;
+  const hd = G * Math.sqrt(3) / 2, margin = 0.02;
   const cellLists = [new Array(GX * GY * GZ), new Array(GX * GY * GZ)];
   const cellFar = new Float32Array(GX * GY * GZ);
   for (let J = 0; J < GY; J++) for (let K = 0; K < GZ; K++) for (let I = 0; I < GX; I++) {
@@ -521,7 +523,7 @@ export function buildBody(opts = {}) {
 
   /** Signed distance (metres, negative inside). */
   const sdf = (x, y, z) => {
-    if (x < 0) x = -x;
+    x = sqrt(x * x + FOLD2); // smooth |x| (no crease on the midline)
     const I = floor((x - gx0) / G), J = floor((y - gy0) / G), K = floor((z - gz0) / G);
     if (I < 0 || J < 0 || K < 0 || I >= GX || J >= GY || K >= GZ) return fullSdf(x, y, z);
     const c = (J * GZ + K) * GX + I;
