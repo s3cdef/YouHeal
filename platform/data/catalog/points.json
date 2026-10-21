@@ -1457,6 +1457,23 @@
     "laterality": "central"
   },
   {
+    "id": "gastrocnemio",
+    "name": {
+      "es": "Gastrocnemio",
+      "en": "Gastrocnemius (calf)"
+    },
+    "aliases": [
+      "Gastrocnemio",
+      "Gemelo",
+      "Pantorrilla"
+    ],
+    "laterality": "bilateral",
+    "source": {
+      "doc": "clinic-cards",
+      "page": 19
+    }
+  },
+  {
     "id": "glandula-salival",
     "name": {
       "es": "Glándula Salival",
@@ -2419,7 +2436,8 @@
     },
     "aliases": [
       "Pliegue infuinal",
-      "Pliegue Inguinal"
+      "Pliegue Inguinal",
+      "Ingle"
     ],
     "laterality": "bilateral"
   },

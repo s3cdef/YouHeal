@@ -13,6 +13,7 @@ import { readPdf } from './lib/pdf.js';
 import { build } from './lib/build.js';
 import { CATEGORIES, SYSTEMS, SIDES, QUALIFIERS } from './lib/i18n.js';
 import { writeReport } from './lib/report.js';
+import { applySupplements } from './lib/supplements.js';
 import { validate } from './validate.js';
 
 const CATALOG_VERSION = '2026.10.0';
@@ -50,6 +51,7 @@ for (const [id, f] of Object.entries(FILES)) {
 }
 const overrides = JSON.parse(readFileSync(join(here, 'overrides.json'), 'utf8'));
 const { data, report } = build({ pdf, overrides, sourcesMeta });
+applySupplements(data, JSON.parse(readFileSync(join(here, 'supplements.json'), 'utf8')), report);
 
 // --------------------------------------------------------------------- write
 const stringify = v => JSON.stringify(v, null, 2) + '\n';
@@ -59,6 +61,7 @@ const counts = Object.fromEntries(order.map(k => [k, data[k].length]));
 counts.pairsLevel1 = data.pairs.filter(p => p.level === 1).length;
 counts.pairsLevel2 = data.pairs.filter(p => p.level === 2).length;
 counts.pairsCompendium = data.pairs.filter(p => p.level === 0).length;
+counts.protocolsApplication = data.protocols.filter(p => p.kind === 'application').length;
 const hashes = Object.fromEntries(Object.entries(texts).map(([k, t]) => [k, sha(t)]));
 let generatedAt = process.env.SOURCE_DATE_EPOCH ? new Date(+process.env.SOURCE_DATE_EPOCH * 1000).toISOString() : new Date().toISOString();
 const manifestPath = join(OUT, 'manifest.json');

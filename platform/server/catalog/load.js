@@ -7,6 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { normalizeText } from '../lib/crypto.js';
+import { slug } from './slug.js';
 
 export const FILES = Object.freeze({
   sources: 'sources.json',
@@ -129,8 +130,13 @@ export function buildModel(data, hashes, { strict = true } = {}) {
   }
   const anatomy = data.anatomy && typeof data.anatomy === 'object' && !Array.isArray(data.anatomy) ? data.anatomy : {};
   if (data.anatomy !== undefined && anatomy !== data.anatomy) errors.push('point-anatomy.json: expected an object keyed by point id');
+  // Source-spelling aliases (e.g. "bulbo-raquideno") and reserved keys ("subpoints", "_…") are expected
+  // in point-anatomy.json for the viewer's benefit; they are skipped silently, only true unknowns warn.
+  const aliasSlugs = new Set();
+  for (const p of points.values()) for (const al of p.aliases || []) aliasSlugs.add(slug(al));
   for (const [pid, a] of Object.entries(anatomy)) {
-    if (!points.has(pid)) { warnings.push(`point-anatomy.json[${pid}]: unknown point (ignored)`); continue; }
+    if (pid === 'subpoints' || pid.startsWith('_')) continue;
+    if (!points.has(pid)) { if (!aliasSlugs.has(pid)) warnings.push(`point-anatomy.json[${pid}]: unknown point (ignored)`); continue; }
     if (a.region && regions.size && !regions.has(a.region)) warnings.push(`point-anatomy.json[${pid}]: unknown region "${a.region}"`);
     if (a.view && !VIEWS.includes(a.view)) warnings.push(`point-anatomy.json[${pid}]: unknown view "${a.view}"`);
     if (a.pos && !['x', 'y', 'z'].every((k) => Number.isFinite(a.pos[k]))) errors.push(`point-anatomy.json[${pid}]: pos must have numeric x,y,z`);

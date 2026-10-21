@@ -8321,5 +8321,97 @@
       "doc": "goiz-n2",
       "page": 236
     }
+  },
+  {
+    "id": "app-19-circulacion-de-piernas",
+    "kind": "application",
+    "number": 19,
+    "name": {
+      "es": "19. Circulación de Piernas",
+      "en": "19. Leg Circulation"
+    },
+    "items": [
+      {
+        "pair": "pb-036",
+        "label": {
+          "es": "Desintoxicación",
+          "en": "Detoxification"
+        }
+      },
+      {
+        "pair": "pb-186",
+        "label": {
+          "es": "Balance hormonal (cortisol)",
+          "en": "Hormonal balance (cortisol)"
+        }
+      },
+      {
+        "pair": "pb-097",
+        "label": {
+          "es": "Desintoxicación",
+          "en": "Detoxification"
+        }
+      },
+      {
+        "pair": "cx-pliegue-inguinal--pliegue-inguinal",
+        "label": {
+          "es": "Circulación MP",
+          "en": "Lower-limb circulation"
+        }
+      },
+      {
+        "pair": "pb-007",
+        "label": {
+          "es": "Circulación MP",
+          "en": "Lower-limb circulation"
+        }
+      },
+      {
+        "pair": "pb-068",
+        "label": {
+          "es": "Circulación MP",
+          "en": "Lower-limb circulation"
+        }
+      },
+      {
+        "pair": "cx-gastrocnemio--gastrocnemio",
+        "label": {
+          "es": "Circulación MP",
+          "en": "Lower-limb circulation"
+        }
+      }
+    ],
+    "dosage": {
+      "acute": {
+        "minutes": [
+          30,
+          45
+        ],
+        "frequency": {
+          "es": "2 a 3 veces al día",
+          "en": "2–3 times per day"
+        }
+      },
+      "chronic": {
+        "minutes": [
+          30,
+          45
+        ],
+        "frequency": {
+          "es": "2 a 3 veces por semana",
+          "en": "2–3 times per week"
+        }
+      }
+    },
+    "notes": [
+      {
+        "es": "Sigue las indicaciones médicas. Visita a tu médico y biomagnetista.",
+        "en": "Follow medical advice. See your physician and biomagnetist."
+      }
+    ],
+    "source": {
+      "doc": "clinic-cards",
+      "page": 19
+    }
   }
 ]

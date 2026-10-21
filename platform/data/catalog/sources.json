@@ -38,5 +38,12 @@
     "author": "YOU HEAL Clinical",
     "license_status": "original",
     "notice": "Original content (translations, normalization, vocabularies)"
+  },
+  {
+    "id": "clinic-cards",
+    "title": "Clinic application protocol cards (owner-supplied reference images)",
+    "author": "YOU HEAL clinic",
+    "license_status": "internal-use",
+    "notice": "Supplied by the clinic owner as a reference image; provenance of the card artwork to be confirmed before redistribution."
   }
 ]

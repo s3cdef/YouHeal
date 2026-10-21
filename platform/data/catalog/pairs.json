@@ -31327,6 +31327,40 @@
     }
   },
   {
+    "id": "cx-gastrocnemio--gastrocnemio",
+    "number": null,
+    "level": 0,
+    "name": {
+      "es": "Gastrocnemio (D) – Gastrocnemio (I)",
+      "en": "Gastrocnemius (R) – Gastrocnemius (L)"
+    },
+    "tracking": {
+      "point": "gastrocnemio",
+      "side": "R",
+      "qualifiers": []
+    },
+    "impact": {
+      "point": "gastrocnemio",
+      "side": "L",
+      "qualifiers": []
+    },
+    "category": "complex",
+    "relations": [],
+    "ratings": {},
+    "symptoms": [],
+    "recommendations": [
+      {
+        "es": "Circulación de miembros pélvicos",
+        "en": "Lower-limb circulation"
+      }
+    ],
+    "notes": [],
+    "source": {
+      "doc": "clinic-cards",
+      "page": 19
+    }
+  },
+  {
     "id": "cx-gluteo--arteria-femoral",
     "number": null,
     "level": 0,

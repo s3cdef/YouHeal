@@ -160,6 +160,14 @@ immunological, psychiatric, oncological, dental, tropical, toxicological`.
 ```
 `kind` ∈ `basic|top10|top5|disease|application`.
 
+**Additive fields (v1.1, produced by the importer; consumers must tolerate them):** pairs may carry
+`altNames`, `magnets` (multi-point pairs such as pb-282 four-point pancreas: `[{point, sub, polarity}]`),
+`samePoints` (other pair ids with identical points), `variants`; ratings may be partial (reservoir pairs
+print only F); relations may omit `ordinal`; protocols of kind `application` may carry `number`,
+per-item `label`, `dosage` and `notes`. Records that do not come from the source PDFs (e.g. the clinic's
+protocol cards) are declared in `importer/supplements.json` under their own `source` id. English
+vocabularies for categories/systems/sides/qualifiers live in `manifest.json → vocabularies`.
+
 ### 4.8 `symptoms.json`  [data] — canonical symptom vocabulary for search/suggest
 `[{ "id":"cefalea", "system":"neurological", "name":{"es":"Cefalea","en":"Headache"}, "pairs":["pb-006","pb-010"] }]`
 
