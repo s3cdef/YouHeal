@@ -300,7 +300,7 @@ export function buildBody(opts = {}) {
   const ankle = [0.112, 0.085, -0.022];
   const legDir1 = norm3([knee[0] - hipJ[0], knee[1] - 0.975, knee[2] - hipJ[2]]);
   const legDir2 = norm3([ankle[0] - knee[0], ankle[1] - knee[1], ankle[2] - knee[2]]);
-  const skeleton = { shoulderJ, elbow, wrist, knuckle, fingertip, hipJ, knee, ankle, armDir, foreDir, handDir };
+  const skeleton = { shoulderJ, elbow, wrist, knuckle, fingertip, hipJ, knee, ankle, armDir, foreDir, handDir, trunkZ: 0.005 };
 
   const prims = []; // {f, lb, k, op}
   const U = (p, k) => prims.push({ ...p, k, op: 0 });

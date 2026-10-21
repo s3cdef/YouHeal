@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { buildBody, polygonize, snapPoint } from '../../web/js/viewer3d/body-sdf.js';
 import { regionAt } from '../../web/js/viewer3d/regions.js';
 import { buildInstances, resolveInstance } from '../../web/js/viewer3d/viewer-common.js';
+import { loadPreset } from './build-anatomy.mjs';
 
 const cat = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'data', 'catalog');
 const anatomy = JSON.parse(readFileSync(join(cat, 'point-anatomy.json'), 'utf8'));
@@ -14,7 +15,9 @@ const regions = JSON.parse(readFileSync(join(cat, 'regions.json'), 'utf8'));
 const entries = Object.entries(anatomy).filter(([k]) => k !== 'subpoints');
 const slug = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\(.*?\)/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const VIEWS = new Set(['anterior', 'posterior', 'lateral', 'superior', 'inferior', 'internal']);
-const body = buildBody({ sex: 'neutral' });
+const presets = Object.fromEntries(['neutral', 'female', 'male'].map((p) => [p, loadPreset(p)]));
+const MH = presets.neutral;
+const skinDist = (q, p) => q.closestPoint(p, 0.05)?.distance ?? Infinity;
 
 test('regions.json: unique ids, localized names, valid parents', () => {
   const ids = new Set(regions.map((r) => r.id));
@@ -38,13 +41,41 @@ test('point-anatomy.json: CONTRACT §4.3 shape, slug ids, known regions/views', 
   }
 });
 
-test('surface points lie on the neutral mannequin skin (≤ 2 mm)', () => {
+test('surface points lie on the neutral MakeHuman skin (≤ 2 mm)', () => {
   for (const [id, a] of entries) {
-    if (a.view === 'internal') { assert.ok(body.sdf(a.pos.x, a.pos.y, a.pos.z) < 0, `${id} internal point inside body`); continue; }
-    const d = Math.abs(body.sdf(a.pos.x, a.pos.y, a.pos.z));
+    const p = [a.pos.x, a.pos.y, a.pos.z];
+    if (a.view === 'internal') {
+      const hits = MH.query.raycastAll([p[0], p[1], p[2] - 1], [0, 0, 1], 2).filter((h) => h.t < 1);
+      assert.ok(hits.length % 2 === 1, `${id}: internal point inside the body`);
+      continue;
+    }
+    const d = skinDist(MH.query, p);
     assert.ok(d < 0.002, `${id}: ${(d * 1000).toFixed(1)} mm off the skin`);
   }
 });
+
+for (const preset of ['neutral', 'female', 'male']) {
+  test(`${preset}: every point re-snaps onto the skin (≤ 2 mm) in the expected region`, () => {
+    const q = presets[preset].query;
+    const sk = presets[preset].skeleton;
+    let regionMismatch = [];
+    for (const [id, a] of entries) {
+      if (a.view === 'internal') continue;
+      for (const sx of [1, -1]) {
+        const r = q.snap([a.pos.x * sx, a.pos.y, a.pos.z], a.view);
+        const d = skinDist(q, r.pos);
+        assert.ok(d < 0.002, `${preset}/${id}: ${(d * 1000).toFixed(1)} mm off the skin`);
+        const moved = Math.hypot(r.pos[0] - a.pos.x * sx, r.pos[1] - a.pos.y, r.pos[2] - a.pos.z);
+        assert.ok(moved < 0.06, `${preset}/${id}: moved ${(moved * 1000).toFixed(0)} mm when re-snapped`);
+      }
+      const rg = regionAt([a.pos.x, a.pos.y, a.pos.z], sk).regionId;
+      const NEAR = new Set(['pelvis|thigh', 'gluteal|thigh', 'knee|leg', 'knee|thigh', 'forearm|hand', 'arm|forearm', 'foot|leg', 'shoulder|arm']);
+      const adjacent = NEAR.has(`${a.region}|${rg}`) || NEAR.has(`${rg}|${a.region}`);
+      if (['arm', 'forearm', 'hand', 'thigh', 'knee', 'leg', 'foot'].includes(a.region) && rg !== a.region && !adjacent) regionMismatch.push(`${id}:${a.region}->${rg}`);
+    }
+    assert.deepEqual(regionMismatch, []);
+  });
+}
 
 test('bilateral points are authored on the patient RIGHT (x<0) when points.json exists', () => {
   const pj = join(cat, 'points.json');
@@ -58,9 +89,9 @@ test('bilateral points are authored on the patient RIGHT (x<0) when points.json 
 });
 
 test('re-snapping catalog positions is stable (idempotent)', () => {
-  for (const [id, a] of entries.slice(0, 120)) {
+  for (const [id, a] of entries) {
     if (a.view === 'internal') continue;
-    const r = snapPoint(body.sdf, [a.pos.x, a.pos.y, a.pos.z], a.view);
+    const r = MH.query.snap([a.pos.x, a.pos.y, a.pos.z], a.view);
     const d = Math.hypot(r.pos[0] - a.pos.x, r.pos[1] - a.pos.y, r.pos[2] - a.pos.z);
     assert.ok(d < 0.003, `${id}: moved ${(d * 1000).toFixed(1)} mm`);
   }
@@ -70,7 +101,7 @@ test('key clinical placements resolve to the expected body zone', () => {
   const expect = { timo: 'thorax', ombligo: 'abdomen', estomago: 'abdomen', rinon: 'lower-back', popliteo: 'knee', gastrocnemio: 'leg', ciatico: 'thigh', palma: 'hand', hipofisis: 'face' };
   for (const [id, region] of Object.entries(expect)) {
     const p = anatomy[id].pos;
-    assert.equal(regionAt([p.x, p.y, p.z]).regionId, region, id);
+    assert.equal(regionAt([p.x, p.y, p.z], MH.skeleton).regionId, region, id);
   }
   assert.ok(anatomy.higado.pos.x < 0, 'liver on the patient right');
   assert.ok(anatomy.corazon.pos.x > 0, 'heart on the patient left');
@@ -86,7 +117,7 @@ test('instances: bilateral R/L mirrored, central single; resolveInstance fallbac
   assert.equal(resolveInstance(by, 'rinon', 'RL').key, 'rinon|R');
 });
 
-test('sex presets mesh into a closed, plausible body', () => {
+test('procedural fallback: sex presets mesh into a closed, plausible body', () => {
   for (const sex of ['neutral', 'female', 'male']) {
     const b = buildBody({ sex });
     const m = polygonize(b.sdf, { bounds: b.bounds, h: 0.012 });

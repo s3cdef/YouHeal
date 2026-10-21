@@ -30,11 +30,17 @@ export function decodeBodyAsset(header, preset, indexBuf, posBuf) {
   }
   const indices = header.index.type === 'uint16' ? new Uint16Array(indexBuf) : new Uint32Array(indexBuf);
   const normals = computeNormals(positions, indices);
+  // trunk depth centre (front/back split for region resolution)
+  let zf = -Infinity, zb = Infinity;
+  for (let i = 0; i < positions.length; i += 3) {
+    if (Math.abs(positions[i]) < 0.03 && positions[i + 1] > 1.0 && positions[i + 1] < 1.35) { zf = Math.max(zf, positions[i + 2]); zb = Math.min(zb, positions[i + 2]); }
+  }
+  const skeleton = { ...p.skeleton, trunkZ: Number.isFinite(zf) ? +((zf + zb) / 2).toFixed(4) : 0.05 };
   return {
     preset: header.presets[preset] ? preset : 'neutral',
     positions, normals, indices,
     groups: header.groups,
-    skeleton: p.skeleton,
+    skeleton,
     bounds: [...mn, ...mx],
   };
 }

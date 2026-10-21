@@ -1,8 +1,9 @@
 /**
  * 2D SVG fallback for the body viewer (used when WebGL is unavailable).
  * Implements the same API as createBodyViewer (CONTRACT §6). The silhouettes
- * are computed from the same procedural SDF (no imagery), so point positions
- * match the 3D viewer exactly.
+ * are computed from the same body as the 3D viewer — the MakeHuman asset, or
+ * the procedural SDF if the asset is unavailable (no imagery) — so point
+ * positions match the 3D viewer exactly.
  *
  * Views: anterior, posterior (mirror), left, right. 'superior' falls back to
  * anterior. Pulse highlight uses a CSS animation (disabled by
@@ -10,6 +11,8 @@
  * @module viewer3d/viewer-svg
  */
 import { buildBody, snapPoint, sphereTrace } from './body-sdf.js';
+import { loadBodyAsset } from './body-asset.js';
+import { buildMeshQuery } from './mesh-query.js';
 import { regionAt } from './regions.js';
 import { buildInstances, localName, sideLabel, uiText, PAIR_COLORS, DEFAULT_POLARITY, resolveInstance } from './viewer-common.js';
 
@@ -95,6 +98,63 @@ function silhouette(sdf, view, h = 0.005) {
   return contourPath(grid, nu, nv, uMin, vMin, h);
 }
 
+/** Occupancy silhouette of a triangle mesh projected along `view` (triangle rasterisation). */
+function meshSilhouette(P, I, triCount, view, h = 0.004) {
+  const lateral = view === 'left' || view === 'right';
+  const uMin = lateral ? -0.45 : -0.66, uMax = lateral ? 0.45 : 0.66;
+  const vMin = -1.79, vMax = 0.02;
+  const nu = Math.ceil((uMax - uMin) / h) + 1, nv = Math.ceil((vMax - vMin) / h) + 1;
+  const grid = new Float32Array(nu * nv).fill(1);
+  const U = (i) => (lateral ? (view === 'left' ? -P[i * 3 + 2] : P[i * 3 + 2]) : view === 'posterior' ? -P[i * 3] : P[i * 3]);
+  const V = (i) => -P[i * 3 + 1];
+  for (let t = 0; t < triCount; t += 3) {
+    const a = I[t], b = I[t + 1], c = I[t + 2];
+    const ax = (U(a) - uMin) / h, ay = (V(a) - vMin) / h, bx = (U(b) - uMin) / h, by = (V(b) - vMin) / h, cx = (U(c) - uMin) / h, cy = (V(c) - vMin) / h;
+    const area = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+    if (Math.abs(area) < 1e-12) continue;
+    const x0 = Math.max(0, Math.floor(Math.min(ax, bx, cx))), x1 = Math.min(nu - 1, Math.ceil(Math.max(ax, bx, cx)));
+    const y0 = Math.max(0, Math.floor(Math.min(ay, by, cy))), y1 = Math.min(nv - 1, Math.ceil(Math.max(ay, by, cy)));
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const w0 = ((bx - x) * (cy - y) - (by - y) * (cx - x)) / area;
+      const w1 = ((cx - x) * (ay - y) - (cy - y) * (ax - x)) / area;
+      if (w0 >= -1e-6 && w1 >= -1e-6 && w0 + w1 <= 1 + 1e-6) grid[y * nu + x] = -1;
+    }
+  }
+  for (let pass = 0; pass < 2; pass++) {
+    const src = grid.slice();
+    for (let j = 1; j < nv - 1; j++) for (let i = 1; i < nu - 1; i++) {
+      let acc = 0;
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) acc += src[(j + dj) * nu + i + di];
+      grid[j * nu + i] = acc / 9;
+    }
+  }
+  return contourPath(grid, nu, nv, uMin, vMin, h);
+}
+
+/** Body source for the fallback: MakeHuman mesh if loadable, else the procedural SDF. */
+async function svgBodySource(opts) {
+  if (opts.bodySource !== 'procedural') {
+    try {
+      const a = await loadBodyAsset({ sex: opts.sex, baseUrl: opts.modelsUrl });
+      const triCount = a.groups.skin.count;
+      const q = buildMeshQuery(a.positions, a.indices, a.normals, { triCount });
+      return {
+        skeleton: a.skeleton,
+        silhouette: (view) => meshSilhouette(a.positions, a.indices, triCount, view),
+        snap: (p, view) => q.snap(p, view),
+        hit: (o, d) => { const r = q.raycast(o, d, 3); return r ? r.point : null; },
+      };
+    } catch { /* fall through to the procedural body */ }
+  }
+  const body = await svgBodySource(opts);
+  return {
+    skeleton: body.skeleton,
+    silhouette: (view) => silhouette(body.sdf, view),
+    snap: (p, view) => snapPoint(body.sdf, p, view),
+    hit: (o, d) => { const t = sphereTrace(body.sdf, o, d, 3); return t < 0 ? null : [o[0] + d[0] * t, o[1] + d[1] * t, o[2] + d[2] * t]; },
+  };
+}
+
 /**
  * @param {HTMLElement} container
  * @param {import('./viewer.js').ViewerOptions} opts
@@ -105,10 +165,10 @@ export async function createSvgViewer(container, opts = {}) {
   const T = uiText(locale);
   const polarity = { ...DEFAULT_POLARITY, ...(opts.polarity || {}) };
   const pairColors = { ...PAIR_COLORS, ...(opts.pairColors || {}) };
-  const body = buildBody({ sex: opts.sex || 'neutral' });
+  const body = await svgBodySource(opts);
   const skin = SKIN[opts.skinTone] || opts.skinTone || SKIN.medium;
   const silCache = new Map();
-  const getSil = (view) => { if (!silCache.has(view)) silCache.set(view, silhouette(body.sdf, view === 'posterior' ? 'anterior' : view)); return silCache.get(view); };
+  const getSil = (view) => { if (!silCache.has(view)) silCache.set(view, body.silhouette(view)); return silCache.get(view); };
 
   container.classList.add('yh-viewer');
   const svg = el('svg', { class: 'yh-viewer__svg', role: 'application', 'aria-label': T.canvasLabel, 'aria-roledescription': T.roleDescription, tabindex: 0, preserveAspectRatio: 'xMidYMid meet' });
@@ -147,7 +207,7 @@ export async function createSvgViewer(container, opts = {}) {
     instances = buildInstances(points || []);
     byKey.clear();
     for (const inst of instances) {
-      const r = snapPoint(body.sdf, [inst.pos.x, inst.pos.y, inst.pos.z], inst.view);
+      const r = body.snap([inst.pos.x, inst.pos.y, inst.pos.z], inst.view);
       inst.p = r.pos; inst.n = r.normal; inst.internal = r.internal;
       byKey.set(inst.key, inst);
     }
@@ -164,7 +224,7 @@ export async function createSvgViewer(container, opts = {}) {
   const visible = (inst, mk) => !mk.has(inst.key) && (!filter || filter.has(inst.id)) && (showAll || highlighted.has(inst.id) || !!filter) && facing(inst);
 
   function setViewBox() {
-    const h = 1.86 / zoom, w = (view === 'left' || view === 'right' ? 0.62 : 1.16) / zoom;
+    const h = 1.86 / zoom, w = (view === 'left' || view === 'right' ? 0.8 : 1.3) / zoom;
     svg.setAttribute('viewBox', `${(center[0] - w / 2).toFixed(4)} ${(center[1] - h / 2).toFixed(4)} ${w.toFixed(4)} ${h.toFixed(4)}`);
   }
 
@@ -296,9 +356,9 @@ export async function createSvgViewer(container, opts = {}) {
     else if (view === 'posterior') { o = [-q.x, y, -1]; d = [0, 0, 1]; }
     else if (view === 'left') { o = [1, y, -q.x]; d = [-1, 0, 0]; }
     else { o = [-1, y, q.x]; d = [1, 0, 0]; }
-    const t = sphereTrace(body.sdf, o, d, 3);
-    if (t < 0) return;
-    const r = regionAt([o[0] + d[0] * t, o[1] + d[1] * t, o[2] + d[2] * t], body.skeleton);
+    const hp = body.hit(o, d);
+    if (!hp) return;
+    const r = regionAt(hp, body.skeleton);
     opts.onRegionClick?.({ regionId: r.regionId, side: r.side, clientX: ev.clientX, clientY: ev.clientY });
   };
   const ORDER = ['anterior', 'right', 'posterior', 'left'];

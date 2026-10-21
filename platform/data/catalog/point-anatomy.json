@@ -3,90 +3,90 @@
   "region": "shoulder",
   "view": "superior",
   "pos": {
-   "x": -0.165,
-   "y": 1.479,
-   "z": -0.012
+   "x": -0.183,
+   "y": 1.448,
+   "z": 0.021
   }
  },
  "aductor": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.137,
-   "y": 0.764,
-   "z": 0.064
+   "x": -0.071,
+   "y": 0.774,
+   "z": 0.117
   }
  },
  "aductor-menor": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.141,
-   "y": 0.814,
-   "z": 0.062
+   "x": -0.061,
+   "y": 0.823,
+   "z": 0.112
   }
  },
  "agujero": {
   "region": "neck",
   "view": "posterior",
   "pos": {
-   "x": -0.026,
-   "y": 1.58,
-   "z": -0.079
+   "x": -0.018,
+   "y": 1.589,
+   "z": -0.016
   }
  },
  "amigdala-cerebral": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.067,
-   "y": 1.636,
-   "z": 0.028
+   "x": -0.069,
+   "y": 1.638,
+   "z": 0.083
   }
  },
  "amigdala-palatina": {
   "region": "neck",
   "view": "lateral",
   "pos": {
-   "x": -0.055,
-   "y": 1.533,
-   "z": 0.018
+   "x": -0.04,
+   "y": 1.524,
+   "z": 0.064
   }
  },
  "ampolla-hepatopancreatica": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.035,
-   "y": 1.098,
-   "z": 0.097
+   "x": -0.031,
+   "y": 1.12,
+   "z": 0.141
   }
  },
  "anexo": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.082,
-   "y": 0.908,
-   "z": 0.081
+   "x": -0.079,
+   "y": 0.921,
+   "z": 0.118
   }
  },
  "angulo": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.063,
-   "y": 1.548,
-   "z": -0.004
+   "x": -0.051,
+   "y": 1.547,
+   "z": 0.054
   }
  },
  "angulo-mandibular": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.063,
-   "y": 1.548,
-   "z": -0.004
+   "x": -0.051,
+   "y": 1.547,
+   "z": 0.054
   }
  },
  "ano": {
@@ -94,35 +94,35 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 0.852,
-   "z": -0.117
+   "y": 0.871,
+   "z": -0.05
   }
  },
  "antecuerno": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.048,
-   "y": 1.703,
-   "z": 0.062
+   "x": -0.044,
+   "y": 1.704,
+   "z": 0.12
   }
  },
  "aorta": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.024,
-   "y": 1.35,
-   "z": 0.101
+   "x": 0.027,
+   "y": 1.36,
+   "z": 0.12
   }
  },
  "apendice": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.078,
-   "y": 0.958,
-   "z": 0.079
+   "x": -0.074,
+   "y": 0.976,
+   "z": 0.124
   }
  },
  "apendice-xifoides": {
@@ -130,62 +130,62 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.222,
-   "z": 0.12
+   "y": 1.236,
+   "z": 0.146
   }
  },
  "aquiles": {
   "region": "leg",
   "view": "posterior",
   "pos": {
-   "x": -0.111,
-   "y": 0.134,
-   "z": -0.048
+   "x": -0.183,
+   "y": 0.124,
+   "z": -0.02
   }
  },
  "arco-cigomatico": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.067,
-   "y": 1.62,
-   "z": 0.025
+   "x": -0.07,
+   "y": 1.624,
+   "z": 0.079
   }
  },
  "arco-del-pie": {
   "region": "foot",
   "view": "inferior",
   "pos": {
-   "x": -0.1,
-   "y": 0.005,
-   "z": 0.045
+   "x": -0.161,
+   "y": 0.023,
+   "z": 0.095
   }
  },
  "arteria-femoral": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.101,
-   "y": 0.864,
-   "z": 0.08
+   "x": -0.095,
+   "y": 0.88,
+   "z": 0.121
   }
  },
  "articulacion": {
   "region": "knee",
   "view": "anterior",
   "pos": {
-   "x": -0.072,
-   "y": 0.486,
-   "z": 0.052
+   "x": -0.178,
+   "y": 0.507,
+   "z": 0.076
   }
  },
  "articulacion-temporomandibular": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.066,
-   "y": 1.603,
-   "z": 0.01
+   "x": -0.07,
+   "y": 1.609,
+   "z": 0.069
   }
  },
  "atlas": {
@@ -193,8 +193,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.565,
-   "z": -0.077
+   "y": 1.574,
+   "z": -0.016
   }
  },
  "axila": {
@@ -202,8 +202,8 @@
   "view": "inferior",
   "pos": {
    "x": -0.182,
-   "y": 1.245,
-   "z": 0
+   "y": 1.31,
+   "z": 0.02
   }
  },
  "axis": {
@@ -211,62 +211,62 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.548,
-   "z": -0.073
+   "y": 1.547,
+   "z": -0.015
   }
  },
  "bazo": {
   "region": "abdomen",
   "view": "lateral",
   "pos": {
-   "x": 0.163,
-   "y": 1.16,
-   "z": 0
+   "x": 0.135,
+   "y": 1.171,
+   "z": 0.038
   }
  },
  "biceps": {
   "region": "arm",
   "view": "anterior",
   "pos": {
-   "x": -0.23,
-   "y": 1.236,
-   "z": 0.034
+   "x": -0.294,
+   "y": 1.273,
+   "z": 0.069
   }
  },
  "borde-calloso": {
   "region": "head",
   "view": "superior",
   "pos": {
-   "x": -0.045,
+   "x": -0.041,
    "y": 1.739,
-   "z": -0.02
+   "z": 0.04
   }
  },
  "boton-aortico": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.034,
-   "y": 1.37,
-   "z": 0.091
+   "x": 0.036,
+   "y": 1.38,
+   "z": 0.109
   }
  },
  "braquial": {
   "region": "arm",
   "view": "anterior",
   "pos": {
-   "x": -0.203,
-   "y": 1.29,
-   "z": 0.035
+   "x": -0.252,
+   "y": 1.311,
+   "z": 0.066
   }
  },
  "bronquio": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.05,
-   "y": 1.37,
-   "z": 0.091
+   "x": -0.053,
+   "y": 1.38,
+   "z": 0.108
   }
  },
  "bulbo-raquideno": {
@@ -274,8 +274,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.586,
-   "z": -0.087
+   "y": 1.594,
+   "z": -0.024
   }
  },
  "bulbo-raquideo": {
@@ -283,152 +283,152 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.586,
-   "z": -0.087
+   "y": 1.594,
+   "z": -0.024
   }
  },
  "bursa": {
   "region": "shoulder",
   "view": "anterior",
   "pos": {
-   "x": -0.172,
-   "y": 1.3,
-   "z": 0.027
+   "x": -0.165,
+   "y": 1.315,
+   "z": 0.083
   }
  },
  "cabeza-de-pancreas": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.018,
-   "y": 1.112,
-   "z": 0.099
+   "x": -0.016,
+   "y": 1.131,
+   "z": 0.142
   }
  },
  "cabeza-de-perone": {
   "region": "leg",
   "view": "lateral",
   "pos": {
-   "x": -0.15,
-   "y": 0.458,
-   "z": 0.002
+   "x": -0.206,
+   "y": 0.476,
+   "z": 0.038
   }
  },
  "cadera": {
   "region": "pelvis",
   "view": "lateral",
   "pos": {
-   "x": -0.164,
-   "y": 0.94,
-   "z": 0.02
+   "x": -0.158,
+   "y": 0.956,
+   "z": 0.062
   }
  },
  "calcaneo": {
   "region": "foot",
   "view": "lateral",
   "pos": {
-   "x": -0.147,
-   "y": 0.038,
-   "z": -0.045
+   "x": -0.206,
+   "y": 0.049,
+   "z": -0.02
   }
  },
  "caliz-renal": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.042,
-   "y": 1.092,
-   "z": -0.089
+   "x": -0.038,
+   "y": 1.116,
+   "z": -0.04
   }
  },
  "canto": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.05,
-   "y": 1.637,
-   "z": 0.065
+   "x": -0.052,
+   "y": 1.639,
+   "z": 0.129
   }
  },
  "canto-externo": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.05,
-   "y": 1.637,
-   "z": 0.065
+   "x": -0.052,
+   "y": 1.639,
+   "z": 0.129
   }
  },
  "capsula-renal": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.08,
-   "y": 1.115,
-   "z": -0.089
+   "x": -0.07,
+   "y": 1.133,
+   "z": -0.037
   }
  },
  "cardias": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.03,
-   "y": 1.185,
-   "z": 0.113
+   "x": 0.026,
+   "y": 1.197,
+   "z": 0.147
   }
  },
  "caries": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.014,
-   "y": 1.572,
-   "z": 0.082
+   "x": -0.01,
+   "y": 1.581,
+   "z": 0.05
   }
  },
  "carina": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.026,
-   "y": 1.372,
-   "z": 0.089
+   "x": -0.027,
+   "y": 1.382,
+   "z": 0.109
   }
  },
  "carotida": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.03,
-   "y": 1.523,
-   "z": 0.052
+   "x": -0.023,
+   "y": 1.515,
+   "z": 0.081
   }
  },
  "cava": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.036,
-   "y": 1.352,
-   "z": 0.102
+   "x": -0.04,
+   "y": 1.362,
+   "z": 0.119
   }
  },
  "ceja": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.04,
-   "y": 1.658,
-   "z": 0.075
+   "x": -0.039,
+   "y": 1.66,
+   "z": 0.144
   }
  },
  "cerebelo": {
   "region": "head",
   "view": "posterior",
   "pos": {
-   "x": -0.032,
-   "y": 1.607,
-   "z": -0.088
+   "x": -0.035,
+   "y": 1.612,
+   "z": -0.025
   }
  },
  "cervical": {
@@ -436,8 +436,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.505,
-   "z": -0.087
+   "y": 1.501,
+   "z": -0.025
   }
  },
  "cervical-1": {
@@ -445,8 +445,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.565,
-   "z": -0.077
+   "y": 1.574,
+   "z": -0.016
   }
  },
  "cervical-2": {
@@ -454,8 +454,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.548,
-   "z": -0.073
+   "y": 1.547,
+   "z": -0.015
   }
  },
  "cervical-3": {
@@ -463,8 +463,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.532,
-   "z": -0.077
+   "y": 1.522,
+   "z": -0.019
   }
  },
  "cervical-4": {
@@ -472,8 +472,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.518,
-   "z": -0.083
+   "y": 1.511,
+   "z": -0.022
   }
  },
  "cervical-7": {
@@ -481,17 +481,17 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.466,
-   "z": -0.094
+   "y": 1.47,
+   "z": -0.036
   }
  },
  "ciatico": {
   "region": "thigh",
   "view": "posterior",
   "pos": {
-   "x": -0.091,
-   "y": 0.805,
-   "z": -0.11
+   "x": -0.116,
+   "y": 0.823,
+   "z": -0.055
   }
  },
  "cicatriz": {
@@ -499,35 +499,35 @@
   "view": "anterior",
   "pos": {
    "x": 0.06,
-   "y": 0.985,
-   "z": 0.086
+   "y": 1.008,
+   "z": 0.133
   }
  },
  "ciego": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.102,
-   "y": 0.975,
-   "z": 0.069
+   "x": -0.1,
+   "y": 0.996,
+   "z": 0.117
   }
  },
  "cisura-de-rolando": {
   "region": "head",
   "view": "superior",
   "pos": {
-   "x": -0.055,
-   "y": 1.731,
-   "z": 0.008
+   "x": -0.05,
+   "y": 1.73,
+   "z": 0.068
   }
  },
  "cisura-de-silvio": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.073,
-   "y": 1.678,
-   "z": 0.025
+   "x": -0.066,
+   "y": 1.679,
+   "z": 0.086
   }
  },
  "cisura-media": {
@@ -536,25 +536,25 @@
   "pos": {
    "x": 0,
    "y": 1.749,
-   "z": -0.022
+   "z": 0.038
   }
  },
  "cisura-silvio": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.073,
-   "y": 1.678,
-   "z": 0.025
+   "x": -0.066,
+   "y": 1.679,
+   "z": 0.086
   }
  },
  "clavicula": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.1,
-   "y": 1.442,
-   "z": 0.041
+   "x": -0.078,
+   "y": 1.452,
+   "z": 0.047
   }
  },
  "clitoris": {
@@ -562,17 +562,17 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 0.85,
-   "z": 0.084
+   "y": 0.869,
+   "z": 0.107
   }
  },
  "codo": {
   "region": "forearm",
   "view": "lateral",
   "pos": {
-   "x": -0.308,
-   "y": 1.127,
-   "z": -0.006
+   "x": -0.397,
+   "y": 1.198,
+   "z": 0.025
   }
  },
  "cola-de-caballo": {
@@ -580,53 +580,53 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 0.975,
-   "z": -0.098
+   "y": 0.996,
+   "z": -0.07
   }
  },
  "cola-de-pancreas": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.066,
-   "y": 1.125,
-   "z": 0.091
+   "x": 0.057,
+   "y": 1.141,
+   "z": 0.141
   }
  },
  "colon-ascendente": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.108,
-   "y": 1.035,
-   "z": 0.07
+   "x": -0.104,
+   "y": 1.068,
+   "z": 0.112
   }
  },
  "colon-descendente": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.108,
-   "y": 1.035,
-   "z": 0.07
+   "x": 0.104,
+   "y": 1.068,
+   "z": 0.112
   }
  },
  "colon-sigmoide": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": 0.078,
-   "y": 0.958,
-   "z": 0.079
+   "x": 0.074,
+   "y": 0.976,
+   "z": 0.124
   }
  },
  "colon-sigmoides": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": 0.078,
-   "y": 0.958,
-   "z": 0.079
+   "x": 0.074,
+   "y": 0.976,
+   "z": 0.124
   }
  },
  "colon-transverso": {
@@ -634,8 +634,8 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.077,
-   "z": 0.1
+   "y": 1.104,
+   "z": 0.139
   }
  },
  "colon-trasnverso": {
@@ -643,35 +643,35 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.077,
-   "z": 0.1
+   "y": 1.104,
+   "z": 0.139
   }
  },
  "comisura": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.022,
-   "y": 1.565,
-   "z": 0.077
+   "x": -0.015,
+   "y": 1.574,
+   "z": 0.049
   }
  },
  "condral": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.055,
-   "y": 1.225,
-   "z": 0.114
+   "x": -0.049,
+   "y": 1.239,
+   "z": 0.147
   }
  },
  "conducto-de-la-vesicula": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.064,
-   "y": 1.118,
-   "z": 0.091
+   "x": -0.056,
+   "y": 1.136,
+   "z": 0.14
   }
  },
  "conducto-deferente": {
@@ -679,17 +679,17 @@
   "view": "anterior",
   "pos": {
    "x": -0.042,
-   "y": 0.86,
-   "z": 0.087
+   "y": 0.876,
+   "z": 0.107
   }
  },
  "conducto-del-pancreas": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.008,
-   "y": 1.098,
-   "z": 0.099
+   "x": 0.007,
+   "y": 1.12,
+   "z": 0.141
   }
  },
  "conducto-espermatico": {
@@ -697,35 +697,35 @@
   "view": "anterior",
   "pos": {
    "x": -0.058,
-   "y": 0.875,
-   "z": 0.085
+   "y": 0.885,
+   "z": 0.113
   }
  },
  "contraciego": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": 0.102,
-   "y": 0.975,
-   "z": 0.069
+   "x": 0.1,
+   "y": 0.996,
+   "z": 0.117
   }
  },
  "corazon": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.062,
-   "y": 1.275,
-   "z": 0.112
+   "x": 0.043,
+   "y": 1.285,
+   "z": 0.15
   }
  },
  "coronarias": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.03,
-   "y": 1.305,
-   "z": 0.112
+   "x": 0.023,
+   "y": 1.315,
+   "z": 0.135
   }
  },
  "coronilla": {
@@ -733,89 +733,89 @@
   "view": "superior",
   "pos": {
    "x": 0,
-   "y": 1.734,
-   "z": -0.075
+   "y": 1.732,
+   "z": -0.016
   }
  },
  "costal": {
   "region": "thorax",
   "view": "lateral",
   "pos": {
-   "x": -0.166,
-   "y": 1.2,
-   "z": 0.005
+   "x": -0.143,
+   "y": 1.213,
+   "z": 0.04
   }
  },
  "costal-anterior": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.105,
-   "y": 1.188,
-   "z": 0.09
+   "x": -0.09,
+   "y": 1.2,
+   "z": 0.136
   }
  },
  "costilla": {
   "region": "thorax",
   "view": "lateral",
   "pos": {
-   "x": -0.158,
-   "y": 1.17,
-   "z": 0.02
+   "x": -0.137,
+   "y": 1.181,
+   "z": 0.057
   }
  },
  "costilla-1": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.05,
-   "y": 1.432,
-   "z": 0.054
+   "x": -0.043,
+   "y": 1.442,
+   "z": 0.069
   }
  },
  "costilla-3": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.065,
-   "y": 1.335,
-   "z": 0.107
+   "x": -0.076,
+   "y": 1.345,
+   "z": 0.129
   }
  },
  "costilla-7": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.09,
-   "y": 1.215,
-   "z": 0.102
+   "x": -0.079,
+   "y": 1.229,
+   "z": 0.141
   }
  },
  "costo-diafragmatico": {
   "region": "thorax",
   "view": "lateral",
   "pos": {
-   "x": -0.153,
-   "y": 1.135,
-   "z": 0.015
+   "x": -0.133,
+   "y": 1.149,
+   "z": 0.056
   }
  },
  "costodiafragmatico": {
   "region": "thorax",
   "view": "lateral",
   "pos": {
-   "x": -0.153,
-   "y": 1.135,
-   "z": 0.015
+   "x": -0.133,
+   "y": 1.149,
+   "z": 0.056
   }
  },
  "costohepatico": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.122,
-   "y": 1.14,
-   "z": 0.064
+   "x": -0.104,
+   "y": 1.152,
+   "z": 0.122
   }
  },
  "coxigeo": {
@@ -823,8 +823,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 0.905,
-   "z": -0.119
+   "y": 0.918,
+   "z": -0.07
   }
  },
  "coxis": {
@@ -832,89 +832,89 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 0.905,
-   "z": -0.119
+   "y": 0.918,
+   "z": -0.07
   }
  },
  "craneal": {
   "region": "head",
   "view": "superior",
   "pos": {
-   "x": -0.042,
-   "y": 1.733,
-   "z": 0.035
+   "x": -0.038,
+   "y": 1.73,
+   "z": 0.096
   }
  },
  "cresta-iliaca": {
   "region": "pelvis",
   "view": "lateral",
   "pos": {
-   "x": -0.148,
-   "y": 1,
-   "z": -0.01
+   "x": -0.149,
+   "y": 1.026,
+   "z": 0.025
   }
  },
  "cresta-isquiatica": {
   "region": "gluteal",
   "view": "posterior",
   "pos": {
-   "x": -0.07,
-   "y": 0.848,
-   "z": -0.128
+   "x": -0.072,
+   "y": 0.868,
+   "z": -0.087
   }
  },
  "cuadrado-lumbar": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.078,
-   "y": 1.045,
-   "z": -0.081
+   "x": -0.074,
+   "y": 1.08,
+   "z": -0.035
   }
  },
  "cuadriceps": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.089,
-   "y": 0.706,
-   "z": 0.08
+   "x": -0.121,
+   "y": 0.725,
+   "z": 0.131
   }
  },
  "cuarta-lumbar": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.02,
-   "y": 1.04,
-   "z": -0.083
+   "x": -0.019,
+   "y": 1.074,
+   "z": -0.045
   }
  },
  "cubito": {
   "region": "forearm",
-  "view": "anterior",
+  "view": "inferior",
   "pos": {
-   "x": -0.299,
-   "y": 1.031,
-   "z": 0.035
+   "x": -0.422,
+   "y": 1.098,
+   "z": 0.108
   }
  },
  "cuello": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.036,
-   "y": 1.497,
-   "z": 0.039
+   "x": -0.025,
+   "y": 1.494,
+   "z": 0.073
   }
  },
  "cuello-de-femur": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.125,
-   "y": 0.86,
-   "z": 0.071
+   "x": -0.126,
+   "y": 0.876,
+   "z": 0.116
   }
  },
  "cuerpo-calloso": {
@@ -922,71 +922,71 @@
   "view": "superior",
   "pos": {
    "x": 0,
-   "y": 1.748,
-   "z": 0.018
+   "y": 1.747,
+   "z": 0.078
   }
  },
  "cuerpo-de-pancreas": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.03,
-   "y": 1.118,
-   "z": 0.098
+   "x": 0.026,
+   "y": 1.136,
+   "z": 0.143
   }
  },
  "dedo-gordo-del-pie": {
   "region": "foot",
   "view": "superior",
   "pos": {
-   "x": -0.128,
-   "y": 0.036,
-   "z": 0.172
+   "x": -0.167,
+   "y": 0.02,
+   "z": 0.198
   }
  },
  "dedo-indice": {
   "region": "hand",
-  "view": "anterior",
+  "view": "inferior",
   "pos": {
-   "x": -0.436,
-   "y": 0.782,
-   "z": 0.038
+   "x": -0.515,
+   "y": 1.003,
+   "z": 0.303
   }
  },
  "deltoides": {
   "region": "arm",
   "view": "lateral",
   "pos": {
-   "x": -0.246,
-   "y": 1.345,
-   "z": -0.011
+   "x": -0.284,
+   "y": 1.349,
+   "z": 0.021
   }
  },
  "deltoides-medio": {
   "region": "arm",
   "view": "lateral",
   "pos": {
-   "x": -0.246,
-   "y": 1.345,
-   "z": -0.011
+   "x": -0.284,
+   "y": 1.349,
+   "z": 0.021
   }
  },
  "diafragma": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.068,
-   "y": 1.168,
-   "z": 0.101
+   "x": -0.058,
+   "y": 1.179,
+   "z": 0.145
   }
  },
  "diente": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": 0.012,
-   "y": 1.572,
-   "z": 0.083
+   "x": 0.008,
+   "y": 1.581,
+   "z": 0.05
   }
  },
  "dorsal": {
@@ -994,8 +994,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.325,
-   "z": -0.097
+   "y": 1.335,
+   "z": -0.061
   }
  },
  "dorsal-1": {
@@ -1003,8 +1003,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.442,
-   "z": -0.097
+   "y": 1.452,
+   "z": -0.041
   }
  },
  "dorsal-12": {
@@ -1012,17 +1012,17 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.152,
-   "z": -0.083
+   "y": 1.162,
+   "z": -0.043
   }
  },
  "dorsal-2": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.018,
-   "y": 1.416,
-   "z": -0.1
+   "x": -0.017,
+   "y": 1.426,
+   "z": -0.051
   }
  },
  "dorsal-3": {
@@ -1030,8 +1030,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.39,
-   "z": -0.1
+   "y": 1.4,
+   "z": -0.054
   }
  },
  "dorsal-5": {
@@ -1039,8 +1039,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.337,
-   "z": -0.098
+   "y": 1.347,
+   "z": -0.06
   }
  },
  "dorsal-6": {
@@ -1048,8 +1048,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.31,
-   "z": -0.097
+   "y": 1.32,
+   "z": -0.061
   }
  },
  "dorsal-7": {
@@ -1057,8 +1057,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.284,
-   "z": -0.095
+   "y": 1.294,
+   "z": -0.059
   }
  },
  "dorso": {
@@ -1066,35 +1066,35 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.27,
-   "z": -0.094
+   "y": 1.28,
+   "z": -0.057
   }
  },
  "dorso-de-la-mano": {
   "region": "hand",
-  "view": "posterior",
+  "view": "lateral",
   "pos": {
-   "x": -0.396,
-   "y": 0.856,
-   "z": 0.001
+   "x": -0.533,
+   "y": 1.028,
+   "z": 0.237
   }
  },
  "duodeno": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.048,
-   "y": 1.112,
-   "z": 0.095
+   "x": -0.042,
+   "y": 1.131,
+   "z": 0.141
   }
  },
  "empeine": {
   "region": "foot",
   "view": "superior",
   "pos": {
-   "x": -0.122,
-   "y": 0.058,
-   "z": 0.065
+   "x": -0.18,
+   "y": 0.056,
+   "z": 0.108
   }
  },
  "epigastrio": {
@@ -1102,80 +1102,80 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.17,
-   "z": 0.111
+   "y": 1.181,
+   "z": 0.145
   }
  },
  "epiplon": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.068,
-   "y": 1.068,
-   "z": 0.09
+   "x": -0.064,
+   "y": 1.098,
+   "z": 0.132
   }
  },
  "escapula": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.09,
-   "y": 1.3,
-   "z": -0.109
+   "x": -0.066,
+   "y": 1.31,
+   "z": -0.073
   }
  },
  "escotadura-ciatica": {
   "region": "gluteal",
   "view": "posterior",
   "pos": {
-   "x": -0.075,
-   "y": 0.93,
-   "z": -0.119
+   "x": -0.071,
+   "y": 0.945,
+   "z": -0.095
   }
  },
  "esfenoides": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.068,
-   "y": 1.628,
-   "z": 0.045
+   "x": -0.067,
+   "y": 1.631,
+   "z": 0.098
   }
  },
  "esfintar-uretral": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.014,
-   "y": 0.84,
-   "z": 0.084
+   "x": -0.015,
+   "y": 0.863,
+   "z": 0.1
   }
  },
  "esfinter-uretral": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.014,
-   "y": 0.84,
-   "z": 0.084
+   "x": -0.015,
+   "y": 0.863,
+   "z": 0.1
   }
  },
  "esofago": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.012,
-   "y": 1.428,
-   "z": 0.061
+   "x": -0.011,
+   "y": 1.438,
+   "z": 0.077
   }
  },
  "esternocleidomastoideo": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.044,
-   "y": 1.515,
-   "z": 0.033
+   "x": -0.031,
+   "y": 1.509,
+   "z": 0.071
   }
  },
  "esternon": {
@@ -1183,53 +1183,53 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.33,
-   "z": 0.105
+   "y": 1.34,
+   "z": 0.126
   }
  },
  "estomago": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.07,
-   "y": 1.15,
-   "z": 0.096
+   "x": 0.059,
+   "y": 1.16,
+   "z": 0.143
   }
  },
  "flanco": {
   "region": "abdomen",
   "view": "lateral",
   "pos": {
-   "x": -0.142,
-   "y": 1.05,
-   "z": 0
+   "x": -0.135,
+   "y": 1.084,
+   "z": 0.037
   }
  },
  "frontal": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.03,
-   "y": 1.695,
-   "z": 0.076
+   "x": -0.028,
+   "y": 1.696,
+   "z": 0.137
   }
  },
  "fronto-orbital": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.052,
-   "y": 1.655,
-   "z": 0.065
+   "x": -0.051,
+   "y": 1.657,
+   "z": 0.133
   }
  },
  "fronto-parietal": {
   "region": "head",
   "view": "superior",
   "pos": {
-   "x": -0.055,
-   "y": 1.731,
-   "z": 0.008
+   "x": -0.05,
+   "y": 1.73,
+   "z": 0.068
   }
  },
  "garganta": {
@@ -1237,71 +1237,71 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.505,
-   "z": 0.048
+   "y": 1.501,
+   "z": 0.084
   }
  },
  "gastrocnemio": {
   "region": "leg",
   "view": "posterior",
   "pos": {
-   "x": -0.104,
-   "y": 0.369,
-   "z": -0.071
+   "x": -0.16,
+   "y": 0.379,
+   "z": -0.051
   }
  },
  "glandula-salival": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.038,
-   "y": 1.526,
-   "z": 0.043
+   "x": -0.03,
+   "y": 1.517,
+   "z": 0.075
   }
  },
  "gluteo": {
   "region": "gluteal",
   "view": "posterior",
   "pos": {
-   "x": -0.088,
-   "y": 0.885,
-   "z": -0.127
+   "x": -0.087,
+   "y": 0.896,
+   "z": -0.094
   }
  },
  "hernia": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.06,
-   "y": 0.888,
-   "z": 0.085
+   "x": -0.059,
+   "y": 0.899,
+   "z": 0.116
   }
  },
  "hiato-esofagico": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.014,
-   "y": 1.198,
-   "z": 0.117
+   "x": 0.012,
+   "y": 1.211,
+   "z": 0.146
   }
  },
  "higado": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.095,
-   "y": 1.17,
-   "z": 0.091
+   "x": -0.081,
+   "y": 1.181,
+   "z": 0.139
   }
  },
  "hipocampo": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.081,
-   "y": 1.643,
-   "z": -0.012
+   "x": -0.074,
+   "y": 1.645,
+   "z": 0.045
   }
  },
  "hipofisis": {
@@ -1309,8 +1309,8 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.664,
-   "z": 0.088
+   "y": 1.666,
+   "z": 0.151
   }
  },
  "hipotalamo": {
@@ -1318,17 +1318,17 @@
   "view": "internal",
   "pos": {
    "x": 0,
-   "y": 1.632,
-   "z": 0.012
+   "y": 1.635,
+   "z": 0.066
   }
  },
  "hombro": {
   "region": "shoulder",
   "view": "anterior",
   "pos": {
-   "x": -0.185,
-   "y": 1.385,
-   "z": 0.048
+   "x": -0.206,
+   "y": 1.371,
+   "z": 0.078
   }
  },
  "hueco-de-la-garganta": {
@@ -1336,17 +1336,17 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.447,
-   "z": 0.061
+   "y": 1.455,
+   "z": 0.073
   }
  },
  "hueso-cigomatico": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.05,
-   "y": 1.618,
-   "z": 0.07
+   "x": -0.055,
+   "y": 1.622,
+   "z": 0.128
   }
  },
  "hueso-hioides": {
@@ -1354,71 +1354,71 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.517,
-   "z": 0.07
+   "y": 1.51,
+   "z": 0.087
   }
  },
  "humero": {
   "region": "arm",
   "view": "lateral",
   "pos": {
-   "x": -0.269,
-   "y": 1.236,
-   "z": -0.008
+   "x": -0.341,
+   "y": 1.273,
+   "z": 0.021
   }
  },
  "iliaco": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.112,
-   "y": 0.948,
-   "z": 0.069
+   "x": -0.106,
+   "y": 0.964,
+   "z": 0.115
   }
  },
  "indice": {
   "region": "hand",
-  "view": "anterior",
+  "view": "inferior",
   "pos": {
-   "x": -0.436,
-   "y": 0.782,
-   "z": 0.038
+   "x": -0.515,
+   "y": 1.003,
+   "z": 0.303
   }
  },
  "infra-axilar": {
   "region": "thorax",
   "view": "lateral",
   "pos": {
-   "x": -0.17,
-   "y": 1.235,
-   "z": 0
+   "x": -0.153,
+   "y": 1.248,
+   "z": 0.033
   }
  },
  "infraaxilar": {
   "region": "thorax",
   "view": "lateral",
   "pos": {
-   "x": -0.17,
-   "y": 1.235,
-   "z": 0
+   "x": -0.153,
+   "y": 1.248,
+   "z": 0.033
   }
  },
  "ingle": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.1,
-   "y": 0.88,
-   "z": 0.079
+   "x": -0.099,
+   "y": 0.89,
+   "z": 0.12
   }
  },
  "inguinal": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.072,
-   "y": 0.898,
-   "z": 0.083
+   "x": -0.07,
+   "y": 0.91,
+   "z": 0.118
   }
  },
  "interciliar": {
@@ -1426,8 +1426,8 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.652,
-   "z": 0.09
+   "y": 1.654,
+   "z": 0.151
   }
  },
  "interiliaco": {
@@ -1435,17 +1435,17 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 0.99,
-   "z": -0.091
+   "y": 1.014,
+   "z": -0.062
   }
  },
  "isquion": {
   "region": "gluteal",
   "view": "posterior",
   "pos": {
-   "x": -0.062,
-   "y": 0.826,
-   "z": -0.122
+   "x": -0.066,
+   "y": 0.854,
+   "z": -0.078
   }
  },
  "labio-superior": {
@@ -1453,8 +1453,8 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.578,
-   "z": 0.083
+   "y": 1.587,
+   "z": 0.054
   }
  },
  "lacrimal": {
@@ -1462,8 +1462,8 @@
   "view": "anterior",
   "pos": {
    "x": -0.015,
-   "y": 1.634,
-   "z": 0.078
+   "y": 1.636,
+   "z": 0.12
   }
  },
  "laringe": {
@@ -1471,107 +1471,107 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.494,
-   "z": 0.045
+   "y": 1.492,
+   "z": 0.082
   }
  },
  "latisimus": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.125,
-   "y": 1.2,
-   "z": -0.097
+   "x": -0.108,
+   "y": 1.213,
+   "z": -0.038
   }
  },
  "latissimus-dorsi": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.125,
-   "y": 1.2,
-   "z": -0.097
+   "x": -0.108,
+   "y": 1.213,
+   "z": -0.038
   }
  },
  "lengua": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.012,
-   "y": 1.556,
-   "z": 0.079
+   "x": -0.008,
+   "y": 1.56,
+   "z": 0.05
   }
  },
  "lig-ext-de-la-rodilla": {
   "region": "knee",
   "view": "lateral",
   "pos": {
-   "x": -0.149,
-   "y": 0.48,
-   "z": -0.002
+   "x": -0.202,
+   "y": 0.501,
+   "z": 0.033
   }
  },
  "lig-int-de-la-rodilla": {
   "region": "knee",
   "view": "anterior",
   "pos": {
-   "x": -0.136,
-   "y": 0.478,
-   "z": 0.041
+   "x": -0.112,
+   "y": 0.499,
+   "z": 0.065
   }
  },
  "ligamento-externo-de-la-rodilla": {
   "region": "knee",
   "view": "lateral",
   "pos": {
-   "x": -0.149,
-   "y": 0.48,
-   "z": -0.002
+   "x": -0.202,
+   "y": 0.501,
+   "z": 0.033
   }
  },
  "ligamento-hepatico": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.055,
-   "y": 1.16,
-   "z": 0.102
+   "x": -0.046,
+   "y": 1.171,
+   "z": 0.145
   }
  },
  "ligamento-interno-de-la-rodilla": {
   "region": "knee",
   "view": "anterior",
   "pos": {
-   "x": -0.136,
-   "y": 0.478,
-   "z": 0.041
+   "x": -0.112,
+   "y": 0.499,
+   "z": 0.065
   }
  },
  "ligamento-pancreatico": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.05,
-   "y": 1.135,
-   "z": 0.097
+   "x": 0.043,
+   "y": 1.149,
+   "z": 0.144
   }
  },
  "ligamento-panreatico": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.05,
-   "y": 1.135,
-   "z": 0.097
+   "x": 0.043,
+   "y": 1.149,
+   "z": 0.144
   }
  },
  "lobulo-posterior-del-higado": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.105,
-   "y": 1.2,
-   "z": -0.099
+   "x": -0.091,
+   "y": 1.213,
+   "z": -0.045
   }
  },
  "lumbar": {
@@ -1579,8 +1579,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.075,
-   "z": -0.079
+   "y": 1.103,
+   "z": -0.04
   }
  },
  "lumbar-1": {
@@ -1588,8 +1588,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.124,
-   "z": -0.082
+   "y": 1.14,
+   "z": -0.041
   }
  },
  "lumbar-3": {
@@ -1597,17 +1597,17 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.068,
-   "z": -0.079
+   "y": 1.098,
+   "z": -0.041
   }
  },
  "lumbar-4": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.02,
-   "y": 1.04,
-   "z": -0.083
+   "x": -0.019,
+   "y": 1.074,
+   "z": -0.045
   }
  },
  "lumbar-5": {
@@ -1615,17 +1615,17 @@
   "view": "posterior",
   "pos": {
    "x": -0.02,
-   "y": 1.012,
-   "z": -0.087
+   "y": 1.04,
+   "z": -0.054
   }
  },
  "lunar": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.06,
-   "y": 1.34,
-   "z": -0.108
+   "x": -0.069,
+   "y": 1.35,
+   "z": -0.077
   }
  },
  "macula": {
@@ -1633,116 +1633,116 @@
   "view": "anterior",
   "pos": {
    "x": -0.026,
-   "y": 1.633,
-   "z": 0.079
+   "y": 1.635,
+   "z": 0.109
   }
  },
  "malar": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.05,
-   "y": 1.618,
-   "z": 0.07
+   "x": -0.055,
+   "y": 1.622,
+   "z": 0.128
   }
  },
  "maleolo-ext": {
   "region": "foot",
   "view": "lateral",
   "pos": {
-   "x": -0.152,
-   "y": 0.07,
-   "z": -0.03
+   "x": -0.222,
+   "y": 0.068,
+   "z": 0.015
   }
  },
  "maleolo-externo": {
   "region": "foot",
   "view": "lateral",
   "pos": {
-   "x": -0.152,
-   "y": 0.07,
-   "z": -0.03
+   "x": -0.222,
+   "y": 0.068,
+   "z": 0.015
   }
  },
  "maleolo-int": {
   "region": "foot",
   "view": "anterior",
   "pos": {
-   "x": -0.088,
-   "y": 0.078,
-   "z": 0
+   "x": -0.166,
+   "y": 0.076,
+   "z": 0.047
   }
  },
  "maleolo-interno": {
   "region": "foot",
   "view": "anterior",
   "pos": {
-   "x": -0.088,
-   "y": 0.078,
-   "z": 0
+   "x": -0.166,
+   "y": 0.076,
+   "z": 0.047
   }
  },
  "mama": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.085,
-   "y": 1.272,
-   "z": 0.106
+   "x": -0.059,
+   "y": 1.282,
+   "z": 0.157
   }
  },
  "mandibula": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.036,
-   "y": 1.542,
-   "z": 0.059
+   "x": -0.025,
+   "y": 1.538,
+   "z": 0.135
   }
  },
  "manubrio": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.016,
-   "y": 1.415,
-   "z": 0.065
+   "x": -0.015,
+   "y": 1.425,
+   "z": 0.085
   }
  },
  "manubrio-del-esternon": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.016,
-   "y": 1.415,
-   "z": 0.065
+   "x": -0.015,
+   "y": 1.425,
+   "z": 0.085
   }
  },
  "mastoides": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.065,
-   "y": 1.598,
-   "z": -0.035
+   "x": -0.066,
+   "y": 1.604,
+   "z": 0.033
   }
  },
  "maxilar-inferior": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.036,
-   "y": 1.542,
-   "z": 0.059
+   "x": -0.025,
+   "y": 1.538,
+   "z": 0.135
   }
  },
  "maxilar-superior": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.03,
-   "y": 1.588,
-   "z": 0.077
+   "x": -0.021,
+   "y": 1.596,
+   "z": 0.058
   }
  },
  "mediastino": {
@@ -1750,8 +1750,8 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.348,
-   "z": 0.099
+   "y": 1.358,
+   "z": 0.119
   }
  },
  "menton": {
@@ -1759,107 +1759,107 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.532,
-   "z": 0.08
+   "y": 1.522,
+   "z": 0.101
   }
  },
  "mesenterio": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.03,
-   "y": 1.062,
-   "z": 0.099
+   "x": -0.028,
+   "y": 1.093,
+   "z": 0.139
   }
  },
  "mordida": {
   "region": "leg",
   "view": "lateral",
   "pos": {
-   "x": -0.151,
-   "y": 0.348,
-   "z": -0.005
+   "x": -0.223,
+   "y": 0.357,
+   "z": 0.033
   }
  },
  "muneca": {
   "region": "forearm",
-  "view": "anterior",
+  "view": "inferior",
   "pos": {
-   "x": -0.371,
-   "y": 0.916,
-   "z": 0.033
+   "x": -0.483,
+   "y": 1.047,
+   "z": 0.189
   }
  },
  "munon": {
   "region": "thigh",
   "view": "lateral",
   "pos": {
-   "x": -0.158,
-   "y": 0.606,
-   "z": 0.002
+   "x": -0.193,
+   "y": 0.626,
+   "z": 0.03
   }
  },
  "nariz": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.011,
-   "y": 1.612,
-   "z": 0.082
+   "x": -0.012,
+   "y": 1.617,
+   "z": 0.151
   }
  },
  "nervio-femoral": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.081,
-   "y": 0.864,
-   "z": 0.084
+   "x": -0.115,
+   "y": 0.88,
+   "z": 0.118
   }
  },
  "nervio-inguinal": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.072,
-   "y": 0.898,
-   "z": 0.083
+   "x": -0.07,
+   "y": 0.91,
+   "z": 0.118
   }
  },
  "nervio-trigemino": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.06,
-   "y": 1.6,
-   "z": 0.045
+   "x": -0.064,
+   "y": 1.606,
+   "z": 0.108
   }
  },
  "nucleos-basales": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.074,
-   "y": 1.664,
-   "z": 0.01
+   "x": -0.07,
+   "y": 1.666,
+   "z": 0.071
   }
  },
  "nudo-braquial": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.062,
-   "y": 1.462,
-   "z": 0.039
+   "x": -0.043,
+   "y": 1.467,
+   "z": 0.059
   }
  },
  "nutricia": {
   "region": "leg",
   "view": "anterior",
   "pos": {
-   "x": -0.124,
-   "y": 0.36,
-   "z": 0.035
+   "x": -0.141,
+   "y": 0.371,
+   "z": 0.055
   }
  },
  "occipital": {
@@ -1867,26 +1867,26 @@
   "view": "posterior",
   "pos": {
    "x": -0.035,
-   "y": 1.66,
-   "z": -0.099
+   "y": 1.662,
+   "z": -0.041
   }
  },
  "oido": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.081,
-   "y": 1.615,
-   "z": -0.004
+   "x": -0.073,
+   "y": 1.62,
+   "z": 0.051
   }
  },
  "ojo": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.032,
-   "y": 1.637,
-   "z": 0.082
+   "x": -0.033,
+   "y": 1.639,
+   "z": 0.109
   }
  },
  "ombligo": {
@@ -1894,107 +1894,107 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.045,
-   "z": 0.101
+   "y": 1.08,
+   "z": 0.137
   }
  },
  "oreja": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.082,
-   "y": 1.638,
-   "z": -0.018
+   "x": -0.074,
+   "y": 1.64,
+   "z": 0.037
   }
  },
  "ovario": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.068,
-   "y": 0.922,
-   "z": 0.082
+   "x": -0.065,
+   "y": 0.936,
+   "z": 0.122
   }
  },
  "palma": {
   "region": "hand",
-  "view": "anterior",
+  "view": "inferior",
   "pos": {
-   "x": -0.396,
-   "y": 0.856,
-   "z": 0.035
+   "x": -0.505,
+   "y": 1.02,
+   "z": 0.237
   }
  },
  "pancreas": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.008,
-   "y": 1.115,
-   "z": 0.1
+   "x": 0.007,
+   "y": 1.133,
+   "z": 0.142
   }
  },
  "paratiroides": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.028,
-   "y": 1.468,
-   "z": 0.05
+   "x": -0.02,
+   "y": 1.472,
+   "z": 0.072
   }
  },
  "paravertebral": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.03,
-   "y": 1.22,
-   "z": -0.093
+   "x": -0.027,
+   "y": 1.234,
+   "z": -0.052
   }
  },
  "parietal": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.073,
-   "y": 1.705,
-   "z": -0.025
+   "x": -0.067,
+   "y": 1.706,
+   "z": 0.035
   }
  },
  "parotida": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.064,
-   "y": 1.585,
-   "z": 0.005
+   "x": -0.066,
+   "y": 1.593,
+   "z": 0.076
   }
  },
  "parpado": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.032,
-   "y": 1.645,
-   "z": 0.08
+   "x": -0.031,
+   "y": 1.647,
+   "z": 0.111
   }
  },
  "parrilla-costal-anterior": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.105,
-   "y": 1.188,
-   "z": 0.09
+   "x": -0.09,
+   "y": 1.2,
+   "z": 0.136
   }
  },
  "pectoral": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.11,
-   "y": 1.32,
-   "z": 0.1
+   "x": -0.133,
+   "y": 1.33,
+   "z": 0.123
   }
  },
  "pene": {
@@ -2002,71 +2002,71 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 0.842,
-   "z": 0.083
+   "y": 0.864,
+   "z": 0.103
   }
  },
  "pericardio": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.032,
-   "y": 1.285,
-   "z": 0.114
+   "x": 0.022,
+   "y": 1.295,
+   "z": 0.141
   }
  },
  "perihepatico": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.13,
-   "y": 1.165,
-   "z": 0.063
+   "x": -0.11,
+   "y": 1.176,
+   "z": 0.121
   }
  },
  "peripancreatico": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.03,
-   "y": 1.098,
-   "z": 0.098
+   "x": 0.027,
+   "y": 1.12,
+   "z": 0.141
   }
  },
  "perirrenal": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.085,
-   "y": 1.082,
-   "z": -0.083
+   "x": -0.078,
+   "y": 1.108,
+   "z": -0.031
   }
  },
  "peritoneo": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.08,
-   "y": 1.015,
-   "z": 0.084
+   "x": -0.079,
+   "y": 1.044,
+   "z": 0.128
   }
  },
  "perone": {
   "region": "leg",
   "view": "lateral",
   "pos": {
-   "x": -0.151,
-   "y": 0.32,
-   "z": -0.007
+   "x": -0.224,
+   "y": 0.327,
+   "z": 0.032
   }
  },
  "piloro": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.025,
-   "y": 1.135,
-   "z": 0.101
+   "x": -0.021,
+   "y": 1.149,
+   "z": 0.144
   }
  },
  "pineal": {
@@ -2074,98 +2074,98 @@
   "view": "superior",
   "pos": {
    "x": 0,
-   "y": 1.751,
-   "z": 0
+   "y": 1.75,
+   "z": 0.06
   }
  },
  "piso-orbital": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.033,
-   "y": 1.624,
-   "z": 0.075
+   "x": -0.036,
+   "y": 1.627,
+   "z": 0.114
   }
  },
  "planta-del-pie": {
   "region": "foot",
   "view": "inferior",
   "pos": {
-   "x": -0.128,
-   "y": 0,
-   "z": 0.08
+   "x": -0.178,
+   "y": 0.003,
+   "z": 0.127
   }
  },
  "pleura": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.13,
-   "y": 1.25,
-   "z": 0.079
+   "x": -0.121,
+   "y": 1.262,
+   "z": 0.139
   }
  },
  "plexo-cervical": {
   "region": "neck",
   "view": "lateral",
   "pos": {
-   "x": -0.096,
-   "y": 1.508,
-   "z": -0.012
+   "x": -0.055,
+   "y": 1.503,
+   "z": 0.035
   }
  },
  "plexo-lumbar": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.038,
-   "y": 1.055,
-   "z": -0.086
+   "x": -0.036,
+   "y": 1.088,
+   "z": -0.043
   }
  },
  "pliegue-inguinal": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.082,
-   "y": 0.855,
-   "z": 0.084
+   "x": -0.084,
+   "y": 0.872,
+   "z": 0.12
   }
  },
  "poligono-de-willis": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.071,
-   "y": 1.652,
-   "z": 0.022
+   "x": -0.068,
+   "y": 1.654,
+   "z": 0.081
   }
  },
  "polo": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.034,
-   "y": 1.712,
-   "z": 0.066
+   "x": -0.031,
+   "y": 1.713,
+   "z": 0.124
   }
  },
  "pomulo": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.045,
-   "y": 1.6,
-   "z": 0.068
+   "x": -0.048,
+   "y": 1.606,
+   "z": 0.134
   }
  },
  "popliteo": {
   "region": "knee",
   "view": "posterior",
   "pos": {
-   "x": -0.1,
-   "y": 0.49,
-   "z": -0.045
+   "x": -0.148,
+   "y": 0.511,
+   "z": -0.023
   }
  },
  "pospineal": {
@@ -2173,8 +2173,8 @@
   "view": "superior",
   "pos": {
    "x": 0,
-   "y": 1.746,
-   "z": -0.045
+   "y": 1.745,
+   "z": 0.015
   }
  },
  "postpineal": {
@@ -2182,17 +2182,17 @@
   "view": "superior",
   "pos": {
    "x": 0,
-   "y": 1.746,
-   "z": -0.045
+   "y": 1.745,
+   "z": 0.015
   }
  },
  "preauricular": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.067,
-   "y": 1.615,
-   "z": 0.012
+   "x": -0.072,
+   "y": 1.62,
+   "z": 0.067
   }
  },
  "prepineal": {
@@ -2201,16 +2201,16 @@
   "pos": {
    "x": 0,
    "y": 1.74,
-   "z": 0.04
+   "z": 0.101
   }
  },
  "primera-costilla": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.05,
-   "y": 1.432,
-   "z": 0.054
+   "x": -0.043,
+   "y": 1.442,
+   "z": 0.069
   }
  },
  "primera-lumbar": {
@@ -2218,8 +2218,8 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.124,
-   "z": -0.082
+   "y": 1.14,
+   "z": -0.041
   }
  },
  "prostata": {
@@ -2227,71 +2227,71 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 0.862,
-   "z": 0.085
+   "y": 0.877,
+   "z": 0.111
   }
  },
  "pudendo": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.042,
-   "y": 0.838,
-   "z": 0.086
+   "x": -0.044,
+   "y": 0.862,
+   "z": 0.103
   }
  },
  "pulmon": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.085,
-   "y": 1.355,
-   "z": 0.095
+   "x": -0.093,
+   "y": 1.365,
+   "z": 0.115
   }
  },
  "punta-de-pancreas": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.095,
-   "y": 1.13,
-   "z": 0.081
+   "x": 0.082,
+   "y": 1.145,
+   "z": 0.134
   }
  },
  "punta-del-corazon": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.088,
-   "y": 1.245,
-   "z": 0.105
+   "x": 0.081,
+   "y": 1.257,
+   "z": 0.154
   }
  },
  "quemadura": {
   "region": "forearm",
-  "view": "anterior",
+  "view": "lateral",
   "pos": {
-   "x": -0.326,
-   "y": 1.008,
-   "z": 0.037
+   "x": -0.469,
+   "y": 1.122,
+   "z": 0.125
   }
  },
  "quiasma": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.056,
-   "y": 1.645,
-   "z": 0.058
+   "x": -0.061,
+   "y": 1.647,
+   "z": 0.116
   }
  },
  "quiasma-optico": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.056,
-   "y": 1.645,
-   "z": 0.058
+   "x": -0.061,
+   "y": 1.647,
+   "z": 0.116
   }
  },
  "quinta-lumbar": {
@@ -2299,35 +2299,35 @@
   "view": "posterior",
   "pos": {
    "x": -0.02,
-   "y": 1.012,
-   "z": -0.087
+   "y": 1.04,
+   "z": -0.054
   }
  },
  "radio": {
   "region": "forearm",
-  "view": "anterior",
+  "view": "lateral",
   "pos": {
-   "x": -0.329,
-   "y": 1.031,
-   "z": 0.035
+   "x": -0.453,
+   "y": 1.141,
+   "z": 0.099
   }
  },
  "rama-isquiatica": {
   "region": "gluteal",
   "view": "posterior",
   "pos": {
-   "x": -0.038,
-   "y": 0.815,
-   "z": -0.115
+   "x": -0.041,
+   "y": 0.847,
+   "z": -0.064
   }
  },
  "rama-mandibular": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.059,
-   "y": 1.565,
-   "z": 0.012
+   "x": -0.062,
+   "y": 1.574,
+   "z": 0.08
   }
  },
  "recto": {
@@ -2335,107 +2335,107 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 0.878,
-   "z": -0.12
+   "y": 0.888,
+   "z": -0.061
   }
  },
  "retro-axilar": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.145,
-   "y": 1.31,
-   "z": -0.084
+   "x": -0.179,
+   "y": 1.32,
+   "z": -0.029
   }
  },
  "retro-tensor-de-la-fascia-lata": {
   "region": "thigh",
   "view": "posterior",
   "pos": {
-   "x": -0.14,
-   "y": 0.81,
-   "z": -0.083
+   "x": -0.153,
+   "y": 0.844,
+   "z": -0.041
   }
  },
  "retroaxilar": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.145,
-   "y": 1.31,
-   "z": -0.084
+   "x": -0.179,
+   "y": 1.32,
+   "z": -0.029
   }
  },
  "retrohepatico": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.095,
-   "y": 1.17,
-   "z": -0.092
+   "x": -0.081,
+   "y": 1.181,
+   "z": -0.042
   }
  },
  "retromastoides": {
   "region": "head",
   "view": "posterior",
   "pos": {
-   "x": -0.055,
-   "y": 1.603,
-   "z": -0.062
+   "x": -0.059,
+   "y": 1.609,
+   "z": 0.006
   }
  },
  "retroplantar": {
   "region": "foot",
   "view": "inferior",
   "pos": {
-   "x": -0.116,
-   "y": 0.002,
-   "z": -0.035
+   "x": -0.19,
+   "y": 0,
+   "z": -0.001
   }
  },
  "retrotensor-de-la-fascia-lata": {
   "region": "thigh",
   "view": "posterior",
   "pos": {
-   "x": -0.14,
-   "y": 0.81,
-   "z": -0.083
+   "x": -0.153,
+   "y": 0.844,
+   "z": -0.041
   }
  },
  "retrotensor-de-las-fascia-lata": {
   "region": "thigh",
   "view": "posterior",
   "pos": {
-   "x": -0.14,
-   "y": 0.81,
-   "z": -0.083
+   "x": -0.153,
+   "y": 0.844,
+   "z": -0.041
   }
  },
  "rinon": {
   "region": "lower-back",
   "view": "posterior",
   "pos": {
-   "x": -0.06,
-   "y": 1.1,
-   "z": -0.09
+   "x": -0.056,
+   "y": 1.118,
+   "z": -0.038
   }
  },
  "rodilla": {
   "region": "knee",
   "view": "lateral",
   "pos": {
-   "x": -0.149,
-   "y": 0.495,
-   "z": 0.014
+   "x": -0.193,
+   "y": 0.516,
+   "z": 0.049
   }
  },
  "rotula": {
   "region": "knee",
   "view": "anterior",
   "pos": {
-   "x": -0.1,
-   "y": 0.504,
-   "z": 0.065
+   "x": -0.148,
+   "y": 0.525,
+   "z": 0.099
   }
  },
  "saco-de-douglas": {
@@ -2443,8 +2443,8 @@
   "view": "anterior",
   "pos": {
    "x": -0.02,
-   "y": 0.885,
-   "z": 0.086
+   "y": 0.896,
+   "z": 0.119
   }
  },
  "sacro": {
@@ -2452,89 +2452,89 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 0.955,
-   "z": -0.106
+   "y": 0.972,
+   "z": -0.075
   }
  },
  "seno-auriculo-ventricular": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.012,
-   "y": 1.268,
-   "z": 0.119
+   "x": 0.008,
+   "y": 1.278,
+   "z": 0.141
   }
  },
  "seno-auriculoventricular": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.012,
-   "y": 1.268,
-   "z": 0.119
+   "x": 0.008,
+   "y": 1.278,
+   "z": 0.141
   }
  },
  "seno-frontal": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.02,
-   "y": 1.68,
-   "z": 0.084
+   "x": -0.019,
+   "y": 1.681,
+   "z": 0.146
   }
  },
  "seno-nasal": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.025,
-   "y": 1.607,
-   "z": 0.079
+   "x": -0.027,
+   "y": 1.612,
+   "z": 0.141
   }
  },
  "seno-paranasal": {
   "region": "face",
   "view": "anterior",
   "pos": {
-   "x": -0.025,
-   "y": 1.607,
-   "z": 0.079
+   "x": -0.027,
+   "y": 1.612,
+   "z": 0.141
   }
  },
  "sien": {
   "region": "face",
   "view": "lateral",
   "pos": {
-   "x": -0.063,
-   "y": 1.66,
-   "z": 0.05
+   "x": -0.061,
+   "y": 1.662,
+   "z": 0.112
   }
  },
  "sigmoides": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": 0.078,
-   "y": 0.958,
-   "z": 0.079
+   "x": 0.074,
+   "y": 0.976,
+   "z": 0.124
   }
  },
  "subclavia": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.085,
-   "y": 1.418,
-   "z": 0.052
+   "x": -0.08,
+   "y": 1.428,
+   "z": 0.071
   }
  },
  "subdiafragma": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.058,
-   "y": 1.15,
-   "z": 0.099
+   "x": -0.049,
+   "y": 1.16,
+   "z": 0.144
   }
  },
  "suelo-pelvico": {
@@ -2542,8 +2542,8 @@
   "view": "inferior",
   "pos": {
    "x": -0.006,
-   "y": 0.735,
-   "z": -0.025
+   "y": 0.834,
+   "z": 0.023
   }
  },
  "supraciliar": {
@@ -2551,53 +2551,53 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.678,
-   "z": 0.087
+   "y": 1.679,
+   "z": 0.149
   }
  },
  "supraespinoso": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.1,
-   "y": 1.405,
-   "z": -0.086
+   "x": -0.098,
+   "y": 1.415,
+   "z": -0.071
   }
  },
  "suprahepatico": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": -0.075,
-   "y": 1.205,
-   "z": 0.106
+   "x": -0.065,
+   "y": 1.218,
+   "z": 0.144
   }
  },
  "suprapubico": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.034,
-   "y": 0.893,
-   "z": 0.085
+   "x": -0.033,
+   "y": 0.905,
+   "z": 0.121
   }
  },
  "suprarrenal": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.06,
-   "y": 1.148,
-   "z": -0.092
+   "x": -0.049,
+   "y": 1.173,
+   "z": -0.046
   }
  },
  "suprarrenales": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.06,
-   "y": 1.148,
-   "z": -0.092
+   "x": -0.049,
+   "y": 1.173,
+   "z": -0.046
   }
  },
  "suprasensorial": {
@@ -2605,17 +2605,17 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.705,
-   "z": 0.078
+   "y": 1.706,
+   "z": 0.137
   }
  },
  "talamo": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.073,
-   "y": 1.655,
-   "z": -0.03
+   "x": -0.074,
+   "y": 1.657,
+   "z": 0.029
   }
  },
  "tallo-cerebral": {
@@ -2623,26 +2623,26 @@
   "view": "internal",
   "pos": {
    "x": 0,
-   "y": 1.6,
-   "z": -0.03
+   "y": 1.606,
+   "z": 0.032
   }
  },
  "talon": {
   "region": "foot",
   "view": "posterior",
   "pos": {
-   "x": -0.114,
-   "y": 0.035,
-   "z": -0.075
+   "x": -0.188,
+   "y": 0.036,
+   "z": -0.028
   }
  },
  "tarso": {
   "region": "foot",
   "view": "superior",
   "pos": {
-   "x": -0.118,
-   "y": 0.075,
-   "z": 0.025
+   "x": -0.183,
+   "y": 0.088,
+   "z": 0.07
   }
  },
  "tempor-occipital": {
@@ -2650,17 +2650,17 @@
   "view": "lateral",
   "pos": {
    "x": -0.064,
-   "y": 1.655,
-   "z": -0.065
+   "y": 1.657,
+   "z": -0.007
   }
  },
  "temporal": {
   "region": "head",
   "view": "lateral",
   "pos": {
-   "x": -0.076,
-   "y": 1.668,
-   "z": -0.002
+   "x": -0.073,
+   "y": 1.669,
+   "z": 0.058
   }
  },
  "temporoccipital": {
@@ -2668,53 +2668,53 @@
   "view": "lateral",
   "pos": {
    "x": -0.064,
-   "y": 1.655,
-   "z": -0.065
+   "y": 1.657,
+   "z": -0.007
   }
  },
  "tendon": {
   "region": "forearm",
   "view": "lateral",
   "pos": {
-   "x": -0.319,
-   "y": 1.109,
-   "z": -0.004
+   "x": -0.409,
+   "y": 1.188,
+   "z": 0.039
   }
  },
  "tendon-del-cuadriceps": {
   "region": "knee",
   "view": "anterior",
   "pos": {
-   "x": -0.1,
-   "y": 0.555,
-   "z": 0.061
+   "x": -0.148,
+   "y": 0.576,
+   "z": 0.106
   }
  },
  "tendon-del-triceps": {
   "region": "arm",
   "view": "posterior",
   "pos": {
-   "x": -0.257,
-   "y": 1.159,
-   "z": -0.042
+   "x": -0.341,
+   "y": 1.22,
+   "z": -0.017
   }
  },
  "tensor-de-la-fascia-lata": {
   "region": "thigh",
   "view": "lateral",
   "pos": {
-   "x": -0.167,
-   "y": 0.835,
-   "z": 0.03
+   "x": -0.18,
+   "y": 0.86,
+   "z": 0.063
   }
  },
  "tensor-de-las-fascia-lata": {
   "region": "thigh",
   "view": "lateral",
   "pos": {
-   "x": -0.167,
-   "y": 0.835,
-   "z": 0.03
+   "x": -0.18,
+   "y": 0.86,
+   "z": 0.063
   }
  },
  "tercera-lumbar": {
@@ -2722,26 +2722,26 @@
   "view": "posterior",
   "pos": {
    "x": 0,
-   "y": 1.068,
-   "z": -0.079
+   "y": 1.098,
+   "z": -0.041
   }
  },
  "testiculo": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.03,
-   "y": 0.818,
-   "z": 0.081
+   "x": -0.032,
+   "y": 0.849,
+   "z": 0.089
   }
  },
  "tibia": {
   "region": "leg",
   "view": "anterior",
   "pos": {
-   "x": -0.113,
-   "y": 0.308,
-   "z": 0.033
+   "x": -0.158,
+   "y": 0.313,
+   "z": 0.057
   }
  },
  "timo": {
@@ -2749,26 +2749,26 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.39,
-   "z": 0.079
+   "y": 1.4,
+   "z": 0.1
   }
  },
  "tiroides": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.017,
-   "y": 1.476,
-   "z": 0.047
+   "x": -0.012,
+   "y": 1.478,
+   "z": 0.075
   }
  },
  "tobillo": {
   "region": "foot",
   "view": "anterior",
   "pos": {
-   "x": -0.113,
-   "y": 0.085,
-   "z": 0.013
+   "x": -0.187,
+   "y": 0.081,
+   "z": 0.076
   }
  },
  "todo-el-frente": {
@@ -2776,26 +2776,26 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 1.21,
-   "z": 0.119
+   "y": 1.223,
+   "z": 0.146
   }
  },
  "trapecio": {
   "region": "upper-back",
   "view": "posterior",
   "pos": {
-   "x": -0.07,
-   "y": 1.452,
-   "z": -0.085
+   "x": -0.049,
+   "y": 1.459,
+   "z": -0.044
   }
  },
  "traquea": {
   "region": "neck",
   "view": "anterior",
   "pos": {
-   "x": -0.013,
-   "y": 1.458,
-   "z": 0.059
+   "x": -0.009,
+   "y": 1.464,
+   "z": 0.073
   }
  },
  "trocanter-mayor": {
@@ -2803,35 +2803,35 @@
   "view": "lateral",
   "pos": {
    "x": -0.18,
-   "y": 0.87,
-   "z": -0.012
+   "y": 0.882,
+   "z": 0.032
   }
  },
  "trocanter-menor": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.124,
-   "y": 0.822,
-   "z": 0.073
+   "x": -0.074,
+   "y": 0.839,
+   "z": 0.119
   }
  },
  "trompa-de-falopio": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.088,
-   "y": 0.935,
-   "z": 0.079
+   "x": -0.083,
+   "y": 0.95,
+   "z": 0.119
   }
  },
  "tunel-carpiano": {
   "region": "hand",
-  "view": "anterior",
+  "view": "inferior",
   "pos": {
-   "x": -0.382,
-   "y": 0.891,
-   "z": 0.034
+   "x": -0.493,
+   "y": 1.025,
+   "z": 0.21
   }
  },
  "ureter": {
@@ -2839,8 +2839,8 @@
   "view": "anterior",
   "pos": {
    "x": -0.052,
-   "y": 0.99,
-   "z": 0.089
+   "y": 1.014,
+   "z": 0.136
   }
  },
  "uretero": {
@@ -2848,8 +2848,8 @@
   "view": "anterior",
   "pos": {
    "x": -0.052,
-   "y": 0.99,
-   "z": 0.089
+   "y": 1.014,
+   "z": 0.136
   }
  },
  "uretra": {
@@ -2857,8 +2857,8 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 0.855,
-   "z": 0.085
+   "y": 0.872,
+   "z": 0.109
   }
  },
  "utero": {
@@ -2866,35 +2866,35 @@
   "view": "anterior",
   "pos": {
    "x": 0,
-   "y": 0.93,
-   "z": 0.084
+   "y": 0.945,
+   "z": 0.13
   }
  },
  "vacuna": {
   "region": "arm",
   "view": "lateral",
   "pos": {
-   "x": 0.248,
-   "y": 1.301,
-   "z": -0.01
+   "x": 0.285,
+   "y": 1.328,
+   "z": 0.048
   }
  },
  "vagina": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.012,
-   "y": 0.83,
-   "z": 0.081
+   "x": -0.013,
+   "y": 0.857,
+   "z": 0.095
   }
  },
  "vago": {
   "region": "neck",
   "view": "lateral",
   "pos": {
-   "x": -0.064,
-   "y": 1.53,
-   "z": 0.002
+   "x": -0.051,
+   "y": 1.52,
+   "z": 0.039
   }
  },
  "valvula-ileocecal": {
@@ -2902,8 +2902,8 @@
   "view": "anterior",
   "pos": {
    "x": -0.085,
-   "y": 0.99,
-   "z": 0.078
+   "y": 1.014,
+   "z": 0.125
   }
  },
  "variable": {
@@ -2911,89 +2911,89 @@
   "view": "internal",
   "pos": {
    "x": 0,
-   "y": 1.1,
-   "z": 0
+   "y": 1.122,
+   "z": 0.041
   }
  },
  "vejiga": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.022,
-   "y": 0.91,
-   "z": 0.084
+   "x": -0.021,
+   "y": 0.923,
+   "z": 0.127
   }
  },
  "vejiga-urinaria": {
   "region": "pelvis",
   "view": "anterior",
   "pos": {
-   "x": -0.022,
-   "y": 0.91,
-   "z": 0.084
+   "x": -0.021,
+   "y": 0.923,
+   "z": 0.127
   }
  },
  "vena-femoral": {
   "region": "thigh",
   "view": "anterior",
   "pos": {
-   "x": -0.112,
-   "y": 0.847,
-   "z": 0.078
+   "x": -0.081,
+   "y": 0.872,
+   "z": 0.119
   }
  },
  "vena-porta": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.035,
-   "y": 1.15,
-   "z": 0.103
+   "x": -0.03,
+   "y": 1.16,
+   "z": 0.145
   }
  },
  "vena-pulmonar": {
   "region": "thorax",
   "view": "anterior",
   "pos": {
-   "x": 0.022,
-   "y": 1.325,
-   "z": 0.109
+   "x": 0.026,
+   "y": 1.335,
+   "z": 0.13
   }
  },
  "verruga": {
   "region": "hand",
-  "view": "posterior",
+  "view": "lateral",
   "pos": {
-   "x": -0.388,
-   "y": 0.875,
-   "z": -0.002
+   "x": -0.524,
+   "y": 1.046,
+   "z": 0.218
   }
  },
  "vesicula": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.082,
-   "y": 1.128,
-   "z": 0.087
+   "x": -0.07,
+   "y": 1.143,
+   "z": 0.138
   }
  },
  "vesicula-biliar": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": -0.082,
-   "y": 1.128,
-   "z": 0.087
+   "x": -0.07,
+   "y": 1.143,
+   "z": 0.138
   }
  },
  "yeyuno": {
   "region": "abdomen",
   "view": "anterior",
   "pos": {
-   "x": 0.055,
-   "y": 1.07,
-   "z": 0.094
+   "x": 0.052,
+   "y": 1.099,
+   "z": 0.135
   }
  },
  "subpoints": {
@@ -3001,9 +3001,9 @@
    "region": "abdomen",
    "view": "anterior",
    "pos": {
-    "x": -0.018,
-    "y": 1.112,
-    "z": 0.099
+    "x": -0.016,
+    "y": 1.131,
+    "z": 0.142
    },
    "of": "pancreas"
   },
@@ -3011,9 +3011,9 @@
    "region": "abdomen",
    "view": "anterior",
    "pos": {
-    "x": 0.03,
-    "y": 1.118,
-    "z": 0.098
+    "x": 0.026,
+    "y": 1.136,
+    "z": 0.143
    },
    "of": "pancreas"
   },
@@ -3021,9 +3021,9 @@
    "region": "abdomen",
    "view": "anterior",
    "pos": {
-    "x": 0.066,
-    "y": 1.125,
-    "z": 0.091
+    "x": 0.057,
+    "y": 1.141,
+    "z": 0.141
    },
    "of": "pancreas"
   },
@@ -3031,9 +3031,9 @@
    "region": "abdomen",
    "view": "anterior",
    "pos": {
-    "x": 0.095,
-    "y": 1.13,
-    "z": 0.081
+    "x": 0.082,
+    "y": 1.145,
+    "z": 0.134
    },
    "of": "pancreas"
   }

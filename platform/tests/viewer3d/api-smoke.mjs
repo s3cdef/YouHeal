@@ -22,6 +22,7 @@ try {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404/.test(m.text())) errors.push(m.text()); });
+  // (the procedural-fallback check intentionally triggers a 404 + console.warn)
   await page.goto(`http://127.0.0.1:${port}/viewer-demo.html?protocol=0`);
   await page.waitForFunction(() => document.documentElement.dataset.viewerReady === '1', null, { timeout: 120000 });
   // Build a second viewer in a fresh container through the public API.
@@ -35,12 +36,15 @@ try {
     const regions = await fetch('catalog-data/regions.json').then((r) => r.json());
     const { createBodyViewer } = await import('/js/viewer3d/viewer.js');
     window.__events = [];
+    const t0 = performance.now();
     window.__v = await createBodyViewer(host, {
       points, regions, locale: 'en',
       onPointClick: (e) => window.__events.push(['point', e]),
       onRegionClick: (e) => window.__events.push(['region', e]),
       onHover: (e) => window.__events.push(['hover', e]),
     });
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    window.__firstRenderMs = performance.now() - t0;
     window.__screen = (key) => {
       const v = window.__v, { camera } = v._debug;
       const inst = v._debug.instances().find((i) => i.key === key);
@@ -51,7 +55,48 @@ try {
   });
   const wait = (ms) => page.waitForTimeout(ms);
 
-  await check('renderer is webgl', async () => assert.equal(await page.evaluate(() => window.__v.renderer), 'webgl'));
+  await check('renderer is webgl with the MakeHuman body', async () => {
+    assert.equal(await page.evaluate(() => window.__v.renderer), 'webgl');
+    assert.equal(await page.evaluate(() => window.__v._debug.model.kind), 'makehuman');
+  });
+  await check('first render ≤ 1.5 s (second viewer, fresh worker)', async () => {
+    const ms = await page.evaluate(() => window.__firstRenderMs);
+    console.log(`     first render: ${ms.toFixed(0)} ms`);
+    assert.ok(ms <= 1500, `${ms.toFixed(0)} ms`);
+  });
+  await check('cold first render ≤ 1.5 s (new page, nothing cached)', async () => {
+    const p2 = await browser.newPage({ viewport: { width: 700, height: 800 } });
+    await p2.goto(`http://127.0.0.1:${port}/viewer-demo.html?protocol=0&points=0`);
+    await p2.waitForFunction(() => document.documentElement.dataset.viewerReady === '1', null, { timeout: 120000 });
+    const ms = await p2.evaluate(async () => {
+      const host = document.createElement('div');
+      host.style.width = '600px'; host.style.height = '700px';
+      document.body.appendChild(host);
+      const { createBodyViewer } = await import('/js/viewer3d/viewer.js');
+      const t0 = performance.now();
+      const v = await createBodyViewer(host, { points: [], sex: 'female' });
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      const dt = performance.now() - t0;
+      v.dispose();
+      return dt;
+    });
+    console.log(`     cold first render (female preset, uncached): ${ms.toFixed(0)} ms`);
+    await p2.close();
+    assert.ok(ms <= 1500, `${ms.toFixed(0)} ms`);
+  });
+  await check('procedural fallback when the asset is missing', async () => {
+    const kind = await page.evaluate(async () => {
+      const host = document.createElement('div');
+      host.style.width = '300px'; host.style.height = '400px';
+      document.body.appendChild(host);
+      const { createBodyViewer } = await import('/js/viewer3d/viewer.js');
+      const v = await createBodyViewer(host, { points: [], modelsUrl: '/assets/does-not-exist/' });
+      const k = v._debug.model.kind;
+      v.dispose(); host.remove();
+      return k;
+    });
+    assert.equal(kind, 'procedural');
+  });
   await check('setView posterior moves camera behind', async () => {
     await page.evaluate(() => window.__v.setView('posterior'));
     await wait(1200);

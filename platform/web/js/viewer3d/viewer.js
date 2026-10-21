@@ -42,6 +42,8 @@ import { buildInstances, localName, sideLabel, uiText, PAIR_COLORS, DEFAULT_POLA
  * @property {(e:{pointId:string|null, side:'R'|'L'|'C'|null})=>void} [onHover]
  * @property {object} [model]            a BodyModel (see body-model.js) to use instead of the procedural mannequin
  * @property {boolean} [forceFallback]   render the 2D SVG fallback even if WebGL works
+ * @property {'auto'|'procedural'} [bodySource] 'auto' (default): MakeHuman asset, procedural fallback
+ * @property {string} [modelsUrl]        base URL of the body assets (default: /assets/models/ next to this module tree)
  * @property {Record<string,string>} [pairColors] colours per pair state
  */
 
@@ -140,10 +142,10 @@ export async function createBodyViewer(container, opts = {}) {
   renderer.toneMappingExposure = 1.0;
   renderer.setClearColor(0x000000, 0);
   const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environment = envTex;
-  scene.environmentIntensity = 0.35;
+  // start loading the body (worker) before any GPU work so both overlap
+  const modelP = opts.model ? Promise.resolve(opts.model) : createBodyModel({ sex: opts.sex || 'neutral', tone: opts.skinTone || 'medium', source: opts.bodySource, modelsUrl: opts.modelsUrl });
+  // image-based ambient light is generated after the first frame (it is costly on software GL)
+  let pmrem = null, envTex = null;
 
   const camera = new THREE.PerspectiveCamera(28, 1, 0.05, 30);
   scene.add(camera);
@@ -171,7 +173,7 @@ export async function createBodyViewer(container, opts = {}) {
   controls.target.copy(BODY_CENTER);
 
   // ---------------------------------------------------------------- model
-  const model = opts.model || await createBodyModel({ sex: opts.sex || 'neutral', tone: opts.skinTone || 'medium' });
+  const model = await modelP;
   scene.add(model.object3d);
   loading.remove();
 
@@ -431,7 +433,7 @@ export async function createBodyViewer(container, opts = {}) {
     const lateral = Math.abs(dir.x) > 0.7;
     const top = dir.y > 0.7;
     const needH = top ? 0.75 : 1.9;
-    const needW = top ? 1.15 : lateral ? 0.6 : 1.12;
+    const needW = top ? 1.2 : lateral ? 0.7 : 1.22;
     const hfov = 2 * Math.atan(Math.tan(vfov / 2) * aspect);
     return Math.max(needH / 2 / Math.tan(vfov / 2), needW / 2 / Math.tan(hfov / 2)) + 0.25;
   }
@@ -727,6 +729,15 @@ export async function createBodyViewer(container, opts = {}) {
     camera.position.copy(pos); controls.target.copy(target); controls.update();
   }
   requestRender();
+  // soft image-based ambient (room environment) once the first frame is on screen
+  const envTimer = setTimeout(() => {
+    if (disposed) return;
+    pmrem = new THREE.PMREMGenerator(renderer);
+    envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = envTex;
+    scene.environmentIntensity = 0.35;
+    requestRender();
+  }, 60);
 
   // ---------------------------------------------------------------- public API
   /** @type {BodyViewer} */
@@ -799,6 +810,7 @@ export async function createBodyViewer(container, opts = {}) {
       if (disposed) return;
       disposed = true;
       cancelAnimationFrame(raf);
+      clearTimeout(envTimer);
       ro?.disconnect();
       reduceMotionMQ?.removeEventListener?.('change', onMotionChange);
       canvas.removeEventListener('pointermove', onPointerMove);
@@ -815,7 +827,7 @@ export async function createBodyViewer(container, opts = {}) {
       rimGeo.dispose(); coreGeo.dispose(); rimMat.dispose(); coreMat.dispose(); ringTex.dispose();
       internalGroup.children.forEach((s) => s.material.dispose());
       if (!opts.model) model.dispose();
-      envTex.dispose(); pmrem.dispose();
+      envTex?.dispose(); pmrem?.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       canvas.remove(); overlay.remove(); list.remove(); live.remove(); loading.remove();

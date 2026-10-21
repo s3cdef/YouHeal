@@ -87,6 +87,7 @@ async function mount() {
     sex: state.sex,
     skinTone: state.tone,
     forceFallback: state.fallback,
+    bodySource: qs.get('body') || undefined,
     onPointClick: (e) => { log.textContent = `pointClick\n${JSON.stringify(e, null, 1)}`; viewer.highlight([e.pointId], { pulse: true }); },
     onRegionClick: (e) => { log.textContent = `regionClick\n${JSON.stringify(e, null, 1)}`; },
     onHover: () => {},

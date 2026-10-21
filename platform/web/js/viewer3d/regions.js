@@ -19,16 +19,18 @@ function segDist(p, a, b) {
   return Math.hypot(px - bx * t, py - by * t, pz - bz * t);
 }
 
-/** Default skeleton landmarks (patient LEFT side) matching body-sdf.js neutral. */
+/** Default skeleton landmarks (patient LEFT side): MakeHuman neutral preset. */
 export const DEFAULT_SKELETON = {
-  shoulderJ: [0.17, 1.405, -0.012], elbow: [0.267, 1.132, -0.006], wrist: [0.375, 0.907, 0.014],
-  fingertip: [0.439, 0.747, 0.036], hipJ: [0.088, 0.905, -0.004], knee: [0.1, 0.49, 0.004], ankle: [0.112, 0.085, -0.022],
+  shoulderJ: [0.189, 1.3906, 0.0206], elbow: [0.3577, 1.2008, 0.0212], wrist: [0.4868, 1.0688, 0.1943],
+  knuckle: [0.5401, 0.9884, 0.2952], fingertip: [0.5426, 0.9426, 0.3284],
+  hipJ: [0.1056, 0.9215, 0.0047], knee: [0.1479, 0.5113, 0.0394], ankle: [0.1882, 0.0715, 0.0223], trunkZ: 0.05,
 };
 
 /**
- * Resolve the clinical body zone for a surface point.
+ * Resolve the clinical body zone for a surface point. Thresholds are relative
+ * to the skeleton landmarks, so any body normalised to the CONTRACT frame works.
  * @param {number[]} p [x,y,z] in the CONTRACT frame
- * @param {object} [sk] skeleton landmarks (patient LEFT side)
+ * @param {object} [sk] skeleton landmarks (patient LEFT side) + trunkZ (trunk depth centre)
  * @returns {{regionId:string, side:'R'|'L'|'C'}}
  */
 export function regionAt(p, sk = DEFAULT_SKELETON) {
@@ -36,32 +38,38 @@ export function regionAt(p, sk = DEFAULT_SKELETON) {
   const ax = Math.abs(x);
   const side = x > 0.025 ? 'L' : x < -0.025 ? 'R' : 'C';
   const q = [ax, y, z];
+  const hipY = sk.hipJ[1], kneeY = sk.knee[1], ankleY = sk.ankle[1];
+  const trunkZ = sk.trunkZ ?? 0.005;
   // upper limb
-  if (ax > 0.13 && y < 1.44 && y > 0.6) {
+  if (ax > 0.13 && y < sk.shoulderJ[1] + 0.05 && y > 0.6) {
     const du = segDist(q, sk.shoulderJ, sk.elbow);
     const df = segDist(q, sk.elbow, sk.wrist);
     const dh = segDist(q, sk.wrist, sk.fingertip);
     const m = Math.min(du, df, dh);
-    const torsoHalf = y > 1.15 ? 0.17 : 0.16;
-    if (m < 0.075 && (ax > torsoHalf || y < 1.0)) {
+    const torsoHalf = sk.shoulderJ[0] - 0.01;
+    if (m < 0.075 && (ax > torsoHalf || y < hipY + 0.08)) {
       const id = m === dh ? 'hand' : m === df ? 'forearm' : 'arm';
       return { regionId: id, side: side === 'C' ? 'L' : side };
     }
   }
   // head & neck
-  if (y > 1.585) return { regionId: z > 0.035 && y < 1.70 && ax < 0.07 ? 'face' : 'head', side };
-  if (y > 1.515) return { regionId: z > 0.02 ? 'face' : 'neck', side };
-  if (y > 1.45 && ax < 0.09) return { regionId: 'neck', side };
+  if (y > 1.585) return { regionId: z > trunkZ + 0.03 && y < 1.70 && ax < 0.07 ? 'face' : 'head', side };
+  if (y > 1.515) return { regionId: z > trunkZ + 0.015 ? 'face' : 'neck', side };
+  if (y > sk.shoulderJ[1] + 0.05 && ax < 0.09) return { regionId: 'neck', side };
   // lower limb
   const legSide = side === 'C' ? (x >= 0 ? 'L' : 'R') : side;
-  if (y < 0.115) return { regionId: 'foot', side: legSide };
-  if (y < 0.43) return { regionId: 'leg', side: legSide };
-  if (y < 0.56) return { regionId: 'knee', side: legSide };
-  if (y < 0.80 || (y < 0.86 && ax > 0.05 && z > -0.04) || (y < 0.84 && ax > 0.03)) return { regionId: 'thigh', side: legSide };
+  const back = z < trunkZ - 0.02;
+  if (y < ankleY + 0.04) return { regionId: 'foot', side: legSide };
+  if (y < kneeY - 0.065) return { regionId: 'leg', side: legSide };
+  if (y < kneeY + 0.055) return { regionId: 'knee', side: legSide };
+  const crotchY = hipY - 0.085;
+  // front: below the inguinal line (pubic tubercle → ASIS); back: below the gluteal fold; side: below the trochanter
+  const inguinal = hipY - 0.07 + (ax - 0.02) * 0.95;
+  if (y < crotchY || (!back && y < inguinal && ax > 0.03) || (ax > sk.hipJ[0] + 0.03 && y < hipY - 0.03)) return { regionId: 'thigh', side: legSide };
   // trunk
-  const back = z < -0.015;
   // anterior thorax/abdomen boundary follows the costal arch (xiphoid → lateral margin)
-  if (back ? y >= 1.15 : y >= 1.215 - 0.6 * ax) return { regionId: back ? 'upper-back' : 'thorax', side };
-  if (y >= 0.95) return { regionId: back ? 'lower-back' : 'abdomen', side };
+  const xiphoidY = hipY + 0.30;
+  if (back ? y >= hipY + 0.23 : y >= xiphoidY - 0.6 * ax) return { regionId: back ? 'upper-back' : 'thorax', side };
+  if (y >= hipY + 0.035) return { regionId: back ? 'lower-back' : 'abdomen', side };
   return { regionId: back ? 'gluteal' : 'pelvis', side };
 }
