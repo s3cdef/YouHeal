@@ -84,6 +84,7 @@ try {
         exit 0
     }
 
+    if (-not $DryRun) { Assert-YHNoReparsePoint -Path $DataDir; Assert-YHNoReparsePoint -Path $OutDir }
     if (-not (Test-Path -LiteralPath $OutDir)) {
         Invoke-YHStep "mkdir $OutDir (restricted ACL)" { New-Item -ItemType Directory -Path $OutDir -Force | Out-Null }
         Set-YHRestrictedAcl -Path $OutDir -ServiceAccount $state.ServiceAccount

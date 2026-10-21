@@ -4,10 +4,12 @@
     Restore YOU HEAL Clinical from an encrypted backup, with automatic rollback.
 
 .DESCRIPTION
-    Verifies the backup (.sha256 sidecar), asks for confirmation, stops the service, snapshots db\ and keys\
-    (cold copy, zip), optionally installs a master key (disaster recovery to a new host), runs the
+    Verifies the backup (.sha256 sidecar), asks for confirmation, stops the service, snapshots db\ only
+    (cold copy, zip; keys are never put in a snapshot - F-18), optionally installs a master key (disaster recovery to a new host), runs the
     application restore command (`node --run restore`), applies migrations, starts and health-checks.
-    Any failure after the snapshot restores it and restarts the previous state.
+    Any failure after the snapshot restores it and restarts the previous state; the snapshot is deleted after a
+    successful restore and kept (with a log line) only on failure. Every elevated operation on the data
+    directory is preceded by a reparse-point (junction/symlink) check (F-03).
 
 .PARAMETER InputFile
     Backup file (*.yhbak).
@@ -50,6 +52,8 @@ Initialize-YHScript -ScriptPath $PSCommandPath -BoundParameters $PSBoundParamete
 
 $snapshot = $null
 $armed = $false
+$oldKeyCopy = $null
+$keyFile = $null
 try {
     $state = Get-YHState -DataDir $DataDir
     $envFile = Join-Path $DataDir 'config\youheal.env'
@@ -68,11 +72,12 @@ try {
         if ($answer -ne 'YES') { throw 'aborted by operator' }
     }
 
+    if (-not $DryRun) { Assert-YHNoReparsePoint -Path $DataDir }
     Invoke-YHServiceControl -Action Stop -Name $svc
     if (-not $NoSafetyBackup) {
         $snapshot = Join-Path $DataDir ('backups\pre-restore-{0}.zip' -f [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ'))
-        Invoke-YHStep "safety snapshot (db\ + keys\) -> $snapshot" {
-            Compress-Archive -Path (Join-Path $DataDir 'db'), (Join-Path $DataDir 'keys') -DestinationPath $snapshot -CompressionLevel Optimal
+        Invoke-YHStep "safety snapshot (db\ only, keys excluded) -> $snapshot" {
+            Compress-Archive -Path (Join-Path $DataDir 'db') -DestinationPath $snapshot -CompressionLevel Optimal
         }
         $armed = $true
     }
@@ -83,10 +88,9 @@ try {
         $keyFile = if ($env0.Contains('YH_MASTER_KEY_FILE')) { $env0['YH_MASTER_KEY_FILE'] } else { Join-Path $DataDir 'keys\master.key' }
         $newKey = (Get-Content -LiteralPath $MasterKeyPath -Raw).Trim()
         if ((Test-Path -LiteralPath $keyFile) -and ((Get-Content -LiteralPath $keyFile -Raw).Trim() -ne $newKey)) {
-            Invoke-YHStep 'retire current master key (decrypt-only)' {
-                $ret = Join-Path $DataDir 'keys\retired'; New-Item -ItemType Directory -Path $ret -Force | Out-Null
-                Copy-Item -LiteralPath $keyFile -Destination (Join-Path $ret ('pre-restore-{0}.key' -f [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')))
-            }
+            $oldKeyCopy = Join-Path $DataDir ('keys\retired\pre-restore-{0}.key' -f [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ'))
+            Write-YHTextFile -Path $oldKeyCopy -Content ((Get-Content -LiteralPath $keyFile -Raw).Trim() + "`n")
+            Write-YHLog "previous master key kept as retired (decrypt-only) key $oldKeyCopy" -Level WARN
         }
         Write-YHTextFile -Path $keyFile -Content ($newKey + "`n")
         Write-YHLog 'master key installed for restore' -Level OK
@@ -103,8 +107,9 @@ try {
     Invoke-YHServiceControl -Action Start -Name $svc
     if (-not (Test-YHHealth -NodeExe $state.NodeExe -AppDir $state.AppDir -EnvFile $envFile -Retries 30)) { throw 'service unhealthy after restore' }
     $armed = $false
+    if ($snapshot) { Invoke-YHStep "remove safety snapshot $snapshot (restore succeeded)" { Remove-Item -LiteralPath $snapshot -Force } }
     Write-YHLog 'restore complete. Verify: sign in, open a known patient, and run Audit > Verify chain (GET /api/v1/audit/verify).' -Level OK
-    if ($snapshot) { Write-YHLog "pre-restore snapshot retained at $snapshot (PHI + keys; delete once satisfied)" }
+    Write-YHLog 'the application kept the replaced database as db\*.pre-restore-* - delete it once satisfied (PHI ciphertext)'
     exit 0
 } catch {
     Write-YHLog ("FAILED: {0}" -f $_.Exception.Message) -Level ERROR
@@ -112,8 +117,14 @@ try {
         Write-YHLog "rolling back to $snapshot" -Level WARN
         try {
             Invoke-YHServiceControl -Action Stop -Name $state.ServiceName
-            Remove-Item -LiteralPath (Join-Path $DataDir 'db'), (Join-Path $DataDir 'keys') -Recurse -Force -ErrorAction SilentlyContinue
+            Assert-YHNoReparsePoint -Path $DataDir   # PS 5.1 Remove-Item -Recurse follows junctions
+            Remove-Item -LiteralPath (Join-Path $DataDir 'db') -Recurse -Force -ErrorAction SilentlyContinue
             Expand-Archive -LiteralPath $snapshot -DestinationPath $DataDir -Force
+            if ($oldKeyCopy -and (Test-Path -LiteralPath $oldKeyCopy)) {
+                Write-YHTextFile -Path $keyFile -Content ((Get-Content -LiteralPath $oldKeyCopy -Raw).Trim() + "`n")
+                Write-YHLog "previous master key reinstated from $oldKeyCopy" -Level WARN
+            }
+            Write-YHLog "pre-restore snapshot KEPT for analysis: $snapshot (PHI ciphertext; delete when done)" -Level WARN
             Set-YHRestrictedAcl -Path $DataDir -ServiceAccount $state.ServiceAccount
             Invoke-YHServiceControl -Action Start -Name $state.ServiceName
             if (Test-YHHealth -NodeExe $state.NodeExe -AppDir $state.AppDir -EnvFile (Join-Path $DataDir 'config\youheal.env') -Retries 30) {

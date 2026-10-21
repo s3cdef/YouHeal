@@ -54,7 +54,13 @@
 .PARAMETER ForceKey
     Allow -MasterKeyPath to replace a different existing key (the old one is kept as a retired key).
 .PARAMETER TrustProxy
-    Set YH_TRUST_PROXY=1 (only behind a reverse proxy you control; see deploy/reverse-proxy).
+    Set YH_TRUST_PROXY=1 (only behind a reverse proxy you control; see deploy/reverse-proxy). Forces
+    -BindHost 127.0.0.1 unless -TrustedProxies is given.
+.PARAMETER TrustedProxies
+    Proxy addresses/CIDRs allowed to send X-Forwarded-* (YH_TRUSTED_PROXIES; backend default: loopback).
+.PARAMETER AllowedHosts
+    Extra Host header values to accept. YH_ALLOWED_HOSTS is otherwise derived from the certificate names
+    and IPs (HostName, computer name, localhost, detected IPs, -Sans) plus the -PublicOrigin host.
 .PARAMETER PublicOrigin
     External origin users browse to (YH_PUBLIC_ORIGIN), e.g. https://clinic.example.org.
 .PARAMETER NodeSource
@@ -116,6 +122,8 @@ param(
     [string]$MasterKeyPath,
     [switch]$ForceKey,
     [switch]$TrustProxy,
+    [string[]]$TrustedProxies = @(),
+    [string[]]$AllowedHosts = @(),
     [string]$PublicOrigin,
     [ValidateSet('Auto', 'System', 'Msi', 'Winget')][string]$NodeSource = 'Auto',
     [string]$NodeVersion,
@@ -152,6 +160,13 @@ try {
     if ($PublicOrigin -and $PublicOrigin -notmatch '^https?://[^\s/]+$') { throw '-PublicOrigin must be an origin like https://clinic.example.org' }
     if ($BindHost -notmatch '^[A-Za-z0-9.:\-\[\]]+$') { throw "-BindHost '$BindHost' is invalid" }
     $Sans = @($Sans | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
+    $TrustedProxies = @($TrustedProxies | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
+    $AllowedHosts = @($AllowedHosts | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
+    foreach ($v in @($TrustedProxies + $AllowedHosts)) { if ($v -notmatch '^[A-Za-z0-9.:/\-\[\]]+$') { throw "invalid host/proxy value '$v'" } }
+    if ($TrustProxy -and $TrustedProxies.Count -eq 0 -and $BindHost -ne '127.0.0.1') {
+        Write-YHLog '-TrustProxy without -TrustedProxies: binding to 127.0.0.1 so only a local proxy can reach the app (F-09)' -Level WARN
+        $BindHost = '127.0.0.1'
+    }
     $arch = Get-YHArch
     $hostId = Get-YHHostIdentity
     if (-not $HostName) { $HostName = $hostId.Fqdn }
@@ -322,9 +337,11 @@ try {
     foreach ($d in @($DataDir, $paths.Db, $paths.Keys, $paths.Tls, $paths.Backups, $paths.Logs, $paths.Config)) {
         if (-not (Test-Path -LiteralPath $d)) { Invoke-YHStep "mkdir $d" { New-Item -ItemType Directory -Path $d -Force | Out-Null } }
     }
+    if (-not $DryRun) { Assert-YHNoReparsePoint -Path $DataDir }
     $svcExists = [bool](Get-Service -Name $ServiceName -ErrorAction SilentlyContinue)
     if ($svcExists) { Set-YHRestrictedAcl -Path $DataDir -ServiceAccount $ServiceAccount } else { Set-YHRestrictedAcl -Path $DataDir }
-    Write-YHLog "data dir $DataDir restricted to SYSTEM + Administrators$(if ($svcExists) { " + $ServiceAccount" })" -Level OK
+    Set-YHRestrictedAcl -Path $paths.Config
+    Write-YHLog "data dir $DataDir restricted to SYSTEM + Administrators$(if ($svcExists) { " + $ServiceAccount" }); config\ to SYSTEM + Administrators only" -Level OK
 
     # --------------------------------------------------------------------------------------------
     # Master key
@@ -374,6 +391,10 @@ try {
     # --------------------------------------------------------------------------------------------
     # Config
     # --------------------------------------------------------------------------------------------
+    # YH_ALLOWED_HOSTS (F-05, DNS-rebinding defence): the certificate names/IPs plus explicit extras.
+    $allowed = @($HostName, $hostId.Short, 'localhost', '127.0.0.1', '::1') + @($hostId.IPs) + $Sans + $AllowedHosts
+    if ($PublicOrigin) { $allowed += ($PublicOrigin -replace '^https?://', '' -replace ':\d+$', '') }
+    $allowedHosts = (@($allowed | Where-Object { $_ } | ForEach-Object { $_.ToLowerInvariant() } | Select-Object -Unique) -join ',')
     $preserved = ''
     if (Test-Path -LiteralPath $envFile) {
         $old = Get-Content -LiteralPath $envFile
@@ -394,7 +415,9 @@ try {
         "YH_MASTER_KEY_FILE=$keyFile"
         "YH_CATALOG_DIR=$(Join-Path $appDir 'data\catalog')"
         "YH_TRUST_PROXY=$([int][bool]$TrustProxy)"
+        "YH_ALLOWED_HOSTS=$allowedHosts"
     )
+    if ($TrustedProxies.Count) { $envLines += "YH_TRUSTED_PROXIES=$($TrustedProxies -join ',')" }
     if ($PublicOrigin) { $envLines += "YH_PUBLIC_ORIGIN=$PublicOrigin" }
     $envLines += '# --- local settings (preserved by Install-YouHeal.ps1) ---'
     $envContent = ($envLines -join "`n") + "`n" + $preserved
@@ -464,6 +487,8 @@ $($xmlEnv -join "`n")
     Invoke-YHNative -FilePath "$env:SystemRoot\System32\sc.exe" -ArgumentList @('config', $ServiceName, 'obj=', $ServiceAccount)
     Invoke-YHNative -FilePath "$env:SystemRoot\System32\sc.exe" -ArgumentList @('failureflag', $ServiceName, '1')
     Set-YHRestrictedAcl -Path $DataDir -ServiceAccount $ServiceAccount
+    # config\ holds youheal.env + install state, read by ELEVATED scripts: never writable by the service (F-03).
+    Set-YHRestrictedAcl -Path $paths.Config
     Write-YHLog "service $ServiceName registered (WinSW) as $ServiceAccount" -Level OK
 
     # --------------------------------------------------------------------------------------------
@@ -485,7 +510,7 @@ $($xmlEnv -join "`n")
     $state = [ordered]@{
         Product = $Product; Version = $appVersion; Prefix = $Prefix; DataDir = $DataDir; AppDir = $appDir
         NodeExe = $nodeExe; NodeSource = $NodeSource; ServiceName = $ServiceName; ServiceAccount = $ServiceAccount
-        BindHost = $BindHost; Port = $Port; HostName = $HostName; TrustProxy = [bool]$TrustProxy; PublicOrigin = $PublicOrigin
+        BindHost = $BindHost; Port = $Port; HostName = $HostName; TrustProxy = [bool]$TrustProxy; TrustedProxies = ($TrustedProxies -join ','); AllowedHosts = ($AllowedHosts -join ','); PublicOrigin = $PublicOrigin
         FirewallRule = $(if ($OpenFirewall) { $fwName } else { $null }); KeepReleases = $KeepReleases
         InstalledAt = [DateTime]::UtcNow.ToString('o')
     }
@@ -531,7 +556,8 @@ $($xmlEnv -join "`n")
         '============================================================================================'
         " $Product $appVersion $(if ($DryRun) { '- DRY RUN, nothing was changed' } else { "installed   (health: $health)" })"
         '--------------------------------------------------------------------------------------------'
-        ' First-run setup (creates the clinic + first admin; accepted from LOOPBACK ONLY):'
+        ' First-run setup (creates the clinic + first admin; LOOPBACK ONLY, needs the one-time setup token):'
+        "   setup token:             Get-Content `"$DataDir\setup-token`"   (elevated; also in $($paths.Logs))"
         "   on this host:            https://localhost:$Port/#/setup"
         "   from a workstation:      ssh -L ${Port}:127.0.0.1:$Port <admin>@$HostName   (OpenSSH Server on Windows)"
         "                            then browse https://localhost:$Port/#/setup"

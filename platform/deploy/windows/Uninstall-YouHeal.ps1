@@ -86,6 +86,9 @@ try {
     }
 
     if ($Purge) {
+        # Never overwrite or recursively delete through a junction planted by the service account (F-03;
+        # Windows PowerShell 5.1 Remove-Item -Recurse and Get-ChildItem -Recurse follow junctions).
+        if (-not $DryRun) { Assert-YHNoReparsePoint -Path $DataDir }
         Write-YHLog 'crypto-erase: destroying master and retired keys'
         $envMap = Read-YHEnvFile -Path (Join-Path $DataDir 'config\youheal.env')
         $keyFiles = @(Get-ChildItem -LiteralPath (Join-Path $DataDir 'keys') -Recurse -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)

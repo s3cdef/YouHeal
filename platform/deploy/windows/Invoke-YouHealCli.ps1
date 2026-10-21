@@ -45,6 +45,8 @@ try {
     # Interactive scripts (create-admin prompts for a password) need the console, so do not capture output.
     $parsed = Read-YHEnvFile -Path $envFile
     if ($DryRun) { Write-YHLog "$($state.NodeExe) --run $Script $(if ($Arguments.Count) { '-- ' + ($Arguments -join ' ') })" -Level DRY; exit 0 }
+    # Runs elevated against the service-writable data dir: refuse junction/symlink tricks first (F-03).
+    if ($parsed.Contains('YH_DATA_DIR')) { Assert-YHNoReparsePoint -Path $parsed['YH_DATA_DIR'] }
     foreach ($k in $parsed.Keys) { [Environment]::SetEnvironmentVariable($k, [string]$parsed[$k], 'Process') }
     Push-Location -LiteralPath $state.AppDir
     try {

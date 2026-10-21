@@ -34,7 +34,8 @@ More in [`docs/previews/`](docs/previews/README.md).
 npm start              # http://127.0.0.1:8080  (loopback only, no TLS needed; data in ./data)
 npm test               # node:test suites
 ```
-Open `http://localhost:8080/#/setup` to create the clinic and first admin. On first start the server
+Open `http://localhost:8080/#/setup` to create the clinic and first admin (paste the one-time token from
+`data/setup-token`, also printed in the server log). On first start the server
 generates `data/keys/master.key` — fine for development, never reuse it for real patient data.
 No `npm install` is needed: there are no dependencies.
 
@@ -44,8 +45,8 @@ No `npm install` is needed: there are no dependencies.
 cd deploy/docker
 umask 077 && mkdir -p secrets && openssl rand -base64 32 > secrets/master.key
 sudo chown 10001:10001 secrets/master.key && sudo chmod 0400 secrets/master.key   # escrow this key!
-docker compose up -d --build
-docker compose exec -it youheal node --run create-admin
+docker compose up -d --build        # set YH_ALLOWED_HOSTS=<name,ip> if users browse to anything but localhost
+docker compose exec -it youheal node --run create-admin    # or: browser setup with the token in /data/setup-token
 ```
 Then browse `https://localhost:8443/` (self-signed certificate; compare the fingerprint printed in
 `docker compose logs youheal`). Read-only root FS, all capabilities dropped, port bound to 127.0.0.1.

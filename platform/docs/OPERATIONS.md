@@ -44,8 +44,9 @@ cd platform/deploy/docker
 umask 077 && mkdir -p secrets && openssl rand -base64 32 > secrets/master.key
 sudo chown 10001:10001 secrets/master.key && sudo chmod 0400 secrets/master.key
 # escrow secrets/master.key NOW (§6.1)
-docker compose up -d --build
+YH_ALLOWED_HOSTS=clinic.lan,192.168.1.20 docker compose up -d --build   # names/IPs users browse to (F-05)
 docker compose ps            # STATUS should become "healthy" within ~40 s
+docker compose exec youheal cat /data/setup-token   # one-time first-run setup token (§3)
 docker compose logs youheal  # entrypoint prints the generated certificate's SHA-256 fingerprint
 ```
 
@@ -78,7 +79,9 @@ runs migrations and the catalog load; starts the service; health-checks it; prin
 certificate fingerprint.
 
 Useful options: `--prefix`, `--data-dir`, `--port`, `--host 127.0.0.1` (behind a local proxy),
-`--trust-proxy`, `--public-origin URL`, `--tls-cert/--tls-key`, `--master-key-file` (DR), `--node-source
+`--trust-proxy` (forces `--host 127.0.0.1` unless `--trusted-proxies LIST`), `--public-origin URL`,
+`--allowed-hosts LIST` (extra Host-header names; the installer always writes `YH_ALLOWED_HOSTS` from the
+certificate SANs), `--tls-cert/--tls-key`, `--master-key-file` (DR), `--node-source
 distro|tarball|system`, `--no-start`, `--init none`. Re-running is safe: unchanged releases are detected
 by tree digest, keys and certificates are kept, local settings below the marker in `youheal.env` are
 preserved.
@@ -155,9 +158,22 @@ against `CHECKSUMS.sha256` and abort on any mismatch.
 ## 3. First-run setup
 
 The setup endpoint creates the clinic organisation and the first admin. It is accepted **only while no
-users exist and only from a loopback address** (unless `YH_ALLOW_REMOTE_SETUP=1`).
+users exist, only from a loopback address** (unless `YH_ALLOW_REMOTE_SETUP=1`), **never when the request
+carries forwarding headers** (`X-Forwarded-For`, `Forwarded`, `X-Real-IP` — i.e. never through a reverse
+proxy), and **only with the one-time setup token** the server writes to `<data>/setup-token` and prints in
+its log at first start. Read the token as the service account / an administrator:
 
-* **On the host**: browse `https://localhost:8443/#/setup`.
+| Platform | Command |
+|---|---|
+| Linux | `sudo -u youheal cat /var/lib/youheal/setup-token` (or `journalctl -u youheal \| grep -i setup`) |
+| macOS | `sudo -u youheal cat /usr/local/var/youheal/setup-token` |
+| Windows | `Get-Content "$env:ProgramData\YouHeal\setup-token"` (elevated PowerShell), or the service log in `%ProgramData%\YouHeal\logs\` |
+| Docker | `docker compose exec youheal cat /data/setup-token` (or `docker compose logs youheal`) |
+
+The token is single-use and becomes invalid once setup completes. The CLI path (`create-admin`) does not
+need it — it already requires root/Administrator on the host.
+
+* **On the host**: browse `https://localhost:8443/#/setup` and paste the setup token.
 * **From a workstation via SSH tunnel** (recommended for headless hosts):
   `ssh -L 8443:127.0.0.1:8443 admin@clinic-host`, then browse `https://localhost:8443/#/setup` on the
   workstation. The browser connects to its own loopback; SSH forwards to the server's loopback, so the
@@ -168,7 +184,8 @@ users exist and only from a loopback address** (unless `YH_ALLOW_REMOTE_SETUP=1`
   Windows: `.\deploy\windows\Invoke-YouHealCli.ps1 create-admin`;
   Docker: `docker compose exec -it youheal node --run create-admin`.
 * **Docker alternative**: set `YH_ALLOW_REMOTE_SETUP=1` once **while the port is bound to 127.0.0.1**,
-  complete the wizard at `https://localhost:8443/#/setup`, then unset it and `docker compose up -d`.
+  complete the wizard at `https://localhost:8443/#/setup` with the setup token, then unset it and
+  `docker compose up -d`.
 
 Immediately after setup: sign in as the admin, **enrol MFA** (mandatory for admins), create named accounts
 for every staff member with the least role needed, complete the clinic profile, and record the master-key
@@ -213,8 +230,11 @@ the installer) or the compose `environment:` block. Invalid values stop the serv
 | `YH_CATALOG_DIR` | `<data>/catalog` (installers set `<app>/data/catalog`) | Catalog JSON |
 | `YH_CATALOG_LICENSES` | all | Comma list filter, e.g. `licensed,original,public-domain` (ADR-007) |
 | `YH_CATALOG_STRICT` | `1` | Fail catalog load on validation errors |
-| `YH_TRUST_PROXY` | `0` | Number of trusted proxy hops (deploy/reverse-proxy) |
+| `YH_TRUST_PROXY` | `0` | Number of trusted proxy hops (deploy/reverse-proxy). Installers force `YH_HOST=127.0.0.1` with it unless trusted proxies are named |
+| `YH_TRUSTED_PROXIES` | loopback | Peers allowed to send `X-Forwarded-*` (comma list of IPs/CIDRs; installers: `--trusted-proxies` / `-TrustedProxies`) |
 | `YH_PUBLIC_ORIGIN` | — | External origin for the Origin check behind a proxy |
+| `YH_ALLOWED_HOSTS` | localhost, loopback IPs, machine hostname, bound IP, `YH_PUBLIC_ORIGIN` host | Host-header allow-list (DNS-rebinding defence). Installers write it from the certificate names/IPs (+ `--allowed-hosts` / `-AllowedHosts`); **Docker: set it** to the name/IP users browse to |
+| `YH_MAX_CONNECTIONS` | server default | Cap on concurrent connections (resource-exhaustion defence) |
 | `YH_ALLOW_REMOTE_SETUP` | `0` | Allow first-run setup from non-loopback clients (temporary use only) |
 | `YH_SESSION_IDLE_MIN` / `YH_SESSION_ABS_HOURS` | 15 / 12 | Session timeouts |
 | `YH_LOCKOUT_ATTEMPTS` / `YH_LOCKOUT_MIN` | 5 / 15 | Account lockout |
@@ -318,15 +338,25 @@ sudo ./deploy/linux/restore.sh --in /mnt/offsite/youheal/youheal-clinic01-202610
 .\deploy\windows\Restore-YouHeal.ps1 -InputFile E:\youheal-clinic01-20261020T021700Z.yhbak
 ```
 The script verifies the `.sha256`, asks for confirmation, stops the service, takes a cold safety snapshot of
-`db/` and `keys/`, runs the application restore (which verifies the GCM tag and SQLite integrity **before**
+`db/` (never `keys/`; 0600, written by the service account), runs the application restore (which verifies the GCM tag and SQLite integrity **before**
 replacing the DB and keeps its own `.pre-restore-*` copy), applies migrations (an older backup is brought
-forward), starts and health-checks. On any failure it **rolls back** to the snapshot automatically.
+forward), starts and health-checks. On any failure it **rolls back** to the snapshot automatically (and
+reinstates the previous master key if one was replaced) and **keeps** the snapshot for analysis; after a
+successful restore the snapshot is **deleted**. A key replaced via `--master-key-file` is kept as a
+decrypt-only retired key in `keys/retired/`.
 Docker: `docker compose stop youheal && docker compose run --rm --no-deps --entrypoint node youheal --run
 restore -- /data/backups/<file>.yhbak --yes && docker compose up -d`.
 
 If a restore fails *and* rollback reports "NOT healthy": stop the service, extract the
-`pre-restore-*.tar.gz`/`.zip` snapshot from `<data>/backups/` back into `<data>/`, fix ownership
-(`chown -R youheal:youheal <data>`), start, and contact support with the restore log.
+`pre-restore-*.tar.gz`/`.zip` snapshot from `<data>/backups/` back into `<data>/` **as the service
+account** (`sudo -u youheal tar -xzf <snapshot> -C <data>`), start, and contact support with the restore log.
+
+**Symlink/junction protection (F-03).** The scripts run as root/Administrator but the data directory is
+writable by the service account. They therefore never write, `chmod`/`chown` or recursively delete
+*inside* it as root: all such operations run as the service account, and every run first scans the data
+directory and **aborts if it contains any symlink (Linux/macOS) or reparse point/junction (Windows)**.
+If you see "refusing to continue: symlinks found…", treat it as a possible compromise of the service
+account (§10).
 
 ### 7.4 DR test procedure (quarterly; evidence for CP-4 / §164.308(a)(7)(ii)(D))
 
@@ -353,7 +383,7 @@ sudo ./deploy/linux/upgrade.sh --from /tmp/youheal-1.1.0-linux-x64.tar.gz     # 
 .\deploy\windows\Upgrade-YouHeal.ps1 -From D:\youheal-1.1.0-win-x64.zip
 ```
 Sequence: preflight (bundle checksums, version, Node engine requirement) → encrypted backup → stop →
-cold DB snapshot (`<data>/backups/pre-upgrade-<oldver>-<ts>.*`) → the **new** release's installer stages it
+cold DB snapshot (`<data>/backups/pre-upgrade-<oldver>-<ts>.*`, db only, deleted after success) → the **new** release's installer stages it
 beside the old one and switches `current` → migrations + catalog load → start → health check. Any failure
 triggers **automatic rollback**: `current` back to the previous release, DB snapshot restored, previous
 env/state/service definition restored, service restarted and health-checked.
@@ -363,8 +393,8 @@ that, take a backup; to roll back, redeploy the previous image tag **and** resto
 (migrations are forward-only).
 
 **Manual rollback later** (after the automatic window): stop the service; point `current` at the previous
-directory in `<prefix>/releases/` (`ln -sfn …` / recreate the junction); restore the matching
-`pre-upgrade-*` snapshot or the pre-upgrade `.yhbak` with `restore.sh`; start. Old releases are pruned to
+directory in `<prefix>/releases/` (`ln -sfn …` / recreate the junction); restore the pre-upgrade `.yhbak`
+(written to `<data>/backups/` at step 2) with `restore.sh` / `Restore-YouHeal.ps1`; start. Old releases are pruned to
 `--keep-releases` (default 3).
 
 ---

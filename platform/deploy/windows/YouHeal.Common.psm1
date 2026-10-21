@@ -320,7 +320,9 @@ function Read-YHEnvFile {
     $h = [ordered]@{}
     if (Test-Path -LiteralPath $Path) {
         foreach ($line in Get-Content -LiteralPath $Path) {
-            if ($line -match '^\s*([A-Z_][A-Z0-9_]*)=(.*)$') { $h[$Matches[1]] = $Matches[2] }
+            # Allow-list: only YH_* and NODE_ENV ever reach processes started by these (elevated) scripts,
+            # so an edited env file cannot inject NODE_OPTIONS, PATH, etc.
+            if ($line -match '^\s*(YH_[A-Z0-9_]+|NODE_ENV)=(.*)$') { $h[$Matches[1]] = $Matches[2] }
         }
     }
     return $h
@@ -343,9 +345,43 @@ function Write-YHTextFile {
     }
     $dir = Split-Path -Parent $Path
     if (-not (Test-Path -LiteralPath $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    foreach ($p in @($dir, $Path, "$Path.tmp")) {
+        if ((Test-Path -LiteralPath $p) -and ((Get-Item -LiteralPath $p -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+            throw "refusing to write through reparse point $p"
+        }
+    }
     $tmp = "$Path.tmp"
     [IO.File]::WriteAllText($tmp, $Content, (New-Object System.Text.UTF8Encoding($false)))
     Move-Item -LiteralPath $tmp -Destination $Path -Force
+}
+
+# ------------------------------------------------------------------------------------------------
+# Reparse-point guard (finding F-03, Windows equivalent of symlink attacks)
+# ------------------------------------------------------------------------------------------------
+function Assert-YHNoReparsePoint {
+    <#
+    .SYNOPSIS
+        Throw if Path, or anything below it, is a reparse point (junction, symbolic link, mount point).
+    .DESCRIPTION
+        The service account (NT SERVICE\YouHeal) can create entries in the data directory, including
+        directory junctions (no privilege needed). These scripts run elevated; an elevated write, ACL change
+        or recursive delete that follows a planted junction could affect arbitrary files. Every elevated
+        operation on the data directory is therefore preceded by this check. The walk never descends into
+        a reparse point (DirectoryInfo.GetFileSystemInfos does not follow links).
+    #>
+    param([Parameter(Mandatory)][string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) { return }
+    $bad = New-Object System.Collections.Generic.List[string]
+    $stack = New-Object System.Collections.Generic.Stack[System.IO.FileSystemInfo]
+    $stack.Push((Get-Item -LiteralPath $Path -Force))
+    while ($stack.Count -gt 0) {
+        $item = $stack.Pop()
+        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { $bad.Add($item.FullName); continue }
+        if ($item -is [IO.DirectoryInfo]) { foreach ($c in $item.GetFileSystemInfos()) { $stack.Push($c) } }
+    }
+    if ($bad.Count -gt 0) {
+        throw ("refusing to continue: reparse points (junctions/symlinks) found under {0}: {1} - investigate (possible link attack)" -f $Path, (($bad | Select-Object -First 5) -join ', '))
+    }
 }
 
 # ------------------------------------------------------------------------------------------------
@@ -361,16 +397,17 @@ function Set-YHRestrictedAcl {
         icacls rights for the service account: M (modify, default) or RX (read/execute).
     #>
     param([Parameter(Mandatory)][string]$Path, [string]$ServiceAccount, [ValidateSet('M', 'RX', 'R')][string]$ServiceRights = 'M')
+    if (-not $script:YHDryRun) { Assert-YHNoReparsePoint -Path $Path }
     $isDir = (Test-Path -LiteralPath $Path -PathType Container) -or $script:YHDryRun
     $inh = if ($isDir) { '(OI)(CI)' } else { '' }
     $grants = @('/grant:r', ('*{0}:{1}F' -f $script:SidSystem, $inh), ('*{0}:{1}F' -f $script:SidAdmins, $inh))
     if ($ServiceAccount) { $grants += ('{0}:{1}{2}' -f $ServiceAccount, $inh, $ServiceRights) }
-    Invoke-YHNative -FilePath "$env:SystemRoot\System32\icacls.exe" -ArgumentList (@($Path, '/inheritance:r') + $grants + @('/Q'))
+    Invoke-YHNative -FilePath "$env:SystemRoot\System32\icacls.exe" -ArgumentList (@($Path, '/inheritance:r') + $grants + @('/L', '/Q'))
     # Remove well-known broad principals if they were ever granted explicitly (Users, Authenticated Users, Everyone, CREATOR OWNER).
     foreach ($sid in @('S-1-5-32-545', 'S-1-5-11', 'S-1-1-0', 'S-1-3-0')) {
-        Invoke-YHNative -FilePath "$env:SystemRoot\System32\icacls.exe" -ArgumentList @($Path, '/remove:g', "*$sid", '/T', '/Q') -AllowedExitCodes @(0, 1, 2, 5)
+        Invoke-YHNative -FilePath "$env:SystemRoot\System32\icacls.exe" -ArgumentList @($Path, '/remove:g', "*$sid", '/T', '/L', '/Q') -AllowedExitCodes @(0, 1, 2, 5)
     }
-    Invoke-YHNative -FilePath "$env:SystemRoot\System32\icacls.exe" -ArgumentList @($Path, '/setowner', "*$script:SidAdmins", '/Q') -AllowedExitCodes @(0, 1)
+    Invoke-YHNative -FilePath "$env:SystemRoot\System32\icacls.exe" -ArgumentList @($Path, '/setowner', "*$script:SidAdmins", '/L', '/Q') -AllowedExitCodes @(0, 1)
 }
 
 # ------------------------------------------------------------------------------------------------
@@ -532,6 +569,8 @@ function Invoke-YHNodeScript {
     $envs = @{}
     $parsed = Read-YHEnvFile -Path $EnvFile
     foreach ($k in $parsed.Keys) { $envs[$k] = $parsed[$k] }
+    # These scripts run elevated; the data dir is writable by the service account (F-03).
+    if ($parsed.Contains('YH_DATA_DIR') -and -not $script:YHDryRun) { Assert-YHNoReparsePoint -Path $parsed['YH_DATA_DIR'] }
     $envs['PATH'] = (Split-Path -Parent $NodeExe) + ';' + $env:SystemRoot + '\System32'
     $argv = @('--run', $Name)
     if ($Arguments.Count) { $argv += '--'; $argv += $Arguments }

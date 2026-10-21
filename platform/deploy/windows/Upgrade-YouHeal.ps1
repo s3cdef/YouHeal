@@ -95,6 +95,7 @@ try {
     Copy-Item -LiteralPath $envFile, $stateFile -Destination $saved
     $svcXml = Join-Path $state.Prefix "service\$svcName.xml"
     if (Test-Path -LiteralPath $svcXml) { Copy-Item -LiteralPath $svcXml -Destination $saved }
+    Assert-YHNoReparsePoint -Path $DataDir
     Invoke-YHServiceControl -Action Stop -Name $svcName
     $snapshot = Join-Path $DataDir ('backups\pre-upgrade-{0}-{1}.zip' -f $oldVersion, [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ'))
     Invoke-YHStep "snapshot db\ -> $snapshot" { Compress-Archive -Path (Join-Path $DataDir 'db') -DestinationPath $snapshot }
@@ -107,6 +108,8 @@ try {
         '-HostName', $state.HostName, '-NoStart', '-SkipMigrate', '-SkipCatalog', '-KeepReleases', [string]$state.KeepReleases)
     if ($state.TrustProxy) { $inst += '-TrustProxy' }
     if ($state.PublicOrigin) { $inst += @('-PublicOrigin', $state.PublicOrigin) }
+    if ($state.PSObject.Properties.Name -contains 'TrustedProxies' -and $state.TrustedProxies) { $inst += @('-TrustedProxies', $state.TrustedProxies) }
+    if ($state.PSObject.Properties.Name -contains 'AllowedHosts' -and $state.AllowedHosts) { $inst += @('-AllowedHosts', $state.AllowedHosts) }
     if ($bundleDir) { $inst += @('-OfflineBundle', $bundleDir) }
     if ($needNode -and $curNode -and $curNode -ge $needNode) { $inst += @('-NodeSource', 'System') }
     if ($DryRun) { $inst += '-DryRun' }
@@ -127,7 +130,8 @@ try {
     if (-not (Test-YHHealth -NodeExe $state2.NodeExe -AppDir $state2.AppDir -EnvFile $envFile -Retries 45)) { throw 'new release failed its health check' }
     $armed = $false
     Write-YHLog "upgraded $oldVersion -> $newVersion" -Level OK
-    Write-YHLog "pre-upgrade DB snapshot kept at $snapshot (PHI; delete after the verification window)"
+    Invoke-YHStep "remove pre-upgrade snapshot $snapshot (upgrade succeeded)" { Remove-Item -LiteralPath $snapshot -Force }
+    Write-YHLog 'the encrypted pre-upgrade backup remains in backups\ for later manual rollback'
     exit 0
 } catch {
     Write-YHLog ("FAILED: {0}" -f $_.Exception.Message) -Level ERROR
@@ -137,8 +141,10 @@ try {
             Invoke-YHServiceControl -Action Stop -Name $svcName
             if (Test-Path -LiteralPath $current) { [IO.Directory]::Delete($current) }
             New-Item -ItemType Junction -Path $current -Target $oldRelease | Out-Null
+            Assert-YHNoReparsePoint -Path $DataDir   # PS 5.1 Remove-Item -Recurse follows junctions
             Remove-Item -LiteralPath (Join-Path $DataDir 'db') -Recurse -Force -ErrorAction SilentlyContinue
             Expand-Archive -LiteralPath $snapshot -DestinationPath $DataDir -Force
+            Write-YHLog "pre-upgrade snapshot KEPT for analysis: $snapshot (PHI ciphertext; delete when done)" -Level WARN
             Copy-Item -LiteralPath (Join-Path $saved 'youheal.env') -Destination $envFile -Force
             Copy-Item -LiteralPath (Join-Path $saved 'install.state.json') -Destination $stateFile -Force
             $svcExe = Join-Path $state.Prefix "service\$svcName.exe"

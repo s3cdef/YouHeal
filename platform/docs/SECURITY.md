@@ -43,13 +43,15 @@ Ratings: L/M/H residual after listed controls. "Ctl" = primary implemented contr
 | **R** | User denies having viewed/changed a record | Hash-chained audit of every auth event, PHI read, create/update/delete, export, finalize; actor, role, IP, request id, timestamp; HMAC anchor detects truncation | L |
 | **I** | Eavesdropping; XSS exfiltration; caching of PHI | TLS 1.2+ (self-signed or CA cert; HSTS); strict CSP `script-src 'self'`, no inline script (ADR-004); `Cache-Control: no-store`; `Referrer-Policy: no-referrer`; no PHI in URLs/logs | M (self-signed cert → users may click through warnings; mitigate with CA-issued cert or distributed trust, fingerprint check) |
 | **D** | Request floods, slowloris, large bodies | Token-bucket rate limits (auth and API); body size caps; proxy timeouts; systemd `Restart=on-failure`, Docker restart policy, pids/memory limits | M (single host; no upstream DDoS protection on-prem) |
-| **E** | Horizontal/vertical privilege escalation (assistant → findings; practitioner → admin) | Server-side RBAC on every route; admin-only user management; first-run setup only while no users exist **and** only from loopback (`YH_ALLOW_REMOTE_SETUP` off by default) | L |
+| **E** | Horizontal/vertical privilege escalation (assistant → findings; practitioner → admin) | Server-side RBAC on every route; admin-only user management; first-run setup only while no users exist, only from loopback (`YH_ALLOW_REMOTE_SETUP` off by default), never with forwarding headers, and only with the one-time `<data>/setup-token`; Host-header allow-list `YH_ALLOWED_HOSTS` defeats DNS rebinding | L |
 
 ### TB2 — Reverse proxy ↔ app (optional)
 
 | STRIDE | Threat | Ctl | Residual |
 |---|---|---|---|
-| S/T | Client forges `X-Forwarded-For`/`-Proto` to spoof IP, bypass rate limits, reach loopback-only setup | App honours forwarding headers only with `YH_TRUST_PROXY=n` and takes the client from the right-most n hops; backend bound to 127.0.0.1; proxy blocks `/api/v1/setup`; docs forbid trust-proxy when the backend is directly reachable | L (misconfiguration risk → R-08) |
+| S/T | Client forges `X-Forwarded-For`/`-Proto` to spoof IP, bypass rate limits, reach loopback-only setup | App honours forwarding headers only with `YH_TRUST_PROXY=n` **and** only from peers in `YH_TRUSTED_PROXIES` (default loopback), taking the client from the right-most n hops; installers force the backend to 127.0.0.1 with `--trust-proxy`; proxies block `/api/v1/setup` and everything below it; the app refuses setup whenever forwarding headers are present | L |
+| I | Query strings / cookies in proxy logs | Log formats without query strings, Referer, cookies or auth headers; patient search is `POST /api/v1/patients/search` | L |
+| D | Login floods through the proxy | nginx `limit_req` on `/api/v1/auth/`, `limit_conn` per IP; app per-IP buckets + `YH_MAX_CONNECTIONS` | L |
 | I | Plaintext hop between proxy and app | Backend keeps TLS; proxy verifies it (`proxy_ssl_verify`, Caddy `tls_trust_pool`) | L |
 | I | BREACH (compression oracle) | Examples disable response compression | L |
 
@@ -62,6 +64,7 @@ Ratings: L/M/H residual after listed controls. "Ctl" = primary implemented contr
 | R | Admin edits DB directly to alter history | Audit triggers forbid UPDATE/DELETE; hash chain + HMAC anchor (keyed with a master-key subkey) make offline edits detectable by `/audit/verify` | M (a root user holding the key can rebuild the chain — inherent on-prem; detect via exported chain heads, R-05) |
 | I | Copy of DB/WAL/backup file leaks PHI | Field-level AES-256-GCM (ADR-003); `secure_delete=ON`; backups encrypted; key not in backups | M (key co-located on host → R-01) |
 | D | Ransomware encrypts/deletes data | Encrypted offsite/offline backups with retention; DR runbook; restore verification | M (depends on clinic keeping an offline copy, R-04) |
+| E | Compromised service account plants symlinks/junctions in its data dir so that root/Administrator maintenance scripts (backup, restore, install, upgrade, uninstall) write, chown or delete arbitrary files | Scripts never write/chmod/chown/recursively delete inside the data dir as root: all such operations run as the service account; every run aborts if the data dir contains a symlink (POSIX) or reparse point (Windows); `chown -h`, icacls `/L`; env files allow-list `YH_*`/`NODE_ENV` only; Windows `config\` is not writable by the service (F-03) | L |
 | E | RCE in Node/app escalates to root | No capabilities (`CapabilityBoundingSet=`), `NoNewPrivileges`, syscall filter, `PrivateDevices`, `ProtectKernel*`, `RestrictNamespaces`, `cap_drop: ALL` + `no-new-privileges` in Docker; zero npm dependencies | L/M (`MemoryDenyWriteExecute=no` required by V8 JIT, R-09) |
 
 ### TB4 — Operator ↔ host (administration)
@@ -319,7 +322,7 @@ Likelihood/Impact: L/M/H. Owner: V = vendor, C = clinic.
 | R-05 | Privileged insider with key rewrites DB and recomputes audit chain | L | H | Medium | Triggers, hash chain, HMAC anchor | Periodic export of chain head to WORM/offsite (or printed); SaaS: external audit sink | V/C |
 | R-06 | Runtime download authenticity relies on HTTPS + SHASUMS from same origin | L | H | Medium | HTTPS-only, SHA-256 verify, Authenticode (MSI), `.asc` shipped in bundles | Make GPG verification against pinned Node release keys mandatory in bundle builds | V |
 | R-07 | Offline bundle and Linux scripts unsigned (placeholder) | M | M | Medium | `CHECKSUMS.sha256`, out-of-band archive hash, Authenticode for PS scripts | Organisational signing key; installers verify signature before checksums | V |
-| R-08 | Misconfigured `YH_TRUST_PROXY` on a directly reachable instance allows IP spoofing | L | M | Low | Docs, examples bind backend to 127.0.0.1; setup also blocked at proxy | Startup warning when trust-proxy is set and bind is non-loopback | V |
+| R-08 | Misconfigured proxy trust allows IP spoofing | L | M | Low | `YH_TRUSTED_PROXIES` (default loopback) limits who may send forwarding headers; installers force 127.0.0.1 with `--trust-proxy`; setup refused with forwarding headers + setup token; setup blocked at proxy (F-04, F-09) | Re-test after server fixes; close if confirmed | V |
 | R-09 | `MemoryDenyWriteExecute=no` (V8 JIT) weakens exploit mitigation | L | M | Low | Syscall filter, NoNewPrivileges, no caps, read-only code | Optional `--jitless` profile for high-assurance sites | V |
 | R-10 | Distribution of GOIZ/Leal content without licence | M | H | **High** | `license_status`, `YH_CATALOG_LICENSES`, bundle licence gate | Obtain licence or ship original/licensed-only catalog (REGULATORY §5) | V |
 | R-11 | Node.js 22 end of life (April 2027) | H (by date) | M | Medium | `engines >=22.13` accepts newer LTS | Validate on Node 24 LTS; update installers' default major before Q1 2027 | V |
@@ -327,11 +330,45 @@ Likelihood/Impact: L/M/H. Owner: V = vendor, C = clinic.
 | R-13 | Single host = single point of failure (availability) | M | L | Low | Restart policies, quick restore, paper fallback | Optional warm standby via scheduled restore on a second host | C |
 | R-14 | MFA optional for non-admin roles | M | M | Medium | Admin MFA mandatory; lockout | Org setting "require MFA for all roles" | V |
 | R-15 | Printed/PDF reports leave the system boundary unencrypted | M | M | Medium | Disclaimer, no PHI in filenames by default | Workstation FDE policy; secure print guidance | C |
+| R-17 | TOCTOU window remains for **Windows** elevated node CLI runs (migrate/backup/restore run as Administrator against the service-writable data dir; reparse-point scan happens immediately before, not atomically) | L | M | Low | Scan before every elevated operation; `config\` not service-writable; env allow-list | Run maintenance CLIs under the service identity (e.g. a one-shot service/task as `NT SERVICE\YouHeal`) | V |
+| R-18 | A compromised service account can still destroy or encrypt its own data (DB, keys, backups in `<data>/backups`) | L | H | Medium | Least privilege elsewhere; offsite `--copy-to` copies are root-owned and outside `<data>` | Offline/immutable backup copy (R-04) | C |
 | R-16 | Untested Windows code paths (installer validated by parser/analyzer, not on a live Windows host in this release) | M | M | Medium | Static analysis, shared logic tested on PowerShell 7 | Windows Server 2022 / Windows 11 CI runner executing install → backup → restore → upgrade → uninstall | V |
 
 ---
 
-## 8. Vulnerability reporting and patch policy
+## 8. Independent assessment — 2026-10-21
+
+An independent security assessor reviewed the server, SPA and deployment tooling (PoCs retained with the
+assessment working papers). Status as of this revision; "remediated in server" items are being fixed by
+the backend team and must be confirmed by re-test before closure.
+
+| ID | Sev. | Area | Finding (summary) | Remediation | Status |
+|---|---|---|---|---|---|
+| F-01 | — | server | Backend finding (see assessor report) | Backend fix | Remediated in server — pending re-test |
+| F-02 | — | server | Backend finding (see assessor report) | Backend fix | Remediated in server — pending re-test |
+| F-03 | **Medium** | deploy | Root/Administrator scripts followed symlinks/junctions planted in the **service-owned data dir** (e.g. `backup.sh` wrote the `.sha256` sidecar and chown/chmod'd it as root at a predictable path; `install.sh` chown/chmod of `db/keys/backups/tls`, TLS chown; `restore.sh` snapshot handling) → arbitrary file overwrite/ownership change by a compromised service account | All writes/chmods/deletes inside `<data>` now run **as the service account** (`svc_write`, `svc_mkdir`, `svc_exec`); root only `chown -h`s `<data>` itself; every script **aborts if `<data>` contains a symlink**; key/TLS material is generated in a root-only staging dir and handed over through the service account; Windows: `Assert-YHNoReparsePoint` before every elevated ACL change, write, node CLI run or recursive delete, icacls `/L`, `config\` ACL excludes the service, env-file allow-list (`YH_*`, `NODE_ENV`) on both platforms; docs copy the backend certificate as the service account. PoC (`symsim`: planted `*.yhbak.sha256 -> <root-owned file>`) is now **refused**, target unchanged | **Fixed (deploy)** |
+| F-04 | Medium | proxy + server | Setup block bypass via trailing slash / sub-path at the proxy; setup reachable through proxies | nginx `location ^~ /api/v1/setup` (only `GET /api/v1/setup/status` passed), Caddy `path /api/v1/setup /api/v1/setup/*`; server refuses setup with forwarding headers and requires a one-time `<data>/setup-token`; runbook + installer banners updated | **Fixed (deploy)**; server part remediated in server — pending re-test |
+| F-05 | Medium | server + deploy | DNS rebinding: arbitrary `Host` headers accepted | Server: `YH_ALLOWED_HOSTS` allow-list. Installers write it from the certificate SANs (+ `--allowed-hosts`/`-AllowedHosts`, public-origin host); compose passes it through | **Fixed (deploy)**; server remediated — pending re-test |
+| F-06 | — | server | Backend finding (see assessor report) | Backend fix | Remediated in server — pending re-test |
+| F-07 | — | server | Backend finding (see assessor report) | Backend fix | Remediated in server — pending re-test |
+| F-08 | Low | proxy + server | Query strings (search terms) could reach proxy logs | nginx `log_format` with `$uri` (no query, no Referer); Caddy log filter redacts the query and drops Cookie/Authorization/Referer/CSRF headers; server adds `POST /api/v1/patients/search` | **Fixed (deploy)**; server remediated — pending re-test |
+| F-09 | Medium | server + deploy | Forwarding headers trusted from any peer when `YH_TRUST_PROXY` set | Server: `YH_TRUSTED_PROXIES` (default loopback). `--trust-proxy`/`-TrustProxy` force `YH_HOST=127.0.0.1` unless `--trusted-proxies`/`-TrustedProxies`; reverse-proxy README updated; compose passes it through | **Fixed (deploy)**; server remediated — pending re-test |
+| F-10 – F-16 | — | server | Backend findings (see assessor report) | Backend fixes | Remediated in server — pending re-test |
+| F-17 | Low | server + proxy | Session cookie hardening: `__Host-yh_sid` under TLS | Proxy docs/examples: no cookie path/domain/flag rewriting | **Fixed (deploy docs)**; server remediated — pending re-test |
+| F-18 | Low | deploy | Restore/upgrade safety snapshots included `keys/`, were root-written and retained indefinitely | Snapshots contain `db/` only, are written 0600 by the service account, and are **deleted after success** (kept with a log line only on failure) — Linux and Windows | **Fixed (deploy)** |
+| F-19 | — | server | Backend finding (see assessor report) | Backend fix | Remediated in server — pending re-test |
+| F-20 | Low | proxy + server | No connection/rate limiting at the edge | nginx `limit_conn` + `limit_req` (auth 10 r/min, API 20 r/s); Caddy rate-limit module guidance; server `YH_MAX_CONNECTIONS` documented | **Fixed (deploy)**; server remediated — pending re-test |
+
+Re-validation after the deploy fixes: `bash -n` + ShellCheck clean; PowerShell parser + PSScriptAnalyzer
+clean; `nginx -t` and `caddy validate` pass, and functional tests confirm 403 for `POST /api/v1/setup`,
+`/api/v1/setup/`, `/api/v1/setup/status` (POST), `//api/v1/setup`, `%73etup`, dot-segment variants, while
+`GET /api/v1/setup/status` is proxied; access logs show no query strings; the symlink PoC is refused by
+`backup.sh`, `install.sh` and `restore.sh` and the target file is untouched; a clean install → backup →
+restore (with key import) → upgrade → purge cycle passes.
+
+---
+
+## 9. Vulnerability reporting and patch policy
 
 * Report suspected vulnerabilities privately to the vendor security contact (set in the support
   contract); do not include PHI in reports.
