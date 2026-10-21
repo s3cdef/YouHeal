@@ -1,0 +1,278 @@
+{
+ "contraindications/abs-01/text": {
+  "text": "Portador de marcapasos o dispositivo electrónico implantado",
+  "hash": "443a60f097c74604"
+ },
+ "contraindications/rel-01/text": {
+  "text": "Embarazo",
+  "hash": "f4223977f9a8870e"
+ },
+ "entities/e-coli/name": {
+  "text": "E. Coli",
+  "hash": "1b810097d9f376e9"
+ },
+ "entities/gastritis/name": {
+  "text": "Gastritis",
+  "hash": "c9822c7f9d21f4b2"
+ },
+ "entities/helicobacter-pylori/name": {
+  "text": "Helicobacter pylori",
+  "hash": "a7fff185f5b59c31"
+ },
+ "entities/vih/contagion": {
+  "text": "Sexual, sanguíneo",
+  "hash": "cf98981d8dbe80fb"
+ },
+ "entities/vih/description": {
+  "text": "Virus de inmunodeficiencia humana.",
+  "hash": "a94c1775f3df7319"
+ },
+ "entities/vih/name": {
+  "text": "VIH",
+  "hash": "c71a5b1a3b7a1ab1"
+ },
+ "glossary/abbr:D/meaning": {
+  "text": "Derecho",
+  "hash": "046c11f37819f580"
+ },
+ "glossary/abbr:I/meaning": {
+  "text": "Izquierdo",
+  "hash": "ac2403e6c126e005"
+ },
+ "glossary/abbr:PB/meaning": {
+  "text": "Par Biomagnético",
+  "hash": "8542c989f933f7cf"
+ },
+ "pairs/cx-rinon--vejiga/name": {
+  "text": "Riñón – Vejiga",
+  "hash": "1459dccf262d7d45"
+ },
+ "pairs/cx-rinon--vejiga/symptoms[0].text": {
+  "text": "Ardor al orinar",
+  "hash": "482dceefb791cfbc"
+ },
+ "pairs/pb-001/name": {
+  "text": "Timo – Recto",
+  "hash": "9f66ff146ba8cd53"
+ },
+ "pairs/pb-001/recommendations[0]": {
+  "text": "Rastreo dirigido con el imán e impactación profiláctica en: Inmunodeficiencia (SIDA)",
+  "hash": "c541db7fc96eaf1a"
+ },
+ "pairs/pb-001/symptoms[0].text": {
+  "text": "Disminución de la respuesta inmunitaria",
+  "hash": "75c9a39512018da5"
+ },
+ "pairs/pb-001/symptoms[1].text": {
+  "text": "Fatiga crónica",
+  "hash": "3f4c4df582fce20c"
+ },
+ "pairs/pb-010/name": {
+  "text": "Cardias – Suprarrenal",
+  "hash": "17534524eaf0c44e"
+ },
+ "pairs/pb-010/symptoms[0].text": {
+  "text": "Acidez y ardor estomacal",
+  "hash": "a4dc2f56431e849a"
+ },
+ "pairs/pb-030/name": {
+  "text": "Píloro – Hígado",
+  "hash": "104238bef9f71493"
+ },
+ "pairs/pb-030/recommendations[0]": {
+  "text": "Dieta blanda",
+  "hash": "2b720798b1fc32c2"
+ },
+ "pairs/pb-030/symptoms[0].text": {
+  "text": "Dolor abdominal y náusea",
+  "hash": "a3687448652e9767"
+ },
+ "pairs/pb-030/symptoms[1].text": {
+  "text": "Acidez",
+  "hash": "c1f6cb7315918936"
+ },
+ "pairs/pb-045/name": {
+  "text": "Supraespinoso – Supraespinoso",
+  "hash": "b8a5bc2bd9584225"
+ },
+ "pairs/pb-045/recommendations[0]": {
+  "text": "Enf. Tropicales (Nilo Virus)",
+  "hash": "8d07c787cf02a947"
+ },
+ "pairs/pb-045/symptoms[0].text": {
+  "text": "Cefalea tensional",
+  "hash": "55a8a596822387ae"
+ },
+ "pairs/pb-045/symptoms[1].text": {
+  "text": "Fiebre",
+  "hash": "d4706d112fb601f5"
+ },
+ "pairs/pb-212/name": {
+  "text": "Pulmón – Pulmón",
+  "hash": "dcc6fca1810bbf06"
+ },
+ "pairs/pb-212/symptoms[0].text": {
+  "text": "Tos seca persistente",
+  "hash": "31327fe0819b7a37"
+ },
+ "points/bazo/name": {
+  "text": "Bazo",
+  "hash": "84fa96102329b9c4"
+ },
+ "points/cardias/name": {
+  "text": "Cardias",
+  "hash": "0b41afa878fd2077"
+ },
+ "points/higado/name": {
+  "text": "Hígado",
+  "hash": "7a6b1d0b8e763d5d"
+ },
+ "points/piloro/name": {
+  "text": "Píloro",
+  "hash": "febddacfa18e25f8"
+ },
+ "points/pulmon/name": {
+  "text": "Pulmón",
+  "hash": "7fef2266c89c575f"
+ },
+ "points/recto/name": {
+  "text": "Recto",
+  "hash": "9fcce8ea553fc9e8"
+ },
+ "points/rinon/name": {
+  "text": "Riñón",
+  "hash": "e4dab6e3795394da"
+ },
+ "points/supraespinoso/name": {
+  "text": "Supraespinoso",
+  "hash": "0f79c6608c196ad0"
+ },
+ "points/suprarrenal/name": {
+  "text": "Suprarrenal",
+  "hash": "75110cdc21e6e638"
+ },
+ "points/timo/name": {
+  "text": "Timo",
+  "hash": "b5d0fef13e58b8ff"
+ },
+ "points/trocanter-menor/name": {
+  "text": "Trocánter Menor",
+  "hash": "35f274db00880c10"
+ },
+ "points/vejiga/name": {
+  "text": "Vejiga",
+  "hash": "3869b6dcc70c7f2b"
+ },
+ "protocols/app-19-circulacion-de-piernas/name": {
+  "text": "19. Circulación de Piernas",
+  "hash": "689978a0656170b4"
+ },
+ "protocols/basic-detox/name": {
+  "text": "Protocolo básico de desintoxicación",
+  "hash": "ecb17b0b76c95fa7"
+ },
+ "protocols/top10-gastrointestinal/name": {
+  "text": "Top 10 Gastrointestinal",
+  "hash": "b141baeae4d715c0"
+ },
+ "recommendations/general-short/body": {
+  "text": "1. Cambiar cepillo de dientes\n2. Fortalecer los Pilares de la Salud\n3. Mantenerse en contacto con el Usuario (segundo rastreo en 8 días)",
+  "hash": "f15bf35338717a54"
+ },
+ "recommendations/general-short/title": {
+  "text": "Recomendaciones Generales (Versión Corta)",
+  "hash": "fa2f0ef2d59e262b"
+ },
+ "recommendations/good-eating/body": {
+  "text": "Las recomendaciones del buen comer son una lista de sugerencias. Comer despacio.",
+  "hash": "50ebf5c65df2ac5d"
+ },
+ "recommendations/good-eating/title": {
+  "text": "Recomendaciones del buen comer",
+  "hash": "2ed358c331585aca"
+ },
+ "recommendations/parasitic/body": {
+  "text": "Las recomendaciones para enfermedades parasitarias señalan las especificaciones a seguir. Cambiar sábanas y toallas.",
+  "hash": "63dacff6b197417f"
+ },
+ "recommendations/parasitic/title": {
+  "text": "Recomendaciones para Enfermedades Parasitarias",
+  "hash": "c00a85d4f7bf2946"
+ },
+ "recommendations/sti/body": {
+  "text": "Las recomendaciones para ITS señalan las especificaciones a seguir. Rastrear a la pareja.",
+  "hash": "d7aca439320de250"
+ },
+ "recommendations/sti/title": {
+  "text": "Recomendaciones para Infecciones de Transmisión Sexual (ITS)",
+  "hash": "9f4575ba5983843c"
+ },
+ "recommendations/stress-management/body": {
+  "text": "Las recomendaciones para el manejo del estrés son sugerencias generales. Respirar profundo.",
+  "hash": "79ae9347dc9e6192"
+ },
+ "recommendations/stress-management/title": {
+  "text": "Recomendaciones para manejo del estrés",
+  "hash": "66b1a6bb1d5081d0"
+ },
+ "recommendations/tropical/body": {
+  "text": "Las enfermedades tropicales se relacionan a transmisión por vectores (mosquitos). Usar repelente.",
+  "hash": "86c0f0798c09712e"
+ },
+ "recommendations/tropical/title": {
+  "text": "Recomendaciones para Enfermedades Tropicales",
+  "hash": "f1ba201242f8a958"
+ },
+ "regions/abdomen/name": {
+  "text": "Abdomen",
+  "hash": "3ba2375490b6e9b6"
+ },
+ "regions/head/name": {
+  "text": "Cabeza",
+  "hash": "bf561398ce6c6d0c"
+ },
+ "regions/lower-back/name": {
+  "text": "Espalda baja",
+  "hash": "69a309ccba1195d2"
+ },
+ "regions/neck/name": {
+  "text": "Cuello",
+  "hash": "f3b78bb69b8f797c"
+ },
+ "regions/pelvis/name": {
+  "text": "Pelvis",
+  "hash": "d8fa661e323babeb"
+ },
+ "regions/thorax/name": {
+  "text": "Tórax",
+  "hash": "282cb320b72a404d"
+ },
+ "regions/upper-back/name": {
+  "text": "Espalda alta",
+  "hash": "6f4a829a41cc18ed"
+ },
+ "symptoms/acidez/name": {
+  "text": "Acidez",
+  "hash": "c1f6cb7315918936"
+ },
+ "symptoms/cefalea/name": {
+  "text": "Cefalea",
+  "hash": "b0687bfb5473cc05"
+ },
+ "symptoms/dolor-abdominal/name": {
+  "text": "Dolor abdominal",
+  "hash": "92935d8d29ab8dbf"
+ },
+ "symptoms/fatiga/name": {
+  "text": "Fatiga",
+  "hash": "ce6d03effffdecd9"
+ },
+ "symptoms/fiebre/name": {
+  "text": "Fiebre",
+  "hash": "d4706d112fb601f5"
+ },
+ "symptoms/tos/name": {
+  "text": "Tos",
+  "hash": "a8e6b7b8deb29727"
+ }
+}

@@ -14,6 +14,7 @@ import * as C from './mock-data.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WEB = path.resolve(__dirname, '../../web');
+const PACKS_DIR = path.resolve(__dirname, '../../data/i18n/packs');
 const args = process.argv.slice(2);
 const argVal = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const PORT = Number(process.env.PORT || argVal('--port', 4173));
@@ -174,7 +175,8 @@ function assembleReport(s, over = {}) {
     amendment: parent ? { parentId: parent.id, parentRevision: parent.revision, parentSha256: parent.reportSha256, reason: s.amendReason } : null,
     org: { name: db.org.name, legalName: db.org.legalName, address: db.org.address, phone: db.org.phone, email: db.org.email, website: db.org.website, license: db.org.license, reportFooter: db.org.reportFooter, logo: db.org.logo || null },
     polarity: db.org.polarity,
-    patient: { id: pt.id, mrn: pt.mrn, firstName: pt.firstName, lastName: pt.lastName, fullName: `${pt.firstName} ${pt.lastName}`, dob: pt.dob, age: ageAt(pt.dob, s.sessionDate), sex: pt.sex },
+    patient: { id: pt.id, mrn: pt.mrn, firstName: pt.firstName, lastName: pt.lastName, fullName: `${pt.firstName} ${pt.lastName}`, dob: pt.dob, age: ageAt(pt.dob, s.sessionDate), sex: pt.sex, preferredLanguage: pt.preferredLanguage || null },
+    reportLocale: status === 'draft' ? null : (over.reportLocale ?? s.reportLocale ?? null),
     practitioner: pr ? { id: pr.id, name: pr.name, email: pr.email, role: pr.role } : null,
     session: { id: s.id, date: s.sessionDate, methodology: s.methodology,
       protocols: s.protocolIds.map((x) => ({ id: x, name: protoById.get(x)?.name ?? null, kind: protoById.get(x)?.kind ?? null })),
@@ -199,9 +201,10 @@ function generalRecs(findings) {
   const ids = findings.map((f) => f.pairId).filter(Boolean);
   return [pick(C.recommendations[0], [{ rule: 'always', pairIds: [] }]), ...(ids.length ? [pick(C.recommendations[1], [{ rule: 'rec-followup', pairIds: ids.slice(0, 2) }])] : [])];
 }
-function finalizeSession(s, signatureName, user, when = new Date()) {
+function finalizeSession(s, signatureName, user, when = new Date(), reportLocale = null) {
   const status = s.parentId ? 'amended' : 'final';
   const finalizedAt = when.toISOString();
+  s.reportLocale = reportLocale || db.patients.find((p) => p.id === s.patientId)?.preferredLanguage || db.org.defaultLocale || 'en';
   const report = assembleReport(s, { status, finalizedAt, finalizedBy: user.id, signatureName });
   s.snapshot = canon(report);
   s.reportSha256 = sha256(s.snapshot);
@@ -218,6 +221,7 @@ function seedDemo(admin) {
   const mary = mk('Mary', 'Example', '1979-04-12', 'female');
   const john = mk('John', 'Demo', '1964-09-30', 'male');
   const ana = mk('Ana', 'Prueba', '1991-01-22', 'female');
+  ana.preferredLanguage = 'es';
   const robert = mk('Robert', 'Testcase', '1958-06-05', 'male');
   const consent = (p, absolute = [], relative = []) => db.consents.push({ id: crypto.randomUUID(), patientId: p.id, type: 'intake', answers: { techniqueExplained: true, questionsAnswered: true, understandsScope: true, continuesMedical: true, authorizesPlacement: true, followUpInformed: true }, contraindications: { absolute, relative }, hasAbsolute: absolute.length > 0, hasRelative: relative.length > 0, signatureName: `${p.firstName} ${p.lastName}`, signedAt: addDays(now(), -20) + 'T15:00:00.000Z', recordedBy: practitioner.id, createdAt: now() });
   consent(mary, [], ['rel-04']); consent(john); consent(robert); consent(ana, ['abs-01'], []);
@@ -466,7 +470,7 @@ R('GET', '/catalog/recommendations', 'any', (c) => send(c.res, 200, list(C.recom
 R('GET', '/catalog/glossary', 'any', (c) => send(c.res, 200, list(C.glossary, c.query)));
 
 // ---- patients (blind-index semantics: exact last name / MRN, ?dob=, or first letter)
-const PATIENT_FIELDS = ['firstName', 'lastName', 'dob', 'sex', 'phone', 'email', 'address', 'mrn', 'notes'];
+const PATIENT_FIELDS = ['firstName', 'lastName', 'dob', 'sex', 'phone', 'email', 'address', 'mrn', 'notes', 'preferredLanguage'];
 const SEXES = ['female', 'male', 'other', 'unknown'];
 const patientSearch = (c, src) => {
   const q = (src.q || '').trim();
@@ -493,6 +497,7 @@ function checkPatient(res, b, create) {
   if (create || 'dob' in b) if (!b.dob || !/^\d{4}-\d{2}-\d{2}$/.test(b.dob) || b.dob > new Date().toISOString().slice(0, 10)) fields.dob = 'must be a valid date, not in the future';
   if (b.sex && !SEXES.includes(b.sex)) fields.sex = `must be one of ${SEXES.join(', ')}`;
   if (b.phone && !/^[0-9+().\s/-]*$/.test(b.phone)) fields.phone = 'has an invalid format';
+  if (b.preferredLanguage && !packs.has(b.preferredLanguage)) fields.preferredLanguage = `must be one of ${[...packs.keys()].join(', ')}`;
   if (Object.keys(fields).length) { err(res, 400, 'VALIDATION', 'Invalid input', fields); return false; }
   return true;
 }
@@ -606,11 +611,12 @@ R('DELETE', '/sessions/:id/findings/:fid', 'clinical', (c) => {
 R('POST', '/sessions/:id/finalize', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
   if (locked(c, s)) return;
-  if (!strict(c.res, c.body, ['signatureName', 'password'])) return;
+  if (!strict(c.res, c.body, ['signatureName', 'password', 'reportLocale'])) return;
+  if (c.body.reportLocale && !packs.has(c.body.reportLocale)) return err(c.res, 400, 'VALIDATION', 'Invalid input', { reportLocale: `must be one of ${[...packs.keys()].join(', ')}` });
   if (!c.body.signatureName) return err(c.res, 400, 'VALIDATION', 'Invalid input', { signatureName: 'is required' });
   if (!c.body.password || !checkPw(c.body.password, c.user.pw)) return err(c.res, 403, 'REAUTH_FAILED', 'Password is incorrect', { password: 'is incorrect' });
   if (c.body.signatureName.trim().toLowerCase() !== c.user.name.trim().toLowerCase()) return err(c.res, 422, 'SIGNATURE_MISMATCH', 'Signature must match the signed-in practitioner');
-  finalizeSession(s, c.body.signatureName, c.user);
+  finalizeSession(s, c.body.signatureName, c.user, new Date(), c.body.reportLocale || null);
   audit(c.user, 'session.finalize', s.id, { detail: { sha256: s.reportSha256 } });
   send(c.res, 200, { ok: true, status: s.status, sha256: s.reportSha256, hashShort: s.reportSha256.slice(0, 16), finalizedAt: s.finalizedAt, session: sessionView(s) });
 });
@@ -668,6 +674,101 @@ R('GET', '/admin/backup', 'admin', (c) => {
   audit(c.user, 'backup.export');
   c.res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="youheal-backup-${new Date().toISOString().slice(0, 10)}.yhb"` });
   c.res.end(crypto.randomBytes(256));
+});
+
+// ---- language packs (CONTRACT §9.3) — read from data/i18n/packs; admin overrides live in memory
+const packs = new Map();
+const deepFallback = (top, base) => (top && typeof top === 'object' && base && typeof base === 'object'
+  ? Object.fromEntries([...new Set([...Object.keys(base), ...Object.keys(top)])].map((k) => [k, k in top ? deepFallback(top[k], base[k]) : base[k]])) : top ?? base);
+for (const dir of fs.existsSync(PACKS_DIR) ? fs.readdirSync(PACKS_DIR) : []) {
+  const read = (f) => { try { return JSON.parse(fs.readFileSync(path.join(PACKS_DIR, dir, f), 'utf8')); } catch { return null; } };
+  const manifest = read('manifest.json'); if (!manifest) continue;
+  packs.set(manifest.locale, { manifest, ui: read('ui.json') || {}, catalog: read('catalog.json') || {}, overrides: new Map() });
+}
+const baselinePack = () => [...packs.values()].find((p) => p.manifest.role === 'baseline');
+// Simulate a few entries whose Spanish baseline changed after translation (so "stale" review can be exercised).
+for (const pk of packs.values()) {
+  if (pk.manifest.role === 'baseline') continue;
+  let n = 0; for (const [k, e] of Object.entries(pk.catalog)) { if (e.status === 'curated' && /^pairs\//.test(k) && n < 3) { pk.catalog[k] = { ...e, status: 'stale', staleText: e.text, text: null }; n++; } }
+}
+function effectiveEntry(pk, key) {
+  const base = baselinePack().catalog[key];
+  const ov = pk.overrides.get(key);
+  if (ov && ov.srcHash === base?.hash) return { text: ov.text, status: 'reviewed', override: true, editedAt: ov.editedAt };
+  const e = pk.catalog[key];
+  if (!e) return { text: null, status: 'missing' };
+  if (e.status === 'stale' || (base && e.srcHash !== base.hash)) return { text: null, staleText: e.staleText ?? e.text, status: 'stale' };
+  return { text: e.text, status: e.text ? e.status : 'missing' };
+}
+function packCoverage(pk) {
+  const base = baselinePack();
+  if (pk === base) { const n = Object.keys(base.catalog).length; return { fields: n, translated: n, byStatus: { baseline: n }, percent: 100, missing: 0, stale: 0 }; }
+  const byStatus = { curated: 0, machine: 0, reviewed: 0, missing: 0, stale: 0 };
+  for (const key of Object.keys(base.catalog)) byStatus[effectiveEntry(pk, key).status]++;
+  const fields = Object.keys(base.catalog).length; const translated = byStatus.curated + byStatus.machine + byStatus.reviewed;
+  return { fields, translated, byStatus, percent: fields ? Math.round((translated / fields) * 1000) / 10 : 0, missing: byStatus.missing, stale: byStatus.stale };
+}
+function stringRows(pk, { q = '', status = '' } = {}) {
+  const base = baselinePack(); const nq = norm(q);
+  const out = [];
+  for (const [key, b] of Object.entries(base.catalog)) {
+    const e = effectiveEntry(pk, key);
+    if (status && e.status !== status) continue;
+    const row = { key, baseline: b.text, text: e.text ?? e.staleText ?? null, status: e.status, override: !!e.override, editedAt: e.editedAt || null };
+    if (nq && !norm(`${key} ${b.text} ${row.text || ''}`).includes(nq)) continue;
+    out.push(row);
+  }
+  return out;
+}
+const packOr404 = (c, locale) => { const pk = packs.get(locale); if (!pk) err(c.res, 404, 'NOT_FOUND', 'Unknown language pack'); return pk; };
+R('GET', '/i18n/packs', null, (c) => send(c.res, 200, [...packs.values()].map((pk) => {
+  const cov = packCoverage(pk); const m = pk.manifest;
+  return { locale: m.locale, name: m.name, nativeName: m.nativeName, dir: m.dir || 'ltr', role: m.role, coverage: { percent: cov.percent, missing: cov.missing, stale: cov.stale } };
+})));
+R('GET', '/i18n/packs/:locale/ui', null, (c) => {
+  const pk = packOr404(c, c.params.locale); if (!pk) return;
+  const ui = c.params.locale === 'en' ? pk.ui : deepFallback(pk.ui, packs.get('en')?.ui || {});
+  const etag = `"${sha256(JSON.stringify(ui)).slice(0, 32)}"`;
+  if (c.req.headers['if-none-match'] === etag) { c.res.writeHead(304, { ETag: etag }); return c.res.end(); }
+  c.res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', ETag: etag, 'Cache-Control': 'no-cache' });
+  c.res.end(JSON.stringify(ui));
+});
+R('GET', '/i18n/packs/:locale/coverage', 'admin', (c) => {
+  const pk = packOr404(c, c.params.locale); if (!pk) return;
+  const cov = packCoverage(pk); const limit = Math.min(Number(c.query.limit ?? 50), 200); const offset = Number(c.query.offset || 0);
+  const slice = (st) => stringRows(pk, { status: st }).slice(offset, offset + limit).map((r) => ({ key: r.key, baseline: r.baseline, text: r.text }));
+  send(c.res, 200, { locale: c.params.locale, fields: cov.fields, translated: cov.translated, percent: cov.percent, byStatus: cov.byStatus, stale: limit ? slice('stale') : [], missing: limit ? slice('missing') : [], limit, offset });
+});
+R('GET', '/i18n/strings', 'admin', (c) => {
+  const pk = packOr404(c, c.query.locale); if (!pk) return;
+  send(c.res, 200, list(stringRows(pk, { q: c.query.q || '', status: c.query.status || '' }), { limit: c.query.limit || 50, offset: c.query.offset || 0 }));
+});
+R('PUT', '/i18n/strings', 'admin', (c) => {
+  if (!strict(c.res, c.body, ['locale', 'key', 'text'])) return;
+  const pk = packOr404(c, c.body.locale); if (!pk) return;
+  if (pk.manifest.role === 'baseline') return err(c.res, 409, 'BASELINE_READONLY', 'The Spanish baseline is edited in the catalog, not here');
+  const base = baselinePack().catalog[c.body.key];
+  if (!base) return err(c.res, 404, 'NOT_FOUND', 'Unknown key');
+  const text = String(c.body.text || '').trim();
+  if (!text || text.length > 20000) return err(c.res, 400, 'VALIDATION', 'Invalid input', { text: 'is required (max 20000 characters)' });
+  pk.overrides.set(c.body.key, { text, srcHash: base.hash, editedBy: c.user.id, editedAt: now() });
+  audit(c.user, 'i18n.string.update', c.body.key);
+  send(c.res, 200, { key: c.body.key, locale: c.body.locale, text, status: 'reviewed', override: true });
+});
+R('DELETE', '/i18n/strings', 'admin', (c) => {
+  if (!strict(c.res, c.body, ['locale', 'key'])) return;
+  const pk = packOr404(c, c.body.locale); if (!pk) return;
+  if (!pk.overrides.delete(c.body.key)) return err(c.res, 404, 'NOT_FOUND', 'No override for this key');
+  audit(c.user, 'i18n.string.revert', c.body.key);
+  send(c.res, 200, { ok: true, key: c.body.key, ...effectiveEntry(pk, c.body.key) });
+});
+R('GET', '/i18n/packs/:locale/export', 'admin', (c) => {
+  const pk = packOr404(c, c.params.locale); if (!pk) return;
+  const base = baselinePack().catalog; const out = {};
+  for (const [key, b] of Object.entries(base)) { const e = effectiveEntry(pk, key); out[key] = { text: e.text, srcHash: e.status === 'stale' ? (pk.catalog[key]?.srcHash ?? b.hash) : b.hash, status: e.status }; }
+  audit(c.user, 'i18n.pack.export', c.params.locale);
+  c.res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Content-Disposition': `attachment; filename="catalog.${c.params.locale}.json"` });
+  c.res.end(JSON.stringify(out, null, 1));
 });
 
 // ---- mock-only helpers

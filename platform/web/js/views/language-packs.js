@@ -39,7 +39,7 @@ export async function renderLanguagePacks(panel) {
 
   const cards = el('div.lp-cards', packs.map((p) => packCard(p, coverage.get(p.locale))));
   const review = el('div.lp-review');
-  mount(panel, el('div.stack-lg',
+  mount(panel, el('div.stack.lp-page',
     el('p.muted', t('langpacks.intro')),
     cards,
     mirrors.length ? review : alertBox({ tone: 'info', children: [el('p', t('langpacks.noMirrors'))] })));

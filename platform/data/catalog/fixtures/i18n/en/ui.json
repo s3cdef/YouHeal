@@ -1,0 +1,9 @@
+{
+ "app": {
+  "title": "YOU HEAL",
+  "hello": "Hello"
+ },
+ "only": {
+  "en": "English only"
+ }
+}

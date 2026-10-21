@@ -17,7 +17,7 @@ export function tmpDir(prefix = 'yh-test-') {
 }
 
 export function copyFixtures(dest = tmpDir('yh-cat-')) {
-  for (const f of fs.readdirSync(FIXTURES)) fs.copyFileSync(path.join(FIXTURES, f), path.join(dest, f));
+  for (const f of fs.readdirSync(FIXTURES)) if (fs.statSync(path.join(FIXTURES, f)).isFile()) fs.copyFileSync(path.join(FIXTURES, f), path.join(dest, f));
   return dest;
 }
 
