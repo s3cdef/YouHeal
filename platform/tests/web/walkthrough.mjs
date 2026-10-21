@@ -101,7 +101,7 @@ async function main() {
   const problems = problems_;
   let mfaSecret = null;
   const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
-  const shot = async (page, name, opts = {}) => { await page.waitForTimeout(opts.wait ?? 250); await page.screenshot({ path: path.join(ART, `${name}.png`), fullPage: !!opts.full }); console.log('  📸', name); };
+  const shot = async (page, name, opts = {}) => { if (!opts.toasts) await page.locator('.toast').evaluateAll((ts) => ts.forEach((n) => n.remove())).catch(() => {}); await page.waitForTimeout(opts.wait ?? 250); await page.screenshot({ path: path.join(ART, `${name}.png`), fullPage: !!opts.full }); console.log('  📸', name); };
 
   async function newPage(viewport, label) {
     const ctx = await browser.newContext({ viewport, deviceScaleFactor: 1, locale: 'en-US', colorScheme: 'light', permissions: ['clipboard-read', 'clipboard-write'] });
@@ -111,6 +111,8 @@ async function main() {
     const page = await ctx.newPage();
     page.setDefaultTimeout(Number(process.env.STEP_TIMEOUT || 15000));
     page.on('console', (m) => { if (m.type() === 'error') problems.push(`[${label}] console: ${m.text()} ${m.location() && m.location().url ? '@ ' + m.location().url : ''}`); });
+    // the anatomical MakeHuman body must load — a procedural-mannequin fallback frame is a failure
+    page.on('console', (m) => { if (/procedural mannequin|body asset unavailable/i.test(m.text())) problems.push(`[${label}] viewer fell back to the procedural body: ${m.text()}`); });
     page.on('pageerror', (e) => problems.push(`[${label}] pageerror: ${e.message}`));
     return { ctx, page };
   }
@@ -264,6 +266,9 @@ async function main() {
   const expanded = await page.locator('.point-drawer .pa-toggle[aria-expanded="true"]').count();
   if (!expanded) await page.locator('.point-drawer .pa-toggle').first().click();
   await page.locator('.point-drawer .pair-detail').first().waitFor();
+  await page.locator('.stage-toolbar .seg', { hasText: 'Back' }).click(); // reset the camera framing (list picks zoom in)
+  await page.locator('.stage-toolbar .seg', { hasText: 'Front' }).click();
+  await page.waitForTimeout(1800); // let the camera animation settle
   await shot(page, '12-point-drawer');
   const markBtn = page.locator('.point-drawer .pa-actions .btn-primary').first();
   if (await markBtn.isEnabled()) await markBtn.click();
@@ -365,6 +370,7 @@ async function main() {
   const tpage = await tctx.newPage();
   tpage.on('console', (m) => { if (m.type() === 'error') problems.push(`[tablet] console: ${m.text()}`); });
   tpage.on('pageerror', (e) => problems.push(`[tablet] pageerror: ${e.message}`));
+  tpage.on('console', (m) => { if (/procedural mannequin|body asset unavailable/i.test(m.text())) problems.push(`[tablet] viewer fell back to the procedural body: ${m.text()}`); });
   await tpage.goto(`${base}/#/`);
   await tpage.locator('.dash-grid .card').first().waitFor();
   await shot(tpage, '30-tablet-dashboard');

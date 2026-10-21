@@ -233,7 +233,7 @@ export async function renderReport({ main, params }) {
       const magnets = (rep.bodyMap && rep.bodyMap.magnets) || findings.flatMap((f) => [
         { id: `${f.seq}-n`, pointId: f.tracking.point, side: f.tracking.side, polarity: 'negative', label: String(f.seq) },
         { id: `${f.seq}-p`, pointId: f.impact.point, side: f.impact.side, polarity: 'positive', label: String(f.seq) }]);
-      const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: pol, locale: getLocale(), magnets, width: 800, height: 1100 });
+      const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: pol, locale: getLocale(), magnets, width: 1000, height: 1200 });
       if (snaps && snaps.anterior && snaps.posterior) {
         imgs = { front: snaps.anterior, back: snaps.posterior };
         if (status === 'draft' && can.findings()) api.put(`/sessions/${encodeURIComponent(params.id)}/report/images`, imgs).catch((err) => toast(`${t('report.imagesNotSaved')} ${errorMessage(err)}`, { tone: 'warn' }));

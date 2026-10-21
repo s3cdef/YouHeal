@@ -508,6 +508,7 @@ export async function renderScan({ main, params }) {
   const stage = el('div.stage');
   const viewerHost = el('div.viewer-host', el('div.viewer-loading', el('span.spinner'), el('span', t('viewer.loading'))));
   const drawer = el('aside.point-drawer', { hidden: true, aria: { label: t('scan.pointDetails') }, tabindex: '-1' });
+  root.querySelector('.scan-body').append(drawer); // docked over the protocol-runner column (see app.css)
   const viewSeg = segmented({ name: 'view', label: t('viewer.view'), value: st.view, size: 'sm',
     options: ['anterior', 'posterior', 'left', 'right'].map((v) => ({ value: v, label: t(`viewer.viewsShort.${v}`), title: t(`viewer.views.${v}`) })),
     onChange: (v) => { st.view = v; viewer && viewer.setView(v); } });
@@ -530,7 +531,7 @@ export async function renderScan({ main, params }) {
   const fallbackNote = el('p.viewer-note', { hidden: true });
   mount(center,
     el('div.stage-toolbar', viewSeg, allToggle, el('div.stage-search', pointSearch.root), listToggle),
-    el('div.stage-wrap', stage, drawer, pointList),
+    el('div.stage-wrap', stage, pointList),
     el('div.stage-foot', legend, fallbackNote));
   stage.append(viewerHost);
 
@@ -625,7 +626,7 @@ export async function renderScan({ main, params }) {
     const p = pointsMap.get(pointId); if (!p) return;
     st.drawerPoint = pointId;
     drawer.hidden = false; drawer.classList.add('is-open');
-    if (!pointList.hidden && stage.clientWidth < 760) { pointList.hidden = true; listToggle.setAttribute('aria-expanded', 'false'); }
+    if (!pointList.hidden) { pointList.hidden = true; listToggle.setAttribute('aria-expanded', 'false'); }
     const altName = getLocale() === 'es' ? p.name.en : p.name.es;
     const body = el('div.drawer-body', skeleton(5));
     mount(drawer,
@@ -881,7 +882,7 @@ export async function renderScan({ main, params }) {
   }
   async function uploadBodyMaps() {
     const mags = magnetsAndPairs().mags.map((x) => ({ ...x, state: x.state }));
-    const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: polarity(), locale: getLocale(), magnets: mags, width: 800, height: 1100 });
+    const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: polarity(), locale: getLocale(), magnets: mags, width: 1000, height: 1200 });
     if (!snaps || !snaps.anterior || !snaps.posterior) return;
     await api.put(`/sessions/${session.id}/report/images`, { front: snaps.anterior, back: snaps.posterior });
   }

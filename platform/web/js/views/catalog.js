@@ -285,7 +285,7 @@ export async function renderProtocolCard({ main, params }) {
       actions: [el('button.btn.btn-primary', { type: 'button', onClick: () => window.print() }, icon('print', { size: 18 }), t('report.print'))] })),
     sheet));
   document.body.classList.add('print-landscape');
-  const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: polarity(), locale: getLocale(), magnets, width: 600, height: 1000 });
+  const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: polarity(), locale: getLocale(), magnets, width: 1000, height: 1200 });
   for (const [fig, v] of [[front, 'anterior'], [back, 'posterior']]) {
     const box = fig.querySelector('.pc-img');
     mount(box, snaps && snaps[v] ? el('img', { src: snaps[v], alt: t('catalog.cardImgAlt', { view: t(`viewer.views.${v}`), name: locText(proto.name) }) }) : el('p.muted', t('viewer.unavailable')));
