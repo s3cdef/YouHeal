@@ -25,6 +25,7 @@ import * as patientRoutes from './routes/patients.js';
 import * as sessionRoutes from './routes/sessions.js';
 import * as auditRoutes from './routes/audit.js';
 import * as adminRoutes from './routes/admin.js';
+import * as i18nRoutes from './routes/i18n.js';
 
 export const RAW = Symbol('raw-response');
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -44,7 +45,7 @@ export function createApp({ cfg, db, keyring, log }) {
   const router = new Router('/api/v1');
   const deps = { cfg, db, keyring, log, audit, sessions, ghost, catalog, limits, RAW };
 
-  for (const mod of [healthRoutes, setupRoutes, authRoutes, userRoutes, orgRoutes, catalogRoutes, patientRoutes, sessionRoutes, auditRoutes, adminRoutes]) {
+  for (const mod of [healthRoutes, setupRoutes, authRoutes, userRoutes, orgRoutes, catalogRoutes, patientRoutes, sessionRoutes, auditRoutes, adminRoutes, i18nRoutes]) {
     mod.register(router, deps);
   }
   const serveStatic = createStaticHandler({ webDir: cfg.webDir, maxAge: cfg.staticMaxAge, log });

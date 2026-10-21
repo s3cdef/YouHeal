@@ -1,12 +1,13 @@
 // Catalog loader: data/catalog/*.json (CONTRACT §4) -> catalog tables, in ONE transaction.
 // Idempotent: skipped when the content fingerprint (sha256 of every catalog file) is unchanged.
-// Usage (CLI): npm run catalog:load -- [--dir <path>] [--force] [--lenient]
+// Usage (CLI): npm run catalog:load -- [--dir <path>] [--i18n <packs dir>] [--force] [--lenient]
 
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { normalizeText } from '../lib/crypto.js';
+import { readPacks, validatePacks, baselineFrom, catalogRecords, composeRecord, effective, BASELINE } from '../i18n/packs.js';
 import { slug } from './slug.js';
 
 export const FILES = Object.freeze({
@@ -332,21 +333,74 @@ export function catalogMeta(db) {
   return m.version ? { version: m.version, fingerprint: m.fingerprint, loadedAt: m.loadedAt, manifest: JSON.parse(m.manifest || 'null'), counts: JSON.parse(m.counts || '{}') } : null;
 }
 
-/** Load the catalog. Throws CatalogError on validation failures (nothing is written). */
-export function loadCatalog(db, { dir, log, force = false, strict = true } = {}) {
+/** Catalog records grouped by file name, in file order (the shape language-pack keys are generated from). */
+export function modelFiles(m) {
+  return {
+    points: [...m.points.values()], regions: [...m.regions.values()], pairs: [...m.pairs.values()],
+    entities: [...m.entities.values()], protocols: [...m.protocols.values()], symptoms: [...m.symptoms.values()],
+    contraindications: [...m.contraindications.values()], recommendations: [...m.recommendations.values()],
+    glossary: m.glossary, sources: [...m.sources.values()],
+  };
+}
+
+function writeI18n(db, packs, baseline) {
+  const ts = new Date().toISOString();
+  db.run('DELETE FROM i18n_strings');
+  db.run('DELETE FROM i18n_packs');
+  db.run('DELETE FROM i18n_ui');
+  for (const [key, b] of baseline) db.run('INSERT INTO i18n_strings (locale, key, text, src_hash, status, updated_at) VALUES (?,?,?,?,?,?)', BASELINE, key, b.text, b.hash, 'baseline', ts);
+  const hasBaselinePack = packs.some((p) => p.locale === BASELINE);
+  const rows = hasBaselinePack || !packs.length ? packs : [{ locale: BASELINE, manifest: { locale: BASELINE, name: 'Spanish', nativeName: 'Español', dir: 'ltr', role: 'baseline', baseline: BASELINE }, sha256: 'synthetic', entries: new Map() }, ...packs];
+  for (const p of rows) {
+    const m = p.manifest;
+    db.run(`INSERT INTO i18n_packs (locale, name, native_name, dir, role, baseline, manifest_json, sha256, loaded_at) VALUES (?,?,?,?,?,?,?,?,?)`,
+      p.locale, m.name || p.locale, m.nativeName || m.name || p.locale, m.dir || 'ltr', m.role, m.baseline || BASELINE, JSON.stringify(m), p.sha256, ts);
+    if (m.role === 'mirror') {
+      for (const [key, e] of p.entries) db.run('INSERT INTO i18n_strings (locale, key, text, src_hash, status, updated_at) VALUES (?,?,?,?,?,?)', p.locale, key, e.text, e.srcHash, e.status, ts);
+    }
+    if (p.ui) db.run('INSERT INTO i18n_ui (locale, json, sha256) VALUES (?,?,?)', p.locale, JSON.stringify(p.ui), crypto.createHash('sha256').update(JSON.stringify(p.ui)).digest('hex'));
+  }
+}
+
+/** Load the catalog (+ language packs). Throws CatalogError on validation failures (nothing is written). */
+export function loadCatalog(db, { dir, i18nDir = null, log, force = false, strict = true } = {}) {
   const { data, hashes } = readFiles(dir);
-  const fingerprint = fingerprintOf(hashes);
+  const packsRead = readPacks(i18nDir);
+  const fingerprint = fingerprintOf({ ...hashes, ...packsRead.hashes });
   const current = catalogMeta(db);
   if (!force && current?.fingerprint === fingerprint) {
     log?.info('catalog unchanged; load skipped', { catalogVersion: current.version });
     return { skipped: true, version: current.version, fingerprint, counts: current.counts, warnings: [] };
   }
   const { model, errors, warnings } = buildModel(data, hashes, { strict });
+  model.fingerprint = fingerprint;
+  // language packs: validate against the catalog's own Spanish text, then compose mirrors into the records
+  const files = modelFiles(model);
+  const baseline = baselineFrom(files);
+  const v = validatePacks(packsRead, baseline);
+  errors.push(...v.errors);
+  warnings.push(...v.warnings);
   if (errors.length) throw new CatalogError(errors, warnings);
-  const counts = db.tx(() => writeModel(db, model));
+  const mirrors = v.packs.filter((p) => p.manifest.role === 'mirror');
+  const byLoc = new Map(mirrors.map((p) => [p.locale, p.entries]));
+  for (const { file, id, rec } of catalogRecords(files)) composeRecord(rec, `${file}/${id}`, [...byLoc.keys()], (loc, key) => byLoc.get(loc).get(key));
+  const counts = db.tx(() => {
+    const c = writeModel(db, model);
+    writeI18n(db, v.packs, baseline);
+    db.run("INSERT OR REPLACE INTO catalog_meta (key, value) VALUES ('i18n_rev', ?)", String(Date.now()));
+    return c;
+  });
+  const coverage = {};
+  for (const p of mirrors) {
+    const byStatus = { curated: 0, machine: 0, reviewed: 0, missing: 0, stale: 0 };
+    for (const [key, b] of baseline) byStatus[effective(b.hash, p.entries.get(key)).status]++;
+    const translated = byStatus.curated + byStatus.machine + byStatus.reviewed;
+    coverage[p.locale] = { fields: baseline.size, translated, percent: baseline.size ? Math.round((translated / baseline.size) * 1000) / 10 : 0, ...byStatus };
+    log?.info('language pack loaded', { event: `i18n.${p.locale}`, count: translated, warnings: JSON.stringify(coverage[p.locale]) });
+  }
   for (const w of warnings.slice(0, 50)) log?.warn('catalog warning', { warnings: w });
   log?.info('catalog loaded', { catalogVersion: model.version, count: counts.pairs });
-  return { skipped: false, version: model.version, fingerprint, counts, warnings };
+  return { skipped: false, version: model.version, fingerprint, counts, warnings, coverage };
 }
 
 // ---------------------------------------------------------------- CLI
@@ -363,7 +417,8 @@ if (isMain) {
     const db = openDb(cfg.dbPath, { log });
     migrate(db, { log });
     const dir = opt('--dir') ? path.resolve(opt('--dir')) : cfg.catalogDir;
-    const r = loadCatalog(db, { dir, log, force: args.includes('--force'), strict: !args.includes('--lenient') });
+    const i18nDir = opt('--i18n') ? path.resolve(opt('--i18n')) : cfg.i18nDir;
+    const r = loadCatalog(db, { dir, i18nDir, log, force: args.includes('--force'), strict: !args.includes('--lenient') });
     db.close();
     console.log(JSON.stringify({ ok: true, ...r, warnings: r.warnings.length }, null, 2));
     if (r.warnings.length) console.log(`${r.warnings.length} warning(s):\n${r.warnings.map((w) => `  - ${w}`).join('\n')}`);

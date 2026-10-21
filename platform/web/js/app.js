@@ -2,11 +2,11 @@
 import { el, mount, clear } from './ui/dom.js';
 import { icon, brandMark } from './ui/icons.js';
 import { api, on as onApi, setCsrf, startIdleWatch, stopIdleWatch, setIdleTimeout, AuthError } from './api.js';
-import { initI18n, setLocale, getLocale, detectLocale, t, onLocaleChange } from './i18n.js';
+import { initI18n, setLocale, getLocale, t, onLocaleChange } from './i18n.js';
 import { route, setNotFound, setHooks, startRouter, navigate, reload, currentPath } from './router.js';
 import { state, can, clearCatalogCache, polarity } from './state.js';
 import { toast } from './ui/toast.js';
-import { segmented } from './ui/components.js';
+import { languagePicker } from './ui/components.js';
 import { applyTheme, getTheme, focusTitle, rememberRoute, lastRoute, initials } from './views/common.js';
 
 const app = document.getElementById('app');
@@ -124,9 +124,8 @@ function buildShell() {
     themeBtn.title = t(`theme.${next}`);
     toast(t('settings.themeSet', { theme: t(`theme.${next}`) }), { tone: 'info', timeout: 2000 });
   });
-  const locSwitch = segmented({
-    name: 'locale', label: t('settings.language'), value: getLocale(), size: 'xs',
-    options: [{ value: 'en', label: 'EN', title: 'English' }, { value: 'es', label: 'ES', title: 'Español' }],
+  const locSwitch = languagePicker({
+    label: t('settings.language'), value: getLocale(), size: 'xs',
     onChange: async (v) => {
       await setLocale(v);
       api.patch('/auth/prefs', { locale: v }).catch(() => {});
@@ -183,7 +182,8 @@ function layoutFor(r, layout) {
     document.body.classList.add('is-auth');
     shellEls = null;
     const main = el('main#main.auth-main', { tabindex: '-1' });
-    mount(app, el('div.auth-layout',
+    const langMenu = el('div.auth-lang', languagePicker({ label: t('settings.language'), value: getLocale(), size: 'xs', names: true, onChange: (v) => setLocale(v) }));
+    mount(app, el('div.auth-layout', langMenu,
       el('div.auth-art', { aria: { hidden: 'true' } }, fieldArt(), el('div.auth-art-text', brandMark(44), el('p.auth-art-name', 'YOU HEAL'), el('p.auth-art-sub', t('app.clinical')), el('p.auth-art-tag', t('auth.tagline')))),
       main));
     return main;
@@ -294,7 +294,7 @@ window.addEventListener('unhandledrejection', (e) => { console.error('Unhandled'
 
 async function boot() {
   applyTheme(getTheme());
-  await initI18n(detectLocale());
+  await initI18n().catch((err) => console.warn('[i18n]', err));
   try {
     setupStatus = await api.get('/setup/status', null, { auth: false });
   } catch {

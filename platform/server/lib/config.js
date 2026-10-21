@@ -157,6 +157,7 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
     setupTokenFile: path.join(dataDir, 'setup-token'),
     catalogDir: env.YH_CATALOG_DIR ? resolve(env.YH_CATALOG_DIR) : path.join(dataDir, 'catalog'),
     catalogStrict: bool(env, 'YH_CATALOG_STRICT', true),
+    i18nDir: env.YH_I18N_DIR ? resolve(env.YH_I18N_DIR) : path.join(dataDir, 'i18n', 'packs'),
     catalogLicenses: parseLicenses(env.YH_CATALOG_LICENSES),
     webDir: env.YH_WEB_DIR ? resolve(env.YH_WEB_DIR) : path.join(ROOT_DIR, 'web'),
     staticMaxAge: int(env, 'YH_STATIC_MAX_AGE', 300, 0, 31536000),

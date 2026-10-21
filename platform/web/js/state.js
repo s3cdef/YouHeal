@@ -9,6 +9,9 @@ export const state = {
   restriction: null, // 'mfa' | 'password' | null (from /auth/me)
 };
 
+/** Report language chosen per session in this tab (memory only); the finalize dialog defaults to it. */
+export const reportLocales = new Map();
+
 export const DEFAULT_POLARITY = { negative: '#2563EB', positive: '#DC2626' };
 
 export function polarity() {

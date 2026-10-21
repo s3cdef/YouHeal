@@ -1,16 +1,17 @@
-// Settings: Profile (locale/theme/password/MFA) · Clinic profile · Users · Audit log.
+// Settings: Profile (locale/theme/password/MFA) · Clinic profile · Users · Language packs · Audit log.
 import { el, mount, clear } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, ValidationError } from '../api.js';
 import { t, setLocale, getLocale, fmtDateTime } from '../i18n.js';
 import { state, can, DEFAULT_POLARITY } from '../state.js';
-import { tabs, card, field, input, textarea, select, segmented, alertBox, setLoading, table, chip, emptyState, skeleton } from '../ui/components.js';
+import { tabs, card, field, input, textarea, select, segmented, languagePicker, languageOptions, alertBox, setLoading, table, chip, emptyState, skeleton } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { pageHeader, applyTheme, getTheme, errorPanel } from './common.js';
 import { navigate } from '../router.js';
 import { showSidebarLogo, handleLockout, refreshMe } from '../app.js';
 import { recoveryCodesBlock } from '../ui/recovery.js';
+import { renderLanguagePacks } from './language-packs.js';
 
 const ROLES = ['admin', 'practitioner', 'assistant', 'auditor'];
 
@@ -20,6 +21,7 @@ export async function renderSettings({ main, params, route, query }) {
     { id: 'profile', label: t('settings.tabProfile'), icon: 'user' },
     can.admin() ? { id: 'clinic', label: t('settings.tabClinic'), icon: 'home' } : null,
     can.admin() ? { id: 'users', label: t('settings.tabUsers'), icon: 'users' } : null,
+    can.admin() ? { id: 'languages', label: t('settings.tabLanguages'), icon: 'globe' } : null,
     can.audit() ? { id: 'audit', label: t('settings.tabAudit'), icon: 'shield' } : null,
   ].filter(Boolean);
   const active = available.some((x) => x.id === wanted) ? wanted : 'profile';
@@ -28,7 +30,7 @@ export async function renderSettings({ main, params, route, query }) {
     onChange: (id, panel, user) => {
       if (user) history.replaceState(null, '', `#/settings/${id}`);
       clear(panel);
-      ({ profile, clinic, users, audit })[id](panel, query || {});
+      ({ profile, clinic, users, audit, languages: renderLanguagePacks })[id](panel, query || {});
     },
   });
   mount(main, el('div.page', pageHeader({ title: t('settings.title'), subtitle: t('settings.subtitle') }), tb.root, tb.panel));
@@ -38,7 +40,7 @@ export async function renderSettings({ main, params, route, query }) {
 // ---------------- Profile ----------------
 function profile(panel, query = {}) {
   const u = state.user || {};
-  const langSeg = segmented({ name: 'lang', label: t('settings.language'), value: getLocale(), options: [{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }],
+  const langSeg = languagePicker({ name: 'lang', label: t('settings.language'), value: getLocale(), names: true,
     onChange: async (v) => { try { await api.patch('/auth/prefs', { locale: v }); if (state.user) state.user.locale = v; } catch (err) { toast(errorMessage(err), { tone: 'error' }); } await setLocale(v); } });
   const themeSeg = segmented({ name: 'theme', label: t('settings.theme'), value: getTheme(), options: ['light', 'dark', 'system'].map((v) => ({ value: v, label: t(`theme.${v}`), icon: v === 'light' ? 'sun' : v === 'dark' ? 'moon' : 'monitor' })),
     onChange: (v) => { applyTheme(v); api.patch('/auth/prefs', { theme: v }).catch(() => {}); } });
@@ -157,7 +159,7 @@ async function clinic(panel) {
     polPreview.append(a, b);
   };
   negIn.addEventListener('input', renderPol); posIn.addEventListener('input', renderPol); renderPol();
-  const locSel = select([{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }]);
+  const locSel = select(languageOptions(org.defaultLocale || 'en'));
   const btn = el('button.btn.btn-primary.btn-lg', { type: 'submit' }, icon('check', { size: 18 }), t('common.saveChanges'));
   const form = el('form.form.form-sections', { novalidate: true },
     card({ title: t('settings.clinicIdentity'), icon: 'home', children: [el('div.grid-2',
@@ -224,7 +226,7 @@ async function users(panel) {
         sel.addEventListener('change', async () => { try { await api.patch(`/users/${u.id}`, { role: sel.value }); toast(t('settings.userUpdated'), { tone: 'success' }); } catch (err) { sel.value = u.role; toast(errorMessage(err), { tone: 'error' }); } });
         return sel;
       } },
-      { key: 'mfa', label: 'MFA', render: (u) => (u.mfaEnabled ? chip(t('settings.mfaOnShort'), 'teal') : chip(t('settings.mfaOffShort'), u.role === 'admin' ? 'rose' : 'amber')) },
+      { key: 'mfa', label: t('settings.colMfa'), render: (u) => (u.mfaEnabled ? chip(t('settings.mfaOnShort'), 'teal') : chip(t('settings.mfaOffShort'), u.role === 'admin' ? 'rose' : 'amber')) },
       { key: 'status', label: t('session.status'), render: (u) => el('span.chips-inline',
         u.active !== false ? chip(t('settings.active'), 'teal') : chip(t('settings.inactive'), 'slate'),
         u.locked ? chip(t('settings.locked'), 'rose') : null,
@@ -323,7 +325,7 @@ async function audit(panel) {
           const signedRow = can.clinical() || /^(session\.finalize|session\.amend|report\.)/.test(a.action);
           return a.targetType === 'session' && can.reports() && signedRow ? el('a.mono', { href: `#/sessions/${id2}/report`, title: t('settings.openReport') }, label) : el('span.mono', { title: String(id2) }, label);
         } },
-        { key: 'ip', label: 'IP', cls: 'mono small' },
+        { key: 'ip', label: t('settings.colIp'), cls: 'mono small' },
         { key: 'hash', label: t('report.hash'), cls: 'mono small', render: (a) => (a.hash ? `${a.hash.slice(0, 12)}…` : '—') },
       ],
     }));

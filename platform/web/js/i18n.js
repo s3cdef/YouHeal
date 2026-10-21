@@ -1,39 +1,101 @@
-// i18n: UI strings from /locales/{en,es}.json; catalog text via loc().
+// i18n (CONTRACT §9): UI strings come from the language packs served by the API
+// (GET /api/v1/i18n/packs/:locale/ui); the language menu from GET /api/v1/i18n/packs.
+// A minimal built-in English set lets the app explain itself when the API is unreachable.
 import { el } from './ui/dom.js';
 
-export const LOCALES = ['en', 'es'];
-const catalogs = {};
+const BUILTIN_EN = {
+  app: { title: 'YOU HEAL Clinical', clinical: 'Clinical', homeLabel: 'YOU HEAL Clinical — home' },
+  common: { retry: 'Retry', untranslated: 'Spanish original — translation pending or out of date' },
+  errors: {
+    generic: 'Something went wrong. Please try again.',
+    network: 'Cannot reach the server. Check your connection and try again.',
+    timeout: 'The server took too long to respond. Please try again.',
+    viewLoad: 'This page could not be loaded. Reload the app and try again.',
+    serverUnreachable: 'The server is not reachable',
+    serverUnreachableBody: 'YOU HEAL Clinical could not contact its server. Make sure it is running, then retry.',
+    languagePackUnavailable: 'The language pack could not be loaded; showing English.',
+  },
+};
+const FALLBACK_PACKS = [{ locale: 'en', name: 'English', nativeName: 'English', dir: 'ltr', role: 'mirror' }];
+const INTL = { en: 'en-US', es: 'es-US' };
+
+const catalogs = { };
+let packs = null;
 let current = 'en';
 const listeners = new Set();
 
+async function fetchJson(url) {
+  const res = await fetch(url, { credentials: 'same-origin', cache: 'no-cache', headers: { Accept: 'application/json' } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+/** Language packs installed on the server ([{locale, name, nativeName, dir, role, coverage}]). */
+export async function loadPacks(force = false) {
+  if (packs && !force) return packs;
+  try {
+    const data = await fetchJson('/api/v1/i18n/packs');
+    const list = Array.isArray(data) ? data : (data && (data.packs || data.items)) || [];
+    packs = list.filter((p) => p && p.locale);
+    if (!packs.length) packs = FALLBACK_PACKS.slice();
+  } catch { packs = packs || FALLBACK_PACKS.slice(); }
+  return packs;
+}
+export function getPacks() { return packs || FALLBACK_PACKS; }
+export function packInfo(locale) { return getPacks().find((p) => p.locale === locale) || null; }
+export function localeLabel(locale) { const p = packInfo(locale); return (p && (p.nativeName || p.name)) || String(locale || '').toUpperCase(); }
+export function isLocale(locale) { return !!locale && getPacks().some((p) => p.locale === locale); }
+
 async function load(locale) {
   if (catalogs[locale]) return catalogs[locale];
-  const res = await fetch(`/locales/${locale}.json`, { credentials: 'same-origin', cache: 'no-cache' });
-  if (!res.ok) throw new Error(`locale ${locale} failed to load`);
-  catalogs[locale] = await res.json();
+  try {
+    const data = await fetchJson(`/api/v1/i18n/packs/${encodeURIComponent(locale)}/ui`);
+    catalogs[locale] = data && typeof data === 'object' && data.strings && typeof data.strings === 'object' ? data.strings : data;
+  } catch (err) {
+    if (locale !== 'en') throw err;
+    console.warn('[i18n] UI language pack unavailable; using built-in English');
+    catalogs.en = BUILTIN_EN;
+  }
   return catalogs[locale];
 }
 
-export async function initI18n(locale) {
+/** Make sure a pack's UI strings are loaded (e.g. to render the report in another language). */
+export async function ensureLocale(locale) { try { await load(locale); return true; } catch { return false; } }
+
+export async function initI18n(locale = null) {
+  await loadPacks();
   await load('en');
-  await setLocale(locale, { silent: true });
+  await setLocale(locale || detectLocale(), { silent: true });
 }
 
+/** The browser language if a pack exists for it, else English. */
 export function detectLocale() {
   const nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
-  return LOCALES.includes(nav) ? nav : 'en';
+  return isLocale(nav) ? nav : 'en';
 }
 
 export async function setLocale(locale, { silent = false } = {}) {
-  const l = LOCALES.includes(locale) ? locale : 'en';
-  await load(l);
+  let l = isLocale(locale) ? locale : 'en';
+  try { await load(l); } catch { l = 'en'; await load('en'); }
   current = l;
+  const p = packInfo(l);
   document.documentElement.lang = l;
+  document.documentElement.dir = p && p.dir === 'rtl' ? 'rtl' : 'ltr';
   if (!silent) for (const fn of listeners) fn(l);
 }
 
 export function onLocaleChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 export function getLocale() { return current; }
+
+/**
+ * Render synchronously in another loaded locale (t, loc, locNode and the formatters all follow it).
+ * Used by the report, whose language is chosen independently of the UI language.
+ */
+export function inLocale(locale, fn) {
+  const prev = current;
+  current = catalogs[locale] ? locale : prev;
+  try { return fn(); } finally { current = prev; }
+}
 
 function lookup(cat, key) {
   let v = cat;
@@ -53,12 +115,16 @@ export function t(key, vars) {
   }
   let s = lookup(catalogs[current], k);
   if (s === undefined) s = lookup(catalogs.en, k);
+  if (s === undefined) s = lookup(BUILTIN_EN, k);
   if (s === undefined) return key;
   if (vars) s = s.replace(/\{(\w+)\}/g, (m, n) => (vars[n] !== undefined && vars[n] !== null ? String(vars[n]) : m));
   return s;
 }
 
-/** Localized catalog text: name[locale] ?? name.es. Returns { text, fallback }. */
+/**
+ * Localized catalog text: name[locale] ?? name.es (the Spanish baseline). Returns { text, fallback }.
+ * The server omits a locale whose mirror entry is missing or stale (§9.4), so fallback === "show the ES badge".
+ */
 export function loc(obj, locale = current) {
   if (obj === null || obj === undefined) return { text: '', fallback: false };
   if (typeof obj === 'string') return { text: obj, fallback: false };
@@ -75,7 +141,7 @@ export function locNode(obj, tag = 'span', cls = '') {
   const node = el(`${tag}${cls ? '.' + cls.split(' ').join('.') : ''}`, text);
   if (fallback) {
     node.lang = 'es';
-    node.append(' ', el('abbr.badge-es', { title: t('common.untranslated'), lang: 'en' }, 'ES'));
+    node.append(' ', el('abbr.badge-es', { title: t('common.untranslated'), aria: { label: t('common.untranslated') }, lang: current, data: { i18nFallback: 'es' } }, 'ES'));
   }
   return node;
 }
@@ -97,7 +163,8 @@ export function vocab(kind, id) {
 }
 
 // ---- formatters ----
-function intlLocale() { return current === 'es' ? 'es-US' : 'en-US'; }
+/** BCP-47 tag for Intl formatting in the active locale. */
+export function intlLocale() { return INTL[current] || current || 'en-US'; }
 
 export function parseDateOnly(s) {
   if (!s) return null;

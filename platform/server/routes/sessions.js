@@ -10,6 +10,8 @@ import { catalogMeta } from '../catalog/load.js';
 import { nowIso, today, addDays, parseJson, orgView, getOrg, ageAt } from './_shared.js';
 import { getPatientRow } from './patients.js';
 import { createReauth } from './_reauth.js';
+import { availableLocales } from './i18n.js';
+import { walkLocalized, srcHash } from '../i18n/packs.js';
 
 export const METHODOLOGIES = ['biomagnetism', 'bioenergetics', 'telebioenergetics'];
 export const PHENOMENA = ['infiltrate', 'exudate', 'cyst', 'abscess', 'neoplasia'];
@@ -24,6 +26,25 @@ const FOLLOW_UP_NOTE = Object.freeze({
   es: 'Se recomienda un rastreo de control a la semana (liberación de reservorios).',
 });
 const IMAGE_MAX_CHARS = 2 * 1024 * 1024;
+const ATTESTATION = Object.freeze({ en: 'I attest that this report accurately reflects the findings of the session described above.', es: 'Certifico que este informe refleja fielmente los hallazgos de la sesión descrita.' });
+const TERMINOLOGY = Object.freeze({ en: 'Findings are reported as "related to" — never as a diagnosis.', es: 'Los hallazgos se reportan como "relacionado con", nunca como diagnóstico.' });
+/** Fixed report texts (not catalog data), indexed by their Spanish text for translating signed snapshots. */
+const FIXED_TEXTS = new Map([DISCLAIMER, FOLLOW_UP_NOTE, ATTESTATION, TERMINOLOGY].map((o) => [o.es, o]));
+
+/**
+ * Resolve every localized object in a report to what is shown in `locale`: { es: <baseline>, [locale]: text? }.
+ * Works on a deep copy (report objects reference the catalog cache). Missing translations fall back to es.
+ */
+export function localizeReport(report, locale, translate = null) {
+  const out = structuredClone(report);
+  for (const { node } of walkLocalized(out, 'report')) {
+    const es = node.es;
+    const t = locale === 'es' ? null : (translate ? translate(es) : node[locale]);
+    for (const k of Object.keys(node)) if (k !== 'es') delete node[k];
+    if (typeof t === 'string' && t) node[locale] = t;
+  }
+  return out;
+}
 
 // ---------------------------------------------------------------- schemas
 
@@ -297,16 +318,32 @@ export function assembleReport({ db, keyring, catalog }, s, overrides = {}) {
     followUp: { date: s.follow_up_date, note: FOLLOW_UP_NOTE },
     attestation: status === 'draft' ? null : {
       signatureName, finalizedAt, finalizedBy: finalizer ? { id: finalizer.id, name: finalizer.name } : null,
-      statement: { en: 'I attest that this report accurately reflects the findings of the session described above.', es: 'Certifico que este informe refleja fielmente los hallazgos de la sesión descrita.' },
+      statement: ATTESTATION,
     },
     disclaimer: DISCLAIMER,
-    terminology: { en: 'Findings are reported as "related to" — never as a diagnosis.', es: 'Los hallazgos se reportan como "relacionado con", nunca como diagnóstico.' },
+    terminology: TERMINOLOGY,
     catalog: {
       version: meta?.version ?? null,
       sources: [...usedDocs].map((id) => c.sources.get(id)).filter(Boolean).map((src) => ({ id: src.id, title: src.title, license_status: src.license_status, notice: src.notice ?? null })),
     },
     generatedAt: status === 'draft' ? nowIso() : finalizedAt,
+    reportLocale: overrides.locale ?? null,
+    availableLocales: availableLocales(db),
   };
+}
+
+/** Assemble + localize: the exact content shown (and, when finalizing, signed) in `locale`. */
+export function assembleLocalizedReport(deps, s, overrides = {}) {
+  const locale = overrides.locale || defaultReportLocale(deps.db, s);
+  return localizeReport(assembleReport(deps, s, { ...overrides, locale }), locale);
+}
+
+export function defaultReportLocale(db, s) {
+  const p = db.get('SELECT preferred_language FROM patients WHERE id = ?', s.patient_id);
+  const avail = availableLocales(db);
+  const org = orgView(getOrg(db, s.org_id));
+  for (const l of [p?.preferred_language, org.defaultLocale, 'es']) if (l && avail.includes(l)) return l;
+  return avail[0];
 }
 
 export const reportHash = (report) => sha256hex(canonicalJson(report));
@@ -565,7 +602,11 @@ export function register(router, deps) {
     const body = check(v.object({
       signatureName: v.string({ min: 1, max: 200 }).optional(),
       password: v.string({ min: 1, max: 1024, trim: false }),
+      reportLocale: v.string({ max: 16, pattern: /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/ }).optional(),
     }), ctx.body);
+    if (body.reportLocale && !availableLocales(db).includes(body.reportLocale)) {
+      throw new HttpError(400, 'VALIDATION', 'Unsupported report language', { reportLocale: `must be one of: ${availableLocales(db).join(', ')}` });
+    }
     const s = getSession(ctx);
     requireDraft(s);
     // F-07: the attestation is bound to the authenticated signer. A supplied name must match the account
@@ -588,17 +629,19 @@ export function register(router, deps) {
         const parent = db.get('SELECT superseded_by FROM scan_sessions WHERE id = ?', fresh.parent_id);
         if (parent?.superseded_by) throw conflict('ALREADY_SUPERSEDED', 'The original report was already amended by another revision');
       }
-      const report = assembleReport(deps, fresh, { status, finalizedAt, finalizedBy: ctx.user.id, signatureName: body.signatureName });
+      const reportLocale = body.reportLocale || defaultReportLocale(db, fresh);
+      // what is signed is exactly what is shown: catalog text resolved in the report language
+      const report = assembleLocalizedReport(deps, fresh, { status, finalizedAt, finalizedBy: ctx.user.id, signatureName: body.signatureName, locale: reportLocale });
       const canonical = canonicalJson(report);
       const hash = sha256hex(canonical);
       db.run(`UPDATE scan_sessions SET status = ?, signature_name_enc = ?, finalized_by = ?, finalized_at = ?, report_sha256 = ?, report_snapshot = ?, updated_at = ?
         WHERE id = ? AND status = 'draft'`, status, encCol(keyring, 'scan_sessions', 'signature_name_enc', s.id, body.signatureName),
       ctx.user.id, finalizedAt, hash, encCol(keyring, 'scan_sessions', 'report_snapshot', s.id, canonical), finalizedAt, s.id);
       if (fresh.parent_id) db.run('UPDATE scan_sessions SET superseded_by = ? WHERE id = ?', s.id, fresh.parent_id);
-      ctx.audit('session.finalize', { targetType: 'session', targetId: s.id, detail: { patientId: s.patient_id, status, revision: s.revision, sha256: hash } });
-      return { hash };
+      ctx.audit('session.finalize', { targetType: 'session', targetId: s.id, detail: { patientId: s.patient_id, status, revision: s.revision, sha256: hash, reportLocale } });
+      return { hash, reportLocale };
     });
-    return { ok: true, status, sha256: result.hash, hashShort: result.hash.slice(0, 16), finalizedAt, session: sessionView(db, keyring, db.get('SELECT * FROM scan_sessions WHERE id = ?', s.id)) };
+    return { ok: true, status, reportLocale: result.reportLocale, sha256: result.hash, hashShort: result.hash.slice(0, 16), finalizedAt, session: sessionView(db, keyring, db.get('SELECT * FROM scan_sessions WHERE id = ?', s.id)) };
   }, { roles: PERM.clinicalWrite, rate: 'auth' });
 
   router.post('/sessions/:id/amend', (ctx) => {
@@ -643,9 +686,11 @@ export function register(router, deps) {
     const isAuditor = ctx.user.role === 'auditor';
     // F-12: auditors review signed records only — drafts are clinical work in progress
     if (isAuditor && s.status === 'draft') throw new HttpError(403, 'FORBIDDEN', 'Auditors may only read finalized reports');
-    let report, hash = null, integrity = null;
+    const q = ctx.query.get('locale');
+    if (q && !availableLocales(db).includes(q)) throw new HttpError(400, 'VALIDATION', 'Unsupported report language', { locale: `must be one of: ${availableLocales(db).join(', ')}` });
+    let report, hash = null, integrity = null, translationOf = null;
     if (s.status === 'draft') {
-      report = assembleReport(deps, s);
+      report = assembleLocalizedReport(deps, s, { locale: q || undefined });
     } else {
       const canonical = decCol(keyring, 'scan_sessions', 'report_snapshot', s.id, s.report_snapshot);
       report = JSON.parse(canonical);
@@ -653,8 +698,16 @@ export function register(router, deps) {
       integrity = safeEqual(actual, s.report_sha256) ? 'verified' : 'mismatch';
       hash = { sha256: s.report_sha256, short: s.report_sha256.slice(0, 16), algorithm: 'sha256', canonicalization: 'json-sorted-keys' };
       if (integrity !== 'verified') ctx.audit('report.integrity_failure', { targetType: 'session', targetId: s.id, outcome: 'failure' });
+      if (q && report.reportLocale && q !== report.reportLocale) {
+        // a translation of the signed report; the stored snapshot and its hash are untouched
+        const byHash = catalog.get().translationsByHash(q);
+        const translate = (es) => FIXED_TEXTS.get(es)?.[q] ?? byHash.get(srcHash(es)) ?? null;
+        translationOf = report.reportLocale;
+        report = { ...localizeReport(report, q, translate), reportLocale: q };
+      }
     }
-    ctx.audit(isAuditor ? 'report.read.auditor' : 'report.read', { targetType: 'session', targetId: s.id, detail: { patientId: s.patient_id, status: s.status } });
+    ctx.audit(isAuditor ? 'report.read.auditor' : 'report.read', { targetType: 'session', targetId: s.id, detail: { patientId: s.patient_id, status: s.status, locale: report.reportLocale ?? null, translationOf } });
+    if (translationOf) return { ...report, translationOf, hash, integrity, supersededBy: s.superseded_by };
     return { ...report, hash, integrity, supersededBy: s.superseded_by };
   }, { roles: PERM.reportRead });
 

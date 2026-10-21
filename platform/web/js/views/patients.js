@@ -2,10 +2,10 @@
 import { el, mount } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, ValidationError } from '../api.js';
-import { t, fmtDate, ageFrom } from '../i18n.js';
+import { t, fmtDate, ageFrom, localeLabel } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
-import { can, searchPatients, patientSearchMemory } from '../state.js';
-import { table, emptyState, field, input, textarea, select, alertBox, setLoading, skeleton, card } from '../ui/components.js';
+import { can, state, searchPatients, patientSearchMemory } from '../state.js';
+import { table, emptyState, field, input, textarea, select, languageOptions, alertBox, setLoading, skeleton, card } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { confirmDialog } from '../ui/modal.js';
 import { pageHeader, fullName, avatar, errorPanel, todayISO } from './common.js';
@@ -91,7 +91,7 @@ export async function renderPatientForm({ main, params }) {
       mk('address', t('patient.address'), textarea({ rows: 2 }), { optional: true, cls: 'span-2' }))] }),
     card({ title: t('patients.secClinical'), icon: 'clipboard', children: [el('div.grid-2',
       mk('mrn', t('patient.mrn'), input({ autocomplete: 'off', class: 'mono', pattern: '[A-Za-z0-9][A-Za-z0-9-]{0,31}', readOnly: editing }), { optional: !editing, hint: editing ? t('patient.mrnLocked') : t('patient.mrnHint') }),
-      el('div'),
+      mk('preferredLanguage', t('patient.preferredLanguage'), select(languageOptions(patient.preferredLanguage || '', { blank: t('patient.languageClinicDefault', { lang: localeLabel((state.org && state.org.defaultLocale) || 'en') }) })), { hint: t('patient.preferredLanguageHint') }),
       mk('notes', t('patient.notes'), textarea({ rows: 3 }), { optional: true, cls: 'span-2', hint: t('patient.notesHint') }))] }),
     errBox,
     el('div.form-actions.sticky-actions',
@@ -107,7 +107,7 @@ export async function renderPatientForm({ main, params }) {
     Object.values(f).forEach((x) => x.setError(null)); errBox.textContent = '';
     const data = Object.fromEntries(Object.keys(f).map((k) => [k, form.elements[k].value.trim()]));
     if (editing) delete data.mrn;
-    for (const k of ['phone', 'email', 'address', 'mrn', 'notes']) if (k in data && data[k] === '') data[k] = null;
+    for (const k of ['phone', 'email', 'address', 'mrn', 'notes', 'preferredLanguage']) if (k in data && data[k] === '') data[k] = null;
     let bad = null;
     for (const k of ['firstName', 'lastName', 'dob', 'sex']) if (!data[k]) { f[k].setError(t('validation.required')); bad = bad || form.elements[k]; }
     if (data.dob && data.dob > todayISO()) { f.dob.setError(t('validation.dobFuture')); bad = bad || form.elements.dob; }

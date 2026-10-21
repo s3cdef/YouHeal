@@ -5,6 +5,7 @@ import { normalizeText } from '../lib/crypto.js';
 import { notFound, badRequest } from '../lib/http.js';
 import { parseJson } from './_shared.js';
 import { catalogMeta, SYSTEMS, CATEGORIES } from '../catalog/load.js';
+import { composeRecord, recordId, walkLocalized, srcHash } from '../i18n/packs.js';
 
 const STOP = new Set(['de', 'la', 'el', 'los', 'las', 'del', 'en', 'con', 'por', 'para', 'una', 'uno', 'que', 'and', 'the',
   'with', 'for', 'from', 'of', 'in', 'on', 'to', 'a', 'y', 'o', 'e', 'al', 'se', 'sin', 'muy', 'has', 'have', 'pain', 'dolor']);
@@ -37,6 +38,23 @@ export function createCatalogService(db, { allowedLicenses = null } = {}) {
     const symptoms = new Map(rows('SELECT * FROM symptoms').map((r) => [r.id, parseJson(r.data)]));
     for (const s of symptoms.values()) s.pairs = (s.pairs || []).filter((id) => pairs.has(id));
 
+    // Admin translation overrides (CONTRACT §9.2) — applied on top of the pack-composed records
+    const overrides = new Map(rows('SELECT * FROM i18n_overrides').map((r) => [`${r.locale}\u0000${r.key}`, r]));
+    const ovLocales = [...new Set([...overrides.values()].map((r) => r.locale))];
+    const applyOverrides = (file, list) => {
+      if (!overrides.size) return;
+      let i = 0;
+      for (const rec of list) {
+        composeRecord(rec, `${file}/${recordId(file, rec, i++)}`, ovLocales, () => undefined, (loc, key) => overrides.get(`${loc}\u0000${key}`));
+      }
+    };
+    applyOverrides('points', points.values());
+    applyOverrides('regions', regions);
+    applyOverrides('entities', entities.values());
+    applyOverrides('pairs', pairs.values());
+    applyOverrides('protocols', protocols.values());
+    applyOverrides('symptoms', symptoms.values());
+
     const byPoint = new Map();
     const push = (m, k, v) => { if (!m.has(k)) m.set(k, []); m.get(k).push(v); };
     const pairSymptoms = new Map();
@@ -67,6 +85,23 @@ export function createCatalogService(db, { allowedLicenses = null } = {}) {
     svc.contraindications = rows('SELECT * FROM contraindications ORDER BY sort').map((r) => parseJson(r.data));
     svc.recommendations = rows('SELECT * FROM recommendations ORDER BY sort').map((r) => parseJson(r.data)).filter((r) => licenseOk(r.source));
     svc.glossary = rows('SELECT * FROM glossary ORDER BY id').map((r) => parseJson(r.data));
+    applyOverrides('contraindications', svc.contraindications);
+    applyOverrides('recommendations', svc.recommendations);
+    applyOverrides('glossary', svc.glossary);
+    applyOverrides('sources', sources.values());
+    /** Spanish-text hash -> effective translation in `locale` (used to translate signed report snapshots). */
+    const byHash = new Map();
+    svc.translationsByHash = (locale) => {
+      if (byHash.has(locale)) return byHash.get(locale);
+      const m = new Map();
+      const all = { points: points.values(), regions, entities: entities.values(), pairs: pairs.values(), protocols: protocols.values(),
+        symptoms: symptoms.values(), contraindications: svc.contraindications, recommendations: svc.recommendations, glossary: svc.glossary };
+      for (const [file, list] of Object.entries(all)) {
+        for (const rec of list) for (const { node } of walkLocalized(rec, file)) if (typeof node[locale] === 'string') m.set(srcHash(node.es), node[locale]);
+      }
+      byHash.set(locale, m);
+      return m;
+    };
     return svc;
   }
 
@@ -93,7 +128,8 @@ export function createCatalogService(db, { allowedLicenses = null } = {}) {
   }
 
   function get() {
-    const fp = db.get("SELECT value FROM catalog_meta WHERE key = 'fingerprint'")?.value || 'empty';
+    const meta = Object.fromEntries(db.all("SELECT key, value FROM catalog_meta WHERE key IN ('fingerprint','i18n_rev')").map((r) => [r.key, r.value]));
+    const fp = `${meta.fingerprint || 'empty'}|${meta.i18n_rev || 0}`;
     if (!cache || cache.fingerprint !== fp) cache = build(fp);
     return cache;
   }

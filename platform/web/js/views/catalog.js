@@ -91,7 +91,7 @@ function pairsTab({ panel, core, query }) {
         { key: 'name', label: t('catalog.pair'), render: (p) => el('span.cell-stack', locNode(p.name, 'span', 'cell-strong'), pairPoles(p, core.points, { compact: true })) },
         { key: 'cat', label: t('catalog.category'), render: (p) => categoryChip(p.category) },
         { key: 'rel', label: t('pair.relatedTo'), render: (p) => el('span.cell-rel', (p.relations || []).slice(0, 3).map((r) => (r.name ? locText(r.name) : r.entity)).join(', ') + ((p.relations || []).length > 3 ? ` +${p.relations.length - 3}` : '') || '—') },
-        { key: 'fpr', label: 'F/P/R', render: (p) => ratingsRow(p.ratings) },
+        { key: 'fpr', label: t('pair.fprShort'), render: (p) => ratingsRow(p.ratings) },
         { key: 'level', label: t('catalog.level'), align: 'right', render: (p) => (p.level ? String(p.level) : el('span.muted.small', 'CX')) },
       ],
     }), more);

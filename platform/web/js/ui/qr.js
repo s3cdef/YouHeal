@@ -213,7 +213,7 @@ export function encodeQR(text) {
 }
 
 /** SVG element for the QR code (dark modules as a single path, 4-module quiet zone). */
-export function qrSvg(text, { px = 220, label = 'QR code' } = {}) {
+export function qrSvg(text, { px = 220, label = '' } = {}) {
   const { size, modules } = encodeQR(text);
   const q = 4; const dim = size + q * 2;
   let d = '';

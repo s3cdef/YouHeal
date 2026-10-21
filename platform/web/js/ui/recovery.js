@@ -4,14 +4,14 @@ import { el } from './dom.js';
 import { icon } from './icons.js';
 import { alertBox } from './components.js';
 import { toast } from './toast.js';
-import { t } from '../i18n.js';
+import { t, fmtDateTime } from '../i18n.js';
 
 /** Print only the codes: a temporary sheet is the sole visible child of <body> while printing. */
 function printCodes(codes, email) {
   const sheet = el('div.recovery-print-sheet',
-    el('p.recovery-print-title', 'YOU HEAL Clinical — ', t('mfa.recoveryTitle')),
+    el('p.recovery-print-title', `${t('app.title')} — `, t('mfa.recoveryTitle')),
     email ? el('p', email) : null,
-    el('p', new Date().toLocaleString()),
+    el('p', fmtDateTime(new Date().toISOString())),
     el('ol.recovery-codes', codes.map((c) => el('li', el('code', c)))),
     el('p.small', t('mfa.recoveryWarn')));
   document.body.append(sheet);

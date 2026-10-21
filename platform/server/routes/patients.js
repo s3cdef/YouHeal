@@ -5,7 +5,8 @@ import { uuid } from '../lib/crypto.js';
 import { notFound, conflict, HttpError } from '../lib/http.js';
 import { PERM } from '../lib/rbac.js';
 import { encryptPatientFields, patientIndexes, decryptPatient, encCol, decCol } from '../lib/phi.js';
-import { nowIso, ageAt } from './_shared.js';
+import { nowIso, ageAt, orgView, getOrg } from './_shared.js';
+import { availableLocales } from './i18n.js';
 
 export const SEXES = ['female', 'male', 'other', 'unknown'];
 const MRN_RE = /^[A-Za-z0-9][A-Za-z0-9-]{0,31}$/;
@@ -21,6 +22,7 @@ const fields = {
   address: v.string({ max: 500, multiline: true }).optional().nullable(),
   mrn: v.string({ max: 32, pattern: MRN_RE }).optional().nullable(),
   notes: v.string({ max: 8000, multiline: true }).optional().nullable(),
+  preferredLanguage: v.string({ max: 16, pattern: /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/ }).optional().nullable(),
 };
 const createSchema = v.object(fields);
 const patchSchema = v.object({
@@ -34,7 +36,7 @@ const blanksToNull = (body, keys) => {
   for (const k of keys) if (out[k] === '') out[k] = null;
   return out;
 };
-const OPTIONAL_KEYS = ['phone', 'email', 'address', 'mrn', 'notes'];
+const OPTIONAL_KEYS = ['phone', 'email', 'address', 'mrn', 'notes', 'preferredLanguage'];
 
 export function getPatientRow(db, orgId, id) {
   check(uuidStr(), id);
@@ -57,6 +59,15 @@ export function consentView(keyring, row) {
 }
 
 export function register(router, { db, keyring, catalog }) {
+  /** preferredLanguage must be a loaded language pack (CONTRACT §9.4). null -> clinic default. */
+  const checkLanguage = (lang) => {
+    if (lang === undefined || lang === null) return lang ?? null;
+    const avail = availableLocales(db);
+    if (!avail.includes(lang)) throw new HttpError(400, 'VALIDATION', 'Unsupported language', { preferredLanguage: `must be one of: ${avail.join(', ')}` });
+    return lang;
+  };
+  const withLang = (row) => ({ ...decryptPatient(keyring, row), preferredLanguage: row.preferred_language ?? null });
+
   function nextMrn(orgId) {
     for (let i = 0; i < 1000; i++) {
       const org = db.get('SELECT next_mrn FROM orgs WHERE id = ?', orgId);
@@ -126,6 +137,7 @@ export function register(router, { db, keyring, catalog }) {
   router.post('/patients', (ctx) => {
     const body = check(createSchema, blanksToNull(ctx.body, OPTIONAL_KEYS));
     const id = uuid(), ts = nowIso(), orgId = ctx.user.org_id;
+    const lang = checkLanguage(body.preferredLanguage) ?? orgView(getOrg(db, orgId)).defaultLocale;
     db.tx(() => {
       let mrn = body.mrn;
       if (mrn) {
@@ -138,15 +150,16 @@ export function register(router, { db, keyring, catalog }) {
         sex_enc, phone_enc, email_enc, address_enc, notes_enc, archived, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)`,
       id, orgId, enc.mrn_enc, ix.mrn_bidx, enc.first_name_enc, enc.last_name_enc, ix.last_name_bidx, ix.last_initial_bidx, enc.dob_enc ?? null, ix.dob_bidx ?? null,
       enc.sex_enc ?? null, enc.phone_enc ?? null, enc.email_enc ?? null, enc.address_enc ?? null, enc.notes_enc ?? null, ctx.user.id, ts, ts);
+      db.run('UPDATE patients SET preferred_language = ? WHERE id = ?', lang, id);
       ctx.audit('patient.create', { targetType: 'patient', targetId: id });
     });
     ctx.status = 201;
-    return decryptPatient(keyring, db.get('SELECT * FROM patients WHERE id = ?', id));
+    return withLang(db.get('SELECT * FROM patients WHERE id = ?', id));
   }, { roles: PERM.patientWrite });
 
   router.get('/patients/:id', (ctx) => {
     const row = getPatientRow(db, ctx.user.org_id, ctx.params.id);
-    const p = decryptPatient(keyring, row);
+    const p = withLang(row);
     const consent = db.get('SELECT id, type, signed_at, has_absolute, has_relative FROM consents WHERE patient_id = ? AND org_id = ? ORDER BY signed_at DESC LIMIT 1', row.id, ctx.user.org_id);
     const sessions = db.get('SELECT COUNT(*) AS n, MAX(session_date) AS last FROM scan_sessions WHERE patient_id = ? AND org_id = ? AND superseded_by IS NULL', row.id, ctx.user.org_id);
     ctx.audit('patient.read', { targetType: 'patient', targetId: row.id });
@@ -161,7 +174,7 @@ export function register(router, { db, keyring, catalog }) {
     const row = getPatientRow(db, ctx.user.org_id, ctx.params.id);
     const body = check(patchSchema, blanksToNull(ctx.body ?? {}, OPTIONAL_KEYS));
     const changed = Object.keys(body);
-    if (!changed.length) return decryptPatient(keyring, row);
+    if (!changed.length) return withLang(row);
     db.tx(() => {
       if (body.mrn) {
         const { mrn_bidx: b } = patientIndexes(keyring, { mrn: body.mrn });
@@ -171,12 +184,13 @@ export function register(router, { db, keyring, catalog }) {
       const ix = patientIndexes(keyring, { lastName: body.lastName, dob: body.dob, mrn: body.mrn ?? undefined });
       const cols = { ...enc, ...Object.fromEntries(Object.entries(ix).filter(([, val]) => val !== undefined)) };
       if (body.archived !== undefined) cols.archived = body.archived ? 1 : 0;
+      if (body.preferredLanguage !== undefined) cols.preferred_language = checkLanguage(body.preferredLanguage);
       for (const k of ['last_name_enc', 'first_name_enc', 'mrn_enc']) if (k in cols && cols[k] === null) delete cols[k];
       const keys = Object.keys(cols);
       if (keys.length) db.run(`UPDATE patients SET ${keys.map((k) => `${k} = ?`).join(', ')}, updated_at = ? WHERE id = ?`, ...keys.map((k) => cols[k]), nowIso(), row.id);
       ctx.audit('patient.update', { targetType: 'patient', targetId: row.id, detail: { fields: changed } });
     });
-    return decryptPatient(keyring, db.get('SELECT * FROM patients WHERE id = ?', row.id));
+    return withLang(db.get('SELECT * FROM patients WHERE id = ?', row.id));
   }, { roles: PERM.patientWrite });
 
   // ---------------------------------------------------------------- consents

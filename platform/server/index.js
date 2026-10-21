@@ -36,7 +36,7 @@ export function bootstrap(cfg, log, { loadCatalogFiles = true } = {}) {
   if (loadCatalogFiles) {
     if (fs.existsSync(path.join(cfg.catalogDir, 'pairs.json'))) {
       try {
-        loadCatalog(db, { dir: cfg.catalogDir, log, strict: cfg.catalogStrict });
+        loadCatalog(db, { dir: cfg.catalogDir, i18nDir: cfg.i18nDir, log, strict: cfg.catalogStrict });
       } catch (e) {
         if (!(e instanceof CatalogError)) throw e;
         log.error('catalog load FAILED — keeping the previously loaded catalog', { errors: e.errors.slice(0, 25), count: e.errors.length });

@@ -2,11 +2,11 @@
 import { el, mount, clear, debounce, isTypingTarget, nextId } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, NetworkError, ApiError } from '../api.js';
-import { t, locText, locNode, getLocale, fmtDuration, ageFrom, fmtDate, vocab } from '../i18n.js';
+import { t, locText, locNode, getLocale, fmtDuration, ageFrom, fmtDate, vocab, isLocale } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
-import { state, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, getList, normSession, normQualifiers } from '../state.js';
+import { state, reportLocales, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, getList, normSession, normQualifiers } from '../state.js';
 import { combobox } from '../ui/combobox.js';
-import { tabs, segmented, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, ratingsRow, statusBadge, pairNum } from '../ui/components.js';
+import { tabs, segmented, select, languageOptions, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, ratingsRow, statusBadge, pairNum } from '../ui/components.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { toast, announce } from '../ui/toast.js';
 import { createViewer, renderSnapshots } from '../bodymap/host.js';
@@ -464,7 +464,7 @@ export async function renderScan({ main, params }) {
     if (m.type === 'symptom' || m.kind === 'symptom') return locText(m.name || m.label);
     const term = m.token || m.term || '';
     const where = m.field ? t(`scan.matchField.${m.field}`) : '';
-    return `“${term}”${where ? ` · ${where}` : ''}`;
+    return `${t('scan.matchTerm', { term })}${where ? ` · ${where}` : ''}`;
   }
   function renderSuggestions(box) {
     const res = directed.results || [];
@@ -831,6 +831,10 @@ export async function renderScan({ main, params }) {
     const fSig = field({ label: t('scan.signatureName'), input: sig, hint: t('scan.signatureFixed') });
     const pw = input({ type: 'password', id: 'sig-password', autocomplete: 'current-password' });
     const fPw = field({ label: t('scan.reauthPassword'), input: pw, hint: t('scan.reauthHint'), required: true });
+    // Report language (CONTRACT §9.4): defaults to the patient's preferred language; recorded as reportLocale.
+    const rlWanted = reportLocales.get(session.id) || patient.preferredLanguage || (state.org && state.org.defaultLocale) || getLocale();
+    const rlSel = select(languageOptions(isLocale(rlWanted) ? rlWanted : getLocale()), { id: 'report-locale' });
+    const fRl = field({ label: t('scan.reportLanguage'), input: rlSel, hint: t('scan.reportLanguageHint') });
     const attest = el('input', { type: 'checkbox', id: 'attest' });
     const errSlot = el('div', { aria: { live: 'assertive' } });
     const m = openModal({
@@ -842,6 +846,7 @@ export async function renderScan({ main, params }) {
           el('dt', t('scan.followUp')), el('dd', followInput.value ? fmtDate(followInput.value) : '—')),
         !st.findings.length ? alertBox({ tone: 'warn', children: [el('p', t('scan.finalizeNoFindings'))] }) : null,
         el('label.check.attest', attest, el('span', t('scan.attestation'))),
+        fRl,
         el('div.grid-2', fSig, fPw), errSlot,
         el('p.muted.small', t('scan.finalizeLock'))),
       actions: [
@@ -857,9 +862,11 @@ export async function renderScan({ main, params }) {
             // wrong password = 403 REAUTH_FAILED (shown inline); 401 = session gone (global → login); 423 = locked (→ login)
             const post = (body) => api.post(`/sessions/${session.id}/finalize`, body);
             let res;
-            try { res = await post({ signatureName: typed, password: pw.value }); } catch (e1) {
-              // transitional: servers predating re-authentication reject the unknown `password` field
-              if (e1.code === 'VALIDATION' && e1.fields && /not an allowed field/.test(e1.fields.password || '')) res = await post({ signatureName: typed });
+            const reportLocale = rlSel.value;
+            reportLocales.set(session.id, reportLocale);
+            try { res = await post({ signatureName: typed, password: pw.value, reportLocale }); } catch (e1) {
+              // transitional: servers predating language packs reject the unknown `reportLocale` field
+              if (e1.code === 'VALIDATION' && e1.fields && /not an allowed field/.test(e1.fields.reportLocale || '')) res = await post({ signatureName: typed, password: pw.value });
               else throw e1;
             }
             m.hashShort = res && (res.hashShort || (res.sha256 || '').slice(0, 16));
@@ -904,7 +911,7 @@ export async function renderScan({ main, params }) {
 
   // ================================================================ keyboard
   function showShortcuts() {
-    const rows = [['J', t('scan.kNext')], ['K', t('scan.kPrev')], ['F', t('scan.kFound')], ['N', t('scan.kNotPresent')], ['I', t('scan.kImpacted')], ['C', t('scan.kCleared')], ['Enter', t('scan.kOpen')], ['/', t('scan.kSearch')], ['1–4', t('scan.kViews')], ['Esc', t('scan.kClose')]];
+    const rows = [['J', t('scan.kNext')], ['K', t('scan.kPrev')], ['F', t('scan.kFound')], ['N', t('scan.kNotPresent')], ['I', t('scan.kImpacted')], ['C', t('scan.kCleared')], [t('keys.enter'), t('scan.kOpen')], ['/', t('scan.kSearch')], ['1–4', t('scan.kViews')], [t('keys.esc'), t('scan.kClose')]];
     openModal({ title: t('scan.shortcuts'), icon: 'keyboard', body: el('dl.shortcuts', rows.map(([k, d]) => [el('dt', kbd(k)), el('dd', d)])), actions: [{ label: t('common.close'), value: null, variant: 'primary', autofocus: true }] });
   }
   const onKey = (e) => {

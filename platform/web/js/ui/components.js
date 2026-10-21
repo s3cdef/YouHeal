@@ -1,7 +1,7 @@
 // Small presentational components: tabs, table, empty state, chips, meters, polarity glyphs, fields.
 import { el, nextId, clear } from './dom.js';
 import { icon } from './icons.js';
-import { t, locText, vocab } from '../i18n.js';
+import { t, locText, vocab, getPacks } from '../i18n.js';
 
 // ---------- Tabs (roving tabindex, arrow keys) ----------
 /** tabs({ tabs:[{id,label,icon,count}], active, onChange(id), label, variant }) → { root, panel, select(id) } */
@@ -169,11 +169,33 @@ export function select(options, props = {}) {
     : el('option', { value: o.value, selected: o.selected || null, disabled: o.disabled || null }, o.label))));
 }
 
+/**
+ * Language menu built from the installed language packs (GET /i18n/packs): a segmented control with
+ * locale codes (or native names when `names`), or a <select> once there are more than three packs.
+ */
+export function languagePicker({ value, onChange, label, size = '', names = false, name = 'locale' }) {
+  const list = getPacks();
+  if (list.length <= 3) {
+    return segmented({ name, label, value, size, onChange,
+      options: list.map((p) => { const nat = p.nativeName || p.name || p.locale; return { value: p.locale, label: names ? nat : p.locale.toUpperCase(), title: nat, ariaLabel: nat, lang: p.locale }; }) });
+  }
+  const s = select(list.map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, selected: p.locale === value })), { aria: { label } });
+  s.addEventListener('change', () => onChange && onChange(s.value));
+  s.setValue = (v) => { s.value = v; };
+  return s;
+}
+
+/** <option> list of the installed language packs (native names), for form selects. */
+export function languageOptions(value, { blank = null } = {}) {
+  const opts = getPacks().map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, selected: p.locale === value }));
+  return blank ? [{ value: '', label: blank, selected: !value }, ...opts] : opts;
+}
+
 /** Segmented control (radio group semantics). */
 export function segmented({ name, options, value, onChange, label, size = '' }) {
   const group = el(`div.segmented${size ? '.segmented-' + size : ''}`, { role: 'radiogroup', aria: { label } });
   const btns = options.map((o) => {
-    const b = el('button.seg', { type: 'button', role: 'radio', aria: { checked: o.value === value ? 'true' : 'false' }, tabindex: o.value === value ? '0' : '-1', data: { value: o.value }, title: o.title || null },
+    const b = el('button.seg', { type: 'button', role: 'radio', aria: { checked: o.value === value ? 'true' : 'false', label: o.ariaLabel || null }, tabindex: o.value === value ? '0' : '-1', data: { value: o.value }, title: o.title || null, lang: o.lang || null },
       o.icon ? icon(o.icon, { size: 16 }) : null, el('span', o.label));
     b.addEventListener('click', () => set(o.value, true));
     return b;

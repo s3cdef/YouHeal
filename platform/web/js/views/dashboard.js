@@ -65,7 +65,7 @@ function stat(label, value, ic, tone, target) {
 export async function renderDashboard({ main }) {
   const user = state.user || {};
   const header = pageHeader({
-    eyebrow: new Intl.DateTimeFormat(document.documentElement.lang === 'es' ? 'es-US' : 'en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date()),
+    eyebrow: fmtDate(new Date().toISOString(), { weekday: 'long', month: 'long', day: 'numeric' }),
     title: `${greeting()}, ${(user.name || '').split(' ').slice(0, 2).join(' ')}`,
     actions: [
       can.patients() ? el('a.btn.btn-primary', { href: '#/patients/new' }, icon('plus', { size: 18 }), t('patients.new')) : null,
