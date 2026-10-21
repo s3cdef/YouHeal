@@ -42,6 +42,9 @@ import { buildInstances, localName, sideLabel, uiText, PAIR_COLORS, DEFAULT_POLA
  * @property {object} [model]            a BodyModel (see body-model.js) to use instead of the procedural mannequin
  * @property {boolean} [forceFallback]   render the 2D SVG fallback even if WebGL works
  * @property {'auto'|'procedural'} [bodySource] 'auto' (default): MakeHuman asset, procedural fallback
+ * @property {'auto'|'high'} [quality='auto'] live-view rendering quality. 'auto': on software GL (SwiftShader,
+ *   llvmpipe, Microsoft Basic Render) MSAA is off and the pixel ratio is 1 for fluid interaction; 'high': always
+ *   MSAA + device pixel ratio (use for documentation/preview capture). snapshot() is antialiased either way.
  * @property {string} [modelsUrl]        base URL of the body assets (default: /assets/models/ next to this module tree)
  * @property {Record<string,string>} [pairColors] colours per pair state
  */
@@ -113,10 +116,16 @@ export async function createBodyViewer(container, opts = {}) {
     const { createSvgViewer } = await import('./viewer-svg.js');
     return createSvgViewer(container, opts);
   }
+  // Live-view quality: 'auto' drops MSAA and caps the pixel ratio on software rasterisers (clinic VMs /
+  // remote desktops) to keep interaction fluid; 'high' always renders at full quality (docs/preview capture).
+  // snapshot() output is antialiased in both modes (supersampled), so reports never degrade.
+  const quality = opts.quality === 'high' ? 'high' : 'auto';
+  const lowLive = quality === 'auto' && probeWebGL().software;
+  const liveAA = !lowLive;
   let renderer;
   try {
     // software rasterisers: no MSAA (≈3x cheaper frames); smooth edges still come from the 1:1 pixel ratio cap below
-    renderer = new THREE.WebGLRenderer({ antialias: !probeWebGL().software, alpha: true, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({ antialias: liveAA, alpha: true, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
   } catch {
     const { createSvgViewer } = await import('./viewer-svg.js');
     return createSvgViewer(container, opts);
@@ -157,7 +166,7 @@ export async function createBodyViewer(container, opts = {}) {
   container.append(canvas, overlay, loading, list, live);
 
   // ---------------------------------------------------------------- renderer / scene
-  renderer.setPixelRatio(probeWebGL().software ? 1 : Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(lowLive ? 1 : Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1.0;
@@ -420,6 +429,16 @@ export async function createBodyViewer(container, opts = {}) {
         const { x } = tangentFrame(A.n);
         a = { p: a.p.clone().addScaledVector(x, -0.017), n: a.n };
         b = { p: b.p.clone().addScaledVector(x, 0.017), n: b.n };
+      } else {
+        // leave the tile from its inner edge so the arc never covers the −/+ glyph
+        const edge = (e, other) => {
+          const d = other.p.clone().sub(e.p);
+          d.addScaledVector(e.n, -d.dot(e.n));
+          if (d.lengthSq() < 1e-8) return e;
+          return { p: e.p.clone().addScaledVector(d.normalize(), TILE * 0.5), n: e.n };
+        };
+        const a2 = edge(a, b), b2 = edge(b, a);
+        a = a2; b = b2;
       }
       const dist = a.p.distanceTo(b.p);
       const mid = a.p.clone().add(b.p).multiplyScalar(0.5);
@@ -787,9 +806,18 @@ export async function createBodyViewer(container, opts = {}) {
       animateTo(inst.position.clone().addScaledVector(dir, 0.7), inst.position.clone(), 650);
       setHovered(inst, true);
     },
+    /**
+     * Render a still image (e.g. report body maps) at the requested size. Always antialiased: rendered
+     * offscreen at SS× the size (SS = 2 without MSAA, 1.5 with it, limited by the GPU's max
+     * renderbuffer size) and downscaled with high-quality canvas filtering.
+     */
     async snapshot(o = {}) {
       const width = Math.round(o.width || 800), height = Math.round(o.height || 1100);
       const view = o.view || 'anterior';
+      const gl = renderer.getContext();
+      const maxSize = Math.min(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE), gl.getParameter(gl.MAX_VIEWPORT_DIMS)[0], 8192);
+      const ss = Math.max(1, Math.min(liveAA ? 1.5 : 2, maxSize / width, maxSize / height));
+      const rw = Math.round(width * ss), rh = Math.round(height * ss);
       const prev = { pos: camera.position.clone(), target: controls.target.clone(), aspect: camera.aspect, size: renderer.getSize(new THREE.Vector2()), pr: renderer.getPixelRatio(), hovered };
       const prevAnim = anim; anim = null;
       hovered = null;
@@ -802,10 +830,18 @@ export async function createBodyViewer(container, opts = {}) {
       camera.position.copy(pos); camera.lookAt(target); camera.updateMatrixWorld(true);
       const prevBg = scene.background;
       if (!o.transparent) scene.background = new THREE.Color('#ffffff');
+      // points/arcs are sized in world units, so supersampling keeps their look; only edges get smoother
       renderer.setPixelRatio(1);
-      renderer.setSize(width, height, false);
+      renderer.setSize(rw, rh, false);
       renderer.render(scene, camera);
-      const url = canvas.toDataURL('image/png');
+      // downscale in the same task (the drawing buffer is still valid without preserveDrawingBuffer)
+      const out = document.createElement('canvas');
+      out.width = width; out.height = height;
+      const g2 = out.getContext('2d');
+      g2.imageSmoothingEnabled = true;
+      g2.imageSmoothingQuality = 'high';
+      g2.drawImage(canvas, 0, 0, rw, rh, 0, 0, width, height);
+      const url = out.toDataURL('image/png');
       // restore
       scene.background = prevBg;
       showAll = prevShowAll;

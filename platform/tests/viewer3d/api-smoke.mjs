@@ -176,12 +176,17 @@ try {
   });
   await check('snapshot returns PNG of requested size', async () => {
     const dim = await page.evaluate(async () => {
+      const t0 = performance.now();
       const url = await window.__v.snapshot({ view: 'posterior', width: 400, height: 550 });
+      window.__snapMs = performance.now() - t0;
       const img = new Image(); img.src = url; await img.decode();
       return { prefix: url.slice(0, 22), w: img.naturalWidth, h: img.naturalHeight };
     });
     assert.equal(dim.prefix, 'data:image/png;base64,');
     assert.equal(dim.w, 400); assert.equal(dim.h, 550);
+    const big = await page.evaluate(async () => { const t0 = performance.now(); await window.__v.snapshot({ view: 'anterior', width: 800, height: 1100 }); return performance.now() - t0; });
+    console.log(`     snapshot (supersampled): 400×550 ${(await page.evaluate(() => window.__snapMs)).toFixed(0)} ms · 800×1100 ${big.toFixed(0)} ms`);
+    assert.ok(big < 3000, `${big} ms`);
   });
   await check('resize + dispose cleans up', async () => {
     const left = await page.evaluate(() => {

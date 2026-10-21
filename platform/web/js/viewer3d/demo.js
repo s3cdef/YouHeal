@@ -1,6 +1,6 @@
 /**
  * Demo harness for the body viewer (web/viewer-demo.html). Not used by the app.
- * URL params: view, sex, tone, locale, points=0|1, protocol=0|1, zoom=legs-back, fallback=1
+ * URL params: view, sex, tone, locale, points=0|1, protocol=0|1, zoom=legs-back, fallback=1, quality=auto|high, body=procedural, cam=x,y,z,tx,ty,tz
  */
 import { createBodyViewer } from './viewer.js';
 
@@ -88,6 +88,7 @@ async function mount() {
     skinTone: state.tone,
     forceFallback: state.fallback,
     bodySource: qs.get('body') || undefined,
+    quality: qs.get('quality') || 'auto',
     onPointClick: (e) => { log.textContent = `pointClick\n${JSON.stringify(e, null, 1)}`; viewer.highlight([e.pointId], { pulse: true }); },
     onRegionClick: (e) => { log.textContent = `regionClick\n${JSON.stringify(e, null, 1)}`; },
     onHover: () => {},

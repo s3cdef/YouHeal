@@ -34,7 +34,8 @@ try {
     page.on('console', (m) => { if (['error', 'warning'].includes(m.type())) problems.push(`[${name}] ${m.type()}: ${m.text()}`); });
     page.on('pageerror', (e) => problems.push(`[${name}] pageerror: ${e.message}`));
     const t0 = Date.now();
-    await page.goto(`http://127.0.0.1:${port}/viewer-demo.html?${query}`);
+    // committed previews are captured at full quality (MSAA even on software GL)
+    await page.goto(`http://127.0.0.1:${port}/viewer-demo.html?${query}${process.env.PREVIEW_DIR ? '&quality=high' : ''}`);
     await page.waitForFunction(() => ['1', 'error'].includes(document.documentElement.dataset.viewerReady), null, { timeout: 120000 });
     await page.waitForTimeout(1200);
     const file = join(out, `viewer-${name}.png`);
