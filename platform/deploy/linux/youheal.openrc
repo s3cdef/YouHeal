@@ -1,4 +1,5 @@
 #!/sbin/openrc-run
+# shellcheck shell=sh disable=SC2034  # variables are consumed by openrc-run
 # YOU HEAL Clinical — OpenRC service (Alpine, Gentoo, Artix). Template rendered by install.sh.
 # Installed to /etc/init.d/youheal; enable with: rc-update add youheal default
 #
