@@ -31,8 +31,9 @@ function totp(secret, offset = 0) {
   return String((h.readUInt32BE(o) & 0x7fffffff) % 1000000).padStart(6, '0');
 }
 
-const ADMIN = { org: 'YOU HEAL Queens', name: 'Jonathan Isaza', email: 'admin@clinic.test', password: 'Magnets-align-at-528hz' };
-const PATIENT = { first: 'Elena', last: 'Martínez', dob: '1983-07-14' };
+// Obviously fictitious demo identities only.
+const ADMIN = { org: 'YOU HEAL Demo Clinic', name: 'Dr. Alex Demo', email: 'admin@clinic.test', password: 'Magnets-align-at-528hz' };
+const PATIENT = { first: 'Jane', last: 'Sample', dob: '1980-01-01' };
 
 async function main() {
   const { chromium } = await loadPlaywright();
@@ -44,7 +45,7 @@ async function main() {
     await new Promise((r) => child.stdout.on('data', (d) => { if (String(d).includes('mock on')) r(); }));
     base = `http://127.0.0.1:${port}`;
   }
-  const problems = [];
+  const problems = problems_;
   const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
   const shot = async (page, name, opts = {}) => { await page.waitForTimeout(opts.wait ?? 250); await page.screenshot({ path: path.join(ART, `${name}.png`), fullPage: !!opts.full }); console.log('  📸', name); };
 
@@ -54,7 +55,8 @@ async function main() {
       document.addEventListener('securitypolicyviolation', (e) => console.error(`CSP violation: ${e.violatedDirective} ${e.blockedURI}`));
     });
     const page = await ctx.newPage();
-    page.on('console', (m) => { if (m.type() === 'error') problems.push(`[${label}] console: ${m.text()}`); });
+    page.setDefaultTimeout(Number(process.env.STEP_TIMEOUT || 15000));
+    page.on('console', (m) => { if (m.type() === 'error') problems.push(`[${label}] console: ${m.text()} ${m.location() && m.location().url ? '@ ' + m.location().url : ''}`); });
     page.on('pageerror', (e) => problems.push(`[${label}] pageerror: ${e.message}`));
     return { ctx, page };
   }
@@ -62,6 +64,7 @@ async function main() {
   // ================================================================ desktop flow
   console.log('Desktop 1440×900 —', base);
   const { ctx, page } = await newPage({ width: 1440, height: 900 }, 'desktop');
+  globalThis.__page = page;
   await page.goto(`${base}/`);
 
   // 1. setup wizard
@@ -70,7 +73,7 @@ async function main() {
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByLabel('Full name').fill(ADMIN.name);
   await page.getByLabel('Email').fill(ADMIN.email);
-  await page.getByLabel('Password', { exact: true }).fill(ADMIN.password);
+  await page.getByLabel(/^Password/).fill(ADMIN.password);
   await page.getByLabel('Confirm password').fill(ADMIN.password);
   await shot(page, '02-setup-admin');
   await page.getByRole('button', { name: 'Create clinic' }).click();
@@ -78,7 +81,7 @@ async function main() {
   await page.getByRole('button', { name: 'Sign in' }).click();
 
   // 2. login
-  await page.getByLabel('Password', { exact: true }).fill(ADMIN.password);
+  await page.getByLabel(/^Password/).fill(ADMIN.password);
   await shot(page, '03-login');
   await page.getByRole('button', { name: 'Sign in' }).click();
 
@@ -115,7 +118,7 @@ async function main() {
   await page.getByLabel('Reason for consultation').fill('Heavy legs and night cramps for 3 months');
   await page.getByLabel('The technique, its scope and its limitations were explained to the patient.').check();
   await page.getByLabel('The patient had the opportunity to ask questions and they were answered.').check();
-  for (const fs2 of await page.locator('fieldset.yn').all()) await fs2.getByText('Yes', { exact: true }).click();
+  for (const fs2 of await page.locator('fieldset.yn').all()) await fs2.getByLabel('Yes', { exact: true }).check();
   await page.locator('.contra-group.is-relative label').first().click();
   await page.getByLabel('Full name of patient or legal guardian').fill(`${PATIENT.first} ${PATIENT.last}`);
   await page.getByLabel('The patient (or legal guardian) read and signed the authorization for treatment.').check();
@@ -219,7 +222,7 @@ async function main() {
   await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
   await page.locator('.dash-grid .card').first().waitFor();
   await shot(page, '25-dashboard-dark');
-  const sessionUrl = await (async () => { await page.goto(`${base}/#/`); await page.locator('.list-row-link').first().waitFor(); return page.locator('.list-row-link[href*="#/sessions/"]').first().getAttribute('href'); })();
+  const sessionUrl = await (async () => { await page.goto(`${base}/#/`); await page.locator('.list-row-link').first().waitFor(); return page.locator('.list-row-link[href^="#/sessions/"]:not([href$="/report"])').first().getAttribute('href'); })();
   if (sessionUrl) { await page.goto(`${base}/${sessionUrl}`); await page.locator('.scan-bar').waitFor(); await page.waitForTimeout(2000); await shot(page, '26-scan-dark'); }
   await page.evaluate(() => { document.documentElement.dataset.theme = 'light'; });
   // Spanish
@@ -258,4 +261,5 @@ async function main() {
   process.exit(filtered.length ? 1 : 0);
 }
 
-main().catch((e) => { console.error(e); process.exit(2); });
+const problems_ = [];
+main().catch(async (e) => { console.error(e); try { console.error('URL:', globalThis.__page.url()); await globalThis.__page.screenshot({ path: path.join(ART, 'zz-failure.png') }); } catch { /* ignore */ } console.error(problems_.join('\n')); process.exit(2); });

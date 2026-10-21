@@ -306,7 +306,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, main:focus, [role=tabpanel]:fo
 @media (max-width: 1180px) { .page { padding: 24px 24px 56px; } }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .page-head-main { display: grid; gap: 6px; min-width: 0; }
-.page-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.9rem, 2.6vw, 2.5rem); letter-spacing: -.005em; line-height: 1.08; }
+.page-title { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.9rem, 2.6vw, 2.5rem); letter-spacing: -.005em; line-height: 1.08; }
 .page-sub { color: var(--ink-2); max-width: 70ch; }
 .page-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .eyebrow { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-ink); }
@@ -490,7 +490,7 @@ button.chip { font: inherit; font-size: var(--fs-xs); font-weight: 700; }
 .modal-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--primary-soft); color: var(--primary-soft-ink); flex: none; }
 .modal-danger .modal-icon { background: var(--danger-soft); color: var(--danger); }
 .modal-warn .modal-icon { background: var(--warn-soft); color: var(--warn); }
-.modal-title { font-family: var(--font-display); font-weight: 600; font-size: 1.55rem; flex: 1; line-height: 1.15; }
+.modal-title { font-family: var(--font-display); font-weight: 500; font-size: 1.55rem; flex: 1; line-height: 1.15; }
 .modal-close { margin-left: auto; }
 .modal-body { padding: 14px 24px 8px; overflow-y: auto; display: grid; gap: 14px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px 20px; border-top: 1px solid var(--border); margin-top: 12px; flex-wrap: wrap; }
@@ -538,7 +538,7 @@ button.chip { font: inherit; font-size: var(--fs-xs); font-weight: 700; }
 .auth-main { display: grid; place-items: center; padding: 40px 24px; }
 .auth-card { width: min(460px, 100%); display: grid; gap: 18px; }
 .auth-card-wide { width: min(640px, 100%); }
-.auth-title { font-family: var(--font-display); font-size: 2.3rem; font-weight: 600; line-height: 1.1; }
+.auth-title { font-family: var(--font-display); font-size: 2.3rem; font-weight: 500; line-height: 1.1; }
 .auth-sub { color: var(--ink-2); }
 .auth-foot { display: flex; align-items: center; gap: 8px; justify-content: center; color: var(--ink-3); font-size: var(--fs-sm); }
 .auth-alt { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -584,7 +584,7 @@ button.chip { font: inherit; font-size: var(--fs-xs); font-weight: 700; }
 .stat[data-tone="teal"] .stat-icon { background: var(--primary-soft); color: var(--primary-soft-ink); }
 .stat[data-tone="amber"] .stat-icon { background: var(--warn-soft); color: var(--warn); }
 .stat[data-tone="violet"] .stat-icon { background: color-mix(in srgb, var(--state-impacted) 12%, var(--surface)); color: var(--state-impacted); }
-.stat-value { font-family: var(--font-display); font-size: 2rem; font-weight: 600; line-height: 1; }
+.stat-value { font-family: var(--font-display); font-size: 2rem; font-weight: 500; line-height: 1; }
 .stat-label { color: var(--ink-2); font-size: var(--fs-sm); font-weight: 600; }
 .dash-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 .dash-col { display: grid; gap: 20px; }
@@ -683,7 +683,7 @@ button.chip { font: inherit; font-size: var(--fs-xs); font-weight: 700; }
 .scan { height: 100vh; display: grid; grid-template-rows: auto auto 1fr; background: var(--bg); }
 .scan-bar { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border); min-height: 68px; z-index: 20; }
 .scan-id { min-width: 0; flex: 1; display: grid; gap: 2px; }
-.scan-title { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scan-title { font-family: var(--font-display); font-weight: 500; font-size: 1.5rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .scan-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--fs-sm); color: var(--ink-2); }
 .scan-flags { display: inline-flex; gap: 6px; }
 .scan-bar-mid { display: flex; align-items: center; gap: 14px; }
@@ -802,7 +802,7 @@ button.chip { font: inherit; font-size: var(--fs-xs); font-weight: 700; }
 @keyframes drawer-in { from { opacity: 0; transform: translateX(16px); } }
 @media (prefers-reduced-motion: reduce) { .point-drawer { animation: none; } }
 .drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 16px 12px 12px 18px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--gold-soft), var(--surface)); }
-.drawer-title { font-family: var(--font-display); font-weight: 600; font-size: 1.7rem; line-height: 1.1; }
+.drawer-title { font-family: var(--font-display); font-weight: 500; font-size: 1.7rem; line-height: 1.1; }
 .drawer-alt { color: var(--ink-3); font-style: italic; font-family: var(--font-display); font-size: 1.05rem; }
 .drawer-body { flex: 1; overflow-y: auto; padding: 14px; display: grid; gap: 10px; align-content: start; }
 .drawer-pairs { list-style: none; display: grid; gap: 8px; }
@@ -914,7 +914,7 @@ details.proto-kind > summary { cursor: pointer; padding: 8px 4px; list-style-pos
 .entity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
 .entity-card { padding: 16px 18px; border-radius: var(--r-lg); border: 1px solid var(--border); background: var(--surface); display: grid; gap: 10px; align-content: start; box-shadow: var(--shadow-1); }
 .entity-head { display: grid; gap: 8px; }
-.entity-name { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+.entity-name { font-family: var(--font-display); font-weight: 500; font-size: 1.35rem; }
 .entity-desc { color: var(--ink-2); font-size: var(--fs-sm); }
 .split { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
 @media (max-width: 980px) { .split { grid-template-columns: 1fr; } }

@@ -8,9 +8,8 @@ let guardLeave = null;
 
 function compile(pattern) {
   const keys = [];
-  const re = pattern
-    .replace(/\/:(\w+)\?/g, (_, k) => { keys.push(k); return '(?:/([^/]+))?'; })
-    .replace(/:(\w+)/g, (_, k) => { keys.push(k); return '([^/]+)'; });
+  // single left-to-right pass so capture groups and keys stay in the same order
+  const re = pattern.replace(/\/:(\w+)(\?)?/g, (_, k, opt) => { keys.push(k); return opt ? '(?:/([^/]+))?' : '/([^/]+)'; });
   return { re: new RegExp(`^${re}/?$`), keys };
 }
 

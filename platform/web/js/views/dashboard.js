@@ -1,7 +1,7 @@
 // Dashboard: today's sessions, drafts to finalize, follow-ups due, recent patients, quick search.
 import { el, mount } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
-import { api, items, NotFoundError } from '../api.js';
+import { api, items } from '../api.js';
 import { t, fmtTime, fmtDate, fmtRelativeDay, locText, parseDateOnly } from '../i18n.js';
 import { navigate } from '../router.js';
 import { state, can, normSession } from '../state.js';
@@ -80,16 +80,10 @@ export async function renderDashboard({ main }) {
   async function load() {
     const patients = items(await api.get('/patients', { limit: 50 }));
     const byId = new Map(patients.map((p) => [p.id, p]));
-    let sessions;
-    try {
-      // Preferred (not in CONTRACT §5 yet): cross-patient listing.
-      sessions = items(await api.get('/sessions', { limit: 200 }));
-    } catch (err) {
-      if (!(err instanceof NotFoundError)) throw err;
-      // Fallback: aggregate per-patient session summaries for the most recent patients.
-      const lists = await Promise.all(patients.slice(0, 40).map((p) => api.get(`/patients/${encodeURIComponent(p.id)}/sessions`).then(items).catch(() => [])));
-      sessions = lists.flat();
-    }
+    // CONTRACT §5 has no cross-patient session listing yet, so aggregate per-patient session summaries
+    // for the most recently added patients. (Backend gap: GET /sessions?from&to&status&followUpTo.)
+    const lists = await Promise.all(patients.slice(0, 40).map((p) => api.get(`/patients/${encodeURIComponent(p.id)}/sessions`).then(items).catch(() => [])));
+    let sessions = lists.flat();
     sessions = sessions.map(normSession).map((s) => ({ ...s, patient: s.patient || byId.get(s.patientId) || null })).filter((s) => !s.supersededBy);
     sessions.sort((x, y) => String(y.startedAt).localeCompare(String(x.startedAt)));
     const isToday = (iso) => iso && todayISO(new Date(iso)) === today;
