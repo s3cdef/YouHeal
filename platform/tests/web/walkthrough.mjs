@@ -54,8 +54,8 @@ async function seedDemo(password) {
   const day = (n, h = 10) => { const d = new Date(); d.setDate(d.getDate() - n); d.setHours(h, 15, 0, 0); return d.toISOString(); };
   const answers = { techniqueExplained: true, questionsAnswered: true, understandsScope: true, continuesMedical: true, authorizesPlacement: true, followUpInformed: true, reason: 'Demo record' };
   let count = 0;
-  const patient = async (firstName, lastName, dob, sex, ci = { relative: [], absolute: [] }) => {
-    const p = await j('POST', '/patients', { firstName, lastName, dob, sex, phone: '(555) 010-0000', email: `${firstName.toLowerCase()}@example.test` });
+  const patient = async (firstName, lastName, dob, sex, ci = { relative: [], absolute: [] }, extra = {}) => {
+    const p = await j('POST', '/patients', { firstName, lastName, dob, sex, phone: '(555) 010-0000', email: `${firstName.toLowerCase()}@example.test`, ...extra });
     await j('POST', `/patients/${p.id}/consents`, { type: 'intake', answers, contraindications: ci, signatureName: `${firstName} ${lastName}`, signedAt: day(20) });
     return p;
   };
@@ -64,6 +64,7 @@ async function seedDemo(password) {
     for (const [i, pid] of pairs.entries()) await j('POST', `/sessions/${s.id}/findings`, { pairId: pid, status: statuses[i] || 'found', dwellMinutes: 15, phenomena: i === 0 && daysAgo > 10 ? ['infiltrate'] : [] });
     if (finalize) await j('POST', `/sessions/${s.id}/finalize`, { signatureName: me.user.name, password });
     count++;
+    return s.id;
   };
   const mary = await patient('Mary', 'Example', '1979-04-12', 'female', { relative: rel ? [rel.id] : [], absolute: [] });
   await session(mary, 14, legPairs.slice(0, 3), { protocolIds: [leg.id], chief: 'Heavy legs, evening ankle swelling', statuses: ['cleared', 'cleared', 'impacted'] });
@@ -71,10 +72,11 @@ async function seedDemo(password) {
   const john = await patient('John', 'Demo', '1964-09-30', 'male');
   await session(john, 1, giPairs.slice(0, 2), { protocolIds: [gi.id], chief: 'Gastritis, bloating after meals', finalize: false });
   await patient('Ana', 'Prueba', '1991-01-22', 'female', { relative: [], absolute: abs ? [abs.id] : [] });
-  const robert = await patient('Robert', 'Testcase', '1958-06-05', 'male');
-  await session(robert, 35, legPairs.slice(4, 5), { chief: 'Low-back pain', statuses: ['cleared'] });
-  await session(robert, 0, legPairs.slice(4, 6), { chief: 'Low-back pain radiating to the right leg', statuses: ['impacted', 'cleared'] });
-  return count;
+  // prefers Spanish: his reports are signed in Spanish (reportLocale defaults to the patient's preferred language)
+  const robert = await patient('Robert', 'Testcase', '1958-06-05', 'male', undefined, { preferredLanguage: 'es' });
+  await session(robert, 35, legPairs.slice(4, 5), { chief: 'Dolor lumbar', statuses: ['cleared'] });
+  const esReport = await session(robert, 0, legPairs.slice(4, 6), { chief: 'Dolor lumbar irradiado a la pierna derecha', statuses: ['impacted', 'cleared'] });
+  return { count, esReport };
 }
 
 async function waitViewer(page) {
@@ -97,7 +99,7 @@ const UI_EN = packValues('en'); const UI_ES = packValues('es');
 // single short words are skipped: many are cognates or catalog terms shared by both languages ("Temporal", "Prion")
 const exclusive = (a, b) => { const sb = new Set(b); return [...new Set(a)].filter((v) => !sb.has(v) && !v.includes('{') && /\p{L}{3,}/u.test(v) && v.length < 80 && (/\s/.test(v.trim()) || v.length >= 10)); };
 const ONLY_EN = exclusive(UI_EN, UI_ES); const ONLY_ES = exclusive(UI_ES, UI_EN);
-const USER_TEXT = ['Heavy legs', 'Follow-up: leg circulation', 'Gastritis, bloating', 'Low-back pain', 'night cramps', 'Demo record', 'Demo Clinic', 'Dr. Alex Demo', 'Jane Sample', 'Mary Example', 'John Demo', 'Ana Prueba', 'Robert Testcase', 'example.test', 'clinic.test'];
+const USER_TEXT = ['Heavy legs', 'Follow-up: leg circulation', 'Gastritis, bloating', 'Low-back pain', 'Dolor lumbar', 'night cramps', 'Demo record', 'Demo Clinic', 'Dr. Alex Demo', 'Jane Sample', 'Mary Example', 'John Demo', 'Ana Prueba', 'Robert Testcase', 'example.test', 'clinic.test'];
 async function checkLeaks(page, label, problems) {
   const flags = await page.evaluate(({ onlyEn, onlyEs, user }) => {
     const EN = new Set(['the', 'and', 'with', 'of', 'for', 'your', 'this', 'that', 'from', 'are', 'is', 'was', 'will', 'been', 'have', 'has', 'to', 'on', 'at', 'by', 'after', 'before', 'into', 'than', 'you', 'or', 'be', 'it', 'its', 'which', 'there', 'were', 'not', 'yet']);
@@ -206,7 +208,8 @@ async function main() {
   }
 
   // 4. dashboard (optionally seed fictitious demo records through the public API first)
-  if (process.env.SEED === '1') { const n = await page.evaluate(seedDemo, ADMIN.password); console.log(`  🌱 seeded ${n} demo sessions via API`); await page.reload(); }
+  let esReportId = null;
+  if (process.env.SEED === '1') { const r = await page.evaluate(seedDemo, ADMIN.password); esReportId = r.esReport; console.log(`  🌱 seeded ${r.count} demo sessions via API`); await page.reload(); }
   await page.locator('.dash-grid .card').first().waitFor();
   await shot(page, '06-dashboard');
 
@@ -318,6 +321,8 @@ async function main() {
   await page.locator('.stage-toolbar .seg', { hasText: 'Front' }).click();
   await page.waitForTimeout(1800); // let the camera animation settle
   await shot(page, '12-point-drawer');
+  const drawerBadges = await page.locator('.point-drawer .badge-es').count();
+  console.log(`  🏷  EN point drawer ES badges: ${drawerBadges}`);
   const markBtn = page.locator('.point-drawer .pa-actions .btn-primary').first();
   if (await markBtn.isEnabled()) await markBtn.click();
   await page.keyboard.press('Escape');
@@ -490,6 +495,18 @@ async function main() {
   await page.pdf({ path: path.join(ART, 'report-es-translation.pdf'), format: 'Letter', preferCSSPageSize: true, printBackground: true });
   await page.emulateMedia({ media: 'screen' });
   console.log('  📄 report-es-translation.pdf');
+  // a report signed in Spanish (patient prefers Spanish): no translation notice
+  if (esReportId) {
+    await page.goto(`${base}/#/sessions/${esReportId}/report`);
+    await page.locator('article.report[lang="es"][data-ready="true"]').waitFor({ timeout: 30000 });
+    if (await page.locator('.rpt-translation').count()) problems.push('[desktop] Spanish-signed report shows a translation notice');
+    await shot(page, '47-es-report-signed', { full: true });
+    await checkLeaks(page, 'es signed report', problems);
+    await page.emulateMedia({ media: 'print' });
+    await page.pdf({ path: path.join(ART, 'report-es.pdf'), format: 'Letter', preferCSSPageSize: true, printBackground: true });
+    await page.emulateMedia({ media: 'screen' });
+    console.log('  📄 report-es.pdf');
+  }
   await page.goto(`${base}/#/settings/languages`);
   await page.locator('.lp-card').first().waitFor();
   await page.waitForTimeout(600);

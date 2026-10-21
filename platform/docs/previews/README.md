@@ -33,6 +33,18 @@ system, recommendations and source citation:
 
 📄 **[Sample report (PDF)](ui/sample-report.pdf)**
 
+## Español — full Spanish UI and catalog (mirrored language packs)
+
+| Scan workspace (ES) | Point drawer (ES) | Report signed in Spanish |
+|---|---|---|
+| ![ES scan](ui/19-es-scan-workspace.jpg) | ![ES drawer](ui/20-es-point-drawer.jpg) | ![ES report](ui/21-es-report.jpg) |
+
+| Settings → Language packs (coverage, review, edit) | Signed report viewed in another language |
+|---|---|
+| ![Language packs](ui/22-language-packs-admin.jpg) | ![Translation notice](ui/23-report-translation-notice.jpg) |
+
+📄 **[Sample report in Spanish (PDF)](ui/sample-report-es.pdf)**
+
 ## Patients, intake & consent
 
 | Dashboard | Patient chart |
