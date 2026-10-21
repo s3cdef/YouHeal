@@ -1,0 +1,8 @@
+[
+  { "id": "cefalea", "system": "neurological", "name": { "es": "Cefalea", "en": "Headache" }, "pairs": ["pb-045"] },
+  { "id": "fiebre", "system": "general", "name": { "es": "Fiebre", "en": "Fever" }, "pairs": ["pb-001", "pb-045", "pb-212"] },
+  { "id": "tos", "system": "respiratory", "name": { "es": "Tos", "en": "Cough" }, "pairs": ["pb-212"] },
+  { "id": "acidez", "system": "gastrointestinal", "name": { "es": "Acidez", "en": "Heartburn" }, "pairs": ["pb-010", "pb-030"] },
+  { "id": "dolor-abdominal", "system": "gastrointestinal", "name": { "es": "Dolor abdominal", "en": "Abdominal pain" }, "pairs": ["pb-030", "pb-010", "pb-001"] },
+  { "id": "fatiga", "system": "general", "name": { "es": "Fatiga", "en": "Fatigue" }, "pairs": ["pb-001", "pb-045", "pb-212", "cx-rinon--vejiga"] }
+]

@@ -1,0 +1,13 @@
+{
+  "timo":          { "region": "thorax",     "view": "anterior",  "pos": { "x": 0,     "y": 1.33, "z": 0.10 } },
+  "recto":         { "region": "pelvis",     "view": "posterior", "pos": { "x": 0,     "y": 0.90, "z": -0.08 } },
+  "higado":        { "region": "abdomen",    "view": "anterior",  "pos": { "x": -0.08, "y": 1.12, "z": 0.11 } },
+  "rinon":         { "region": "lower-back", "view": "posterior", "pos": { "x": -0.06, "y": 1.05, "z": -0.10 } },
+  "vejiga":        { "region": "pelvis",     "view": "anterior",  "pos": { "x": 0,     "y": 0.88, "z": 0.10 } },
+  "piloro":        { "region": "abdomen",    "view": "anterior",  "pos": { "x": -0.03, "y": 1.10, "z": 0.12 } },
+  "cardias":       { "region": "abdomen",    "view": "anterior",  "pos": { "x": 0.04,  "y": 1.18, "z": 0.12 } },
+  "suprarrenal":   { "region": "lower-back", "view": "posterior", "pos": { "x": -0.06, "y": 1.10, "z": -0.10 } },
+  "supraespinoso": { "region": "upper-back", "view": "posterior", "pos": { "x": -0.12, "y": 1.42, "z": -0.08 } },
+  "pulmon":        { "region": "thorax",     "view": "anterior",  "pos": { "x": -0.09, "y": 1.30, "z": 0.10 } },
+  "bazo":          { "region": "abdomen",    "view": "lateral",   "pos": { "x": 0.12,  "y": 1.13, "z": 0.02 } }
+}

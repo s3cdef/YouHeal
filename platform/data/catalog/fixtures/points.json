@@ -1,0 +1,14 @@
+[
+  { "id": "timo", "name": { "es": "Timo", "en": "Thymus" }, "aliases": ["Timo"], "laterality": "central" },
+  { "id": "recto", "name": { "es": "Recto", "en": "Rectum" }, "aliases": ["Recto"], "laterality": "central" },
+  { "id": "higado", "name": { "es": "Hígado", "en": "Liver" }, "aliases": ["Hígado"], "laterality": "central" },
+  { "id": "rinon", "name": { "es": "Riñón", "en": "Kidney" }, "aliases": ["Riñón"], "laterality": "bilateral" },
+  { "id": "vejiga", "name": { "es": "Vejiga", "en": "Bladder" }, "aliases": ["Vejiga"], "laterality": "central" },
+  { "id": "piloro", "name": { "es": "Píloro", "en": "Pylorus" }, "aliases": ["Píloro"], "laterality": "central" },
+  { "id": "cardias", "name": { "es": "Cardias", "en": "Cardia" }, "aliases": ["Cardias"], "laterality": "central" },
+  { "id": "suprarrenal", "name": { "es": "Suprarrenal", "en": "Adrenal gland" }, "aliases": ["Suprarrenal"], "laterality": "bilateral" },
+  { "id": "supraespinoso", "name": { "es": "Supraespinoso", "en": "Supraspinatus" }, "aliases": ["Supraespinoso"], "laterality": "bilateral" },
+  { "id": "pulmon", "name": { "es": "Pulmón", "en": "Lung" }, "aliases": ["Pulmón"], "laterality": "bilateral" },
+  { "id": "bazo", "name": { "es": "Bazo", "en": "Spleen" }, "aliases": ["Bazo"], "laterality": "central" },
+  { "id": "trocanter-menor", "name": { "es": "Trocánter Menor", "en": "Lesser trochanter" }, "aliases": ["Trocánter Menor"], "laterality": "bilateral" }
+]

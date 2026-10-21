@@ -1,0 +1,13 @@
+[
+  { "id": "vih", "name": { "es": "VIH", "en": "HIV" }, "kind": "pathogen", "classification": "virus",
+    "contagion": { "es": "Sexual, sanguíneo" }, "description": { "es": "Virus de inmunodeficiencia humana." },
+    "polePairs": [{ "neg": "timo", "pos": "recto", "pairId": "pb-001" }], "protocols": ["top10-gastrointestinal"],
+    "source": { "doc": "leal-2018", "page": 456 } },
+  { "id": "e-coli", "name": { "es": "E. Coli", "en": "E. coli" }, "kind": "pathogen", "classification": "bacteria",
+    "polePairs": [{ "neg": "timo", "pos": "recto", "pairId": "pb-001" }, { "neg": "rinon", "pos": "vejiga", "pairId": "cx-rinon--vejiga" }],
+    "source": { "doc": "leal-2018", "page": 210 } },
+  { "id": "helicobacter-pylori", "name": { "es": "Helicobacter pylori", "en": "Helicobacter pylori" }, "kind": "pathogen", "classification": "bacteria",
+    "polePairs": [{ "neg": "piloro", "pos": "higado", "pairId": "pb-030" }], "source": { "doc": "leal-2018", "page": 300 } },
+  { "id": "gastritis", "name": { "es": "Gastritis", "en": "Gastritis" }, "kind": "condition", "classification": "dysfunctional",
+    "polePairs": [{ "neg": "cardias", "pos": "suprarrenal" }], "protocols": ["top10-gastrointestinal"], "source": { "doc": "leal-2018", "page": 280 } }
+]

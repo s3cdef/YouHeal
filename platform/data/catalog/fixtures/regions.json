@@ -1,0 +1,9 @@
+[
+  { "id": "head", "name": { "es": "Cabeza", "en": "Head" }, "parent": null },
+  { "id": "neck", "name": { "es": "Cuello", "en": "Neck" }, "parent": null },
+  { "id": "thorax", "name": { "es": "Tórax", "en": "Thorax" }, "parent": null },
+  { "id": "abdomen", "name": { "es": "Abdomen", "en": "Abdomen" }, "parent": null },
+  { "id": "pelvis", "name": { "es": "Pelvis", "en": "Pelvis" }, "parent": null },
+  { "id": "upper-back", "name": { "es": "Espalda alta", "en": "Upper back" }, "parent": null },
+  { "id": "lower-back", "name": { "es": "Espalda baja", "en": "Lower back" }, "parent": null }
+]

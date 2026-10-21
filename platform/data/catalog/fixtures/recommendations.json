@@ -1,0 +1,4 @@
+[
+  { "id": "hydration", "title": { "es": "Hidratación", "en": "Hydration" }, "body": { "es": "Beber abundante agua durante 3 días.", "en": "Drink plenty of water for 3 days." } },
+  { "id": "follow-up", "title": { "es": "Seguimiento", "en": "Follow-up" }, "body": { "es": "Realizar un rastreo de control a la semana.", "en": "Schedule a follow-up scan after one week." } }
+]

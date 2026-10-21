@@ -1,0 +1,8 @@
+[
+  { "id": "basic-detox", "kind": "basic", "name": { "es": "Protocolo básico de desintoxicación", "en": "Basic detox protocol" },
+    "items": [{ "pair": "pb-001" }, { "pair": "cx-rinon--vejiga" }], "source": { "doc": "goiz-n1", "page": 100 } },
+  { "id": "top10-gastrointestinal", "kind": "top10", "name": { "es": "Top 10 Gastrointestinal", "en": "Top 10 Gastrointestinal" },
+    "items": [{ "pair": "pb-010" }, { "pair": "pb-030" }, { "protocol": "basic-detox" }, { "pair": "pb-001" }], "source": { "doc": "goiz-n1", "page": 107 } },
+  { "id": "app-19-circulacion-de-piernas", "kind": "application", "name": { "es": "19. Circulación de Piernas", "en": "19. Leg circulation" },
+    "items": [{ "pair": "pb-045" }, { "pair": "pb-212" }], "source": { "doc": "youheal", "page": 1 } }
+]
