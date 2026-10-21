@@ -21,7 +21,7 @@ export function register(router, { audit }) {
   }, { roles: PERM.auditRead });
 
   router.get('/audit/verify', (ctx) => {
-    const r = audit.verify();
+    const r = audit.verify({ orgId: ctx.user.org_id });
     ctx.audit('audit.verify', { targetType: 'audit', outcome: r.ok ? 'success' : 'failure', detail: { checked: r.checked, brokenAt: r.brokenAt } });
     return r;
   }, { roles: PERM.auditRead });

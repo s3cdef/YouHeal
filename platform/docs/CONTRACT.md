@@ -185,14 +185,14 @@ general recommendation sections `{id, title:{}, body:{}}`; abbreviations `{abbr,
 Conventions: errors `{ "error": { "code":"VALIDATION", "message":"...", "fields":{...} } }`;
 list endpoints `{ "items":[...], "total":n }` with `?limit=&offset=`; timestamps ISO-8601 UTC.
 State-changing requests (`POST/PATCH/PUT/DELETE`) MUST carry header `X-CSRF-Token` equal to the session's
-token (returned by `/auth/me` and `/auth/login`). Auth cookie: `yh_sid` — `HttpOnly; Secure (when TLS); SameSite=Strict; Path=/`.
+token (returned by `/auth/me` and `/auth/login`). Auth cookie: `__Host-yh_sid` over TLS (`HttpOnly; Secure; SameSite=Strict; Path=/`, no Domain), `yh_sid` on plain-HTTP dev only; the server honors only the name matching the request's scheme and ignores a duplicated session cookie. `/api` requests whose `Host` is not an allowed name (localhost/127.0.0.1/[::1], the `YH_PUBLIC_ORIGIN` host, `YH_ALLOWED_HOSTS`, and the machine's hostname/bound IPs when exposed) get `421 MISDIRECTED_REQUEST`.
 
 | Method & path | Role | Body / query → response |
 |---|---|---|
 | GET `/health` | public | `{status:"ok", version, catalogVersion}` |
-| GET `/setup/status` | public | `{needsSetup:boolean}` |
-| POST `/setup` | public, only while no users | `{org:{name}, admin:{email,name,password}}` → `{ok:true}` |
-| POST `/auth/login` | public | `{email,password,totp?}` → `{user, csrfToken}` or `401 {error:{code:"MFA_REQUIRED"}}` |
+| GET `/setup/status` | public | `{needsSetup:boolean, tokenRequired:true}` |
+| POST `/setup` | public, only while no users, direct loopback only (refused if `X-Forwarded-For`/`Forwarded`/`X-Real-IP` present, unless `YH_ALLOW_REMOTE_SETUP=1`) | `{setupToken, org:{name}, admin:{email,name,password}}` → `{ok:true}`. `setupToken` = the one-time value the server writes to `<data>/setup-token` (0600) and prints in its log at first start; wrong/missing → `403 SETUP_TOKEN_INVALID`; the file is deleted after success |
+| POST `/auth/login` | public | `{email,password,totp?}` → `{user, csrfToken}` or `401 {error:{code:"MFA_REQUIRED"}}`; `423 ACCOUNT_LOCKED`; `429 RATE_LIMITED` (per-IP or per-account bucket). A TOTP step and each recovery code are single-use even under concurrent requests |
 | POST `/auth/logout` | any | → `{ok:true}` |
 | GET `/auth/me` | any | `{user:{id,email,name,role,locale,mfaEnabled}, org:{...}, csrfToken}` |
 | POST `/auth/password` | any | `{current,next}` |
@@ -215,7 +215,8 @@ token (returned by `/auth/me` and `/auth/login`). Auth cookie: `yh_sid` — `Htt
 | POST `/catalog/suggest` | any | `{symptoms:[ids], text?:string}` → ranked `[{pairId, score, score01, matched:[...]}]` (`score01` = score / top score, 0–1) |
 | GET `/catalog/search` | any | `?q=` unified search across points/pairs/entities/protocols/symptoms |
 | GET `/catalog/contraindications` `/catalog/recommendations` `/catalog/glossary` | any | |
-| GET `/patients` | practitioner+ | `?q=` (blind-index exact last-name / MRN, or first-letter list); items include `sessionCount`, `lastSessionDate` (superseded revisions excluded) |
+| POST `/patients/search` | practitioner+ | `{q?, dob?, archived?, limit?, offset?}` — preferred (no PHI in URLs/logs); same result shape as GET `/patients` |
+| GET `/patients` | practitioner+ | **Deprecated** (search terms in the URL); responds with `Deprecation: true`. `?q=` (blind-index exact last-name / MRN, or first-letter list); items include `sessionCount`, `lastSessionDate` (superseded revisions excluded) |
 | POST `/patients` | practitioner, assistant | `{firstName,lastName,dob,sex,phone,email,address,mrn?,notes?}` |
 | GET/PATCH `/patients/:id` | practitioner+ | decrypted record |
 | POST `/patients/:id/consents` | practitioner, assistant | `{type:"intake", answers:{}, contraindications:{relative:[ids],absolute:[ids]}, signatureName, signedAt}` |
@@ -225,12 +226,12 @@ token (returned by `/auth/me` and `/auth/login`). Auth cookie: `yh_sid` — `Htt
 | GET/PATCH `/sessions/:id` | practitioner+ | session + findings; PATCH (draft only) also accepts `scanState` (object ≤ 64 KB: checklist marks, cursor, active protocol ids, directed-scan text), stored encrypted, returned by GET |
 | POST `/sessions/:id/findings` | practitioner | `{pairId? , trackingPoint?, impactPoint?, trackingSide, impactSide, qualifiers?, phenomena:[], dwellMinutes?, status:"found"\|"impacted"\|"cleared", notes?}` |
 | PATCH/DELETE `/sessions/:id/findings/:fid` | practitioner | |
-| POST `/sessions/:id/finalize` | practitioner | locks session; stores report snapshot + sha256; `{signatureName}` |
+| POST `/sessions/:id/finalize` | practitioner | locks session; stores report snapshot + sha256; `{password, signatureName?}` — `password` = the signer's current password (re-authentication; wrong → `403 REAUTH_FAILED`). The attested name is always the signer's account name; a supplied `signatureName` that differs (after accent/case/space normalization) → `422 SIGNATURE_MISMATCH` |
 | POST `/sessions/:id/amend` | practitioner | `{reason}` → new revision, original kept |
-| GET `/sessions/:id/report` | practitioner+ | assembled report JSON (org, patient, practitioner, session, findings with resolved catalog data, recommendations, follow-up date, disclaimer, hash). `org.logo` included. `generalRecommendations` (also `recommendations.general`) = only the general sections relevant to the found pairs (always `general-short`; `parasitic`, `tropical`, `sti`, `stress-management`, `good-eating`, … by pair category/recommendation text/relations), each `{id, title, summary, body, matchedBy}`. Report images PUT before finalize are part of the hashed snapshot |
+| GET `/sessions/:id/report` | practitioner+, auditor (FINAL/AMENDED only — drafts 403; audited as `report.read.auditor`) | assembled report JSON (org, patient, practitioner, session, findings with resolved catalog data, recommendations, follow-up date, disclaimer, hash). `org.logo` included. `generalRecommendations` (also `recommendations.general`) = only the general sections relevant to the found pairs (always `general-short`; `parasitic`, `tropical`, `sti`, `stress-management`, `good-eating`, … by pair category/recommendation text/relations), each `{id, title, summary, body, matchedBy}`. Report images PUT before finalize are part of the hashed snapshot |
 | PUT `/sessions/:id/report/images` | practitioner | `{front:"data:image/png;base64,...", back:"..."}` (≤ 2 MB each) |
 | GET `/audit` | admin, auditor | `?limit=&offset=&actor=&action=` |
-| GET `/audit/verify` | admin, auditor | `{ok, checked, brokenAt?}` (hash-chain verification) |
+| GET `/audit/verify` | admin, auditor | `{ok, checked, brokenAt?, reason?}` — verifies the whole (global) chain, the keyed in-DB anchor and the external anchor log; `checked` = this org's row count; `brokenAt` is withheld (null) when the break is in another tenant's row. `GET /audit` lists only the caller's org rows (pre-login/unknown-account rows are platform-operator data) |
 | GET `/admin/backup` | admin | streams an encrypted backup |
 
 Roles: `admin` (clinic owner), `practitioner` (biomagnetist / MD), `assistant` (front desk: patients +
@@ -272,14 +273,15 @@ Must degrade gracefully if WebGL is unavailable (render a 2D front/back SVG with
 ## 7. Security baseline (maps to NIST SP 800-53 r5 / HIPAA Security Rule; detail in `docs/SECURITY.md`)
 
 - Passwords: `crypto.scrypt` (N=2^15, r=8, p=1, 32-byte salt), min 12 chars, breached-pattern basics. (IA-5)
-- MFA: TOTP RFC 6238 (SHA-1, 30 s, 6 digits, ±1 step), 10 single-use recovery codes (hashed). Admins MUST enroll. (IA-2(1))
+- MFA: TOTP RFC 6238 (SHA-1, 30 s, 6 digits, ±1 step), steps claimed with a guarded UPDATE (no replay, also under concurrency); 10 single-use recovery codes stored one row each (`user_recovery_codes`), HMAC-SHA256 with a dedicated HKDF subkey + key id, consumed by a guarded UPDATE (`used_at IS NULL`, exactly one row). Codes stay valid after key rotation while the retired key is kept. Disabling MFA revokes the user's other sessions. Admins MUST enroll. (IA-2(1))
 - Sessions: 256-bit random token, stored **hashed** (SHA-256); idle timeout 15 min, absolute 12 h; rotate on login. (AC-11, AC-12, SC-23)
-- Lockout: 5 failed attempts / 15 min per account + per-IP token bucket. (AC-7)
+- Lockout: 5 failed attempts / 15 min per account (atomic `UPDATE … RETURNING` counter; decision re-made on a fresh row after password verification) + per-account token bucket (≤ 5 verifications in flight / window; refunded on success and on admin unlock) + per-IP token bucket (IPv6 bucketed per /64). Unknown accounts lock identically (persisted shadow counters keyed by HMAC of the email). Last active admin protected in-transaction and by a DB trigger. (AC-7)
+- Proxies: `X-Forwarded-*` are honored only when `YH_TRUST_PROXY` is set AND the TCP peer is in `YH_TRUSTED_PROXIES` (IPs/CIDRs, default loopback). Connection caps: `YH_MAX_CONNECTIONS` (512) and `YH_MAX_CONN_PER_IP` (64); headers timeout 15 s. First-run setup needs the one-time setup token.
 - CSRF: per-session token header + `SameSite=Strict`. Origin/Referer check on mutations.
 - Headers: CSP `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'`, HSTS (TLS), `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy` minimal, `Cross-Origin-Opener-Policy: same-origin`. (SC-8, SI-10)
-- Audit: append-only table, each row `hash = SHA256(prev_hash || canonical_json(row))`; every auth event, PHI read, create/update/delete, export, finalize. DB triggers forbid UPDATE/DELETE on audit rows. (AU-2, AU-3, AU-9, AU-10)
-- PHI encrypted at rest (ADR-003), TLS in transit (installer generates a self-signed cert if none supplied), encrypted backups (AES-256-GCM, key = master key). (SC-8, SC-28, CP-9)
-- Input validation on every route (schema validator in `lib/validate.js`), body size limit 1 MB (4 MB for report images), JSON only.
+- Audit: append-only table, each row `hash = SHA256(prev_hash || canonical_json(row))`; every auth event, PHI read, create/update/delete, export, finalize. DB triggers forbid UPDATE/DELETE on audit rows. The chain head is also exported (HMAC-signed) every 100 rows and at shutdown to the append-only file `<data>/audit-anchor.log`; `/audit/verify` cross-checks it to detect tail truncation. (AU-2, AU-3, AU-9, AU-10)
+- PHI encrypted at rest (ADR-003), TLS in transit (installer generates a self-signed cert if none supplied), encrypted backups (AES-256-GCM, key = master key). Restore authenticates the whole file (GCM tag) in a first pass before producing any plaintext, then decompresses with an output cap equal to the header's byte count; each restore appends a `backup.restore` audit row (with the backup's sha256) to the restored chain. (SC-8, SC-28, CP-9)
+- Input validation on every route (schema validator in `lib/validate.js`), body size limit 1 MB (4 MB for report images), JSON only; free-form JSON is checked iteratively (bounded depth and element count, no `__proto__`/`constructor`/`prototype` keys).
 - Least privilege: service runs as dedicated non-root user; container read-only root FS; data dir 0700.
 - Logs never contain PHI, tokens or passwords.
 
