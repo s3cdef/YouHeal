@@ -16,7 +16,7 @@ export const ENCRYPTED_COLUMNS = [
   {
     table: 'scan_sessions', key: ['id'], cols: {
       chief_complaint_enc: 'scan_sessions.chief_complaint', vitals_enc: 'scan_sessions.vitals', notes_enc: 'scan_sessions.notes',
-      amend_reason_enc: 'scan_sessions.amend_reason', signature_name_enc: 'scan_sessions.signature_name', report_snapshot: 'scan_sessions.report_snapshot',
+      amend_reason_enc: 'scan_sessions.amend_reason', scan_state_enc: 'scan_sessions.scan_state', signature_name_enc: 'scan_sessions.signature_name', report_snapshot: 'scan_sessions.report_snapshot',
     },
   },
   { table: 'findings', key: ['id'], cols: { notes_enc: 'findings.notes' } },
