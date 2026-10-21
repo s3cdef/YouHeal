@@ -1,5 +1,5 @@
 // Patients: list/search and create/edit demographics.
-import { el, mount, debounce } from '../ui/dom.js';
+import { el, mount } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, ValidationError } from '../api.js';
 import { t, fmtDate, ageFrom } from '../i18n.js';
@@ -11,49 +11,57 @@ import { confirmDialog } from '../ui/modal.js';
 import { pageHeader, fullName, avatar, errorPanel, todayISO } from './common.js';
 
 export async function renderPatientList({ main, query }) {
+  // Server search is blind-index exact match (PHI is encrypted): exact last name, exact MRN, exact DOB, or first letter.
   let q = query.q || '';
+  let dob = query.dob || '';
   const search = el('input.input.input-lg', { type: 'search', id: 'patient-search', placeholder: t('patients.searchPlaceholder'), value: q, autocomplete: 'off', spellcheck: 'false', aria: { describedby: 'patient-search-hint' } });
+  const dobIn = el('input.input.input-lg', { type: 'date', id: 'patient-dob', value: dob, max: todayISO() });
+  const go = el('button.btn.btn-primary.btn-lg', { type: 'submit' }, icon('search', { size: 18 }), t('common.search'));
+  const clearBtn = el('button.btn.btn-ghost.btn-lg', { type: 'button', onClick: () => { q = ''; dob = ''; search.value = ''; dobIn.value = ''; load(); } }, t('patients.showRecent'));
+  const form = el('form.patient-search', { role: 'search', novalidate: true },
+    el('div.field.ps-q', el('label.label', { for: 'patient-search' }, t('patients.searchLabel')), el('div.search-field', el('span.search-icon', icon('search', { size: 20 })), search)),
+    el('div.field.ps-dob', el('label.label', { for: 'patient-dob' }, t('patients.dobSearch')), dobIn),
+    el('div.ps-actions', go, clearBtn),
+    el('p.field-hint.ps-hint', { id: 'patient-search-hint' }, icon('lock', { size: 14 }), t('patients.searchHint')));
+  form.addEventListener('submit', (e) => { e.preventDefault(); q = search.value.trim(); dob = dobIn.value; load(); });
   const letters = el('div.alpha', { role: 'group', aria: { label: t('patients.byLetter') } },
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((L) => el('button.alpha-btn', { type: 'button', aria: { pressed: q.toUpperCase() === L ? 'true' : 'false' }, onClick: () => { q = q.toUpperCase() === L ? '' : L; search.value = q; load(); } }, L)));
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((L) => el('button.alpha-btn', { type: 'button', aria: { pressed: q.toUpperCase() === L ? 'true' : 'false' }, onClick: () => { q = q.toUpperCase() === L ? '' : L; search.value = q; dob = ''; dobIn.value = ''; load(); } }, L)));
   const results = el('div.results', skeleton(5));
   const count = el('p.results-count', { aria: { live: 'polite' } });
   mount(main, el('div.page',
     pageHeader({ title: t('patients.title'), subtitle: t('patients.subtitle'), actions: can.patients() ? [el('a.btn.btn-primary', { href: '#/patients/new' }, icon('plus', { size: 18 }), t('patients.new'))] : [] }),
-    el('div.toolbar',
-      el('div.search-field', el('label.sr-only', { for: 'patient-search' }, t('patients.searchLabel')), el('span.search-icon', icon('search', { size: 20 })), search),
-      el('p.field-hint', { id: 'patient-search-hint' }, t('patients.searchHint'))),
-    letters, count, results));
+    form, letters, count, results));
 
   async function load() {
     letters.querySelectorAll('.alpha-btn').forEach((b) => b.setAttribute('aria-pressed', b.textContent === q.toUpperCase() ? 'true' : 'false'));
-    const url = new URLSearchParams(); if (q) url.set('q', q);
-    history.replaceState(null, '', `#/patients${q ? '?' + url.toString() : ''}`);
-    let list;
-    try { list = items(await api.get('/patients', { q, limit: 200 })); } catch (err) { mount(results, errorPanel(err, load)); return; }
-    count.textContent = t('patients.count', { count: list.length });
+    const url = new URLSearchParams(); if (q) url.set('q', q); if (dob) url.set('dob', dob);
+    history.replaceState(null, '', `#/patients${url.toString() ? '?' + url.toString() : ''}`);
+    let res;
+    try { res = await api.get('/patients', { q, dob, limit: 200 }); } catch (err) { mount(results, errorPanel(err, load)); return; }
+    const list = items(res);
+    const mode = dob ? 'dob' : q.length === 1 ? 'letter' : q ? 'exact' : 'recent';
+    count.textContent = t(`patients.count_${mode}`, { count: list.length, total: res.total ?? list.length, q, dob: dob ? fmtDate(dob) : '' });
     mount(results, table({
       caption: t('patients.title'),
       rows: list,
       onRowClick: (p) => navigate(`/patients/${p.id}`),
       rowLabel: (p) => fullName(p),
-      empty: emptyState({ icon: 'users', title: q ? t('patients.noMatch', { q }) : t('patients.empty'), body: q ? t('patients.noMatchBody') : t('patients.emptyBody'),
+      empty: emptyState({ icon: 'users', title: q || dob ? t('patients.noMatch', { q: q || fmtDate(dob) }) : t('patients.empty'), body: q || dob ? t('patients.noMatchBody') : t('patients.emptyBody'),
         action: can.patients() ? el('a.btn.btn-primary', { href: '#/patients/new' }, icon('plus', { size: 18 }), t('patients.new')) : null }),
       columns: [
         { key: 'name', label: t('patients.colName'), render: (p) => el('span.cell-person', avatar(p, 'sm'), el('a.cell-link', { href: `#/patients/${p.id}` }, fullName(p))) },
-        { key: 'dob', label: t('patients.colDob'), render: (p) => el('span', fmtDate(p.dob), el('span.muted', ` · ${t('patient.ageYears', { age: ageFrom(p.dob) ?? '—' })}`)) },
+        { key: 'dob', label: t('patients.colDob'), render: (p) => el('span', fmtDate(p.dob), el('span.muted', ` · ${t('patient.ageYears', { age: p.age ?? ageFrom(p.dob) ?? '—' })}`)) },
         { key: 'sex', label: t('patients.colSex'), render: (p) => (p.sex ? t(`sex.${p.sex}`) : '—') },
         { key: 'mrn', label: t('patients.colMrn'), cls: 'mono' },
-        { key: 'last', label: t('patients.colLastScan'), render: (p) => (p.lastSessionAt ? fmtDate(p.lastSessionAt) : el('span.muted', t('dashboard.noScans'))) },
-        { key: 'sessions', label: t('patients.colSessions'), align: 'right', render: (p) => String(p.sessionCount ?? '—') },
+        { key: 'added', label: t('patients.colAdded'), render: (p) => (p.createdAt ? fmtDate(p.createdAt) : '—') },
       ],
     }));
   }
-  search.addEventListener('input', debounce(() => { q = search.value.trim(); load(); }, 250));
   await load();
   return null;
 }
 
-const SEXES = ['female', 'male', 'intersex', 'unknown'];
+const SEXES = ['female', 'male', 'other', 'unknown'];
 
 export async function renderPatientForm({ main, params }) {
   const editing = !!params.id;
@@ -78,12 +86,10 @@ export async function renderPatientForm({ main, params }) {
     card({ title: t('patients.secContact'), icon: 'globe', children: [el('div.grid-2',
       mk('phone', t('patient.phone'), input({ type: 'tel', autocomplete: 'off', inputmode: 'tel' }), { optional: true }),
       mk('email', t('patient.email'), input({ type: 'email', autocomplete: 'off', inputmode: 'email' }), { optional: true }),
-      mk('address', t('patient.address'), input({ autocomplete: 'off' }), { optional: true, cls: 'span-2' }),
-      mk('emergencyContact', t('patient.emergencyContact'), input({ autocomplete: 'off' }), { optional: true, cls: 'span-2' }))] }),
+      mk('address', t('patient.address'), textarea({ rows: 2 }), { optional: true, cls: 'span-2' }))] }),
     card({ title: t('patients.secClinical'), icon: 'clipboard', children: [el('div.grid-2',
-      mk('mrn', t('patient.mrn'), input({ autocomplete: 'off', class: 'mono' }), { optional: true, hint: t('patient.mrnHint') }),
-      mk('referredBy', t('patient.referredBy'), input({ autocomplete: 'off' }), { optional: true }),
-      mk('occupation', t('patient.occupation'), input({ autocomplete: 'off' }), { optional: true }),
+      mk('mrn', t('patient.mrn'), input({ autocomplete: 'off', class: 'mono', pattern: '[A-Za-z0-9][A-Za-z0-9-]{0,31}', readOnly: editing }), { optional: !editing, hint: editing ? t('patient.mrnLocked') : t('patient.mrnHint') }),
+      el('div'),
       mk('notes', t('patient.notes'), textarea({ rows: 3 }), { optional: true, cls: 'span-2', hint: t('patient.notesHint') }))] }),
     errBox,
     el('div.form-actions.sticky-actions',
@@ -98,10 +104,14 @@ export async function renderPatientForm({ main, params }) {
     e.preventDefault();
     Object.values(f).forEach((x) => x.setError(null)); errBox.textContent = '';
     const data = Object.fromEntries(Object.keys(f).map((k) => [k, form.elements[k].value.trim()]));
+    if (editing) delete data.mrn;
+    for (const k of ['phone', 'email', 'address', 'mrn', 'notes']) if (k in data && data[k] === '') data[k] = null;
     let bad = null;
     for (const k of ['firstName', 'lastName', 'dob', 'sex']) if (!data[k]) { f[k].setError(t('validation.required')); bad = bad || form.elements[k]; }
     if (data.dob && data.dob > todayISO()) { f.dob.setError(t('validation.dobFuture')); bad = bad || form.elements.dob; }
     if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { f.email.setError(t('validation.email')); bad = bad || form.elements.email; }
+    if (data.phone && !/^[0-9+().\s/-]*$/.test(data.phone)) { f.phone.setError(t('validation.phone')); bad = bad || form.elements.phone; }
+    if (data.mrn && !/^[A-Za-z0-9][A-Za-z0-9-]{0,31}$/.test(data.mrn)) { f.mrn.setError(t('validation.mrn')); bad = bad || form.elements.mrn; }
     if (bad) { bad.focus(); errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', t('validation.fixErrors'))] })); return; }
     setLoading(submit, true);
     try {

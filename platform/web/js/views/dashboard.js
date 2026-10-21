@@ -1,10 +1,10 @@
 // Dashboard: today's sessions, drafts to finalize, follow-ups due, recent patients, quick search.
 import { el, mount } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
-import { api, items } from '../api.js';
+import { api, items, NotFoundError } from '../api.js';
 import { t, fmtTime, fmtDate, fmtRelativeDay, locText, parseDateOnly } from '../i18n.js';
 import { navigate } from '../router.js';
-import { state, can } from '../state.js';
+import { state, can, normSession } from '../state.js';
 import { combobox } from '../ui/combobox.js';
 import { card, emptyState, statusBadge, skeleton, chip } from '../ui/components.js';
 import { pageHeader, fullName, avatar, demographics, todayISO, addDaysISO, methodologyLabel, errorPanel } from './common.js';
@@ -16,15 +16,15 @@ function greeting() {
 
 export function quickSearch({ autofocus = false } = {}) {
   const cb = combobox({
-    label: t('dashboard.searchLabel'), placeholder: t('dashboard.searchPlaceholder'), size: 'lg',
+    label: t('dashboard.searchLabel'), placeholder: can.patients() ? t('dashboard.searchPlaceholder') : t('dashboard.searchPlaceholderCatalog'), size: 'lg',
     source: async (q) => {
       const [pts, cat] = await Promise.all([
-        can.patients() || can.reports() ? api.get('/patients', { q, limit: 6 }).then(items).catch(() => []) : [],
-        api.get('/catalog/search', { q }).then(items).catch(() => []),
+        can.patients() ? api.get('/patients', { q, limit: 6 }).then(items).catch(() => []) : [],
+        api.get('/catalog/search', { q, limit: 12 }).then(items).catch(() => []),
       ]);
       return [
         ...pts.map((p) => ({ id: p.id, type: 'patient', label: fullName(p), sublabel: `${t('search.types.patient')} · ${demographics(p)}`, badge: chip(t('search.types.patient'), 'teal') })),
-        ...cat.slice(0, 8).map((r) => ({ id: r.id, type: r.type, label: `${r.number ? '#' + r.number + ' ' : ''}${locText(r.name)}`, sublabel: t(`search.types.${r.type}`), badge: chip(t(`search.types.${r.type}`), r.type === 'pair' ? 'gold' : 'slate') })),
+        ...cat.slice(0, 8).map((r) => { const type = r.kind || r.type; return { id: r.id, type, label: `${r.number ? '#' + r.number + ' ' : ''}${locText(r.name)}`, sublabel: t(`search.types.${type}`), badge: chip(t(`search.types.${type}`), type === 'pair' ? 'gold' : 'slate') }; }),
       ];
     },
     onSelect: (it) => {
@@ -41,7 +41,7 @@ export function quickSearch({ autofocus = false } = {}) {
 }
 
 function sessionRow(s, { showDate = false, action = null } = {}) {
-  const href = s.status === 'draft' ? `#/sessions/${s.id}` : `#/sessions/${s.id}/report`;
+  const href = !can.clinical() ? `#/patients/${s.patientId}/sessions` : s.status === 'draft' ? `#/sessions/${s.id}` : `#/sessions/${s.id}/report`;
   return el('li.list-row',
     el('a.list-row-link', { href },
       el('span.list-time', showDate ? fmtDate(s.startedAt, { month: 'short', day: 'numeric' }) : fmtTime(s.startedAt)),
@@ -78,14 +78,27 @@ export async function renderDashboard({ main }) {
   const today = todayISO();
   const tomorrow = addDaysISO(today, 1);
   async function load() {
-    const startToday = new Date(); startToday.setHours(0, 0, 0, 0);
-    const startTomorrow = new Date(startToday); startTomorrow.setDate(startTomorrow.getDate() + 1);
-    const [todays, drafts, follow, patients] = await Promise.all([
-      api.get('/sessions', { from: startToday.toISOString(), to: startTomorrow.toISOString(), limit: 50 }).then(items),
-      api.get('/sessions', { status: 'draft', limit: 20 }).then(items),
-      api.get('/sessions', { followUpTo: addDaysISO(today, 7), limit: 20 }).then(items),
-      api.get('/patients', { limit: 200 }).then(items),
-    ]);
+    const patients = items(await api.get('/patients', { limit: 50 }));
+    const byId = new Map(patients.map((p) => [p.id, p]));
+    let sessions;
+    try {
+      // Preferred (not in CONTRACT §5 yet): cross-patient listing.
+      sessions = items(await api.get('/sessions', { limit: 200 }));
+    } catch (err) {
+      if (!(err instanceof NotFoundError)) throw err;
+      // Fallback: aggregate per-patient session summaries for the most recent patients.
+      const lists = await Promise.all(patients.slice(0, 40).map((p) => api.get(`/patients/${encodeURIComponent(p.id)}/sessions`).then(items).catch(() => [])));
+      sessions = lists.flat();
+    }
+    sessions = sessions.map(normSession).map((s) => ({ ...s, patient: s.patient || byId.get(s.patientId) || null })).filter((s) => !s.supersededBy);
+    sessions.sort((x, y) => String(y.startedAt).localeCompare(String(x.startedAt)));
+    const isToday = (iso) => iso && todayISO(new Date(iso)) === today;
+    const latestByPatient = new Map();
+    for (const s of sessions) if (!latestByPatient.has(s.patientId)) latestByPatient.set(s.patientId, s);
+    const todays = sessions.filter((s) => isToday(s.startedAt)).sort((x, y) => String(x.startedAt).localeCompare(String(y.startedAt)));
+    const drafts = sessions.filter((s) => s.status === 'draft');
+    const follow = [...latestByPatient.values()].filter((s) => s.status !== 'draft' && s.followUpDate && s.followUpDate <= addDaysISO(today, 7)).sort((x, y) => x.followUpDate.localeCompare(y.followUpDate));
+    for (const p of patients) { const l = latestByPatient.get(p.id); p.lastSessionAt = l ? l.startedAt : null; }
     return { todays, drafts, follow, patients };
   }
   let data;
@@ -120,7 +133,7 @@ export async function renderDashboard({ main }) {
     })) : emptyState({ icon: 'refresh', title: t('dashboard.noFollowUps'), compact: true }),
   });
   followCard.id = 'dash-follow';
-  const recent = [...data.patients].sort((a, b) => String(b.lastSessionAt || b.updatedAt || '').localeCompare(String(a.lastSessionAt || a.updatedAt || ''))).slice(0, 6);
+  const recent = [...data.patients].sort((a, b) => String(b.lastSessionAt || b.createdAt || '').localeCompare(String(a.lastSessionAt || a.createdAt || ''))).slice(0, 6);
   const recentCard = card({
     title: t('dashboard.recentPatients'), icon: 'users',
     actions: el('a.btn.btn-sm.btn-ghost', { href: '#/patients' }, t('common.viewAll'), icon('chevronRight', { size: 16 })),

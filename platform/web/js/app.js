@@ -1,7 +1,7 @@
 // YOU HEAL Clinical — SPA bootstrap.
 import { el, mount, clear } from './ui/dom.js';
 import { icon, brandMark } from './ui/icons.js';
-import { api, on as onApi, setCsrf, startIdleWatch, stopIdleWatch, AuthError } from './api.js';
+import { api, on as onApi, setCsrf, startIdleWatch, stopIdleWatch, setIdleTimeout, AuthError } from './api.js';
 import { initI18n, setLocale, getLocale, detectLocale, t, onLocaleChange } from './i18n.js';
 import { route, setNotFound, setHooks, startRouter, navigate, reload, currentPath } from './router.js';
 import { state, can, clearCatalogCache, polarity } from './state.js';
@@ -18,13 +18,21 @@ let pendingNotice = null;
 export async function refreshMe() {
   try {
     const me = await api.get('/auth/me', null, { auth: false });
-    state.user = me.user; state.org = me.org || null;
-    if (me.csrfToken) setCsrf(me.csrfToken);
+    applyMe(me);
     return true;
   } catch (err) {
     if (err instanceof AuthError) { state.user = null; return false; }
     throw err;
   }
+}
+
+/** Apply a /auth/me (or /auth/login) payload. */
+export function applyMe(me) {
+  state.user = me.user; state.org = me.org || null;
+  if (me.csrfToken) setCsrf(me.csrfToken);
+  state.restriction = me.passwordChangeRequired || (me.user && me.user.mustChangePassword) ? 'password'
+    : me.mfaEnrollmentRequired ? 'mfa' : null;
+  if (me.session && me.session.idleTimeoutSec) setIdleTimeout(me.session.idleTimeoutSec);
 }
 
 export async function afterLogin() {
@@ -53,6 +61,12 @@ export function applyPolarityVars() {
 
 function onIdleExpired() { signOut({ expired: true }); }
 
+onApi('restricted', async () => {
+  await refreshMe().catch(() => {});
+  shellEls = null;
+  navigate(state.restriction === 'password' ? '/password' : '/mfa');
+});
+
 onApi('unauthorized', () => {
   if (!state.user) return;
   state.user = null; stopIdleWatch(); shellEls = null;
@@ -63,9 +77,10 @@ onApi('unauthorized', () => {
 
 // ---------------- shell ----------------
 const NAV = [
-  { id: 'dashboard', href: '#/', icon: 'home', label: 'nav.dashboard', show: () => true },
-  { id: 'patients', href: '#/patients', icon: 'users', label: 'nav.patients', show: () => can.patients() || can.reports() },
-  { id: 'catalog', href: '#/catalog', icon: 'book', label: 'nav.catalog', show: () => true },
+  { id: 'dashboard', href: '#/', icon: 'home', label: 'nav.dashboard', show: () => can.patients() },
+  { id: 'patients', href: '#/patients', icon: 'users', label: 'nav.patients', show: () => can.patients() },
+  { id: 'audit', href: '#/settings/audit', icon: 'shield', label: 'nav.audit', show: () => can.audit() && !can.patients() },
+  { id: 'catalog', href: '#/catalog', icon: 'book', label: 'nav.catalog', show: () => can.patients() || can.reports() },
   { id: 'settings', href: '#/settings', icon: 'settings', label: 'nav.settings', show: () => true },
 ];
 
@@ -124,6 +139,7 @@ function setActiveNav(id) {
 
 function layoutFor(r, layout) {
   if (layout === 'auth') {
+    document.body.classList.add('is-auth');
     shellEls = null;
     const main = el('main#main.auth-main', { tabindex: '-1' });
     mount(app, el('div.auth-layout',
@@ -131,6 +147,7 @@ function layoutFor(r, layout) {
       main));
     return main;
   }
+  document.body.classList.remove('is-auth');
   if (!shellEls || !shellEls.shell.isConnected) buildShell();
   shellEls.shell.classList.toggle('is-compact', !!r.compact);
   setActiveNav(r.nav);
@@ -178,7 +195,8 @@ function view(loader, fnName, opts = {}) {
 
 route('/setup', view(() => import('./views/auth.js'), 'renderSetup', { public: true, layout: 'auth' }));
 route('/login', view(() => import('./views/auth.js'), 'renderLogin', { public: true, layout: 'auth' }));
-route('/mfa', view(() => import('./views/auth.js'), 'renderMfaEnroll', { layout: 'auth', allowWithoutMfa: true }));
+route('/mfa', view(() => import('./views/auth.js'), 'renderMfaEnroll', { layout: 'auth', allow: 'mfa' }));
+route('/password', view(() => import('./views/auth.js'), 'renderPasswordChange', { layout: 'auth', allow: 'password' }));
 route('/', view(() => import('./views/dashboard.js'), 'renderDashboard', { nav: 'dashboard' }));
 route('/patients', view(() => import('./views/patients.js'), 'renderPatientList', { nav: 'patients' }));
 route('/patients/new', view(() => import('./views/patients.js'), 'renderPatientForm', { nav: 'patients' }));
@@ -188,6 +206,7 @@ route('/sessions/:id', view(() => import('./views/scan.js'), 'renderScan', { nav
 route('/sessions/:id/report', view(() => import('./views/report.js'), 'renderReport', { nav: 'patients' }));
 route('/catalog/protocols/:id/card', view(() => import('./views/catalog.js'), 'renderProtocolCard', { nav: 'catalog' }));
 route('/catalog/:tab?', view(() => import('./views/catalog.js'), 'renderCatalog', { nav: 'catalog' }));
+route('/settings/audit', view(() => import('./views/settings.js'), 'renderSettings', { nav: 'audit', tab: 'audit' }));
 route('/settings/:tab?', view(() => import('./views/settings.js'), 'renderSettings', { nav: 'settings' }));
 setNotFound(view(() => import('./views/dashboard.js'), 'renderNotFound', {}));
 
@@ -205,8 +224,12 @@ setHooks({
     if (ctx.path === '/setup') return state.user ? '/' : '/login';
     if (r.public) return state.user && ctx.path === '/login' ? '/' : null;
     if (!state.user) { rememberRoute(ctx.path); return '/login'; }
-    // CONTRACT §7: admins MUST enroll MFA.
-    if (state.user.role === 'admin' && !state.user.mfaEnabled && !r.allowWithoutMfa) return '/mfa';
+    // Server restrictions: admins MUST enroll MFA; admin-created users must change their password first.
+    if (state.restriction === 'password' && r.allow !== 'password') return '/password';
+    if (state.restriction === 'mfa' && r.allow !== 'mfa') return '/mfa';
+    if (!state.restriction && (r.allow === 'password')) return '/';
+    // Role landing: the auditor has no patient directory.
+    if (!can.patients() && (ctx.path === '/' || ctx.path.startsWith('/patients'))) return can.audit() ? '/settings/audit' : '/catalog';
     return null;
   },
   after(ctx) {
@@ -250,8 +273,10 @@ async function boot() {
 }
 
 export function goAfterLogin() {
+  if (state.restriction === 'password') { navigate('/password'); return; }
+  if (state.restriction === 'mfa') { navigate('/mfa'); return; }
   const lr = lastRoute();
-  navigate(lr && lr !== '/login' ? lr : '/');
+  navigate(lr && !/^\/(login|setup|mfa|password)/.test(lr) ? lr : '/');
 }
 
 boot();

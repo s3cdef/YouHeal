@@ -852,12 +852,12 @@ if [ "${DO_MIGRATE}" = 1 ]; then
   ok "migrations applied"
 fi
 if [ "${DO_CATALOG}" = 1 ]; then
-  if [ -n "$(ls -A "${APP_DIR}/data/catalog" 2>/dev/null || true)" ] || [ "${DRY_RUN}" = 1 ]; then
+  if [ -f "${APP_DIR}/data/catalog/points.json" ] || [ -f "${APP_DIR}/data/catalog/manifest.json" ] || [ "${DRY_RUN}" = 1 ]; then
     log "loading catalog"
     node_script "${NODE_BIN}" "${SERVICE_USER}" "${ENV_FILE}" "${APP_DIR}" catalog:load
     ok "catalog loaded"
   else
-    warn "${APP_DIR}/data/catalog is empty — skipped catalog load"
+    warn "no catalog JSON (points.json/manifest.json) in ${APP_DIR}/data/catalog — skipped catalog load"
   fi
 fi
 prune_releases

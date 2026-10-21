@@ -116,7 +116,10 @@ try {
     # ---- 5. migrate + catalog --------------------------------------------------------------------
     Write-YHLog 'step 5/6: migrations + catalog'
     Invoke-YHNodeScript -NodeExe $state2.NodeExe -AppDir $state2.AppDir -EnvFile $envFile -Name 'migrate'
-    Invoke-YHNodeScript -NodeExe $state2.NodeExe -AppDir $state2.AppDir -EnvFile $envFile -Name 'catalog:load'
+    $catDir = Join-Path $state2.AppDir 'data\catalog'
+    if ($DryRun -or (Test-Path -LiteralPath (Join-Path $catDir 'points.json')) -or (Test-Path -LiteralPath (Join-Path $catDir 'manifest.json'))) {
+        Invoke-YHNodeScript -NodeExe $state2.NodeExe -AppDir $state2.AppDir -EnvFile $envFile -Name 'catalog:load'
+    } else { Write-YHLog 'no catalog JSON in the new release - catalog load skipped' -Level WARN }
 
     # ---- 6. start + verify -----------------------------------------------------------------------
     Write-YHLog 'step 6/6: start and health check'

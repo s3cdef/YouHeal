@@ -500,7 +500,8 @@ $($xmlEnv -join "`n")
     # --------------------------------------------------------------------------------------------
     if (-not $SkipMigrate) { Write-YHLog 'running database migrations'; Invoke-YHNodeScript -NodeExe $nodeExe -AppDir $appDir -EnvFile $envFile -Name 'migrate'; Write-YHLog 'migrations applied' -Level OK }
     if (-not $SkipCatalog) {
-        if ($DryRun -or (Get-ChildItem -LiteralPath (Join-Path $appDir 'data\catalog') -ErrorAction SilentlyContinue)) {
+        $catDir = Join-Path $appDir 'data\catalog'
+        if ($DryRun -or (Test-Path -LiteralPath (Join-Path $catDir 'points.json')) -or (Test-Path -LiteralPath (Join-Path $catDir 'manifest.json'))) {
             Write-YHLog 'loading catalog'; Invoke-YHNodeScript -NodeExe $nodeExe -AppDir $appDir -EnvFile $envFile -Name 'catalog:load'; Write-YHLog 'catalog loaded' -Level OK
         } else { Write-YHLog 'data\catalog is empty - catalog load skipped' -Level WARN }
     }

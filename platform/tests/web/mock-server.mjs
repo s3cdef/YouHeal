@@ -19,6 +19,7 @@ const argVal = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1
 const PORT = Number(process.env.PORT || argVal('--port', 4173));
 const DEMO = !args.includes('--no-demo');
 const LATENCY = Number(argVal('--latency', 60));
+const NO_MFA = args.includes('--no-mfa');
 
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'";
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.glb': 'model/gltf-binary', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
@@ -28,7 +29,6 @@ const db = {
   org: null, users: [], sessions: new Map(), patients: [], consents: [], scanSessions: [], audit: [],
   failed: new Map(), reportImages: new Map(),
 };
-const id = (p) => `${p}_${crypto.randomBytes(6).toString('hex')}`;
 const now = () => new Date().toISOString();
 const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(',')}]` : v && typeof v === 'object' ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(',')}}` : JSON.stringify(v));
@@ -50,151 +50,182 @@ function totpOk(secret, code) { const s = Math.floor(Date.now() / 30000); return
 
 function audit(actor, action, target = null, extra = {}) {
   const prev = db.audit.length ? db.audit[db.audit.length - 1].hash : '0'.repeat(64);
-  const row = { id: db.audit.length + 1, ts: now(), actor: actor ? { id: actor.id, name: actor.name, email: actor.email } : null, action, target, ip: '127.0.0.1', ...extra };
+  const row = { id: db.audit.length + 1, ts: now(), actor: actor ? { id: actor.id, name: actor.name, email: actor.email, role: actor.role } : null, action,
+    targetType: target ? (String(action).split('.')[0]) : null, targetId: target, outcome: /failure/.test(action) ? 'failure' : 'success', ip: '127.0.0.1', detail: extra.detail || null };
   row.prevHash = prev; row.hash = sha256(prev + canon({ ...row, hash: undefined }));
   db.audit.push(row);
 }
 
-// ---------------------------------------------------------------- catalog helpers
+// ---------------------------------------------------------------- catalog helpers (shapes mirror server/routes/catalog.js)
 const pointsById = new Map(C.points.map((p) => [p.id, p]));
 const pairsById = new Map(C.pairs.map((p) => [p.id, p]));
 const entById = new Map(C.entities.map((e) => [e.id, e]));
 const protoById = new Map(C.protocols.map((p) => [p.id, p]));
+const sourceById = new Map(C.sources.map((s) => [s.id, s]));
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const textOf = (o) => (o ? Object.values(o).join(' ') : '');
 
 function expandProtocol(proto, seen = new Set()) {
   const out = [];
   for (const it of proto.items) {
-    if (it.pair) out.push({ pairId: it.pair, via: proto.id });
-    else if (it.protocol && !seen.has(it.protocol)) { seen.add(it.protocol); out.push(...expandProtocol(protoById.get(it.protocol), seen)); }
+    if (it.pair) { if (!out.some((x) => x.pairId === it.pair)) out.push({ pairId: it.pair, via: proto.id }); }
+    else if (it.protocol && !seen.has(it.protocol)) { seen.add(it.protocol); for (const x of expandProtocol(protoById.get(it.protocol), seen)) if (!out.some((y) => y.pairId === x.pairId)) out.push(x); }
   }
   return out;
 }
 const protocolsContaining = (pairId) => C.protocols.filter((p) => expandProtocol(p).some((x) => x.pairId === pairId)).map((p) => ({ id: p.id, kind: p.kind, name: p.name }));
-const pairSummary = (p) => ({ id: p.id, number: p.number, level: p.level, name: p.name, tracking: p.tracking, impact: p.impact, category: p.category, ratings: p.ratings,
-  relations: p.relations.map((r) => ({ entity: r.entity, ordinal: r.ordinal, name: entById.get(r.entity)?.name })), systems: [...new Set(p.symptoms.map((s) => s.system))] });
+const pointRef = (id, end) => ({ point: id, side: end?.side || 'C', qualifiers: end?.qualifiers || [], name: pointsById.get(id)?.name ?? null });
+const pairSummary = (p) => (p ? {
+  id: p.id, number: p.number ?? null, level: p.level ?? 0, name: p.name,
+  tracking: pointRef(p.tracking.point, p.tracking), impact: pointRef(p.impact.point, p.impact),
+  category: p.category ?? null, ratings: p.ratings || {},
+  relations: p.relations.map((r) => ({ entity: r.entity, ordinal: r.ordinal ?? null, name: entById.get(r.entity)?.name ?? null, kind: entById.get(r.entity)?.kind ?? null })),
+} : null);
 function pairFull(p) {
-  return { ...p, relations: p.relations.map((r) => ({ ordinal: r.ordinal, entity: entById.get(r.entity) || { id: r.entity, name: { es: r.entity } } })),
-    protocols: protocolsContaining(p.id), trackingPoint: pointsById.get(p.tracking.point), impactPoint: pointsById.get(p.impact.point),
-    sourceInfo: C.sources.find((s) => s.id === p.source.doc) };
+  const src = sourceById.get(p.source?.doc);
+  return { ...p, ...pairSummary(p),
+    relations: p.relations.map((r) => { const e = entById.get(r.entity); return { entity: r.entity, ordinal: r.ordinal ?? null, name: e?.name ?? null, kind: e?.kind ?? null, classification: e?.classification ?? null }; }),
+    trackingPoint: pointsById.get(p.tracking.point) || null, impactPoint: pointsById.get(p.impact.point) || null,
+    symptomIds: C.symptoms.filter((s) => s.pairs.includes(p.id)).map((s) => s.id),
+    protocols: protocolsContaining(p.id),
+    sourceInfo: src ? { id: src.id, title: src.title, license_status: src.license_status, notice: src.notice ?? null } : null };
 }
-
+const fWeight = (p) => { const F = p.ratings?.F; return F > 0 ? (1 + F) / 4 : 0.4; };
 function suggest({ symptoms = [], text = '' }) {
   const scores = new Map();
-  const add = (pid, s, m) => { const e = scores.get(pid) || { pairId: pid, score: 0, matched: [] }; e.score += s; e.matched.push(m); scores.set(pid, e); };
+  const bump = (pid, inc, reason) => { const e = scores.get(pid) || { pairId: pid, score: 0, matched: [] }; e.score += inc; e.matched.push(reason); scores.set(pid, e); };
   for (const sid of symptoms) {
-    const s = C.symptoms.find((x) => x.id === sid); if (!s) continue;
-    for (const pid of s.pairs) add(pid, 1, { kind: 'symptom', id: s.id, label: s.name });
+    const s = C.symptoms.find((x) => x.id === sid); if (!s || !s.pairs.length) continue;
+    const spec = 1 / Math.log(1 + s.pairs.length);
+    for (const pid of s.pairs) bump(pid, spec * fWeight(pairsById.get(pid)), { type: 'symptom', id: sid, name: s.name, weight: Math.round(spec * 1000) / 1000 });
   }
-  const terms = norm(text).split(/[^a-z0-9]+/).filter((w) => w.length > 3);
-  for (const p of C.pairs) {
-    for (const term of terms) {
-      const hitSym = p.symptoms.find((s) => norm(textOf(s.text)).includes(term));
-      if (hitSym) add(p.id, 0.6, { kind: 'text', term, label: hitSym.text });
-      const hitEnt = p.relations.find((r) => norm(textOf(entById.get(r.entity)?.name)).includes(term));
-      if (hitEnt) add(p.id, 0.5, { kind: 'relation', term, label: entById.get(hitEnt.entity).name });
-    }
+  const tokens = [...new Set(norm(text).match(/[a-z0-9]+/g) || [])].filter((w) => w.length >= 3).slice(0, 20);
+  for (const p of C.pairs) for (const t of tokens) {
+    const hit = p.symptoms.find((s) => norm(textOf(s.text)).includes(t));
+    if (hit) { bump(p.id, 0.5 * fWeight(p), { type: 'text', token: t, field: 'symptom', system: hit.system, text: hit.text }); continue; }
+    if (norm(textOf(p.name)).includes(t)) { bump(p.id, 0.35 * fWeight(p), { type: 'text', token: t, field: 'name' }); continue; }
+    if (p.relations.some((r) => norm(textOf(entById.get(r.entity)?.name)).includes(t))) bump(p.id, 0.35 * fWeight(p), { type: 'text', token: t, field: 'relation' });
   }
-  const max = Math.max(1, ...[...scores.values()].map((x) => x.score));
-  return [...scores.values()].map((x) => ({ ...x, score: Math.round((x.score / max) * 100) / 100 })).sort((a, b) => b.score - a.score).slice(0, 20);
+  return [...scores.values()].map((x) => ({ ...x, score: Math.round(x.score * 1000) / 1000, pair: pairSummary(pairsById.get(x.pairId)) })).sort((a, b) => b.score - a.score).slice(0, 25);
 }
 
 // ---------------------------------------------------------------- domain helpers
-const publicUser = (u) => ({ id: u.id, email: u.email, name: u.name, role: u.role, locale: u.locale, theme: u.theme, mfaEnabled: !!u.mfaEnabled, active: u.active !== false, lastLoginAt: u.lastLoginAt || null, createdAt: u.createdAt });
-const patientSummary = (p) => ({ id: p.id, firstName: p.firstName, lastName: p.lastName, dob: p.dob, sex: p.sex, mrn: p.mrn });
-function sessionOut(s) {
+const publicUser = (u) => ({ id: u.id, email: u.email, name: u.name, role: u.role, locale: u.locale, theme: u.theme, mfaEnabled: !!u.mfaEnabled, active: u.active !== false,
+  locked: !!(u.lockedUntil && u.lockedUntil > Date.now()), mustChangePassword: !!u.mustChangePassword, recoveryCodesRemaining: (u.recovery || []).length, lastLoginAt: u.lastLoginAt || null, createdAt: u.createdAt });
+const ageAt = (dob, at = new Date().toISOString()) => { if (!dob) return null; const [y, m, d] = dob.split('-').map(Number); const [ay, am, ad] = at.slice(0, 10).split('-').map(Number); let a = ay - y; if (am < m || (am === m && ad < d)) a--; return a; };
+const patientSummary = (p) => ({ id: p.id, mrn: p.mrn, firstName: p.firstName, lastName: p.lastName, dob: p.dob, age: ageAt(p.dob), sex: p.sex, archived: false, createdAt: p.createdAt });
+const restrictionOf = (u) => (u.mustChangePassword ? 'password' : u.role === 'admin' && !u.mfaEnabled && !NO_MFA ? 'mfa' : null);
+const mePayload = (u, csrf) => ({ user: publicUser(u), org: db.org, csrfToken: csrf, mfaEnrollmentRequired: restrictionOf(u) === 'mfa', passwordChangeRequired: restrictionOf(u) === 'password', session: { idleTimeoutSec: 900 } });
+const nextMrn = () => `YH-${String(db.patients.length + 1).padStart(6, '0')}`;
+const addDays = (iso, n) => { const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const userName = (uid) => { const u = db.users.find((x) => x.id === uid); return u ? { id: u.id, name: u.name } : null; };
+function sessionSummary(s) {
+  return { id: s.id, patientId: s.patientId, status: s.status, revision: s.revision, parentId: s.parentId, supersededBy: s.supersededBy,
+    methodology: s.methodology, sessionDate: s.sessionDate, followUpDate: s.followUpDate, practitioner: userName(s.practitionerId),
+    findingCount: s.findings.length, finalizedAt: s.finalizedAt, reportSha256: s.reportSha256, createdAt: s.createdAt };
+}
+const sessionView = (s) => ({ ...sessionSummary(s), protocolIds: s.protocolIds, symptoms: s.symptoms, chiefComplaint: s.chiefComplaint, vitals: s.vitals, notes: s.notes,
+  amendReason: s.amendReason, signatureName: s.signatureName, finalizedBy: userName(s.finalizedBy), updatedAt: s.updatedAt,
+  images: { front: !!db.reportImages.get(s.id)?.front, back: !!db.reportImages.get(s.id)?.back }, findings: s.findings.map((f) => ({ ...f })) });
+
+function makeFinding(s, pairId, status, extra = {}) {
+  const p = pairsById.get(pairId);
+  return { id: crypto.randomUUID(), sessionId: s.id, seq: s.findings.length + 1, pairId, trackingPoint: p.tracking.point, trackingSide: p.tracking.side, impactPoint: p.impact.point, impactSide: p.impact.side,
+    qualifiers: { tracking: [], impact: [] }, phenomena: [], dwellMinutes: 15, status, notes: null, createdAt: now(), updatedAt: now(), ...extra };
+}
+const DISCLAIMER = {
+  en: 'Biomagnetic Pair findings are complementary, non-diagnostic observations. They do not identify disease and do not replace evaluation, diagnosis or treatment by a licensed physician. Continue all medical indications.',
+  es: 'Los hallazgos del Par Biomagnético son observaciones complementarias y no diagnósticas. No identifican enfermedades y no sustituyen la evaluación, el diagnóstico ni el tratamiento por un médico con licencia. Continúe con todas las indicaciones médicas.',
+};
+function assembleReport(s, over = {}) {
   const pt = db.patients.find((p) => p.id === s.patientId);
   const pr = db.users.find((u) => u.id === s.practitionerId);
-  return { ...s, patient: pt ? patientSummary(pt) : null, practitioner: pr ? { id: pr.id, name: pr.name } : null, findingsCount: s.findings.length };
+  const status = over.status ?? s.status;
+  const nameOfPoint = (id) => pointsById.get(id)?.name ?? { es: id, en: id };
+  const findings = s.findings.map((f) => {
+    const p = f.pairId ? pairsById.get(f.pairId) : null;
+    return { seq: f.seq, pairId: f.pairId, pair: p ? { id: p.id, number: p.number, level: p.level, name: p.name } : null,
+      tracking: { point: f.trackingPoint, name: nameOfPoint(f.trackingPoint), side: f.trackingSide, qualifiers: f.qualifiers.tracking || [], polarity: 'negative' },
+      impact: { point: f.impactPoint, name: nameOfPoint(f.impactPoint), side: f.impactSide, qualifiers: f.qualifiers.impact || [], polarity: 'positive' },
+      relatedTo: (p?.relations || []).map((r) => { const e = entById.get(r.entity); return { entity: r.entity, name: e?.name ?? null, kind: e?.kind ?? null, classification: e?.classification ?? null, ordinal: r.ordinal ?? null }; }),
+      category: p?.category ?? 'uncatalogued', ratings: { F: p?.ratings?.F ?? null, P: p?.ratings?.P ?? null, R: p?.ratings?.R ?? null },
+      phenomena: f.phenomena, status: f.status, dwellMinutes: f.dwellMinutes, notes: f.notes };
+  });
+  const groups = []; for (const f of findings) { let g = groups.find((x) => x.category === f.category); if (!g) { g = { category: f.category, seqs: [] }; groups.push(g); } g.seqs.push(f.seq); }
+  const magnets = [];
+  for (const f of findings) {
+    for (const side of f.tracking.side === 'RL' ? ['R', 'L'] : [f.tracking.side]) magnets.push({ id: `${f.seq}-n-${side}`, pointId: f.tracking.point, side, polarity: 'negative', label: String(f.seq), state: f.status === 'found' ? 'active' : 'done' });
+    for (const side of f.impact.side === 'RL' ? ['R', 'L'] : [f.impact.side]) magnets.push({ id: `${f.seq}-p-${side}`, pointId: f.impact.point, side, polarity: 'positive', label: String(f.seq), state: f.status === 'found' ? 'active' : 'done' });
+  }
+  const pairSpecific = []; const seen = new Set();
+  for (const f of findings) { if (!f.pairId || seen.has(f.pairId)) continue; seen.add(f.pairId); const recs = pairsById.get(f.pairId).recommendations || []; if (recs.length) pairSpecific.push({ pairId: f.pairId, number: f.pair.number, name: f.pair.name, items: recs }); }
+  const parent = s.parentId ? db.scanSessions.find((x) => x.id === s.parentId) : null;
+  const img = db.reportImages.get(s.id) || {};
+  const finalizer = userName(over.finalizedBy ?? s.finalizedBy);
+  return {
+    schema: 'youheal.report/v1', title: 'Biomagnetic Pair Scan Report', reportId: s.id,
+    reportNumber: `${pt.mrn}-${s.sessionDate.slice(0, 10).replace(/-/g, '')}-R${s.revision}`,
+    status: status === 'draft' ? 'DRAFT' : status === 'amended' ? 'AMENDED' : 'FINAL', revision: s.revision,
+    amendment: parent ? { parentId: parent.id, parentRevision: parent.revision, parentSha256: parent.reportSha256, reason: s.amendReason } : null,
+    org: { name: db.org.name, legalName: db.org.legalName, address: db.org.address, phone: db.org.phone, email: db.org.email, website: db.org.website, license: db.org.license, reportFooter: db.org.reportFooter },
+    polarity: db.org.polarity,
+    patient: { id: pt.id, mrn: pt.mrn, firstName: pt.firstName, lastName: pt.lastName, fullName: `${pt.firstName} ${pt.lastName}`, dob: pt.dob, age: ageAt(pt.dob, s.sessionDate), sex: pt.sex },
+    practitioner: pr ? { id: pr.id, name: pr.name, email: pr.email, role: pr.role } : null,
+    session: { id: s.id, date: s.sessionDate, methodology: s.methodology,
+      protocols: s.protocolIds.map((x) => ({ id: x, name: protoById.get(x)?.name ?? null, kind: protoById.get(x)?.kind ?? null })),
+      chiefComplaint: s.chiefComplaint, symptoms: s.symptoms.map((x) => { const y = C.symptoms.find((z) => z.id === x); return { id: x, name: y?.name ?? null, system: y?.system ?? null }; }),
+      vitals: s.vitals, notes: s.notes },
+    findings, groups,
+    totals: { findings: findings.length, byStatus: Object.fromEntries(['found', 'impacted', 'cleared'].map((st) => [st, findings.filter((f) => f.status === st).length])) },
+    bodyMap: { magnets, images: { front: img.front || null, back: img.back || null } },
+    recommendations: { pairSpecific, general: C.recommendations },
+    followUp: { date: s.followUpDate, note: { en: 'A follow-up scan is recommended after one week (reservoir release).', es: 'Se recomienda un rastreo de control a la semana (liberación de reservorios).' } },
+    attestation: status === 'draft' ? null : { signatureName: over.signatureName ?? s.signatureName, finalizedAt: over.finalizedAt ?? s.finalizedAt, finalizedBy: finalizer,
+      statement: { en: 'I attest that this report accurately reflects the findings of the session described above.', es: 'Certifico que este informe refleja fielmente los hallazgos de la sesión descrita.' } },
+    disclaimer: DISCLAIMER,
+    terminology: { en: 'Findings are reported as "related to" — never as a diagnosis.', es: 'Los hallazgos se reportan como "relacionado con", nunca como diagnóstico.' },
+    catalog: { version: '2026.10.0-mock', sources: [...new Set(findings.map((f) => pairsById.get(f.pairId)?.source?.doc).filter(Boolean))].map((x) => sourceById.get(x)).filter(Boolean).map((x) => ({ id: x.id, title: x.title, license_status: x.license_status, notice: x.notice })) },
+    generatedAt: status === 'draft' ? now() : (over.finalizedAt ?? s.finalizedAt),
+  };
 }
-function nextMrn() { return `YH-${String(1000 + db.patients.length + 1)}`; }
-
-function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
-const dateOnly = (d) => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
-
-function makeFinding(pairId, status, extra = {}) {
-  const p = pairsById.get(pairId);
-  return { id: id('fnd'), pairId, trackingPoint: p.tracking.point, impactPoint: p.impact.point,
-    trackingSide: p.tracking.side === 'RL' ? 'R' : p.tracking.side, impactSide: p.impact.side === 'RL' ? 'L' : p.impact.side,
-    qualifiers: [], phenomena: [], dwellMinutes: 15, status, notes: '', createdAt: now(), updatedAt: now(), ...extra };
-}
-
 function finalizeSession(s, signatureName, user, when = new Date()) {
-  s.status = s.amendOf ? 'amended' : 'final';
-  s.finalizedAt = when.toISOString();
-  s.signature = { name: signatureName, signedAt: s.finalizedAt, userId: user.id };
-  if (!s.followUpDate) s.followUpDate = dateOnly(addDays(s.startedAt, 7));
-  const snap = buildReport(s);
-  delete snap.images;
-  s.reportSnapshot = snap;
-  s.reportHash = sha256(canon(snap));
+  const status = s.parentId ? 'amended' : 'final';
+  const finalizedAt = when.toISOString();
+  const report = assembleReport(s, { status, finalizedAt, finalizedBy: user.id, signatureName });
+  s.snapshot = canon(report);
+  s.reportSha256 = sha256(s.snapshot);
+  Object.assign(s, { status, finalizedAt, finalizedBy: user.id, signatureName, updatedAt: finalizedAt });
+  if (s.parentId) { const parent = db.scanSessions.find((x) => x.id === s.parentId); if (parent) parent.supersededBy = s.id; }
 }
 
 function seedDemo(admin) {
-  const practitioner = { id: id('usr'), email: 'lucia.herrera@clinic.test', name: 'Dr. Lucía Herrera', role: 'practitioner', locale: 'en', theme: 'system', pw: hashPw('correct-horse-battery'), mfaEnabled: false, active: true, createdAt: now() };
-  const assistant = { id: id('usr'), email: 'front.desk@clinic.test', name: 'Sam Rivera', role: 'assistant', locale: 'es', theme: 'system', pw: hashPw('correct-horse-battery'), mfaEnabled: false, active: true, createdAt: now() };
-  db.users.push(practitioner, assistant);
-  const mk = (firstName, lastName, dob, sex, extra = {}) => {
-    const p = { id: id('pat'), firstName, lastName, dob, sex, phone: '(718) 555-01' + String(10 + db.patients.length), email: `${firstName.toLowerCase()}@example.test`, address: 'Queens, NY', mrn: nextMrn(), notes: '', createdAt: now(), updatedAt: now(), ...extra };
-    db.patients.push(p); return p;
-  };
+  const mkU = (email, name, role, locale) => { const u = { id: crypto.randomUUID(), email, name, role, locale, theme: 'system', pw: hashPw('correct-horse-battery'), mfaEnabled: false, active: true, createdAt: now() }; db.users.push(u); return u; };
+  const practitioner = mkU('lucia.herrera@clinic.test', 'Dr. Lucía Herrera', 'practitioner', 'en');
+  mkU('front.desk@clinic.test', 'Sam Rivera', 'assistant', 'es');
+  mkU('auditor@clinic.test', 'Quality Auditor', 'auditor', 'en');
+  const mk = (firstName, lastName, dob, sex) => { const p = { id: crypto.randomUUID(), mrn: nextMrn(), firstName, lastName, dob, sex, phone: `(718) 555-01${10 + db.patients.length}`, email: `${firstName.toLowerCase().replace(/\s/g, '')}@example.test`, address: 'Queens, NY', notes: null, createdAt: now(), updatedAt: now() }; db.patients.push(p); return p; };
   const maria = mk('María', 'González', '1979-04-12', 'female');
   const james = mk('James', 'Carter', '1964-09-30', 'male');
   const ana = mk('Ana Lucía', 'Restrepo', '1991-01-22', 'female');
   const robert = mk('Robert', 'Kim', '1958-06-05', 'male');
-  const consent = (p, absolute = [], relative = []) => db.consents.push({ id: id('cns'), patientId: p.id, type: 'intake', answers: { techniqueExplained: true, questionsAnswered: true, understandsScope: true, continuesMedical: true, reason: 'Fatiga y piernas pesadas' }, contraindications: { absolute, relative }, signatureName: `${p.firstName} ${p.lastName}`, signedAt: now(), createdAt: now(), createdBy: practitioner.id });
+  const consent = (p, absolute = [], relative = []) => db.consents.push({ id: crypto.randomUUID(), patientId: p.id, type: 'intake', answers: { techniqueExplained: true, questionsAnswered: true, understandsScope: true, continuesMedical: true, authorizesPlacement: true, followUpInformed: true }, contraindications: { absolute, relative }, hasAbsolute: absolute.length > 0, hasRelative: relative.length > 0, signatureName: `${p.firstName} ${p.lastName}`, signedAt: addDays(now(), -20) + 'T15:00:00.000Z', recordedBy: practitioner.id, createdAt: now() });
   consent(maria, [], ['rel-04']); consent(james); consent(robert); consent(ana, ['abs-01'], []);
-  const mkSession = (p, daysAgo, findings, { status = 'final', chief = '', symptoms = [], protocolIds = [], follow = null } = {}) => {
-    const start = addDays(new Date(), -daysAgo); start.setHours(10 - Math.min(daysAgo, 2), 15, 0, 0);
-    const s = { id: id('ses'), patientId: p.id, practitionerId: practitioner.id, methodology: 'biomagnetism', protocolIds, chiefComplaint: chief, symptoms, symptomsText: '', vitals: {},
-      status: 'draft', revision: 1, amendOf: null, startedAt: start.toISOString(), finalizedAt: null, followUpDate: follow, findings: findings.map(([pid, st, ex]) => makeFinding(pid, st, ex)), scanState: {}, notes: '' };
+  const mkSession = (p, daysAgo, findings, { status = 'final', chief = '', symptoms = [], protocolIds = [], follow } = {}) => {
+    const start = new Date(); start.setDate(start.getDate() - daysAgo); start.setHours(daysAgo ? 10 : Math.max(8, new Date().getHours() - 1), 15, 0, 0);
+    const s = { id: crypto.randomUUID(), patientId: p.id, practitionerId: practitioner.id, methodology: 'biomagnetism', protocolIds, chiefComplaint: chief, symptoms, vitals: null, notes: null,
+      status: 'draft', revision: 1, parentId: null, supersededBy: null, amendReason: null, sessionDate: start.toISOString(), finalizedAt: null, finalizedBy: null, signatureName: null, reportSha256: null,
+      followUpDate: follow === undefined ? addDays(start.toISOString(), 7) : follow, findings: [], createdAt: start.toISOString(), updatedAt: start.toISOString() };
+    for (const [pid, st, ex] of findings) s.findings.push(makeFinding(s, pid, st, ex));
     db.scanSessions.push(s);
-    if (status === 'final') finalizeSession(s, practitioner.name, practitioner, addDays(start, 0));
+    if (status === 'final') finalizeSession(s, practitioner.name, practitioner, new Date(start.getTime() + 50 * 60000));
     return s;
   };
   mkSession(maria, 14, [['pb-231', 'cleared'], ['pb-232', 'cleared'], ['pb-234', 'impacted', { phenomena: ['infiltrate'] }]], { chief: 'Heavy legs, evening ankle swelling', symptoms: ['piernas-pesadas', 'varices'], protocolIds: ['app-19-circulacion-piernas'] });
-  mkSession(maria, 7, [['pb-231', 'cleared'], ['pb-232', 'impacted'], ['pb-236', 'impacted']], { chief: 'Follow-up: leg circulation', symptoms: ['piernas-pesadas', 'calambres'], protocolIds: ['app-19-circulacion-piernas'], follow: dateOnly(new Date()) });
-  mkSession(james, 1, [['pb-047', 'found', { notes: 'Marked tenderness epigastric' }], ['pb-063', 'found']], { status: 'draft', chief: 'Gastritis, bloating after meals', symptoms: ['gastritis', 'distension-abdominal'], protocolIds: ['top10-gastrointestinal'] });
-  mkSession(robert, 0, [['pb-235', 'impacted', { trackingSide: 'R', impactSide: 'L', phenomena: [] }], ['pb-232', 'cleared']], { chief: 'Low-back pain radiating to right leg', symptoms: ['dolor-lumbar'], protocolIds: [] });
-  mkSession(robert, 35, [['pb-235', 'cleared']], { chief: 'Low-back pain', symptoms: ['dolor-lumbar'], follow: dateOnly(addDays(new Date(), -28)) });
+  mkSession(maria, 7, [['pb-231', 'cleared'], ['pb-232', 'impacted'], ['pb-236', 'impacted']], { chief: 'Follow-up: leg circulation', symptoms: ['piernas-pesadas', 'calambres'], protocolIds: ['app-19-circulacion-piernas'] });
+  mkSession(james, 1, [['pb-047', 'found', { notes: 'Marked epigastric tenderness' }], ['pb-063', 'found']], { status: 'draft', chief: 'Gastritis, bloating after meals', symptoms: ['gastritis', 'distension-abdominal'], protocolIds: ['top10-gastrointestinal'] });
+  mkSession(robert, 35, [['pb-235', 'cleared']], { chief: 'Low-back pain', symptoms: ['dolor-lumbar'] });
+  mkSession(robert, 0, [['pb-235', 'impacted'], ['pb-232', 'cleared']], { chief: 'Low-back pain radiating to right leg', symptoms: ['dolor-lumbar'] });
   audit(admin, 'demo.seed');
-}
-
-function buildReport(s) {
-  const pt = db.patients.find((p) => p.id === s.patientId);
-  const pr = db.users.find((u) => u.id === s.practitionerId);
-  const findings = s.findings.map((f, i) => {
-    const p = f.pairId ? pairsById.get(f.pairId) : null;
-    return { ...f, n: i + 1,
-      pair: p ? { id: p.id, number: p.number, level: p.level, name: p.name, category: p.category, ratings: p.ratings, relations: p.relations.map((r) => ({ ordinal: r.ordinal, entity: entById.get(r.entity) })), source: p.source } : null,
-      trackingPoint: pointsById.get(f.trackingPoint) ? { id: f.trackingPoint, name: pointsById.get(f.trackingPoint).name } : { id: f.trackingPoint, name: { es: f.trackingPoint } },
-      impactPoint: pointsById.get(f.impactPoint) ? { id: f.impactPoint, name: pointsById.get(f.impactPoint).name } : { id: f.impactPoint, name: { es: f.impactPoint } } };
-  });
-  return {
-    reportId: `RPT-${s.startedAt.slice(0, 4)}-${s.id.slice(-6).toUpperCase()}`,
-    status: s.status, revision: s.revision, amendOf: s.amendOf, amendReason: s.amendReason || null,
-    hash: s.reportHash || null, generatedAt: now(),
-    org: db.org,
-    patient: pt ? { ...patientSummary(pt), phone: pt.phone } : null,
-    practitioner: pr ? { id: pr.id, name: pr.name, email: pr.email, role: pr.role, license: pr.license || null } : null,
-    session: { id: s.id, startedAt: s.startedAt, finalizedAt: s.finalizedAt, methodology: s.methodology, chiefComplaint: s.chiefComplaint,
-      protocols: s.protocolIds.map((x) => protoById.get(x)).filter(Boolean).map((p) => ({ id: p.id, name: p.name, kind: p.kind })), notes: s.notes || '' },
-    findings,
-    symptoms: s.symptoms.map((x) => C.symptoms.find((y) => y.id === x)).filter(Boolean).map((y) => ({ id: y.id, name: y.name, system: y.system })),
-    symptomsText: s.symptomsText || '',
-    recommendations: {
-      pairs: findings.filter((f) => f.pair).flatMap((f) => (pairsById.get(f.pairId).recommendations || []).map((text) => ({ pairId: f.pairId, pairName: f.pair.name, text }))),
-      general: C.recommendations,
-    },
-    followUpDate: s.followUpDate || dateOnly(addDays(s.startedAt, 7)),
-    signature: s.signature || null,
-    disclaimer: {
-      en: 'Biomagnetic Pair findings are complementary, non-diagnostic observations. They do not identify disease and do not replace evaluation, diagnosis or treatment by a licensed physician. Continue all medical indications.',
-      es: 'Los hallazgos del Par Biomagnético son observaciones complementarias y no diagnósticas. No identifican enfermedades ni sustituyen la evaluación, el diagnóstico o el tratamiento por un médico con licencia. Continúe todas las indicaciones médicas.',
-    },
-    images: db.reportImages.get(s.id) || null,
-  };
 }
 
 // ---------------------------------------------------------------- http plumbing
@@ -204,7 +235,7 @@ function send(res, status, body, headers = {}) {
   res.end(data);
 }
 const err = (res, status, code, message, fields) => send(res, status, { error: { code, message, ...(fields ? { fields } : {}) } });
-function readBody(req, limit = 4 * 1024 * 1024) {
+function readBody(req, limit = 4 * 1024 * 1024 + 4096) {
   return new Promise((resolve, reject) => {
     let size = 0; const chunks = [];
     req.on('data', (c) => { size += c.length; if (size > limit) { reject(new Error('too large')); req.destroy(); } else chunks.push(c); });
@@ -227,36 +258,44 @@ function startSession(res, user) {
   res.setHeader('Set-Cookie', `yh_sid=${sid}; HttpOnly; SameSite=Strict; Path=/`);
   return csrf;
 }
+/** Strict body check like server/lib/validate.js: unknown keys → 400 VALIDATION. */
+function strict(res, body, allowed) {
+  const bad = Object.keys(body || {}).filter((k) => !allowed.includes(k));
+  if (bad.length) { err(res, 400, 'VALIDATION', 'Invalid input', Object.fromEntries(bad.map((k) => [k, 'is not an allowed field']))); return false; }
+  return true;
+}
 
 const ROLE_SETS = {
   any: ['admin', 'practitioner', 'assistant', 'auditor'],
-  'practitioner+': ['admin', 'practitioner', 'assistant', 'auditor'],
-  clinical: ['admin', 'practitioner'],
+  patientRead: ['admin', 'practitioner', 'assistant'],
   intake: ['admin', 'practitioner', 'assistant'],
+  clinical: ['admin', 'practitioner'],
+  report: ['admin', 'practitioner', 'auditor'],
   admin: ['admin'],
   audit: ['admin', 'auditor'],
 };
 
 const routes = [];
-const R = (method, pattern, roles, fn) => {
+const R = (method, pattern, roles, fn, allowWhen = []) => {
   const keys = []; const re = new RegExp(`^${pattern.replace(/:(\w+)/g, (_, k) => { keys.push(k); return '([^/]+)'; })}$`);
-  routes.push({ method, re, keys, roles, fn });
+  if (roles === 'anyRestricted') { roles = 'any'; allowWhen = ['mfa', 'password']; }
+  routes.push({ method, re, keys, roles, fn, allowWhen });
 };
-const list = (arr, q) => { const limit = Number(q.limit || 500); const offset = Number(q.offset || 0); return { items: arr.slice(offset, offset + limit), total: arr.length }; };
+const list = (arr, q, def = 500) => { const limit = Math.min(Number(q.limit || def), 5000); const offset = Number(q.offset || 0); return { items: arr.slice(offset, offset + limit), total: arr.length }; };
 
 // ---- public
 R('GET', '/health', null, (c) => send(c.res, 200, { status: 'ok', version: '0.0.0-mock', catalogVersion: '2026.10.0-mock' }));
 R('GET', '/setup/status', null, (c) => send(c.res, 200, { needsSetup: db.users.length === 0 }));
 R('POST', '/setup', null, (c) => {
-  if (db.users.length) return err(c.res, 409, 'ALREADY_SETUP', 'Setup already completed');
+  if (db.users.length) return err(c.res, 409, 'ALREADY_SETUP', 'Setup has already been completed');
   const { org, admin } = c.body;
   const fields = {};
-  if (!org?.name) fields['org.name'] = 'required';
-  if (!admin?.email || !/^[^\s@]+@[^\s@]+$/.test(admin.email)) fields.email = 'Invalid email';
-  if (!admin?.password || admin.password.length < 12) fields.password = 'At least 12 characters';
+  if (!org?.name) fields['org.name'] = 'is required';
+  if (!admin?.email || !/^[^\s@]+@[^\s@]+$/.test(admin.email)) fields['admin.email'] = 'must be a valid email';
+  if (!admin?.password || admin.password.length < 12) fields['admin.password'] = 'must be at least 12 characters';
   if (Object.keys(fields).length) return err(c.res, 400, 'VALIDATION', 'Invalid input', fields);
-  db.org = { id: id('org'), name: org.name, legalName: org.name, address: '', phone: '', email: '', website: '', license: '', reportFooter: '', polarity: { negative: '#2563EB', positive: '#DC2626' }, defaultLocale: 'en', logo: null };
-  const u = { id: id('usr'), email: admin.email.toLowerCase(), name: admin.name || 'Administrator', role: 'admin', locale: 'en', theme: 'system', pw: hashPw(admin.password), mfaEnabled: false, active: true, createdAt: now() };
+  db.org = { id: crypto.randomUUID(), name: org.name, legalName: null, address: null, phone: null, email: null, website: null, license: null, reportFooter: null, polarity: { negative: '#2563EB', positive: '#DC2626' }, defaultLocale: org.defaultLocale || 'en' };
+  const u = { id: crypto.randomUUID(), email: admin.email.toLowerCase(), name: admin.name || 'Administrator', role: 'admin', locale: admin.locale || 'en', theme: 'system', pw: hashPw(admin.password), mfaEnabled: false, active: true, createdAt: now() };
   db.users.push(u);
   audit(u, 'setup.complete');
   if (DEMO) seedDemo(u);
@@ -266,81 +305,96 @@ R('POST', '/auth/login', null, (c) => {
   const { email = '', password = '', totp: code } = c.body;
   const u = db.users.find((x) => x.email === String(email).toLowerCase());
   const f = db.failed.get(email) || 0;
-  if (f >= 5) return err(c.res, 429, 'LOCKED', 'Too many attempts. Try again in 15 minutes.');
-  if (!u || u.active === false || !checkPw(password, u.pw)) { db.failed.set(email, f + 1); audit(u || null, 'auth.login.failed', email); return err(c.res, 401, 'INVALID_CREDENTIALS', 'Invalid email or password'); }
+  if (f >= 5) return err(c.res, 423, 'ACCOUNT_LOCKED', 'Too many failed attempts. Try again in 15 minutes or contact your administrator.');
+  if (!u || u.active === false || !checkPw(password, u.pw)) { db.failed.set(email, f + 1); audit(u || null, 'auth.login.failure', email); return err(c.res, 401, 'INVALID_CREDENTIALS', 'Invalid email or password'); }
   if (u.mfaEnabled) {
-    if (!code) return err(c.res, 401, 'MFA_REQUIRED', 'Enter your authenticator code');
+    if (!code) return err(c.res, 401, 'MFA_REQUIRED', 'Enter the 6-digit code from your authenticator app');
     const rc = (u.recovery || []).findIndex((h) => h === sha256(String(code).trim().toLowerCase()));
     if (rc >= 0) u.recovery.splice(rc, 1);
-    else if (!totpOk(u.mfaSecret, code)) { db.failed.set(email, f + 1); return err(c.res, 401, 'INVALID_MFA', 'Invalid code'); }
+    else if (!totpOk(u.mfaSecret, code)) { db.failed.set(email, f + 1); return err(c.res, 401, 'MFA_INVALID', 'Invalid or already used authentication code'); }
   }
   db.failed.delete(email);
   u.lastLoginAt = now();
   const csrf = startSession(c.res, u);
-  audit(u, 'auth.login');
-  send(c.res, 200, { user: publicUser(u), csrfToken: csrf });
+  audit(u, 'auth.login.success');
+  send(c.res, 200, mePayload(u, csrf));
 });
 
 // ---- session-bound
-R('POST', '/auth/logout', 'any', (c) => { db.sessions.delete(sha256(cookies(c.req).yh_sid)); audit(c.user, 'auth.logout'); send(c.res, 200, { ok: true }, { 'Set-Cookie': 'yh_sid=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict' }); });
-R('GET', '/auth/me', 'any', (c) => send(c.res, 200, { user: publicUser(c.user), org: db.org, csrfToken: c.sess.csrf }));
+R('POST', '/auth/logout', 'anyRestricted', (c) => { db.sessions.delete(sha256(cookies(c.req).yh_sid)); audit(c.user, 'auth.logout'); send(c.res, 200, { ok: true }, { 'Set-Cookie': 'yh_sid=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict' }); });
+R('GET', '/auth/me', 'any', (c) => send(c.res, 200, mePayload(c.user, c.sess.csrf)), ['mfa', 'password']);
 R('POST', '/auth/password', 'any', (c) => {
-  if (!checkPw(c.body.current || '', c.user.pw)) return err(c.res, 400, 'VALIDATION', 'Current password is incorrect', { current: 'Incorrect password' });
-  if (!c.body.next || c.body.next.length < 12) return err(c.res, 400, 'VALIDATION', 'Too short', { next: 'At least 12 characters' });
-  c.user.pw = hashPw(c.body.next); audit(c.user, 'auth.password.change'); send(c.res, 200, { ok: true });
-});
+  if (!checkPw(c.body.current || '', c.user.pw)) return err(c.res, 400, 'VALIDATION', 'Current password is incorrect', { current: 'is incorrect' });
+  if (!c.body.next || c.body.next.length < 12) return err(c.res, 400, 'VALIDATION', 'Password does not meet policy', { next: 'must be at least 12 characters' });
+  c.user.pw = hashPw(c.body.next); c.user.mustChangePassword = false; audit(c.user, 'auth.password.change'); send(c.res, 200, { ok: true });
+}, ['password']);
 R('POST', '/auth/mfa/setup', 'any', (c) => {
+  if (c.user.mfaEnabled) return err(c.res, 409, 'MFA_ALREADY_ENABLED', 'MFA is already enabled; disable it first to re-enroll');
   c.user.pendingSecret = b32enc(crypto.randomBytes(20));
   const label = encodeURIComponent(`YOU HEAL Clinical:${c.user.email}`);
   send(c.res, 200, { secret: c.user.pendingSecret, otpauthUrl: `otpauth://totp/${label}?secret=${c.user.pendingSecret}&issuer=${encodeURIComponent('YOU HEAL Clinical')}&algorithm=SHA1&digits=6&period=30` });
-});
+}, ['mfa']);
 R('POST', '/auth/mfa/enable', 'any', (c) => {
-  if (!c.user.pendingSecret || !totpOk(c.user.pendingSecret, c.body.code)) return err(c.res, 400, 'INVALID_MFA', 'Invalid code');
+  if (!c.user.pendingSecret || !totpOk(c.user.pendingSecret, c.body.code)) return err(c.res, 400, 'MFA_INVALID', 'The code did not match. Check the time on your device and try again.', { code: 'is invalid' });
   c.user.mfaSecret = c.user.pendingSecret; delete c.user.pendingSecret; c.user.mfaEnabled = true;
   const codes = Array.from({ length: 10 }, () => { const h = crypto.randomBytes(5).toString('hex'); return `${h.slice(0, 5)}-${h.slice(5)}`; });
   c.user.recovery = codes.map((x) => sha256(x));
   audit(c.user, 'auth.mfa.enable');
   send(c.res, 200, { ok: true, recoveryCodes: codes });
-});
+}, ['mfa']);
 R('POST', '/auth/mfa/disable', 'any', (c) => {
-  if (c.user.role === 'admin') return err(c.res, 403, 'MFA_REQUIRED_FOR_ROLE', 'Administrators must keep MFA enabled');
-  if (!checkPw(c.body.password || '', c.user.pw) || !totpOk(c.user.mfaSecret, c.body.code)) return err(c.res, 400, 'VALIDATION', 'Invalid password or code');
+  if (!checkPw(c.body.password || '', c.user.pw) || !totpOk(c.user.mfaSecret, c.body.code)) return err(c.res, 403, 'REAUTH_FAILED', 'Password or authentication code is incorrect');
   c.user.mfaEnabled = false; delete c.user.mfaSecret; audit(c.user, 'auth.mfa.disable'); send(c.res, 200, { ok: true });
 });
-R('PATCH', '/auth/prefs', 'any', (c) => { if (c.body.locale) c.user.locale = c.body.locale; if (c.body.theme) c.user.theme = c.body.theme; send(c.res, 200, { ok: true, user: publicUser(c.user) }); });
+R('PATCH', '/auth/prefs', 'any', (c) => { if (!strict(c.res, c.body, ['locale', 'theme'])) return; if (c.body.locale) c.user.locale = c.body.locale; if (c.body.theme) c.user.theme = c.body.theme; send(c.res, 200, { ok: true, user: publicUser(c.user) }); });
 
 R('GET', '/users', 'admin', (c) => send(c.res, 200, list(db.users.map(publicUser), c.query)));
 R('POST', '/users', 'admin', (c) => {
-  const { email, name, role, password } = c.body;
-  if (!email || !name || !ROLE_SETS.any.includes(role)) return err(c.res, 400, 'VALIDATION', 'Invalid input', { email: !email ? 'required' : undefined, name: !name ? 'required' : undefined });
-  if (db.users.some((u) => u.email === email.toLowerCase())) return err(c.res, 409, 'EMAIL_TAKEN', 'A user with this email already exists', { email: 'Already in use' });
-  if (!password || password.length < 12) return err(c.res, 400, 'VALIDATION', 'Temporary password must be at least 12 characters', { password: 'At least 12 characters' });
-  const u = { id: id('usr'), email: email.toLowerCase(), name, role, locale: 'en', theme: 'system', pw: hashPw(password), mfaEnabled: false, active: true, createdAt: now() };
-  db.users.push(u); audit(c.user, 'user.create', u.id); send(c.res, 201, publicUser(u));
+  if (!strict(c.res, c.body, ['email', 'name', 'role', 'password', 'mustChangePassword', 'locale'])) return;
+  const { email, name, role } = c.body; let { password } = c.body;
+  if (!email || !name || !ROLE_SETS.any.includes(role)) return err(c.res, 400, 'VALIDATION', 'Invalid input', { ...(!email ? { email: 'is required' } : {}), ...(!name ? { name: 'is required' } : {}) });
+  if (db.users.some((u) => u.email === email.toLowerCase())) return err(c.res, 409, 'EMAIL_TAKEN', 'A user with this email already exists');
+  let generated = false;
+  if (password === undefined) { password = crypto.randomBytes(9).toString('base64url'); generated = true; }
+  if (password.length < 12) return err(c.res, 400, 'VALIDATION', 'Password does not meet policy', { password: 'must be at least 12 characters' });
+  const u = { id: crypto.randomUUID(), email: email.toLowerCase(), name, role, locale: c.body.locale || 'en', theme: 'system', pw: hashPw(password), mustChangePassword: generated || c.body.mustChangePassword === true, mfaEnabled: false, active: true, createdAt: now() };
+  db.users.push(u); audit(c.user, 'user.create', u.id);
+  send(c.res, 201, { user: publicUser(u), ...(generated ? { temporaryPassword: password } : {}) });
 });
 R('PATCH', '/users/:id', 'admin', (c) => {
+  if (!strict(c.res, c.body, ['email', 'name', 'role', 'active', 'password', 'locale', 'unlock', 'resetMfa'])) return;
   const u = db.users.find((x) => x.id === c.params.id); if (!u) return err(c.res, 404, 'NOT_FOUND', 'User not found');
-  if (u.id === c.user.id && (c.body.active === false || (c.body.role && c.body.role !== 'admin'))) return err(c.res, 409, 'SELF_LOCKOUT', 'You cannot deactivate or demote yourself');
-  for (const k of ['name', 'role', 'active']) if (k in c.body) u[k] = c.body[k];
-  if (c.body.password) u.pw = hashPw(c.body.password);
-  audit(c.user, 'user.update', u.id); send(c.res, 200, publicUser(u));
+  if (u.role === 'admin' && ((c.body.role && c.body.role !== 'admin') || c.body.active === false) && db.users.filter((x) => x.role === 'admin' && x.active).length <= 1) return err(c.res, 409, 'LAST_ADMIN', 'The clinic must keep at least one active administrator');
+  for (const k of ['name', 'role', 'active', 'email', 'locale']) if (k in c.body) u[k] = c.body[k];
+  if (c.body.password) { u.pw = hashPw(c.body.password); u.mustChangePassword = true; }
+  if (c.body.unlock) { db.failed.delete(u.email); u.lockedUntil = null; }
+  if (c.body.resetMfa) { u.mfaEnabled = false; delete u.mfaSecret; }
+  audit(c.user, 'user.update', u.id); send(c.res, 200, { user: publicUser(u) });
 });
 R('GET', '/org', 'any', (c) => send(c.res, 200, db.org));
 R('PATCH', '/org', 'admin', (c) => {
-  const allowed = ['name', 'legalName', 'address', 'phone', 'email', 'website', 'license', 'reportFooter', 'polarity', 'defaultLocale', 'logo'];
-  if (c.body.logo && String(c.body.logo).length > 280000) return err(c.res, 400, 'VALIDATION', 'Logo too large', { logo: 'Max 200 KB' });
+  const allowed = ['name', 'legalName', 'address', 'phone', 'email', 'website', 'license', 'reportFooter', 'polarity', 'defaultLocale'];
+  if (!strict(c.res, c.body, allowed)) return;
+  if (c.body.website && !/^https?:\/\/\S+$/.test(c.body.website)) return err(c.res, 400, 'VALIDATION', 'Invalid input', { website: 'must start with http:// or https://' });
   for (const k of allowed) if (k in c.body) db.org[k] = c.body[k];
   audit(c.user, 'org.update'); send(c.res, 200, db.org);
 });
 
 // ---- catalog
-R('GET', '/catalog/manifest', 'any', (c) => send(c.res, 200, { version: '2026.10.0-mock', generatedAt: now(), counts: { points: C.points.length, pairs: C.pairs.length, entities: C.entities.length, protocols: C.protocols.length, symptoms: C.symptoms.length } }));
-R('GET', '/catalog/points', 'any', (c) => send(c.res, 200, { items: C.points, total: C.points.length }));
-R('GET', '/catalog/regions', 'any', (c) => send(c.res, 200, { items: C.regions, total: C.regions.length }));
+R('GET', '/catalog/manifest', 'any', (c) => send(c.res, 200, { version: '2026.10.0-mock', counts: { points: C.points.length, pairs: C.pairs.length, entities: C.entities.length, protocols: C.protocols.length, symptoms: C.symptoms.length }, sources: C.sources }));
+R('GET', '/catalog/sources', 'any', (c) => send(c.res, 200, { items: C.sources, total: C.sources.length }));
+R('GET', '/catalog/points', 'any', (c) => send(c.res, 200, list(C.points, c.query, 5000)));
+R('GET', '/catalog/points/:id', 'any', (c) => { const p = pointsById.get(c.params.id); return p ? send(c.res, 200, p) : err(c.res, 404, 'NOT_FOUND', 'Point not found'); });
+R('GET', '/catalog/points/:id/pairs', 'any', (c) => {
+  const point = pointsById.get(c.params.id); if (!point) return err(c.res, 404, 'NOT_FOUND', 'Point not found');
+  const items = C.pairs.filter((p) => p.tracking.point === point.id || p.impact.point === point.id).map((p) => ({ role: p.tracking.point === point.id && p.impact.point === point.id ? 'both' : p.tracking.point === point.id ? 'tracking' : 'impact', pair: pairSummary(p) }));
+  send(c.res, 200, { point, items, total: items.length });
+});
+R('GET', '/catalog/regions', 'any', (c) => send(c.res, 200, list(C.regions, c.query, 5000)));
 R('GET', '/catalog/pairs', 'any', (c) => {
   const { q, category, level, point, system, protocol } = c.query;
   let arr = C.pairs;
-  if (q) { const n = norm(q); arr = arr.filter((p) => norm(textOf(p.name)).includes(n) || String(p.number) === q.trim() || p.relations.some((r) => norm(textOf(entById.get(r.entity)?.name)).includes(n))); }
+  if (q) { const n = norm(q); const num = /^\s*(?:pb[\s-]*)?(\d{1,4})\s*$/i.exec(q); arr = arr.filter((p) => (num && p.number === Number(num[1])) || norm(textOf(p.name)).includes(n) || p.relations.some((r) => norm(textOf(entById.get(r.entity)?.name)).includes(n))); }
   if (category) arr = arr.filter((p) => p.category === category);
   if (level) arr = arr.filter((p) => String(p.level) === String(level));
   if (point) arr = arr.filter((p) => p.tracking.point === point || p.impact.point === point);
@@ -349,170 +403,206 @@ R('GET', '/catalog/pairs', 'any', (c) => {
   send(c.res, 200, list(arr.map(pairSummary), c.query));
 });
 R('GET', '/catalog/pairs/:id', 'any', (c) => { const p = pairsById.get(c.params.id); return p ? send(c.res, 200, pairFull(p)) : err(c.res, 404, 'NOT_FOUND', 'Pair not found'); });
-R('GET', '/catalog/points/:id/pairs', 'any', (c) => {
-  const pid = c.params.id;
-  const arr = C.pairs.filter((p) => p.tracking.point === pid || p.impact.point === pid).map((p) => ({ ...pairSummary(p), role: p.tracking.point === pid && p.impact.point === pid ? 'both' : p.tracking.point === pid ? 'tracking' : 'impact' }));
-  send(c.res, 200, { items: arr, total: arr.length });
-});
 R('GET', '/catalog/entities', 'any', (c) => {
   let arr = C.entities; const { q, kind, classification } = c.query;
   if (q) arr = arr.filter((e) => norm(textOf(e.name)).includes(norm(q)));
   if (kind) arr = arr.filter((e) => e.kind === kind);
   if (classification) arr = arr.filter((e) => e.classification === classification);
-  send(c.res, 200, list(arr.map((e) => ({ ...e, polePairs: C.pairs.filter((p) => p.relations.some((r) => r.entity === e.id)).map((p) => ({ neg: p.tracking.point, pos: p.impact.point, pairId: p.id })) })), c.query));
+  send(c.res, 200, list(arr.map((e) => ({ id: e.id, name: e.name, kind: e.kind, classification: e.classification ?? null, pairCount: C.pairs.filter((p) => p.relations.some((r) => r.entity === e.id)).length })), c.query));
 });
-R('GET', '/catalog/entities/:id', 'any', (c) => { const e = entById.get(c.params.id); return e ? send(c.res, 200, { ...e, pairs: C.pairs.filter((p) => p.relations.some((r) => r.entity === e.id)).map(pairSummary) }) : err(c.res, 404, 'NOT_FOUND', 'Not found'); });
-R('GET', '/catalog/protocols', 'any', (c) => send(c.res, 200, { items: C.protocols.map((p) => ({ id: p.id, kind: p.kind, name: p.name, count: expandProtocol(p).length, source: p.source })), total: C.protocols.length }));
+R('GET', '/catalog/entities/:id', 'any', (c) => { const e = entById.get(c.params.id); return e ? send(c.res, 200, { ...e, polePairs: [], pairs: C.pairs.filter((p) => p.relations.some((r) => r.entity === e.id)).map(pairSummary), protocols: [] }) : err(c.res, 404, 'NOT_FOUND', 'Entity not found'); });
+R('GET', '/catalog/protocols', 'any', (c) => send(c.res, 200, list(C.protocols.map((p) => ({ id: p.id, kind: p.kind, name: p.name, source: p.source ?? null, pairCount: expandProtocol(p).length })), c.query)));
 R('GET', '/catalog/protocols/:id', 'any', (c) => {
   const p = protoById.get(c.params.id); if (!p) return err(c.res, 404, 'NOT_FOUND', 'Protocol not found');
-  send(c.res, 200, { ...p, pairs: expandProtocol(p).map((x) => ({ ...pairSummary(pairsById.get(x.pairId)), via: x.via })) });
+  send(c.res, 200, { ...p, pairs: expandProtocol(p).map((x) => ({ ...x, pair: pairSummary(pairsById.get(x.pairId)) })), children: p.items.filter((i) => i.protocol).map((i) => ({ id: i.protocol, name: protoById.get(i.protocol)?.name ?? null, kind: protoById.get(i.protocol)?.kind ?? null })) });
 });
 R('GET', '/catalog/symptoms', 'any', (c) => {
   let arr = C.symptoms; const { q, system } = c.query;
   if (q) arr = arr.filter((s) => norm(textOf(s.name)).includes(norm(q)));
   if (system) arr = arr.filter((s) => s.system === system);
-  send(c.res, 200, list(arr, c.query));
+  send(c.res, 200, list(arr.map((s) => ({ ...s, pairCount: s.pairs.length })), c.query));
 });
-R('POST', '/catalog/suggest', 'any', (c) => send(c.res, 200, { items: suggest(c.body), total: 0 }));
+R('POST', '/catalog/suggest', 'any', (c) => { const items = suggest(c.body); send(c.res, 200, { items, total: items.length }); });
 R('GET', '/catalog/search', 'any', (c) => {
-  const n = norm(c.query.q || ''); if (!n) return send(c.res, 200, { items: [] });
+  const n = norm(c.query.q || ''); if (!n) return send(c.res, 200, { items: [], total: 0 });
   const out = [];
-  for (const p of C.points) if (norm(textOf(p.name)).includes(n)) out.push({ type: 'point', id: p.id, name: p.name });
-  for (const p of C.pairs) if (norm(textOf(p.name)).includes(n) || String(p.number) === n) out.push({ type: 'pair', id: p.id, name: p.name, number: p.number });
-  for (const e of C.entities) if (norm(textOf(e.name)).includes(n)) out.push({ type: 'entity', id: e.id, name: e.name, kind: e.kind });
-  for (const p of C.protocols) if (norm(textOf(p.name)).includes(n)) out.push({ type: 'protocol', id: p.id, name: p.name });
-  for (const s of C.symptoms) if (norm(textOf(s.name)).includes(n)) out.push({ type: 'symptom', id: s.id, name: s.name });
-  send(c.res, 200, { items: out.slice(0, 30), total: out.length });
+  const num = /^\s*(?:pb[\s-]*)?(\d{1,4})\s*$/i.exec(c.query.q);
+  for (const p of C.pairs) if ((num && p.number === Number(num[1])) || norm(textOf(p.name)).includes(n)) out.push({ kind: 'pair', id: p.id, name: p.name, number: p.number, category: p.category, summary: pairSummary(p) });
+  for (const p of C.points) if (norm(textOf(p.name)).includes(n)) out.push({ kind: 'point', id: p.id, name: p.name, laterality: p.laterality, region: p.region });
+  for (const e of C.entities) if (norm(textOf(e.name)).includes(n)) out.push({ kind: 'entity', id: e.id, name: e.name, entityKind: e.kind, classification: e.classification });
+  for (const p of C.protocols) if (norm(textOf(p.name)).includes(n)) out.push({ kind: 'protocol', id: p.id, name: p.name, protocolKind: p.kind });
+  for (const s of C.symptoms) if (norm(textOf(s.name)).includes(n)) out.push({ kind: 'symptom', id: s.id, name: s.name, system: s.system });
+  send(c.res, 200, { items: out.slice(0, Number(c.query.limit || 50)), total: out.length });
 });
-R('GET', '/catalog/contraindications', 'any', (c) => send(c.res, 200, { items: C.contraindications, total: C.contraindications.length }));
-R('GET', '/catalog/recommendations', 'any', (c) => send(c.res, 200, { items: C.recommendations, total: C.recommendations.length }));
-R('GET', '/catalog/glossary', 'any', (c) => send(c.res, 200, { items: C.glossary, total: C.glossary.length }));
+R('GET', '/catalog/contraindications', 'any', (c) => send(c.res, 200, list(C.contraindications, c.query)));
+R('GET', '/catalog/recommendations', 'any', (c) => send(c.res, 200, list(C.recommendations, c.query)));
+R('GET', '/catalog/glossary', 'any', (c) => send(c.res, 200, list(C.glossary, c.query)));
 
-// ---- patients
-R('GET', '/patients', 'practitioner+', (c) => {
-  const q = norm(c.query.q || '').trim();
-  let arr = db.patients;
-  if (q) arr = arr.filter((p) => norm(p.lastName).startsWith(q) || norm(p.firstName).startsWith(q) || norm(p.mrn) === q || norm(`${p.firstName} ${p.lastName}`).includes(q));
-  arr = [...arr].sort((a, b) => a.lastName.localeCompare(b.lastName));
-  const withLast = arr.map((p) => { const ss = db.scanSessions.filter((s) => s.patientId === p.id).sort((a, b) => b.startedAt.localeCompare(a.startedAt)); return { ...patientSummary(p), phone: p.phone, lastSessionAt: ss[0]?.startedAt || null, sessionCount: ss.length, updatedAt: p.updatedAt }; });
-  audit(c.user, 'patient.list');
-  send(c.res, 200, list(withLast, c.query));
+// ---- patients (blind-index semantics: exact last name / MRN, ?dob=, or first letter)
+const PATIENT_FIELDS = ['firstName', 'lastName', 'dob', 'sex', 'phone', 'email', 'address', 'mrn', 'notes'];
+const SEXES = ['female', 'male', 'other', 'unknown'];
+R('GET', '/patients', 'patientRead', (c) => {
+  const q = (c.query.q || '').trim();
+  let arr = [...db.patients].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  let mode = 'list';
+  if (c.query.dob) { arr = arr.filter((p) => p.dob === c.query.dob); mode = 'dob'; }
+  if (q.length === 1 && /\p{L}/u.test(q)) { arr = arr.filter((p) => norm(p.lastName).startsWith(norm(q))); mode = 'letter'; }
+  else if (q) { arr = arr.filter((p) => norm(p.lastName) === norm(q) || norm(p.mrn) === norm(q)); mode = 'exact'; }
+  if (mode !== 'list') arr.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
+  audit(c.user, 'patient.search', null, { detail: { mode } });
+  send(c.res, 200, list(arr.map(patientSummary), c.query, 25));
 });
-const PATIENT_FIELDS = ['firstName', 'lastName', 'dob', 'sex', 'phone', 'email', 'address', 'mrn', 'notes', 'emergencyContact', 'occupation', 'referredBy'];
+function checkPatient(res, b, create) {
+  if (!strict(res, b, [...PATIENT_FIELDS, ...(create ? [] : ['archived'])])) return false;
+  const fields = {};
+  if (create || 'firstName' in b) if (!b.firstName) fields.firstName = 'is required';
+  if (create || 'lastName' in b) if (!b.lastName) fields.lastName = 'is required';
+  if (create || 'dob' in b) if (!b.dob || !/^\d{4}-\d{2}-\d{2}$/.test(b.dob) || b.dob > new Date().toISOString().slice(0, 10)) fields.dob = 'must be a valid date, not in the future';
+  if (b.sex && !SEXES.includes(b.sex)) fields.sex = `must be one of ${SEXES.join(', ')}`;
+  if (b.phone && !/^[0-9+().\s/-]*$/.test(b.phone)) fields.phone = 'has an invalid format';
+  if (Object.keys(fields).length) { err(res, 400, 'VALIDATION', 'Invalid input', fields); return false; }
+  return true;
+}
 R('POST', '/patients', 'intake', (c) => {
-  const b = c.body; const fields = {};
-  if (!b.firstName) fields.firstName = 'Required'; if (!b.lastName) fields.lastName = 'Required';
-  if (!b.dob || !/^\d{4}-\d{2}-\d{2}$/.test(b.dob)) fields.dob = 'Use YYYY-MM-DD';
-  if (Object.keys(fields).length) return err(c.res, 400, 'VALIDATION', 'Please check the highlighted fields', fields);
-  const p = { id: id('pat'), createdAt: now(), updatedAt: now() };
-  for (const k of PATIENT_FIELDS) p[k] = b[k] ?? '';
+  const b = Object.fromEntries(Object.entries(c.body).map(([k, v]) => [k, v === '' ? null : v]));
+  if (!checkPatient(c.res, b, true)) return;
+  if (b.mrn && db.patients.some((p) => p.mrn === b.mrn)) return err(c.res, 409, 'MRN_TAKEN', 'This MRN is already assigned to another patient');
+  const p = { id: crypto.randomUUID(), createdAt: now(), updatedAt: now() };
+  for (const k of PATIENT_FIELDS) p[k] = b[k] ?? null;
+  if (!p.sex) p.sex = 'unknown';
   if (!p.mrn) p.mrn = nextMrn();
-  db.patients.push(p); audit(c.user, 'patient.create', p.id); send(c.res, 201, p);
+  db.patients.push(p); audit(c.user, 'patient.create', p.id); send(c.res, 201, { ...p, age: ageAt(p.dob) });
 });
-R('GET', '/patients/:id', 'practitioner+', (c) => { const p = db.patients.find((x) => x.id === c.params.id); if (!p) return err(c.res, 404, 'NOT_FOUND', 'Patient not found'); audit(c.user, 'patient.read', p.id); send(c.res, 200, p); });
+R('GET', '/patients/:id', 'patientRead', (c) => {
+  const p = db.patients.find((x) => x.id === c.params.id); if (!p) return err(c.res, 404, 'NOT_FOUND', 'Patient not found');
+  const cs = db.consents.filter((x) => x.patientId === p.id).sort((a, b) => b.signedAt.localeCompare(a.signedAt))[0];
+  const ss = db.scanSessions.filter((s) => s.patientId === p.id && !s.supersededBy);
+  audit(c.user, 'patient.read', p.id);
+  send(c.res, 200, { ...p, age: ageAt(p.dob), latestConsent: cs ? { id: cs.id, type: cs.type, signedAt: cs.signedAt, hasAbsolute: cs.hasAbsolute, hasRelative: cs.hasRelative } : null,
+    sessionCount: ss.length, lastSessionDate: ss.map((s) => s.sessionDate).sort().pop() || null });
+});
 R('PATCH', '/patients/:id', 'intake', (c) => {
   const p = db.patients.find((x) => x.id === c.params.id); if (!p) return err(c.res, 404, 'NOT_FOUND', 'Patient not found');
-  for (const k of PATIENT_FIELDS) if (k in c.body) p[k] = c.body[k];
-  p.updatedAt = now(); audit(c.user, 'patient.update', p.id); send(c.res, 200, p);
+  const b = Object.fromEntries(Object.entries(c.body).map(([k, v]) => [k, v === '' ? null : v]));
+  if (!checkPatient(c.res, b, false)) return;
+  for (const k of PATIENT_FIELDS) if (k in b && !(k === 'mrn' && !b.mrn)) p[k] = b[k];
+  p.updatedAt = now(); audit(c.user, 'patient.update', p.id); send(c.res, 200, { ...p, age: ageAt(p.dob) });
 });
-R('GET', '/patients/:id/consents', 'practitioner+', (c) => { const arr = db.consents.filter((x) => x.patientId === c.params.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt)); send(c.res, 200, { items: arr, total: arr.length }); });
+R('GET', '/patients/:id/consents', 'patientRead', (c) => { const arr = db.consents.filter((x) => x.patientId === c.params.id).sort((a, b) => b.signedAt.localeCompare(a.signedAt)); send(c.res, 200, { items: arr, total: arr.length }); });
 R('POST', '/patients/:id/consents', 'intake', (c) => {
+  if (!strict(c.res, c.body, ['type', 'answers', 'contraindications', 'signatureName', 'signedAt'])) return;
   const b = c.body;
-  if (!b.signatureName) return err(c.res, 400, 'VALIDATION', 'Signature required', { signatureName: 'Required' });
-  const x = { id: id('cns'), patientId: c.params.id, type: b.type || 'intake', answers: b.answers || {}, contraindications: b.contraindications || { relative: [], absolute: [] }, signatureName: b.signatureName, signedAt: b.signedAt || now(), createdAt: now(), createdBy: c.user.id };
-  db.consents.push(x); audit(c.user, 'consent.create', x.id); send(c.res, 201, x);
+  if (!b.signatureName) return err(c.res, 400, 'VALIDATION', 'Invalid input', { signatureName: 'is required' });
+  const ci = { relative: b.contraindications?.relative || [], absolute: b.contraindications?.absolute || [] };
+  const x = { id: crypto.randomUUID(), patientId: c.params.id, type: b.type || 'intake', answers: b.answers || {}, contraindications: ci, hasAbsolute: ci.absolute.length > 0, hasRelative: ci.relative.length > 0, signatureName: b.signatureName, signedAt: b.signedAt || now(), recordedBy: c.user.id, createdAt: now() };
+  db.consents.push(x); audit(c.user, 'consent.create', x.id);
+  const warnings = [];
+  if (x.hasAbsolute) warnings.push({ code: 'ABSOLUTE_CONTRAINDICATION', message: 'Absolute contraindication recorded: biomagnetic scanning should not be performed.' });
+  if (x.hasRelative) warnings.push({ code: 'RELATIVE_CONTRAINDICATION', message: 'Relative contraindication recorded: proceed only with clinical judgement.' });
+  send(c.res, 201, { consent: x, warnings });
 });
-R('GET', '/patients/:id/sessions', 'practitioner+', (c) => { const arr = db.scanSessions.filter((s) => s.patientId === c.params.id).sort((a, b) => b.startedAt.localeCompare(a.startedAt)).map(sessionOut); send(c.res, 200, { items: arr, total: arr.length }); });
+
+// ---- sessions (no cross-patient GET /sessions in the real API)
+const SESSION_PATCH = ['methodology', 'protocolIds', 'chiefComplaint', 'symptoms', 'vitals', 'notes', 'sessionDate', 'followUpDate'];
+R('GET', '/patients/:id/sessions', 'patientRead', (c) => { const arr = db.scanSessions.filter((s) => s.patientId === c.params.id).sort((a, b) => b.sessionDate.localeCompare(a.sessionDate) || b.revision - a.revision).map(sessionSummary); send(c.res, 200, { items: arr, total: arr.length }); });
 R('POST', '/patients/:id/sessions', 'clinical', (c) => {
+  if (!strict(c.res, c.body, SESSION_PATCH)) return;
   const p = db.patients.find((x) => x.id === c.params.id); if (!p) return err(c.res, 404, 'NOT_FOUND', 'Patient not found');
   const b = c.body;
-  if (!['biomagnetism', 'bioenergetics', 'telebioenergetics'].includes(b.methodology)) return err(c.res, 400, 'VALIDATION', 'Invalid methodology', { methodology: 'Invalid' });
-  const s = { id: id('ses'), patientId: p.id, practitionerId: c.user.id, methodology: b.methodology, protocolIds: b.protocolIds || [], chiefComplaint: b.chiefComplaint || '', symptoms: b.symptoms || [], symptomsText: '', vitals: b.vitals || {},
-    status: 'draft', revision: 1, amendOf: null, startedAt: now(), finalizedAt: null, followUpDate: null, findings: [], scanState: {}, notes: '' };
-  db.scanSessions.push(s); audit(c.user, 'session.create', s.id); send(c.res, 201, sessionOut(s));
-});
-// Assumed (not in CONTRACT §5): cross-patient session listing for the dashboard.
-R('GET', '/sessions', 'practitioner+', (c) => {
-  const { status, from, to, followUpFrom, followUpTo } = c.query;
-  let arr = db.scanSessions;
-  if (status) { const st = status.split(','); arr = arr.filter((s) => st.includes(s.status)); }
-  if (from) arr = arr.filter((s) => s.startedAt >= from);
-  if (to) arr = arr.filter((s) => s.startedAt < to);
-  if (followUpFrom || followUpTo) {
-    // only the latest session per patient carries the active follow-up
-    const latest = new Map(); for (const s of db.scanSessions) { const l = latest.get(s.patientId); if (!l || s.startedAt > l.startedAt) latest.set(s.patientId, s); }
-    arr = arr.filter((s) => latest.get(s.patientId) === s && s.followUpDate && (!followUpFrom || s.followUpDate >= followUpFrom) && (!followUpTo || s.followUpDate <= followUpTo));
-  }
-  arr = [...arr].sort((a, b) => b.startedAt.localeCompare(a.startedAt)).map((s) => { const o = sessionOut(s); delete o.findings; delete o.reportSnapshot; return o; });
-  send(c.res, 200, list(arr, c.query));
+  if (!['biomagnetism', 'bioenergetics', 'telebioenergetics'].includes(b.methodology)) return err(c.res, 400, 'VALIDATION', 'Invalid input', { methodology: 'must be one of biomagnetism, bioenergetics, telebioenergetics' });
+  const cs = db.consents.filter((x) => x.patientId === p.id && x.type === 'intake').sort((a, b2) => b2.signedAt.localeCompare(a.signedAt))[0];
+  if (!cs) return err(c.res, 409, 'CONSENT_REQUIRED', 'An intake consent must be recorded before starting a session');
+  const date = b.sessionDate || now();
+  const s = { id: crypto.randomUUID(), patientId: p.id, practitionerId: c.user.id, methodology: b.methodology, protocolIds: b.protocolIds || [], chiefComplaint: b.chiefComplaint || null, symptoms: b.symptoms || [], vitals: b.vitals ?? null, notes: b.notes || null,
+    status: 'draft', revision: 1, parentId: null, supersededBy: null, amendReason: null, sessionDate: date, finalizedAt: null, finalizedBy: null, signatureName: null, reportSha256: null,
+    followUpDate: b.followUpDate === undefined ? addDays(date, 7) : b.followUpDate, findings: [], createdAt: now(), updatedAt: now() };
+  db.scanSessions.push(s); audit(c.user, 'session.create', s.id);
+  send(c.res, 201, { ...sessionView(s), warnings: cs.hasAbsolute ? [{ code: 'ABSOLUTE_CONTRAINDICATION', message: 'The latest intake records an absolute contraindication.' }] : [] });
 });
 const getSes = (c) => db.scanSessions.find((s) => s.id === c.params.id);
-const locked = (s) => s.status !== 'draft';
-R('GET', '/sessions/:id', 'practitioner+', (c) => { const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found'); audit(c.user, 'session.read', s.id); const o = sessionOut(s); delete o.reportSnapshot; send(c.res, 200, o); });
+const locked = (c, s) => { if (s.status !== 'draft') { err(c.res, 409, 'SESSION_LOCKED', 'Session is finalized and cannot be modified; create an amendment instead'); return true; } return false; };
+R('GET', '/sessions/:id', 'clinical', (c) => { const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found'); audit(c.user, 'session.read', s.id); send(c.res, 200, sessionView(s)); });
 R('PATCH', '/sessions/:id', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  if (locked(s)) return err(c.res, 409, 'LOCKED', 'Session is finalized');
-  for (const k of ['methodology', 'protocolIds', 'chiefComplaint', 'symptoms', 'symptomsText', 'vitals', 'followUpDate', 'notes', 'scanState']) if (k in c.body) s[k] = c.body[k];
-  send(c.res, 200, sessionOut(s));
+  if (locked(c, s)) return;
+  if (!strict(c.res, c.body, SESSION_PATCH)) return;
+  for (const k of SESSION_PATCH) if (k in c.body) s[k] = c.body[k];
+  s.updatedAt = now(); send(c.res, 200, sessionView(s));
 });
+const FINDING_FIELDS = ['pairId', 'trackingPoint', 'impactPoint', 'trackingSide', 'impactSide', 'qualifiers', 'phenomena', 'dwellMinutes', 'status', 'notes'];
+const normQual = (q) => (Array.isArray(q) ? { tracking: q, impact: q } : { tracking: q?.tracking || [], impact: q?.impact || [] });
 R('POST', '/sessions/:id/findings', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  if (locked(s)) return err(c.res, 409, 'LOCKED', 'Session is finalized');
+  if (locked(c, s)) return;
+  if (!strict(c.res, c.body, FINDING_FIELDS)) return;
   const b = c.body; const p = b.pairId ? pairsById.get(b.pairId) : null;
-  if (b.pairId && !p) return err(c.res, 400, 'VALIDATION', 'Unknown pair', { pairId: 'Unknown' });
-  if (!p && (!b.trackingPoint || !b.impactPoint)) return err(c.res, 400, 'VALIDATION', 'Pair or points required');
-  const f = { id: id('fnd'), pairId: b.pairId || null, trackingPoint: b.trackingPoint || p.tracking.point, impactPoint: b.impactPoint || p.impact.point,
-    trackingSide: b.trackingSide || 'C', impactSide: b.impactSide || 'C', qualifiers: b.qualifiers || [], phenomena: b.phenomena || [], dwellMinutes: b.dwellMinutes ?? null,
-    status: b.status || 'found', notes: b.notes || '', createdAt: now(), updatedAt: now() };
+  if (b.pairId && !p) return err(c.res, 400, 'VALIDATION', 'Unknown pair', { pairId: 'unknown pair' });
+  if (!p && (!b.trackingPoint || !b.impactPoint)) return err(c.res, 400, 'VALIDATION', 'Either pairId or both trackingPoint and impactPoint are required');
+  const f = { id: crypto.randomUUID(), sessionId: s.id, seq: Math.max(0, ...s.findings.map((x) => x.seq)) + 1, pairId: b.pairId || null, trackingPoint: b.trackingPoint || p.tracking.point, impactPoint: b.impactPoint || p.impact.point,
+    trackingSide: b.trackingSide || p?.tracking.side || 'C', impactSide: b.impactSide || p?.impact.side || 'C', qualifiers: normQual(b.qualifiers), phenomena: b.phenomena || [], dwellMinutes: b.dwellMinutes ?? null,
+    status: b.status || 'found', notes: b.notes || null, createdAt: now(), updatedAt: now() };
   s.findings.push(f); audit(c.user, 'finding.create', f.id); send(c.res, 201, f);
 });
 R('PATCH', '/sessions/:id/findings/:fid', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  if (locked(s)) return err(c.res, 409, 'LOCKED', 'Session is finalized');
+  if (locked(c, s)) return;
+  if (!strict(c.res, c.body, FINDING_FIELDS)) return;
   const f = s.findings.find((x) => x.id === c.params.fid); if (!f) return err(c.res, 404, 'NOT_FOUND', 'Finding not found');
-  for (const k of ['trackingSide', 'impactSide', 'qualifiers', 'phenomena', 'dwellMinutes', 'status', 'notes']) if (k in c.body) f[k] = c.body[k];
+  for (const k of ['trackingSide', 'impactSide', 'phenomena', 'dwellMinutes', 'status', 'notes']) if (k in c.body) f[k] = c.body[k];
+  if ('qualifiers' in c.body) f.qualifiers = normQual(c.body.qualifiers);
   f.updatedAt = now(); send(c.res, 200, f);
 });
 R('DELETE', '/sessions/:id/findings/:fid', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  if (locked(s)) return err(c.res, 409, 'LOCKED', 'Session is finalized');
+  if (locked(c, s)) return;
   s.findings = s.findings.filter((x) => x.id !== c.params.fid); audit(c.user, 'finding.delete', c.params.fid); send(c.res, 200, { ok: true });
 });
 R('POST', '/sessions/:id/finalize', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  if (locked(s)) return err(c.res, 409, 'LOCKED', 'Session is already finalized');
-  if (!c.body.signatureName) return err(c.res, 400, 'VALIDATION', 'Signature required', { signatureName: 'Required' });
+  if (locked(c, s)) return;
+  if (!strict(c.res, c.body, ['signatureName'])) return;
+  if (!c.body.signatureName) return err(c.res, 400, 'VALIDATION', 'Invalid input', { signatureName: 'is required' });
   finalizeSession(s, c.body.signatureName, c.user);
-  audit(c.user, 'session.finalize', s.id, { reportHash: s.reportHash });
-  send(c.res, 200, sessionOut(s));
+  audit(c.user, 'session.finalize', s.id, { detail: { sha256: s.reportSha256 } });
+  send(c.res, 200, { ok: true, status: s.status, sha256: s.reportSha256, hashShort: s.reportSha256.slice(0, 16), finalizedAt: s.finalizedAt, session: sessionView(s) });
 });
 R('POST', '/sessions/:id/amend', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  if (!locked(s)) return err(c.res, 409, 'NOT_FINAL', 'Only finalized sessions can be amended');
-  if (!c.body.reason) return err(c.res, 400, 'VALIDATION', 'Reason required', { reason: 'Required' });
-  const n = { ...structuredClone(s), id: id('ses'), status: 'draft', revision: s.revision + 1, amendOf: s.id, amendReason: c.body.reason, finalizedAt: null, signature: null, reportHash: null, reportSnapshot: null, practitionerId: c.user.id };
-  n.findings = n.findings.map((f) => ({ ...f, id: id('fnd') }));
-  db.scanSessions.push(n); audit(c.user, 'session.amend', n.id, { amendOf: s.id }); send(c.res, 201, sessionOut(n));
+  if (s.status === 'draft') return err(c.res, 409, 'NOT_FINALIZED', 'Only finalized sessions can be amended; edit the draft instead');
+  if (s.supersededBy) return err(c.res, 409, 'ALREADY_SUPERSEDED', 'This revision was already amended; amend the latest revision');
+  const pending = db.scanSessions.find((x) => x.parentId === s.id && x.status === 'draft');
+  if (pending) return err(c.res, 409, 'AMENDMENT_IN_PROGRESS', 'An amendment draft already exists for this session', { draftId: pending.id });
+  if (!c.body.reason || c.body.reason.length < 3) return err(c.res, 400, 'VALIDATION', 'Invalid input', { reason: 'must be at least 3 characters' });
+  const n = { ...structuredClone({ ...s, snapshot: undefined }), id: crypto.randomUUID(), status: 'draft', revision: s.revision + 1, parentId: s.id, supersededBy: null, amendReason: c.body.reason, finalizedAt: null, finalizedBy: null, signatureName: null, reportSha256: null, practitionerId: c.user.id, createdAt: now(), updatedAt: now() };
+  n.findings = n.findings.map((f) => ({ ...f, id: crypto.randomUUID(), sessionId: n.id }));
+  if (db.reportImages.has(s.id)) db.reportImages.set(n.id, { ...db.reportImages.get(s.id) });
+  db.scanSessions.push(n); audit(c.user, 'session.amend', n.id); send(c.res, 201, sessionView(n));
 });
-R('GET', '/sessions/:id/report', 'practitioner+', (c) => {
+R('GET', '/sessions/:id/report', 'report', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  if (c.user.role === 'assistant') return err(c.res, 403, 'FORBIDDEN', 'Not allowed');
   audit(c.user, 'report.read', s.id);
-  const rep = s.reportSnapshot ? { ...s.reportSnapshot, generatedAt: now(), images: db.reportImages.get(s.id) || null } : buildReport(s);
-  send(c.res, 200, rep);
+  if (s.status === 'draft') return send(c.res, 200, { ...assembleReport(s), hash: null, integrity: null, supersededBy: s.supersededBy });
+  const integrity = sha256(s.snapshot) === s.reportSha256 ? 'verified' : 'mismatch';
+  send(c.res, 200, { ...JSON.parse(s.snapshot), hash: { sha256: s.reportSha256, short: s.reportSha256.slice(0, 16), algorithm: 'sha256', canonicalization: 'json-sorted-keys' }, integrity, supersededBy: s.supersededBy });
 });
 R('PUT', '/sessions/:id/report/images', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
-  const { front, back } = c.body;
-  for (const [k, v] of Object.entries({ front, back })) if (v && (!/^data:image\/(png|jpeg|webp);base64,/.test(v) || v.length > 2.8e6)) return err(c.res, 400, 'VALIDATION', `Invalid ${k} image`);
-  db.reportImages.set(s.id, { front, back }); send(c.res, 200, { ok: true });
+  if (locked(c, s)) return;
+  if (!strict(c.res, c.body, ['front', 'back'])) return;
+  const cur = db.reportImages.get(s.id) || {};
+  for (const k of ['front', 'back']) {
+    const v = c.body[k]; if (v === undefined) continue;
+    if (v !== null && (!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(v) || v.length > 2 * 1024 * 1024)) return err(c.res, 400, 'VALIDATION', 'Invalid input', { [k]: 'must be a PNG/JPEG/WebP data URL ≤ 2 MB' });
+    cur[k] = v;
+  }
+  db.reportImages.set(s.id, cur); send(c.res, 200, { ok: true, updated: Object.keys(c.body) });
 });
 
 // ---- audit / admin
 R('GET', '/audit', 'audit', (c) => {
   let arr = [...db.audit].reverse();
-  if (c.query.actor) arr = arr.filter((a) => a.actor && (a.actor.email.includes(c.query.actor) || a.actor.name.toLowerCase().includes(c.query.actor.toLowerCase())));
-  if (c.query.action) arr = arr.filter((a) => a.action.startsWith(c.query.action));
+  if (c.query.actor) arr = arr.filter((a) => a.actor && a.actor.id === c.query.actor);
+  if (c.query.action) { const q = c.query.action; arr = arr.filter((a) => (q.endsWith('*') ? a.action.startsWith(q.slice(0, -1)) : a.action === q)); }
   send(c.res, 200, list(arr, { limit: c.query.limit || 50, offset: c.query.offset || 0 }));
 });
 R('GET', '/audit/verify', 'audit', (c) => {
@@ -527,7 +617,7 @@ R('GET', '/audit/verify', 'audit', (c) => {
 });
 R('GET', '/admin/backup', 'admin', (c) => {
   audit(c.user, 'backup.export');
-  c.res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="youheal-backup-${dateOnly(new Date())}.yhb"` });
+  c.res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="youheal-backup-${new Date().toISOString().slice(0, 10)}.yhb"` });
   c.res.end(crypto.randomBytes(256));
 });
 
@@ -547,6 +637,8 @@ async function handleApi(req, res, url) {
   if (r.roles) {
     const s = currentSession(req);
     if (!s) return err(res, 401, 'UNAUTHENTICATED', 'Sign in required');
+    const restriction = restrictionOf(s.user);
+    if (restriction && !r.allowWhen.includes(restriction)) return err(res, 403, restriction === 'mfa' ? 'MFA_ENROLLMENT_REQUIRED' : 'PASSWORD_CHANGE_REQUIRED', restriction === 'mfa' ? 'Administrators must enroll in multi-factor authentication before continuing' : 'You must change your password before continuing');
     if (!ROLE_SETS[r.roles].includes(s.user.role)) return err(res, 403, 'FORBIDDEN', 'Your role cannot perform this action');
     if (req.method !== 'GET' && req.headers['x-csrf-token'] !== s.csrf) return err(res, 403, 'CSRF', 'Missing or invalid CSRF token');
     ctx.sess = s; ctx.user = s.user;
@@ -585,8 +677,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 if (args.includes('--seeded')) {
-  db.org = { id: id('org'), name: 'YOU HEAL Queens', legalName: 'YOU HEAL Queens LLC', address: '37-12 Main St, Flushing, NY 11354', phone: '(718) 555-0142', email: 'care@youheal.test', website: 'youheal.test', license: 'NY-BIO-00421', reportFooter: '', polarity: { negative: '#2563EB', positive: '#DC2626' }, defaultLocale: 'en', logo: null };
-  const u = { id: id('usr'), email: 'admin@clinic.test', name: 'Clinic Admin', role: 'admin', locale: 'en', theme: 'system', pw: hashPw('correct-horse-battery'), mfaEnabled: false, active: true, createdAt: now() };
+  db.org = { id: crypto.randomUUID(), name: 'YOU HEAL Queens', legalName: 'YOU HEAL Queens LLC', address: '37-12 Main St, Flushing, NY 11354', phone: '(718) 555-0142', email: 'care@youheal.test', website: 'https://youheal.test', license: 'NY-BIO-00421', reportFooter: null, polarity: { negative: '#2563EB', positive: '#DC2626' }, defaultLocale: 'en' };
+  const u = { id: crypto.randomUUID(), email: 'admin@clinic.test', name: 'Clinic Admin', role: 'admin', locale: 'en', theme: 'system', pw: hashPw('correct-horse-battery'), mfaEnabled: false, active: true, createdAt: now() };
   db.users.push(u); if (DEMO) seedDemo(u);
 }
 

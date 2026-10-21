@@ -41,13 +41,12 @@ export async function startScan(patient, { followUpOf = null } = {}) {
       title: t('scanStart.noIntakeTitle'), icon: 'clipboard', tone: 'warn',
       body: el('p', t('scanStart.noIntakeBody')),
       actions: [
-        { label: t('scanStart.continueAnyway'), value: 'go', variant: 'ghost' },
+        { label: t('common.cancel'), value: null, variant: 'ghost' },
         { label: t('scanStart.completeIntake'), value: 'intake', variant: 'primary', autofocus: true },
       ],
     });
-    const v = await m.result;
-    if (v === 'intake') { navigate(`/patients/${patient.id}/intake`); return null; }
-    if (v !== 'go') return null;
+    if ((await m.result) === 'intake') navigate(`/patients/${patient.id}/intake`);
+    return null;
   }
   return newSessionDialog(patient, { consent, followUpOf });
 }
@@ -85,11 +84,15 @@ async function newSessionDialog(patient, { consent, followUpOf }) {
           const s = await api.post(`/patients/${encodeURIComponent(patient.id)}/sessions`, { methodology, protocolIds: [...chosen], chiefComplaint: chief.value.trim(), symptoms: [] });
           m.created = s;
           return true;
-        } catch (err) { toast(errorMessage(err), { tone: 'error' }); return false; }
+        } catch (err) {
+          if (err.code === 'CONSENT_REQUIRED') { m.needsConsent = true; toast(t('scanStart.consentRequired'), { tone: 'warn' }); return true; }
+          toast(errorMessage(err), { tone: 'error' }); return false;
+        }
       } },
     ],
   });
   const v = await m.result;
+  if (m.needsConsent) { navigate(`/patients/${patient.id}/intake`); return null; }
   if (v === 'go' && m.created) { navigate(`/sessions/${m.created.id}`); return m.created; }
   return null;
 }

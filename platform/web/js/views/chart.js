@@ -4,7 +4,7 @@ import { icon } from '../ui/icons.js';
 import { api, items, errorMessage } from '../api.js';
 import { t, fmtDate, fmtDateTime, locNode, fmtRelativeDay } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
-import { can, loadCore, getList } from '../state.js';
+import { can, loadCore, getList, normSession } from '../state.js';
 import { tabs, card, emptyState, table, statusBadge, chip, field, input, textarea, alertBox, setLoading, skeleton, categoryChip } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { confirmDialog } from '../ui/modal.js';
@@ -20,11 +20,17 @@ export async function renderChart({ main, params }) {
   try {
     [patient, sessions, consents] = await Promise.all([
       api.get(`/patients/${encodeURIComponent(params.id)}`),
-      api.get(`/patients/${encodeURIComponent(params.id)}/sessions`).then(items).catch(() => []),
+      api.get(`/patients/${encodeURIComponent(params.id)}/sessions`).then((r) => items(r).map(normSession)).catch(() => []),
       api.get(`/patients/${encodeURIComponent(params.id)}/consents`).then(items).catch(() => []),
     ]);
   } catch (err) { mount(main, el('div.page', errorPanel(err, () => renderChart({ main, params })))); return null; }
   const latest = consents[0] || null;
+  // Full session detail (findings) is clinical data: only fetched for admin/practitioner, newest 8, once per render.
+  let detailsP = null;
+  const sessionDetails = () => {
+    if (!detailsP) detailsP = can.clinical() ? Promise.all(sessions.slice(0, 8).map((x) => api.get(`/sessions/${encodeURIComponent(x.id)}`).then(normSession).catch(() => ({ ...x, findings: [] })))) : Promise.resolve([]);
+    return detailsP;
+  };
   const absolute = latest?.contraindications?.absolute || [];
   const relative = latest?.contraindications?.relative || [];
   const flags = el('div.chart-flags',
@@ -51,12 +57,12 @@ export async function renderChart({ main, params }) {
       { id: 'overview', label: t('chart.tabOverview'), icon: 'user' },
       { id: 'intake', label: t('chart.tabIntake'), icon: 'clipboard' },
       { id: 'sessions', label: t('chart.tabSessions'), icon: 'activity', count: sessions.length },
-      { id: 'reports', label: t('chart.tabReports'), icon: 'file', count: sessions.filter((s) => s.status !== 'draft').length },
-    ],
+      can.reports() ? { id: 'reports', label: t('chart.tabReports'), icon: 'file', count: sessions.filter((s) => s.status !== 'draft').length } : null,
+    ].filter(Boolean),
     onChange: (id, panel, user) => {
       if (user) history.replaceState(null, '', `#/patients/${patient.id}/${id}`);
       clear(panel);
-      const ctx = { patient, sessions, consents, panel, refresh: () => renderChart({ main, params: { ...params, tab: id } }) };
+      const ctx = { patient, sessions, consents, panel, sessionDetails, refresh: () => renderChart({ main, params: { ...params, tab: id } }) };
       if (id === 'overview') overview(ctx);
       else if (id === 'intake') intake(ctx);
       else if (id === 'sessions') sessionsTab(ctx);
@@ -68,8 +74,8 @@ export async function renderChart({ main, params }) {
 }
 
 // ---------------- Overview ----------------
-function overview({ patient, sessions, consents, panel }) {
-  const latestS = sessions[0];
+function overview({ patient, sessions, consents, panel, sessionDetails }) {
+  const latestS = sessions.find((x) => !x.supersededBy) || sessions[0];
   const finals = sessions.filter((s) => s.status !== 'draft');
   const followDue = latestS && latestS.followUpDate;
   const dl = (rows) => el('dl.dl', rows.filter(([, v]) => v).map(([k, v]) => [el('dt', k), el('dd', v)]));
@@ -84,14 +90,14 @@ function overview({ patient, sessions, consents, panel }) {
       children: latestS ? [
         el('div.latest',
           el('p.latest-date', fmtDateTime(latestS.startedAt), ' ', statusBadge(latestS.status)),
-          el('p', methodologyLabel(latestS.methodology), latestS.chiefComplaint ? ` · ${latestS.chiefComplaint}` : ''),
-          el('p.muted', t('dashboard.findingsCount', { count: (latestS.findings || []).length || latestS.findingsCount || 0 })),
+          el('p', methodologyLabel(latestS.methodology), latestS.practitioner ? ` · ${latestS.practitioner.name}` : ''),
+          el('p.muted', t('dashboard.findingsCount', { count: latestS.findingsCount || 0 })),
           followDue ? el('p.follow', icon('clock', { size: 16 }), t('chart.followUpDue', { when: fmtRelativeDay(followDue), date: fmtDate(followDue) })) : null,
-          el('div.btn-row',
-            latestS.status === 'draft' ? el('a.btn.btn-primary', { href: `#/sessions/${latestS.id}` }, t('dashboard.resume')) : el('a.btn.btn-secondary', { href: `#/sessions/${latestS.id}/report` }, icon('file', { size: 18 }), t('chart.viewReport')))),
+          can.clinical() ? el('div.btn-row',
+            latestS.status === 'draft' ? el('a.btn.btn-primary', { href: `#/sessions/${latestS.id}` }, t('dashboard.resume')) : el('a.btn.btn-secondary', { href: `#/sessions/${latestS.id}/report` }, icon('file', { size: 18 }), t('chart.viewReport'))) : null),
       ] : [emptyState({ icon: 'activity', title: t('chart.noSessions'), compact: true })] }),
-    card({ title: t('chart.recurring'), icon: 'layers', sub: t('chart.recurringSub'),
-      children: [finals.length ? recurringList(sessions) : emptyState({ icon: 'layers', title: t('chart.noTrend'), compact: true })] }),
+    can.clinical() ? card({ title: t('chart.recurring'), icon: 'layers', sub: t('chart.recurringSub'),
+      children: [finals.length ? recurringList(sessionDetails) : emptyState({ icon: 'layers', title: t('chart.noTrend'), compact: true })] }) : null,
     card({ title: t('chart.intakeStatus'), icon: 'clipboard', actions: el('a.btn.btn-sm.btn-ghost', { href: `#/patients/${patient.id}/intake` }, t('chart.openIntake')),
       children: [consents[0] ? el('div',
         el('p', t('chart.signedBy', { name: consents[0].signatureName, date: fmtDate(consents[0].signedAt || consents[0].createdAt) })),
@@ -112,9 +118,9 @@ function contraSummary(consent) {
   return box;
 }
 
-function recurringList(sessions) {
+function recurringList(sessionDetails) {
   const box = el('div', skeleton(3));
-  loadCore().then((core) => {
+  Promise.all([loadCore(), sessionDetails()]).then(([core, sessions]) => {
     const counts = new Map();
     for (const s of sessions) for (const f of s.findings || []) if (f.pairId) counts.set(f.pairId, (counts.get(f.pairId) || 0) + 1);
     const top = [...counts.entries()].filter(([, n]) => n > 1).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -214,7 +220,7 @@ function intake({ patient, consents, panel, refresh }) {
     if (problems.length) { errBox.replaceChildren(alertBox({ tone: 'danger', title: t('validation.fixErrors'), children: [el('ul', problems.map((p) => el('li', p)))] })); errBox.scrollIntoView({ block: 'center' }); return; }
     setLoading(submit, true);
     try {
-      await api.post(`/patients/${encodeURIComponent(patient.id)}/consents`, {
+      const res = await api.post(`/patients/${encodeURIComponent(patient.id)}/consents`, {
         type: 'intake',
         answers: { ...answers, reason: reason.value.trim(), medications: meds.value.trim(), physician: physician.value.trim() },
         contraindications: { absolute: [...absSel], relative: [...relSel] },
@@ -222,7 +228,9 @@ function intake({ patient, consents, panel, refresh }) {
       });
       dirty = false;
       toast(t('intake.saved'), { tone: 'success' });
-      if (absSel.size) toast(t('intake.savedBlocked'), { tone: 'warn' });
+      const warns = (res && res.warnings) || [];
+      if (warns.some((w) => w.code === 'ABSOLUTE_CONTRAINDICATION') || absSel.size) toast(t('intake.savedBlocked'), { tone: 'warn', timeout: 10000 });
+      else if (warns.some((w) => w.code === 'RELATIVE_CONTRAINDICATION')) toast(t('intake.savedRelative'), { tone: 'warn' });
       refresh();
     } catch (err) { errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] })); }
     finally { setLoading(submit, false); }
@@ -231,33 +239,32 @@ function intake({ patient, consents, panel, refresh }) {
 }
 
 // ---------------- Sessions + trend ----------------
-function sessionsTab({ patient, sessions, panel }) {
+function sessionsTab({ patient, sessions, panel, sessionDetails }) {
   if (!sessions.length) {
     mount(panel, emptyState({ icon: 'activity', title: t('chart.noSessions'), body: t('chart.noSessionsBody'), action: can.scan() ? el('button.btn.btn-primary', { type: 'button', onClick: () => startScan(patient) }, icon('magnet', { size: 18 }), t('chart.startScan')) : null }));
     return;
   }
   const trendBox = el('div', skeleton(4));
   mount(panel,
-    card({ title: t('chart.trendTitle'), icon: 'layers', sub: t('chart.trendSub'), children: [trendBox] }),
-    card({ title: t('chart.history'), icon: 'activity', children: [table({
+    can.clinical() ? card({ title: t('chart.trendTitle'), icon: 'layers', sub: t('chart.trendSub'), children: [trendBox] }) : null,
+    card({ title: t('chart.history'), icon: 'activity', sub: can.clinical() ? null : t('chart.summaryOnly'), children: [table({
       caption: t('chart.history'), rows: sessions,
-      onRowClick: (s) => navigate(s.status === 'draft' ? `/sessions/${s.id}` : `/sessions/${s.id}/report`),
+      onRowClick: can.clinical() ? (s) => navigate(s.status === 'draft' ? `/sessions/${s.id}` : `/sessions/${s.id}/report`) : null,
       rowLabel: (s) => fmtDateTime(s.startedAt),
       columns: [
         { key: 'date', label: t('session.date'), render: (s) => fmtDateTime(s.startedAt) },
         { key: 'methodology', label: t('session.methodology'), render: (s) => methodologyLabel(s.methodology) },
-        { key: 'chief', label: t('session.chiefComplaint'), render: (s) => s.chiefComplaint || el('span.muted', '—') },
-        { key: 'findings', label: t('session.findings'), align: 'right', render: (s) => String((s.findings || []).length || s.findingsCount || 0) },
-        { key: 'status', label: t('session.status'), render: (s) => statusBadge(s.status) },
-        { key: 'act', label: el('span.sr-only', t('common.actions')), align: 'right', render: (s) => (s.status === 'draft'
+        { key: 'by', label: t('report.practitioner'), render: (s) => s.practitioner?.name || '—' },
+        { key: 'findings', label: t('session.findings'), align: 'right', render: (s) => String(s.findingsCount || 0) },
+        { key: 'status', label: t('session.status'), render: (s) => el('span.cell-stack', statusBadge(s.status), s.revision > 1 ? el('span.muted.small', t('report.revision', { n: s.revision })) : null, s.supersededBy ? el('span.muted.small', t('chart.superseded')) : null) },
+        { key: 'act', label: el('span.sr-only', t('common.actions')), align: 'right', render: (s) => (!can.clinical() ? null : s.status === 'draft'
           ? el('a.btn.btn-sm.btn-primary', { href: `#/sessions/${s.id}` }, t('dashboard.resume'))
           : el('a.btn.btn-sm.btn-secondary', { href: `#/sessions/${s.id}/report` }, icon('file', { size: 16 }), t('chart.report'))) },
       ],
     })] }));
-  loadCore().then(async (core) => {
-    const chrono = [...sessions].sort((a, b) => a.startedAt.localeCompare(b.startedAt)).slice(-8);
-    // fetch findings when the list endpoint omits them
-    await Promise.all(chrono.map(async (s, i) => { if (!s.findings) { try { chrono[i] = await api.get(`/sessions/${s.id}`); } catch { chrono[i] = { ...s, findings: [] }; } } }));
+  if (!can.clinical()) return;
+  Promise.all([loadCore(), sessionDetails()]).then(([core, details]) => {
+    const chrono = details.filter((s) => !s.supersededBy).sort((a, b) => a.startedAt.localeCompare(b.startedAt));
     const rows = new Map();
     chrono.forEach((s, col) => { for (const f of s.findings || []) { const key = f.pairId || `${f.trackingPoint}--${f.impactPoint}`; if (!rows.has(key)) rows.set(key, { key, pairId: f.pairId, cells: new Map(), n: 0 }); const r = rows.get(key); r.cells.set(col, f.status); r.n++; } });
     const ordered = [...rows.values()].sort((a, b) => b.n - a.n);
@@ -288,6 +295,7 @@ function reportsTab({ sessions, panel }) {
       { key: 'signed', label: t('report.signedOn'), render: (s) => fmtDateTime(s.finalizedAt) },
       { key: 'by', label: t('report.practitioner'), render: (s) => s.practitioner?.name || '—' },
       { key: 'status', label: t('session.status'), render: (s) => statusBadge(s.status) },
+      { key: 'rev', label: t('report.revisionShort'), render: (s) => el('span.cell-stack', `R${s.revision || 1}`, s.supersededBy ? el('span.muted.small', t('chart.superseded')) : null) },
       { key: 'hash', label: t('report.hash'), cls: 'mono', render: (s) => (s.reportHash ? s.reportHash.slice(0, 16) : '—') },
       { key: 'act', label: el('span.sr-only', t('common.actions')), align: 'right', render: (s) => el('a.btn.btn-sm.btn-secondary', { href: `#/sessions/${s.id}/report` }, icon('file', { size: 16 }), t('common.open')) },
     ],

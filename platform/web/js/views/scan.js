@@ -4,21 +4,25 @@ import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, NetworkError, ApiError } from '../api.js';
 import { t, locText, locNode, getLocale, fmtDuration, ageFrom, fmtDate } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
-import { state, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, getList } from '../state.js';
+import { state, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, getList, normSession, normQualifiers } from '../state.js';
 import { combobox } from '../ui/combobox.js';
 import { tabs, segmented, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, select, ratingsRow, statusBadge } from '../ui/components.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { toast, announce } from '../ui/toast.js';
-import { createViewer } from '../bodymap/host.js';
+import { createViewer, renderSnapshots } from '../bodymap/host.js';
 import { pairDetailBody } from './pair-detail.js';
 import { fullName, errorPanel, methodologyLabel, addDaysISO } from './common.js';
 import { PROTOCOL_KINDS } from './start-scan.js';
 import { latestConsent } from './start-scan.js';
 
 const PHENOMENA = ['infiltrate', 'exudate', 'cyst', 'abscess', 'neoplasia'];
+// qualifiers: S superior, INF inferior, A anterior, P posterior, LAT lateral (CONTRACT §4.6)
 const QUALIFIERS = ['S', 'INF', 'A', 'P', 'LAT'];
 const SIDES = ['R', 'L', 'C'];
 const FINDING_STATES = ['found', 'impacted', 'cleared'];
+// Runner state (checklist, not-present marks, cursor) is UI-only: the API has no field for it, and we keep it
+// out of browser storage. It survives in-app navigation for the lifetime of the page.
+const runnerMemory = new Map();
 
 // ---------------------------------------------------------------- autosave queue
 class SaveQueue {
@@ -72,17 +76,17 @@ export async function renderScan({ main, params }) {
   mount(main, el('div.scan-loading', skeleton(8)));
   let session; let core; let patient;
   try {
-    [session, core] = await Promise.all([api.get(`/sessions/${encodeURIComponent(params.id)}`), loadCore()]);
+    [session, core] = await Promise.all([api.get(`/sessions/${encodeURIComponent(params.id)}`).then(normSession), loadCore()]);
     patient = session.patient && session.patient.dob !== undefined ? session.patient : await api.get(`/patients/${encodeURIComponent(session.patientId)}`).catch(() => session.patient || {});
   } catch (err) { mount(main, el('div.page', errorPanel(err, () => renderScan({ main, params })))); return null; }
 
-  const readOnly = session.status !== 'draft' || !can.findings();
+  const readOnly = session.status !== 'draft' || !can.findings() || !!session.supersededBy;
   const disposers = [];
   const timers = new Map(); // findingId -> { endsAt, total }
   let viewer = null; let viewerKind = null;
   let symptomsCatalog = [];
   const st = {
-    findings: (session.findings || []).map((f) => ({ ...f })),
+    findings: (session.findings || []).map((f) => ({ ...f, qualifiers: normQualifiers(f.qualifiers) })),
     checklist: [],
     notPresent: new Set(),
     cursor: 0,
@@ -91,7 +95,7 @@ export async function renderScan({ main, params }) {
     view: 'anterior',
     drawerPoint: null,
     expandedFinding: null,
-    symptoms: [...(session.symptoms || [])],
+    symptoms: [...(session.symptoms || [])].map((x) => (typeof x === 'string' ? x : x.id)),
     leftOpen: false, rightOpen: false,
   };
 
@@ -117,14 +121,22 @@ export async function renderScan({ main, params }) {
     return { trackingSide: map(pair.tracking.side, 'tracking'), impactSide: map(pair.impact.side, 'impact') };
   };
 
+  let lastProtocolIds = JSON.stringify(session.protocolIds || []);
   const persistScanState = debounce(() => {
+    runnerMemory.set(session.id, { checklist: st.checklist, notPresent: [...st.notPresent], cursor: st.cursor, activeProtocols: st.activeProtocols });
     if (readOnly) return;
-    const body = { scanState: { checklist: st.checklist, notPresent: [...st.notPresent], cursor: st.cursor, activeProtocols: st.activeProtocols }, protocolIds: st.activeProtocols.filter((p) => p !== '__h2t') };
-    queue.push({ coalesce: 'session', body, exec(q) { return api.patch(`/sessions/${session.id}`, this.body); } });
+    const protocolIds = st.activeProtocols.filter((p) => p !== '__h2t');
+    if (JSON.stringify(protocolIds) === lastProtocolIds) return;
+    lastProtocolIds = JSON.stringify(protocolIds);
+    patchSession({ protocolIds });
   }, 600);
+  const onSaveError = (err) => {
+    if (err && (err.code === 'SESSION_LOCKED' || err.status === 409)) { toast(t('scan.lockedElsewhere'), { tone: 'error', timeout: 10000 }); setTimeout(() => renderScan({ main, params }), 300); return; }
+    toast(errorMessage(err), { tone: 'error' });
+  };
   const patchSession = (body) => {
     if (readOnly) return;
-    queue.push({ coalesce: 'session', body, exec() { return api.patch(`/sessions/${session.id}`, this.body); }, fail: (err) => toast(errorMessage(err), { tone: 'error' }) });
+    queue.push({ coalesce: 'session', body, exec() { return api.patch(`/sessions/${session.id}`, this.body); }, fail: onSaveError });
   };
 
   // ---------- findings ops (optimistic) ----------
@@ -134,14 +146,14 @@ export async function renderScan({ main, params }) {
     if (existing) { if (existing.status !== status) updateFinding(existing.id, { status }); return existing; }
     const pair = pairOf(pairId);
     const tmpId = nextId('tmp');
-    const f = { id: tmpId, pairId, trackingPoint: pair?.tracking.point, impactPoint: pair?.impact.point, ...(pair ? defaultSides(pair) : { trackingSide: 'C', impactSide: 'C' }), qualifiers: [], phenomena: [], dwellMinutes: 15, status, notes: '', ...extra, _pending: true };
+    const f = { id: tmpId, pairId, trackingPoint: pair?.tracking.point, impactPoint: pair?.impact.point, ...(pair ? defaultSides(pair) : { trackingSide: 'C', impactSide: 'C' }), qualifiers: { tracking: [...(pair?.tracking.qualifiers || [])], impact: [...(pair?.impact.qualifiers || [])] }, phenomena: [], dwellMinutes: 15, status, notes: '', ...extra, _pending: true };
     st.findings.push(f);
     st.notPresent.delete(pairId);
     if (!st.checklist.some((c) => c.pairId === pairId)) st.checklist.push({ pairId, source: 'manual' });
     queue.push({
-      exec: () => api.post(`/sessions/${session.id}/findings`, { pairId, trackingPoint: f.trackingPoint, impactPoint: f.impactPoint, trackingSide: f.trackingSide, impactSide: f.impactSide, qualifiers: f.qualifiers, phenomena: f.phenomena, dwellMinutes: f.dwellMinutes, status: f.status, notes: f.notes }),
+      exec: () => api.post(`/sessions/${session.id}/findings`, { pairId, trackingPoint: f.trackingPoint, impactPoint: f.impactPoint, trackingSide: f.trackingSide, impactSide: f.impactSide, qualifiers: f.qualifiers, phenomena: f.phenomena, dwellMinutes: f.dwellMinutes, status: f.status, notes: f.notes || null }),
       done: (res, q) => { q.idMap.set(tmpId, res.id); const cur = st.findings.find((x) => x.id === tmpId); if (cur) { cur.id = res.id; delete cur._pending; } if (timers.has(tmpId)) { timers.set(res.id, timers.get(tmpId)); timers.delete(tmpId); } if (st.expandedFinding === tmpId) st.expandedFinding = res.id; renderFindings(); },
-      fail: (err) => { st.findings = st.findings.filter((x) => x.id !== tmpId); toast(errorMessage(err), { tone: 'error' }); renderAll(); },
+      fail: (err) => { st.findings = st.findings.filter((x) => x.id !== tmpId); onSaveError(err); renderAll(); },
     });
     persistScanState();
     announce(t('scan.announceFound', { pair: pair ? locText(pair.name) : pairId }));
@@ -156,7 +168,7 @@ export async function renderScan({ main, params }) {
     queue.push({
       coalesce: `f:${fid}`, body: patch,
       exec(q) { return api.patch(`/sessions/${session.id}/findings/${encodeURIComponent(q.realId(fid))}`, this.body); },
-      fail: (err) => { Object.assign(f, before); toast(errorMessage(err), { tone: 'error' }); renderAll(); },
+      fail: (err) => { Object.assign(f, before); onSaveError(err); renderAll(); },
     });
     if ('status' in patch) { renderAll(); announce(t('scan.announceStatus', { status: t(`state.${patch.status}`) })); } else { syncViewer(); renderChecklist(); }
   }
@@ -165,7 +177,7 @@ export async function renderScan({ main, params }) {
     const f = st.findings.find((x) => x.id === fid); if (!f) return;
     st.findings = st.findings.filter((x) => x.id !== fid);
     timers.delete(fid);
-    queue.push({ exec: (q) => api.del(`/sessions/${session.id}/findings/${encodeURIComponent(q.realId(fid))}`), fail: (err) => { st.findings.push(f); toast(errorMessage(err), { tone: 'error' }); renderAll(); } });
+    queue.push({ exec: (q) => api.del(`/sessions/${session.id}/findings/${encodeURIComponent(q.realId(fid))}`), fail: (err) => { st.findings.push(f); onSaveError(err); renderAll(); } });
     renderAll();
     if (undo) {
       const pair = pairOf(f.pairId);
@@ -226,7 +238,7 @@ export async function renderScan({ main, params }) {
   }
 
   // ---------- initial checklist ----------
-  const ss = session.scanState || {};
+  const ss = runnerMemory.get(session.id) || session.scanState || {};
   if (Array.isArray(ss.checklist) && ss.checklist.length) {
     st.checklist = ss.checklist.filter((c) => core.pairs.has(c.pairId));
     st.notPresent = new Set(ss.notPresent || []);
@@ -281,8 +293,11 @@ export async function renderScan({ main, params }) {
   const right = el('aside#scan-right.scan-right', { aria: { label: t('scan.sessionPane') } });
   const scrim = el('div.scan-scrim', { hidden: true, onClick: () => { setPane('left', false); setPane('right', false); } });
   const root = el('div.scan', bar,
-    readOnly ? el('div.scan-locked', alertBox({ tone: 'info', ic: 'lock', title: session.status === 'draft' ? t('scan.noPermission') : t('scan.lockedTitle'), children: [el('p', session.status === 'draft' ? t('scan.noPermissionBody') : t('scan.lockedBody')),
-      session.status !== 'draft' && can.findings() ? el('button.btn.btn-sm.btn-secondary', { type: 'button', onClick: () => amend() }, icon('edit', { size: 16 }), t('scan.amend')) : null] })) : null,
+    readOnly ? el('div.scan-locked', alertBox({ tone: 'info', ic: 'lock', title: session.supersededBy ? t('scan.supersededTitle') : session.status === 'draft' ? t('scan.noPermission') : t('scan.lockedTitle'),
+      children: [el('p', session.supersededBy ? t('scan.supersededBody') : session.status === 'draft' ? t('scan.noPermissionBody') : t('scan.lockedBody')),
+        el('div.btn-row',
+          session.supersededBy ? el('a.btn.btn-sm.btn-secondary', { href: `#/sessions/${session.supersededBy}` }, t('scan.openLatest')) : null,
+          session.status !== 'draft' && !session.supersededBy && can.findings() ? el('button.btn.btn-sm.btn-secondary', { type: 'button', onClick: () => amend() }, icon('edit', { size: 16 }), t('scan.amend')) : null)] })) : null,
     el('div.scan-body', left, center, right, scrim));
   mount(main, root);
 
@@ -372,7 +387,7 @@ export async function renderScan({ main, params }) {
   }
 
   // ---- directed scan
-  const directed = { text: session.symptomsText || '', results: null, loading: false };
+  const directed = { text: '', results: null, loading: false };
   function directedPanel() {
     const chips = el('div.sym-chips');
     const resultsEl = el('div.suggest-results', { aria: { live: 'polite' } });
@@ -383,7 +398,7 @@ export async function renderScan({ main, params }) {
       onEnterText: (txt) => { freeText.value = freeText.value ? `${freeText.value}, ${txt}` : txt; directed.text = freeText.value; },
     });
     const freeText = textarea({ rows: 2, id: 'directed-text', placeholder: t('scan.freeTextPlaceholder'), value: directed.text });
-    freeText.addEventListener('input', debounce(() => { directed.text = freeText.value; patchSession({ symptomsText: freeText.value }); }, 700));
+    freeText.addEventListener('input', () => { directed.text = freeText.value; });
     const go = el('button.btn.btn-primary.btn-block', { type: 'button' }, icon('sparkles', { size: 18 }), t('scan.suggest'));
     go.addEventListener('click', async () => {
       if (!st.symptoms.length && !freeText.value.trim()) { toast(t('scan.suggestNeedInput'), { tone: 'warn' }); cb.focus(); return; }
@@ -404,6 +419,13 @@ export async function renderScan({ main, params }) {
     if (directed.results) renderSuggestions(resultsEl);
     return wrap;
   }
+  function matchedLabel(m) {
+    if (typeof m === 'string') return m;
+    if (m.type === 'symptom' || m.kind === 'symptom') return locText(m.name || m.label);
+    const term = m.token || m.term || '';
+    const where = m.field ? t(`scan.matchField.${m.field}`) : '';
+    return `“${term}”${where ? ` · ${where}` : ''}`;
+  }
   function renderSuggestions(box) {
     const res = directed.results || [];
     if (!res.length) { mount(box, emptyState({ icon: 'search', title: t('scan.noSuggestions'), compact: true })); return; }
@@ -418,7 +440,7 @@ export async function renderScan({ main, params }) {
         return el('li.suggest-item',
           el('div.suggest-top', el('span.pair-num', `#${pair.number}`), el('span.suggest-name', locNode(pair.name)), categoryChip(pair.category)),
           el('div.score', { role: 'img', aria: { label: t('scan.score', { pct }) } }, el('span.score-bar', { style: { width: `${Math.max(6, pct)}%` } }), el('span.score-num', `${pct}%`)),
-          el('ul.matched', (r.matched || []).map((m) => el('li.chip.tone-slate.chip-sm', typeof m === 'string' ? m : (m.label ? locText(m.label) : m.term || m.name ? locText(m.name) : '')))),
+          el('ul.matched', (r.matched || []).map((m) => el(`li.chip.chip-sm.${m.type === 'symptom' ? 'tone-sky' : 'tone-slate'}`, matchedLabel(m)))),
           el('div.suggest-actions',
             el('button.btn.btn-sm.btn-ghost', { type: 'button', onClick: () => openPointDrawer(pair.tracking.point, { pairId: pair.id }) }, icon('eye', { size: 16 }), t('scan.view')),
             el('button.btn.btn-sm.btn-secondary', { type: 'button', disabled: inScan || readOnly, onClick: () => { addToChecklist(pair.id); renderLeft(); renderSuggestions(box); syncViewer(); } }, inScan ? icon('check', { size: 16 }) : icon('plus', { size: 16 }), inScan ? t('scan.inScan') : t('scan.addToScan'))));
@@ -586,7 +608,7 @@ export async function renderScan({ main, params }) {
 
   // ================================================================ RIGHT: session panel
   const chief = textarea({ rows: 2, id: 'chief', value: session.chiefComplaint || '', readOnly, placeholder: t('scan.chiefPlaceholder') });
-  chief.addEventListener('input', debounce(() => patchSession({ chiefComplaint: chief.value.trim() }), 700));
+  chief.addEventListener('input', debounce(() => patchSession({ chiefComplaint: chief.value.trim() || null }), 700));
   const symChipsRight = el('div.sym-chips');
   symChipTargets.add(symChipsRight);
   const symCb = readOnly ? null : combobox({
@@ -600,7 +622,7 @@ export async function renderScan({ main, params }) {
   followInput.addEventListener('change', () => patchSession({ followUpDate: followInput.value || null }));
   if (!session.followUpDate && !readOnly) patchSession({ followUpDate: followInput.value });
   const notes = textarea({ rows: 3, id: 'session-notes', value: session.notes || '', readOnly, placeholder: t('scan.sessionNotesPlaceholder') });
-  notes.addEventListener('input', debounce(() => patchSession({ notes: notes.value }), 900));
+  notes.addEventListener('input', debounce(() => patchSession({ notes: notes.value || null }), 900));
 
   mount(right,
     el('div.pane-head', el('h2.pane-title', t('scan.sessionPane')), el('button.icon-btn.pane-close', { type: 'button', aria: { label: t('common.close') }, onClick: () => setPane('right', false) }, icon('x'))),
@@ -670,10 +692,12 @@ export async function renderScan({ main, params }) {
     dwell.addEventListener('change', () => { const v = dwell.value === '' ? null : Math.max(0, Math.min(240, Number(dwell.value))); updateFinding(f.id, { dwellMinutes: v }); });
     const step = (d) => { const v = Math.max(0, Math.min(240, (Number(dwell.value) || 0) + d)); dwell.value = v; updateFinding(f.id, { dwellMinutes: v }); };
     const fnotes = textarea({ rows: 2, value: f.notes || '', readOnly, id: `${idv}-notes`, placeholder: t('scan.findingNotesPlaceholder') });
-    fnotes.addEventListener('input', debounce(() => updateFinding(f.id, { notes: fnotes.value }), 700));
+    fnotes.addEventListener('input', debounce(() => updateFinding(f.id, { notes: fnotes.value || null }), 700));
     return el('div.finding-details', { id: idv },
       el('div.grid-2', sideSeg(t('scan.trackingSide'), f.trackingSide, (v) => updateFinding(f.id, { trackingSide: v })), sideSeg(t('scan.impactSide'), f.impactSide, (v) => updateFinding(f.id, { impactSide: v }))),
-      toggleChips(t('scan.qualifiers'), QUALIFIERS, f.qualifiers, (q) => t(`qualifier.${q}`), (v) => updateFinding(f.id, { qualifiers: v })),
+      el('div.grid-2',
+        toggleChips(t('scan.qualTracking'), QUALIFIERS, f.qualifiers.tracking, (q) => t(`qualifier.${q}`), (v) => updateFinding(f.id, { qualifiers: { ...f.qualifiers, tracking: v } })),
+        toggleChips(t('scan.qualImpact'), QUALIFIERS, f.qualifiers.impact, (q) => t(`qualifier.${q}`), (v) => updateFinding(f.id, { qualifiers: { ...f.qualifiers, impact: v } }))),
       toggleChips(t('scan.phenomena'), PHENOMENA, f.phenomena, (p) => t(`phenomena.${p}`), (v) => { updateFinding(f.id, { phenomena: v }); }),
       el('div.field', el('label.sp-label', { for: `${idv}-dwell` }, t('scan.dwell')),
         el('div.stepper-input', el('button.icon-btn', { type: 'button', aria: { label: t('scan.dwellLess') }, disabled: readOnly, onClick: () => step(-5) }, icon('minus', { size: 18 })), dwell, el('span.unit', t('scan.minutes')),
@@ -748,17 +772,27 @@ export async function renderScan({ main, params }) {
           if (!typed) { fSig.setError(t('validation.required')); sig.focus(); return false; }
           if (expected && typed.toLowerCase().replace(/\s+/g, ' ') !== expected.toLowerCase().replace(/\s+/g, ' ')) { fSig.setError(t('scan.signatureMismatch', { name: expected })); sig.focus(); return false; }
           try {
-            await api.post(`/sessions/${session.id}/finalize`, { signatureName: typed });
+            // Body-map images become part of the immutable report snapshot, so upload them while still a draft.
+            await uploadBodyMaps().catch((e) => console.warn('body map upload failed', e));
+            const res = await api.post(`/sessions/${session.id}/finalize`, { signatureName: typed });
+            m.hashShort = res && (res.hashShort || (res.sha256 || '').slice(0, 16));
             return true;
           } catch (err) { errSlot.append(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] })); return false; }
         } },
       ],
     });
     if ((await m.result) === 'ok') {
-      toast(t('scan.finalized'), { tone: 'success' });
+      toast(m.hashShort ? t('scan.finalizedHash', { hash: m.hashShort }) : t('scan.finalized'), { tone: 'success', timeout: 7000 });
+      runnerMemory.delete(session.id);
       setLeaveGuard(null);
       navigate(`/sessions/${session.id}/report`);
     }
+  }
+  async function uploadBodyMaps() {
+    const mags = magnetsAndPairs().mags.map((x) => ({ ...x, state: x.state }));
+    const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: polarity(), locale: getLocale(), magnets: mags, width: 800, height: 1100 });
+    if (!snaps || !snaps.anterior || !snaps.posterior) return;
+    await api.put(`/sessions/${session.id}/report/images`, { front: snaps.anterior, back: snaps.posterior });
   }
   async function amend() {
     const reason = textarea({ rows: 3, id: 'amend-reason' });
@@ -767,7 +801,11 @@ export async function renderScan({ main, params }) {
       { label: t('common.cancel'), value: null, variant: 'ghost' },
       { label: t('scan.amendCreate'), value: 'ok', variant: 'primary', onClick: async () => {
         if (!reason.value.trim()) { fR.setError(t('validation.required')); return false; }
-        try { m.created = await api.post(`/sessions/${session.id}/amend`, { reason: reason.value.trim() }); return true; } catch (err) { fR.setError(errorMessage(err)); return false; }
+        try { m.created = await api.post(`/sessions/${session.id}/amend`, { reason: reason.value.trim() }); return true; } catch (err) {
+          if (err.code === 'AMENDMENT_IN_PROGRESS' && err.fields && err.fields.draftId) { m.created = { id: err.fields.draftId }; toast(t('scan.amendExisting'), { tone: 'info' }); return true; }
+          if (err.code === 'ALREADY_SUPERSEDED' && session.supersededBy) { m.created = { id: session.supersededBy }; toast(t('scan.amendSuperseded'), { tone: 'info' }); return true; }
+          fR.setError(errorMessage(err)); return false;
+        }
       } }] });
     if ((await m.result) === 'ok' && m.created) navigate(`/sessions/${m.created.id}`);
   }

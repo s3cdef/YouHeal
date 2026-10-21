@@ -12,14 +12,15 @@ import { navigate } from '../router.js';
 
 const ROLES = ['admin', 'practitioner', 'assistant', 'auditor'];
 
-export async function renderSettings({ main, params }) {
+export async function renderSettings({ main, params, route }) {
+  const wanted = params.tab || (route && route.tab);
   const available = [
     { id: 'profile', label: t('settings.tabProfile'), icon: 'user' },
     can.admin() ? { id: 'clinic', label: t('settings.tabClinic'), icon: 'home' } : null,
     can.admin() ? { id: 'users', label: t('settings.tabUsers'), icon: 'users' } : null,
     can.audit() ? { id: 'audit', label: t('settings.tabAudit'), icon: 'shield' } : null,
   ].filter(Boolean);
-  const active = available.some((x) => x.id === params.tab) ? params.tab : 'profile';
+  const active = available.some((x) => x.id === wanted) ? wanted : 'profile';
   const tb = tabs({
     label: t('settings.title'), active, variant: 'line', tabs: available,
     onChange: (id, panel, user) => {

@@ -6,7 +6,7 @@ import { openModal } from './ui/modal.js';
 
 const BASE = '/api/v1';
 let csrfToken = null;
-const listeners = { unauthorized: new Set(), activity: new Set() };
+const listeners = { unauthorized: new Set(), activity: new Set(), restricted: new Set() };
 
 export class ApiError extends Error {
   constructor(status, code, message, fields) {
@@ -21,6 +21,8 @@ export class NotFoundError extends ApiError { constructor(...a) { super(...a); t
 export class ValidationError extends ApiError { constructor(...a) { super(...a); this.name = 'ValidationError'; } }
 export class ConflictError extends ApiError { constructor(...a) { super(...a); this.name = 'ConflictError'; } }
 export class RateLimitError extends ApiError { constructor(...a) { super(...a); this.name = 'RateLimitError'; } }
+export class LockedError extends ApiError { constructor(...a) { super(...a); this.name = 'LockedError'; } }
+export class RestrictedError extends ApiError { constructor(...a) { super(...a); this.name = 'RestrictedError'; } }
 export class NetworkError extends ApiError { constructor(msg) { super(0, 'NETWORK', msg); this.name = 'NetworkError'; } }
 
 export function setCsrf(token) { csrfToken = token || null; }
@@ -32,7 +34,9 @@ function errorFor(status, body) {
   const args = [status, e.code, e.message, e.fields];
   if (status === 401 && e.code === 'MFA_REQUIRED') return new MfaRequiredError(...args);
   if (status === 401) return new AuthError(...args);
+  if (status === 403 && (e.code === 'MFA_ENROLLMENT_REQUIRED' || e.code === 'PASSWORD_CHANGE_REQUIRED')) return new RestrictedError(...args);
   if (status === 403) return new ForbiddenError(...args);
+  if (status === 423) return new LockedError(...args);
   if (status === 404) return new NotFoundError(...args);
   if (status === 409) return new ConflictError(...args);
   if (status === 429) return new RateLimitError(...args);
@@ -70,6 +74,7 @@ export async function request(method, path, { query, body, auth = true, timeoutM
   if (!res.ok) {
     const err = errorFor(res.status, data);
     if (err instanceof AuthError && auth) emit('unauthorized', err);
+    if (err instanceof RestrictedError) emit('restricted', err);
     throw err;
   }
   if (data && typeof data.csrfToken === 'string') setCsrf(data.csrfToken);
@@ -100,8 +105,13 @@ export function errorMessage(err) {
 }
 
 // ---------------- idle timeout ----------------
-const IDLE_WARN_MS = 13 * 60 * 1000;
-const IDLE_LIMIT_MS = 15 * 60 * 1000;
+let IDLE_LIMIT_MS = 15 * 60 * 1000;
+let IDLE_WARN_MS = IDLE_LIMIT_MS - 2 * 60 * 1000;
+/** Server-reported idle timeout (GET /auth/me → session.idleTimeoutSec); warn 2 minutes before. */
+export function setIdleTimeout(sec) {
+  if (!Number.isFinite(sec) || sec < 180) return;
+  IDLE_LIMIT_MS = sec * 1000; IDLE_WARN_MS = IDLE_LIMIT_MS - 2 * 60 * 1000;
+}
 let lastRequest = Date.now();
 let lastUserActivity = Date.now();
 let idleTimer = null;

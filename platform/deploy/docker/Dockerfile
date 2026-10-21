@@ -10,13 +10,17 @@
 # The tag below pins Node + Alpine *versions*, but a tag is mutable (Docker Official Images are rebuilt
 # for OS security patches). For a reproducible, attestable build (CM-2, CM-14, SR-4) pin by digest too:
 #
-#   docker buildx imagetools inspect node:22.23.4-alpine3.23 --format '{{json .Manifest.Digest}}'
-#   # or: docker pull node:22.23.4-alpine3.23 && docker inspect --format '{{index .RepoDigests 0}}' node:22.23.4-alpine3.23
+#   docker buildx imagetools inspect node:22.23.3-alpine3.24 --format '{{json .Manifest.Digest}}'
+#   # or: docker pull node:22.23.3-alpine3.24 && docker inspect --format '{{index .RepoDigests 0}}' node:22.23.3-alpine3.24
 #
-# then build with  --build-arg NODE_IMAGE=node:22.23.4-alpine3.23@sha256:<digest>
+# then build with  --build-arg NODE_IMAGE=node:22.23.3-alpine3.24@sha256:<digest>
 # (the digest is the multi-arch index digest; Docker selects the right platform manifest).
 # Re-pin on a schedule (e.g. monthly) and record the digest in the release notes / SBOM.
-ARG NODE_IMAGE=node:22.23.4-alpine3.23
+# Digest of the tag below when this file was written (multi-arch index, 2026-09-23 build):
+#   node:22.23.3-alpine3.24@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+# Prefer tags that have been published for >= 2 weeks: freshly pushed tags can be briefly incomplete
+# (no platform manifests yet) and have had no community soak time.
+ARG NODE_IMAGE=node:22.23.3-alpine3.24
 
 FROM ${NODE_IMAGE}
 
@@ -35,7 +39,12 @@ LABEL org.opencontainers.image.title="YOU HEAL Clinical" \
 # openssl: used ONLY by the entrypoint to mint a self-signed certificate on first start when none is mounted.
 # The stock 'node' user (uid 1000) is removed so the only non-root account is our uid 10001.
 # npm/corepack/yarn are deleted: the server has no dependencies and they are pure attack surface.
-RUN set -eux; \
+#
+# Behind a TLS-intercepting egress proxy, supply its CA as a BuildKit secret (never baked into a layer):
+#   docker build --secret id=build_ca,src=/path/proxy-ca.pem --build-arg HTTPS_PROXY=... -f deploy/docker/Dockerfile .
+RUN --mount=type=secret,id=build_ca,required=false \
+    set -eux; \
+    if [ -s /run/secrets/build_ca ]; then export SSL_CERT_FILE=/run/secrets/build_ca; fi; \
     apk upgrade --no-cache; \
     apk add --no-cache tini openssl ca-certificates; \
     deluser --remove-home node 2>/dev/null || true; \

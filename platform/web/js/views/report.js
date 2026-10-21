@@ -1,42 +1,46 @@
-// Clinical report (CONTRACT §8): print-perfect US Letter, running header/footer via @page margin boxes.
+// Clinical report (CONTRACT §8) rendered from GET /sessions/:id/report (schema youheal.report/v1).
+// Print-perfect US Letter; running header/footer via @page margin boxes fed by CSS custom properties.
 import { el, mount } from '../ui/dom.js';
 import { icon, brandMark } from '../ui/icons.js';
 import { api, errorMessage } from '../api.js';
-import { t, locText, locNode, fmtDate, fmtDateTime, ageFrom, getLocale, loc } from '../i18n.js';
-import { loadCore, polarity, can } from '../state.js';
-import { categoryChip, ratingsRow, skeleton, statusBadge, alertBox } from '../ui/components.js';
+import { t, locText, locNode, fmtDate, fmtDateTime, getLocale, loc } from '../i18n.js';
+import { loadCore, polarity, can, state } from '../state.js';
+import { ratingsRow, skeleton, statusBadge, alertBox } from '../ui/components.js';
 import { renderSnapshots } from '../bodymap/host.js';
 import { fullName, errorPanel, methodologyLabel } from './common.js';
 import { toast } from '../ui/toast.js';
 
-const CAT_ORDER = ['virus', 'bacteria', 'fungus', 'parasite', 'prion', 'dysfunctional', 'glandular-dysfunction', 'psychoemotional', 'reservoir', 'complex', 'special', 'temporary'];
-
-function cssString(s) { return `"${String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ')}"`; }
+const CAT_ORDER = ['virus', 'bacteria', 'fungus', 'parasite', 'prion', 'dysfunctional', 'glandular-dysfunction', 'psychoemotional', 'reservoir', 'complex', 'special', 'temporary', 'uncatalogued'];
 const PAGE_VARS = ['--rpt-head-left', '--rpt-head-right', '--rpt-foot-left', '--rpt-page', '--rpt-of'];
+function cssString(s) { return `"${String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ')}"`; }
 
 export async function renderReport({ main, params }) {
   mount(main, el('div.page', skeleton(10)));
   let rep; let core;
   try { [rep, core] = await Promise.all([api.get(`/sessions/${encodeURIComponent(params.id)}/report`), loadCore()]); } catch (err) { mount(main, el('div.page', errorPanel(err, () => renderReport({ main, params })))); return null; }
 
-  const isFinal = rep.status === 'final' || rep.status === 'amended';
-  const org = rep.org || {};
+  const status = String(rep.status || 'DRAFT').toLowerCase(); // draft | final | amended
+  const isFinal = status !== 'draft';
+  const org = rep.org || state.org || {};
   const pt = rep.patient || {};
   const sess = rep.session || {};
+  const pol = { ...polarity(), ...(rep.polarity || {}) };
   const printed = new Date();
-  const hash16 = rep.hash ? rep.hash.slice(0, 16) : null;
-  const statusLabel = t(`report.status.${rep.status}`);
+  const hashFull = rep.hash ? (typeof rep.hash === 'string' ? rep.hash : rep.hash.sha256) : null;
+  const hash16 = rep.hash ? (rep.hash.short || String(hashFull).slice(0, 16)) : null;
+  const integrity = rep.integrity || null; // 'verified' | 'mismatch' | null (drafts)
+  const statusLabel = t(`report.status.${status}`);
+  const reportNo = rep.reportNumber || rep.reportId || '';
 
-  // running header/footer (Chromium @page margin boxes read these variables)
   const rs = document.documentElement.style;
   rs.setProperty('--rpt-head-left', cssString(`${org.name || 'YOU HEAL'} · ${t('report.title')}`));
-  rs.setProperty('--rpt-head-right', cssString(`${fullName(pt)} · ${rep.reportId || ''} · ${statusLabel}`));
-  rs.setProperty('--rpt-foot-left', cssString(`${hash16 ? `${t('report.hash')} ${hash16}` : t('report.notFinalShort')} · ${t('report.printed')} ${fmtDateTime(printed.toISOString())}`));
+  rs.setProperty('--rpt-head-right', cssString(`${pt.fullName || fullName(pt)} · ${reportNo} · ${statusLabel}`));
+  rs.setProperty('--rpt-foot-left', cssString(`${hash16 ? `SHA-256 ${hash16} · ${t(`report.integrity.${integrity || 'none'}`)}` : t('report.notFinalShort')} · ${t('report.printed')} ${fmtDateTime(printed.toISOString())}`));
   rs.setProperty('--rpt-page', cssString(`${t('report.page')} `));
   rs.setProperty('--rpt-of', cssString(` ${t('report.of')} `));
+  rs.setProperty('--rpt-neg', pol.negative); rs.setProperty('--rpt-pos', pol.positive);
   document.body.classList.add('printing-report');
 
-  const age = ageFrom(pt.dob, sess.startedAt ? new Date(sess.startedAt) : new Date());
   const kv = (label, value, cls = '') => el(`div.kv${cls ? '.' + cls : ''}`, el('span.kv-k', label), el('span.kv-v', value || '—'));
 
   // ---------- header ----------
@@ -45,62 +49,71 @@ export async function renderReport({ main, params }) {
     el('div.rpt-org', logo,
       el('div',
         el('p.rpt-org-name', org.name || 'YOU HEAL'),
-        el('p.rpt-org-line', [org.address].filter(Boolean).join('')),
+        org.legalName && org.legalName !== org.name ? el('p.rpt-org-line', org.legalName) : null,
+        org.address ? el('p.rpt-org-line', org.address) : null,
         el('p.rpt-org-line', [org.phone, org.email, org.website].filter(Boolean).join(' · ')),
         org.license ? el('p.rpt-org-line', `${t('report.license')} ${org.license}`) : null)),
     el('div.rpt-title-block',
       el('h1.rpt-title', { tabindex: '-1' }, t('report.title')),
-      el('p.rpt-id', el('span.kv-k', t('report.reportId')), ' ', el('strong.mono', rep.reportId || '—')),
-      el('p', el(`span.rpt-status.is-${rep.status}`, statusLabel), rep.revision > 1 ? el('span.rpt-rev', ` ${t('report.revision', { n: rep.revision })}`) : null)));
+      el('p.rpt-id', el('span.kv-k', t('report.reportId')), ' ', el('strong.mono', reportNo || '—')),
+      el('p', el(`span.rpt-status.is-${status}`, statusLabel), rep.revision > 1 ? el('span.rpt-rev', ` ${t('report.revision', { n: rep.revision })}`) : null)));
 
-  // ---------- patient + session blocks ----------
+  // ---------- patient + session ----------
+  const protocols = (sess.protocols || []).map((p) => locText(p.name) || p.id).filter(Boolean);
   const blocks = el('section.rpt-blocks',
     el('div.rpt-block', el('h2.rpt-block-title', t('report.patient')),
       el('div.kv-grid',
-        kv(t('patient.name'), fullName(pt), 'kv-wide'),
+        kv(t('patient.name'), pt.fullName || fullName(pt), 'kv-wide'),
         kv(t('patient.dob'), fmtDate(pt.dob)),
-        kv(t('report.age'), age !== null ? t('patient.ageYears', { age }) : '—'),
+        kv(t('report.age'), pt.age !== null && pt.age !== undefined ? t('patient.ageYears', { age: pt.age }) : '—'),
         kv(t('patient.sex'), pt.sex ? t(`sex.${pt.sex}`) : '—'),
         kv(t('patient.mrn'), pt.mrn))),
     el('div.rpt-block', el('h2.rpt-block-title', t('report.session')),
       el('div.kv-grid',
-        kv(t('report.dateTime'), fmtDateTime(sess.startedAt), 'kv-wide'),
+        kv(t('report.dateTime'), fmtDateTime(sess.date || sess.startedAt), 'kv-wide'),
         kv(t('session.methodology'), methodologyLabel(sess.methodology)),
         kv(t('report.practitioner'), rep.practitioner?.name),
-        kv(t('report.protocols'), (sess.protocols || []).map((p) => locText(p.name)).join(', ') || t('report.freeScan'), 'kv-wide'),
+        kv(t('report.protocols'), protocols.join(', ') || t('report.freeScan'), 'kv-wide'),
         sess.chiefComplaint ? kv(t('session.chiefComplaint'), sess.chiefComplaint, 'kv-wide') : null)));
 
   // ---------- results table grouped by category ----------
   const findings = rep.findings || [];
-  const groups = new Map();
-  for (const f of findings) { const c = f.pair?.category || 'other'; if (!groups.has(c)) groups.set(c, []); groups.get(c).push(f); }
-  const cats = [...groups.keys()].sort((a, b) => (CAT_ORDER.indexOf(a) + 99) % 199 - (CAT_ORDER.indexOf(b) + 99) % 199);
+  const bySeq = new Map(findings.map((f) => [f.seq, f]));
+  let groups = (rep.groups || []).map((g) => ({ category: g.category, items: g.seqs.map((n) => bySeq.get(n)).filter(Boolean) }));
+  if (!groups.length && findings.length) {
+    const m = new Map(); for (const f of findings) { const c = f.category || 'uncatalogued'; if (!m.has(c)) m.set(c, []); m.get(c).push(f); }
+    groups = [...m.entries()].map(([category, its]) => ({ category, items: its }));
+  }
+  groups.sort((a, b) => (CAT_ORDER.indexOf(a.category) + 99) % 199 - (CAT_ORDER.indexOf(b.category) + 99) % 199);
   const sideTxt = (s) => (s && s !== 'C' ? ` (${t(`side.${s}short`)})` : '');
-  const ptName = (p) => (p ? locText(p.name) : '—');
+  const qualTxt = (q) => (q && q.length ? ` ${q.map((x) => t(`qualifier.${x}short`)).join('/')}` : '');
+  const endTxt = (e) => `${locText(e?.name) || e?.point || '—'}${sideTxt(e?.side)}${qualTxt(e?.qualifiers)}`;
+  const totals = rep.totals || { findings: findings.length, byStatus: {} };
   const results = el('section.rpt-section.rpt-results',
-    el('h2.rpt-h2', t('report.results'), el('span.rpt-h2-meta', t('report.resultsCount', { count: findings.length }))),
+    el('h2.rpt-h2', t('report.results'), el('span.rpt-h2-meta', [t('report.resultsCount', { count: totals.findings ?? findings.length }),
+      ...['found', 'impacted', 'cleared'].map((k) => (totals.byStatus && totals.byStatus[k] ? `${t(`state.${k}`)} ${totals.byStatus[k]}` : null))].filter(Boolean).join(' · '))),
     findings.length ? el('table.rpt-table',
       el('caption.sr-only', t('report.results')),
       el('thead', el('tr',
         el('th.num', { scope: 'col' }, '#'),
         el('th', { scope: 'col' }, t('report.colPair')),
-        el('th', { scope: 'col' }, el('span.th-pole', el('span.mag.mag-neg.mag-xs', '−'), t('report.colTracking'))),
-        el('th', { scope: 'col' }, el('span.th-pole', el('span.mag.mag-pos.mag-xs', '+'), t('report.colImpact'))),
+        el('th', { scope: 'col' }, el('span.th-pole', el('span.mag.mag-neg.mag-xs.rpt-mag', '−'), t('report.colTracking'))),
+        el('th', { scope: 'col' }, el('span.th-pole', el('span.mag.mag-pos.mag-xs.rpt-mag', '+'), t('report.colImpact'))),
         el('th', { scope: 'col' }, t('pair.relatedTo')),
         el('th', { scope: 'col' }, 'F/P/R'),
         el('th', { scope: 'col' }, t('session.status')),
         el('th.num', { scope: 'col' }, t('report.colDwell')))),
-      cats.map((c) => el('tbody.rpt-group',
-        el('tr.rpt-group-row', el('th', { colspan: 8, scope: 'colgroup' }, c === 'other' ? t('report.uncategorized') : t(`category.${c}`), el('span.rpt-group-n', ` · ${groups.get(c).length}`))),
-        groups.get(c).map((f) => el('tr',
-          el('td.num', String(f.n)),
-          el('td', el('span.rpt-pair', f.pair ? el('span.rpt-pairnum', `PB ${f.pair.number}`) : null, f.pair ? locNode(f.pair.name) : `${ptName(f.trackingPoint)} – ${ptName(f.impactPoint)}`),
-            (f.phenomena || []).length || (f.qualifiers || []).length ? el('span.rpt-flags', [...(f.qualifiers || []).map((q) => t(`qualifier.${q}`)), ...(f.phenomena || []).map((p) => t(`phenomena.${p}`))].map((x) => el('span.rpt-flag', x))) : null,
+      groups.map((g) => el('tbody.rpt-group',
+        el('tr.rpt-group-row', el('th', { colspan: 8, scope: 'colgroup' }, g.category === 'uncatalogued' ? t('report.uncategorized') : t(`category.${g.category}`), el('span.rpt-group-n', ` · ${g.items.length}`))),
+        g.items.map((f) => el('tr',
+          el('td.num', String(f.seq ?? '')),
+          el('td', el('span.rpt-pair', f.pair && f.pair.number ? el('span.rpt-pairnum', `PB ${f.pair.number}`) : null, f.pair ? locNode(f.pair.name) : `${locText(f.tracking?.name)} – ${locText(f.impact?.name)}`),
+            (f.phenomena || []).length ? el('span.rpt-flags', f.phenomena.map((p) => el('span.rpt-flag', t(`phenomena.${p}`)))) : null,
             f.notes ? el('span.rpt-note', f.notes) : null),
-          el('td', ptName(f.trackingPoint), sideTxt(f.trackingSide)),
-          el('td', ptName(f.impactPoint), sideTxt(f.impactSide)),
-          el('td.rpt-rel', (f.pair?.relations || []).map((r) => `${locText(r.entity?.name || r.name)}${r.ordinal ? ` (${r.ordinal})` : ''}`).join(', ') || '—'),
-          el('td', f.pair ? ratingsRow(f.pair.ratings) : '—'),
+          el('td', endTxt(f.tracking)),
+          el('td', endTxt(f.impact)),
+          el('td.rpt-rel', (f.relatedTo || []).map((r) => `${locText(r.name) || r.entity}${r.ordinal ? ` (${r.ordinal})` : ''}`).join(', ') || '—'),
+          el('td', f.ratings && (f.ratings.F || f.ratings.P || f.ratings.R) ? ratingsRow(f.ratings) : '—'),
           el('td', el(`span.rpt-state.state-${f.status}`, t(`state.${f.status}`))),
           el('td.num', f.dwellMinutes ? t('report.min', { n: f.dwellMinutes }) : '—')))))) : el('p.rpt-empty', t('report.noFindings')),
     el('p.rpt-legend', t('report.legend')));
@@ -114,72 +127,83 @@ export async function renderReport({ main, params }) {
       el('figure.rpt-map', front, el('figcaption', t('viewer.views.anterior'))),
       el('figure.rpt-map', back, el('figcaption', t('viewer.views.posterior'))),
       el('div.rpt-map-key',
-        el('p', el('span.mag.mag-neg', '−'), ' ', t('polarity.trackingNeg')),
-        el('p', el('span.mag.mag-pos', '+'), ' ', t('polarity.impactPos')),
+        el('p', el('span.mag.mag-neg.rpt-mag', '−'), ' ', t('polarity.trackingNeg')),
+        el('p', el('span.mag.mag-pos.rpt-mag', '+'), ' ', t('polarity.impactPos')),
         el('p.muted', t('report.mapKey')))));
 
-  // ---------- symptoms / recommendations / follow-up ----------
-  const syms = rep.symptoms || [];
+  // ---------- symptoms / follow-up / recommendations ----------
+  const syms = sess.symptoms || rep.symptoms || [];
   const symptoms = el('section.rpt-section.rpt-keep',
     el('h2.rpt-h2', t('report.symptoms')),
-    syms.length || rep.symptomsText ? el('div',
-      syms.length ? el('ul.rpt-sym', syms.map((s) => el('li', locNode(s.name), el('span.muted', ` · ${t(`system.${s.system}`)}`)))) : null,
-      rep.symptomsText ? el('p.rpt-free', rep.symptomsText) : null) : el('p.muted', t('report.noSymptoms')));
-  const pairRecs = (rep.recommendations && rep.recommendations.pairs) || [];
+    syms.length ? el('ul.rpt-sym', syms.map((s) => el('li', s.name ? locNode(s.name) : s.id, s.system ? el('span.muted', ` · ${t(`system.${s.system}`)}`) : null))) : el('p.muted', t('report.noSymptoms')));
+  const fu = rep.followUp || {};
+  const follow = el('section.rpt-section.rpt-keep.rpt-follow',
+    el('h2.rpt-h2', t('report.followUp')),
+    fu.date ? el('p', el('strong', fmtDate(fu.date, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }))) : el('p.muted', '—'),
+    el('p.small', fu.note ? locText(fu.note) : t('report.followUpNote')));
+  const pairRecs = (rep.recommendations && (rep.recommendations.pairSpecific || rep.recommendations.pairs)) || [];
   const genRecs = (rep.recommendations && rep.recommendations.general) || [];
   const recommendations = el('section.rpt-section',
     el('h2.rpt-h2', t('report.recommendations')),
-    pairRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.pairSpecific')), el('ul', pairRecs.map((r) => el('li', el('strong', `${locText(r.pairName)}: `), locNode(r.text))))) : null,
-    genRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.general')), el('ul', genRecs.map((r) => el('li', el('strong', `${locText(r.title)}: `), locNode(r.body))))) : null);
-  const follow = el('section.rpt-section.rpt-keep.rpt-follow',
-    el('h2.rpt-h2', t('report.followUp')),
-    el('p', el('strong', fmtDate(rep.followUpDate, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })), ' — ', t('report.followUpNote')));
+    pairRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.pairSpecific')), el('ul', pairRecs.flatMap((r) => (r.items || [r.text]).map((txt) => el('li', el('strong', `${r.number ? `PB ${r.number} ` : ''}${locText(r.name || r.pairName)}: `), locNode(txt)))))) : null,
+    genRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.general')), el('ul', genRecs.map((r) => el('li', el('strong', `${locText(r.title)}: `), locNode(r.body))))) : null,
+    !pairRecs.length && !genRecs.length ? el('p.muted', '—') : null);
 
-  // ---------- signature / attestation ----------
-  const sig = rep.signature;
+  // ---------- attestation ----------
+  const att = rep.attestation;
   const signature = el('section.rpt-section.rpt-keep.rpt-sign',
     el('h2.rpt-h2', t('report.attestation')),
-    el('p', t('report.attestationText')),
+    el('p', att && att.statement ? locText(att.statement) : t('report.attestationText')),
     el('div.rpt-sign-row',
-      el('div.rpt-sign-box', el('p.rpt-sign-name', sig ? sig.name : ' '), el('p.rpt-sign-line', t('report.signature'))),
-      el('div.rpt-sign-box', el('p.rpt-sign-name', sig ? fmtDateTime(sig.signedAt) : ' '), el('p.rpt-sign-line', t('report.signedOn')))),
-    sig ? el('p.muted.small', t('report.esigned', { name: sig.name, date: fmtDateTime(sig.signedAt) })) : el('p.rpt-unsigned', t('report.unsigned')),
-    rep.amendReason ? el('p.small', el('strong', `${t('report.amendReason')}: `), rep.amendReason) : null);
+      el('div.rpt-sign-box', el('p.rpt-sign-name', att ? att.signatureName : ' '), el('p.rpt-sign-line', t('report.signature'))),
+      el('div.rpt-sign-box', el('p.rpt-sign-name.rpt-sign-date', att ? fmtDateTime(att.finalizedAt) : ' '), el('p.rpt-sign-line', t('report.signedOn')))),
+    att ? el('p.muted.small', t('report.esigned', { name: att.finalizedBy?.name || att.signatureName, date: fmtDateTime(att.finalizedAt) })) : el('p.rpt-unsigned', t('report.unsigned')),
+    rep.amendment ? el('p.small', el('strong', `${t('report.amendReason')}: `), rep.amendment.reason || '—', rep.amendment.parentSha256 ? el('span.muted', ` · ${t('report.supersedes', { rev: rep.amendment.parentRevision, hash: String(rep.amendment.parentSha256).slice(0, 16) })}`) : null) : null);
 
-  const disclaimerText = loc(rep.disclaimer || {}).text || t('report.disclaimer');
-  const disclaimer = el('section.rpt-disclaimer.rpt-keep', el('p.rpt-disc-title', t('report.scopeTitle')), el('p', t('report.disclaimer')),
-    getLocale() !== 'en' && rep.disclaimer && disclaimerText !== t('report.disclaimer') ? el('p.muted.small', disclaimerText) : null);
+  const discText = (rep.disclaimer && rep.disclaimer[getLocale()]) || t('report.disclaimer');
+  const disclaimer = el('section.rpt-disclaimer.rpt-keep', el('p.rpt-disc-title', t('report.scopeTitle')), el('p', discText),
+    rep.terminology ? el('p.small.muted', locText(rep.terminology)) : null);
+  const sources = (rep.catalog && rep.catalog.sources) || [];
+  const integrityEl = el(`span.rpt-integrity.is-${integrity || 'none'}`, icon(integrity === 'verified' ? 'shield' : integrity === 'mismatch' ? 'alert' : 'info', { size: 12 }), t(`report.integrity.${integrity || 'none'}`));
   const footer = el('footer.rpt-footer',
     el('span', org.reportFooter || `${org.name || 'YOU HEAL'}${org.phone ? ' · ' + org.phone : ''}`),
-    el('span.mono', hash16 ? `${t('report.hash')} ${hash16}` : t('report.notFinalShort')),
-    el('span', `${t('report.printed')} ${fmtDateTime(printed.toISOString())}`));
+    el('span.mono', hash16 ? `SHA-256 ${hash16}` : t('report.notFinalShort'), ' ', integrityEl),
+    el('span', `${t('report.printed')} ${fmtDateTime(printed.toISOString())}`),
+    sources.length ? el('span.rpt-sources', `${t('report.catalogSources')}: ${sources.map((s) => s.title + (s.notice ? ` (${s.notice})` : '')).join('; ')}${rep.catalog.version ? ` · ${t('report.catalogVersion')} ${rep.catalog.version}` : ''}`) : null);
 
   const watermark = !isFinal ? el('div.rpt-watermark', { aria: { hidden: 'true' } }, t('report.watermark')) : null;
+  const superseded = rep.supersededBy ? el('div.rpt-superseded', icon('alert', { size: 16 }), el('span', t('report.supersededBanner')), ' ', el('a.no-print', { href: `#/sessions/${rep.supersededBy}/report` }, t('report.openLatest'))) : null;
   const paper = el('article.report', { aria: { label: t('report.title') } }, watermark,
+    superseded,
     !isFinal ? el('div.rpt-draft-banner', icon('alert', { size: 16 }), t('report.draftBanner')) : null,
+    integrity === 'mismatch' ? el('div.rpt-superseded.is-danger', icon('alert', { size: 16 }), t('report.integrityMismatch')) : null,
     header, blocks, results, maps,
     el('div.rpt-two', symptoms, follow),
     recommendations, signature, disclaimer, footer);
+  paper.style.setProperty('--pol-neg', pol.negative);
+  paper.style.setProperty('--pol-pos', pol.positive);
 
+  const back2 = status === 'draft' && can.clinical() ? `#/sessions/${params.id}` : pt.id && can.patients() ? `#/patients/${pt.id}/reports` : '#/settings/audit';
   const toolbar = el('div.report-toolbar.no-print',
-    el('a.btn.btn-ghost', { href: rep.status === 'draft' ? `#/sessions/${params.id}` : `#/patients/${pt.id}/reports` }, icon('arrowLeft', { size: 18 }), t('common.back')),
-    el('div.report-toolbar-mid', statusBadge(rep.status), hash16 ? el('span.mono.muted.small', `SHA-256 ${hash16}…`) : null),
+    el('a.btn.btn-ghost', { href: back2 }, icon('arrowLeft', { size: 18 }), t('common.back')),
+    el('div.report-toolbar-mid', statusBadge(status), hash16 ? el('span.mono.muted.small', `SHA-256 ${hash16}…`) : null, integrity ? el(`span.integrity-pill.is-${integrity}`, icon(integrity === 'verified' ? 'shield' : 'alert', { size: 14 }), t(`report.integrity.${integrity}`)) : null),
     el('button.btn.btn-primary', { type: 'button', onClick: () => window.print() }, icon('print', { size: 18 }), t('report.print')));
   mount(main, el('div.page.page-report', toolbar,
     !isFinal ? alertBox({ tone: 'warn', ic: 'alert', title: t('report.draftTitle'), children: [el('p', t('report.draftBody'))] }) : null,
     el('div.paper-wrap', paper)));
 
-  // ---------- body map images ----------
+  // ---------- body map images: stored → else render live (and store while still a draft) ----------
   (async () => {
-    let imgs = rep.images && rep.images.front && rep.images.back ? rep.images : null;
+    const stored = (rep.bodyMap && rep.bodyMap.images) || rep.images || {};
+    let imgs = stored.front && stored.back ? stored : null;
     if (!imgs) {
-      const magnets = findings.flatMap((f) => [
-        { id: `${f.id}-n`, pointId: f.trackingPoint?.id || f.trackingPoint, side: f.trackingSide, polarity: 'negative', label: String(f.n) },
-        { id: `${f.id}-p`, pointId: f.impactPoint?.id || f.impactPoint, side: f.impactSide, polarity: 'positive', label: String(f.n) }]);
-      const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: polarity(), locale: getLocale(), magnets, width: 800, height: 1100 });
+      const magnets = (rep.bodyMap && rep.bodyMap.magnets) || findings.flatMap((f) => [
+        { id: `${f.seq}-n`, pointId: f.tracking.point, side: f.tracking.side, polarity: 'negative', label: String(f.seq) },
+        { id: `${f.seq}-p`, pointId: f.impact.point, side: f.impact.side, polarity: 'positive', label: String(f.seq) }]);
+      const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: pol, locale: getLocale(), magnets, width: 800, height: 1100 });
       if (snaps && snaps.anterior && snaps.posterior) {
         imgs = { front: snaps.anterior, back: snaps.posterior };
-        if (can.findings()) api.put(`/sessions/${encodeURIComponent(params.id)}/report/images`, imgs).catch((err) => toast(`${t('report.imagesNotSaved')} ${errorMessage(err)}`, { tone: 'warn' }));
+        if (status === 'draft' && can.findings()) api.put(`/sessions/${encodeURIComponent(params.id)}/report/images`, imgs).catch((err) => toast(`${t('report.imagesNotSaved')} ${errorMessage(err)}`, { tone: 'warn' }));
       }
     }
     if (!paper.isConnected) return;
@@ -188,6 +212,6 @@ export async function renderReport({ main, params }) {
     paper.dataset.ready = 'true';
   })();
 
-  void categoryChip; void core;
-  return () => { for (const v of PAGE_VARS) rs.removeProperty(v); document.body.classList.remove('printing-report'); };
+  void loc;
+  return () => { for (const v of [...PAGE_VARS, '--rpt-neg', '--rpt-pos']) rs.removeProperty(v); document.body.classList.remove('printing-report'); };
 }

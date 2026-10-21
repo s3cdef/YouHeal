@@ -196,10 +196,11 @@ if is_true "${YH_AUTO_MIGRATE:-1}"; then run_script migrate; else log "skipping 
 
 STEP="catalog"
 if is_true "${YH_AUTO_CATALOG:-1}"; then
-  if [ -d "${APP_DIR}/data/catalog" ] && [ -n "$(ls -A "${APP_DIR}/data/catalog" 2>/dev/null)" ]; then
+  _cat="${YH_CATALOG_DIR:-${APP_DIR}/data/catalog}"
+  if [ -f "${_cat}/points.json" ] || [ -f "${_cat}/manifest.json" ]; then
     run_script catalog:load
   else
-    log "WARNING: ${APP_DIR}/data/catalog is empty; catalog load skipped."
+    log "WARNING: no catalog JSON in ${_cat} (points.json/manifest.json); catalog load skipped."
   fi
 else
   log "skipping catalog load (YH_AUTO_CATALOG=0)"

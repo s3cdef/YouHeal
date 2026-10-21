@@ -101,7 +101,8 @@ rollback() {
     chown -R "${SVC_USER}:${SVC_GROUP}" "${DATA_DIR}/db" "${DATA_DIR}/keys"
   fi
   service_ctl start || true
-  if health_check "${STATE_NODE_BIN}" "${ENV_FILE}" "${HEALTH_RETRIES}"; then warn "rolled back; service is healthy on the previous data"
+  if [ "${INIT_SYSTEM}" = none ]; then warn "rolled back; no init system — start the service manually"
+  elif health_check "${STATE_NODE_BIN}" "${ENV_FILE}" "${HEALTH_RETRIES}"; then warn "rolled back; service is healthy on the previous data"
   else err "rollback finished but the service is NOT healthy — see docs/OPERATIONS.md §7"; fi
 }
 on_exit_hook() { if [ "$1" -ne 0 ]; then rollback; fi; }
@@ -132,7 +133,9 @@ STAGED="${DATA_DIR}/backups/.restore-$(basename -- "${IN_FILE}")"
 run cp -- "${IN_FILE}" "${STAGED}"
 run chown "${SVC_USER}:${SVC_GROUP}" "${STAGED}"
 log "running application restore"
-node_script "${STATE_NODE_BIN}" "${SVC_USER}" "${ENV_FILE}" "${APP_DIR}" restore --in "${STAGED}" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}
+# Backend contract: `npm run restore -- <file.yhbak> --yes` (verifies the GCM tag + SQLite integrity before
+# replacing the DB, refuses while the server pid file is live, and keeps its own .pre-restore copy).
+node_script "${STATE_NODE_BIN}" "${SVC_USER}" "${ENV_FILE}" "${APP_DIR}" restore "${STAGED}" --yes ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}
 run rm -f -- "${STAGED}"
 
 log "applying migrations (backup may predate the installed release)"

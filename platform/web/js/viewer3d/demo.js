@@ -95,8 +95,8 @@ async function mount() {
     viewer.setPairs(protocolPairs());
   }
   if (qs.get('highlight')) viewer.highlight(qs.get('highlight').split(','), { pulse: true });
-  viewer.setView(state.view);
   const cam = qs.get('cam') ? qs.get('cam').split(',').map(Number) : qs.get('zoom') === 'legs-back' ? [0, 0.68, -2.15, 0, 0.62, 0] : null;
+  if (!cam) viewer.setView(state.view);
   if (cam && viewer._debug) {
     const { camera, controls } = viewer._debug;
     setTimeout(() => {

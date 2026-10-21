@@ -8,7 +8,7 @@ import { state } from '../state.js';
 import { field, input, alertBox, setLoading } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { qrSvg } from '../ui/qr.js';
-import { afterLogin, goAfterLogin, takeNotice, signOut } from '../app.js';
+import { afterLogin, goAfterLogin, takeNotice, signOut, refreshMe } from '../app.js';
 
 function authCard({ title, sub, children, steps = null }) {
   return el('section.auth-card',
@@ -123,7 +123,7 @@ export async function renderSetup({ main }) {
           await api.post('/setup', { org: { name: data.orgName }, admin: { email: data.email, name: data.name, password: data.password } }, { auth: false });
           step = 2; draw();
         } catch (err) {
-          if (!applyFieldErrors(err, { email: fEmail, password: fPw, name: fName })) errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] }));
+          if (!applyFieldErrors(err, { email: fEmail, password: fPw, name: fName, 'admin.email': fEmail, 'admin.password': fPw, 'admin.name': fName })) errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] }));
         } finally { setLoading(submit, false); }
       });
       mount(main, authCard({ title: t('setup.adminTitle'), sub: t('setup.adminSub', { org: data.orgName }), steps, children: [form] }));
@@ -168,7 +168,7 @@ export async function renderLogin({ main, query }) {
       } catch (err) {
         if (err instanceof MfaRequiredError) { totpStep(); return; }
         creds = null;
-        errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', err.status === 401 ? t('auth.invalid') : errorMessage(err))] }));
+        errBox.replaceChildren(alertBox({ tone: 'danger', title: err.status === 423 ? t('auth.lockedTitle') : null, children: [el('p', err.status === 401 ? t('auth.invalid') : errorMessage(err))] }));
         pw.input.value = ''; pw.input.focus();
       } finally { if (submit.isConnected) setLoading(submit, false); }
     });
@@ -279,7 +279,7 @@ export async function renderMfaEnroll({ main }) {
     const ack = el('input', { type: 'checkbox', id: 'ack-codes' });
     const cont = el('button.btn.btn-primary.btn-lg.btn-block', { type: 'button', disabled: true }, t('common.continue'));
     ack.addEventListener('change', () => { cont.disabled = !ack.checked; });
-    cont.addEventListener('click', () => { goAfterLogin(); });
+    cont.addEventListener('click', async () => { await refreshMe().catch(() => {}); goAfterLogin(); });
     const list = el('ol.recovery-codes', codes.map((c) => el('li', el('code', c))));
     const copy = el('button.btn.btn-secondary', { type: 'button' }, icon('copy', { size: 18 }), t('mfa.copyCodes'));
     copy.addEventListener('click', async () => {
@@ -305,5 +305,39 @@ export async function renderMfaEnroll({ main }) {
     ));
     main.querySelector('h1').focus();
   }
+  return null;
+}
+
+// ---------------- Forced password change (admin-created users) ----------------
+export async function renderPasswordChange({ main }) {
+  const cur = passwordInput({ autocomplete: 'current-password' });
+  const next = passwordInput();
+  const conf = passwordInput();
+  const fCur = field({ label: t('settings.currentPassword'), input: cur.input, control: cur, hint: t('auth.tempPasswordHint'), required: true });
+  const fNext = field({ label: t('settings.newPassword'), input: next.input, control: next, hint: t('auth.pw.hint'), required: true });
+  const fConf = field({ label: t('auth.confirmPassword'), input: conf.input, control: conf, required: true });
+  bindPwField(next, fNext, null);
+  const errBox = el('div.form-error-slot', { aria: { live: 'assertive' } });
+  const submit = el('button.btn.btn-primary.btn-lg.btn-block', { type: 'submit' }, t('settings.changePassword'));
+  const form = el('form.form', { novalidate: true }, fCur, fNext, fConf, errBox, el('div.form-actions', submit));
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); [fCur, fNext, fConf].forEach((f) => f.setError(null)); errBox.textContent = '';
+    if (!cur.input.value) { fCur.setError(t('validation.required')); cur.input.focus(); return; }
+    const probs = passwordProblems(next.input.value, state.user ? state.user.email : '');
+    if (probs.length) { fNext.setError(probs.join(' ')); next.input.focus(); return; }
+    if (next.input.value !== conf.input.value) { fConf.setError(t('validation.passwordMismatch')); conf.input.focus(); return; }
+    setLoading(submit, true);
+    try {
+      await api.post('/auth/password', { current: cur.input.value, next: next.input.value });
+      toast(t('settings.passwordChanged'), { tone: 'success' });
+      await refreshMe().catch(() => {});
+      goAfterLogin();
+    } catch (err) {
+      if (!applyFieldErrors(err, { current: fCur, next: fNext })) errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] }));
+    } finally { if (submit.isConnected) setLoading(submit, false); }
+  });
+  mount(main, authCard({ title: t('auth.changeTitle'), sub: t('auth.changeSub', { name: (state.user && state.user.name) || '' }),
+    children: [el('div.auth-badge', icon('lock', { size: 28 })), form, el('p.auth-foot', el('button.link-btn', { type: 'button', onClick: () => signOut() }, t('auth.signOut')))] }));
+  cur.input.focus();
   return null;
 }

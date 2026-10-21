@@ -95,7 +95,7 @@ try {
     $staged = Join-Path $DataDir ('backups\.restore-' + (Split-Path -Leaf $InputFile))
     Invoke-YHStep "stage $InputFile -> $staged" { Copy-Item -LiteralPath $InputFile -Destination $staged -Force }
     Write-YHLog 'running application restore'
-    Invoke-YHNodeScript -NodeExe $state.NodeExe -AppDir $state.AppDir -EnvFile $envFile -Name 'restore' -Arguments (@('--in', $staged) + $RestoreArguments)
+    Invoke-YHNodeScript -NodeExe $state.NodeExe -AppDir $state.AppDir -EnvFile $envFile -Name 'restore' -Arguments (@($staged, '--yes') + $RestoreArguments)
     Invoke-YHStep "remove staged copy" { Remove-Item -LiteralPath $staged -Force }
     Write-YHLog 'applying migrations (backup may predate the installed release)'
     Invoke-YHNodeScript -NodeExe $state.NodeExe -AppDir $state.AppDir -EnvFile $envFile -Name 'migrate'

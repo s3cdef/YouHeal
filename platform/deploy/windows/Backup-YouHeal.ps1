@@ -106,6 +106,8 @@ try {
         Set-Content -LiteralPath "$file.sha256" -Encoding ASCII -Value ('{0}  {1}' -f $sum.ToLowerInvariant(), (Split-Path -Leaf $file))
         Write-YHLog ("backup written: {0} ({1:N0} bytes, sha256 {2})" -f $file, (Get-Item -LiteralPath $file).Length, $sum) -Level OK
     }
+    Write-YHLog 'verifying backup (GCM authentication tag) with the application'
+    Invoke-YHNodeScript -NodeExe $state.NodeExe -AppDir $state.AppDir -EnvFile $envFile -Name 'backup' -Arguments @('--verify', $file)
 
     if ($CopyTo) {
         Invoke-YHStep "copy to $CopyTo" {

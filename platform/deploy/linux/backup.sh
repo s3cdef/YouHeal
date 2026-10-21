@@ -143,6 +143,9 @@ if [ "${DRY_RUN}" = 0 ]; then
   chown "${STATE_SERVICE_USER}" "${FILE}" "${FILE}.sha256"; chmod 0600 "${FILE}" "${FILE}.sha256"
   ok "backup written: ${FILE} ($(wc -c <"${FILE}" | tr -d ' ') bytes, sha256 ${SUM})"
 fi
+log "verifying backup (GCM authentication tag) with the application"
+node_script "${STATE_NODE_BIN}" "${STATE_SERVICE_USER}" "${ENV_FILE}" "${APP_DIR}" backup --verify "${FILE}"
+ok "backup verified"
 
 if [ -n "${COPY_TO}" ]; then
   run mkdir -p "${COPY_TO}"; run chmod 0700 "${COPY_TO}"

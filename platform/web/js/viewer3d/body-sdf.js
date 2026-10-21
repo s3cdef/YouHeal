@@ -312,8 +312,8 @@ export function buildBody(opts = {}) {
     T(0.825, 0.070 * hp, 0.055, 0.065, -0.014),
     T(0.860, 0.125 * hp, 0.078, 0.090, -0.016),
     T(0.910, 0.150 * hp, 0.088, 0.098, -0.015),
-    T(0.970, 0.148 * hp, 0.090, 0.090, -0.010),
-    T(1.025, 0.144 * (hp + wa) / 2, 0.090, 0.082, -0.002),
+    T(0.970, 0.145 * hp, 0.090, 0.090, -0.010),
+    T(1.025, 0.143 * (hp + wa) / 2, 0.090, 0.082, -0.002),
     T(1.075, 0.142 * wa, 0.089, 0.078, 0.003),
     T(1.130, 0.145 * wa, 0.094, 0.082, 0.005),
     T(1.200, 0.151 * (wa + sh) / 2, 0.102, 0.090, 0.005),
@@ -333,8 +333,8 @@ export function buildBody(opts = {}) {
   U(ellipsoid([0.118 * sh, 1.220, -0.035], [0.040, 0.110, 0.060], [0, 0, 0.15]), 0.05); // latissimus
   U(ellipsoid([0.082 * sh, 1.300, -0.060], [0.060, 0.090, 0.040], [0, 0, 0.18]), 0.05); // scapula
   U(ellipsoid([0.060, 1.120, -0.050], [0.045, 0.090, 0.035]), 0.05);               // erector spinae
-  U(ellipsoid([0.068 * hp, 0.872, -0.058], [0.078 * P.glute, 0.086, 0.068 * P.glute], [0.1, 0, 0.1]), 0.05); // gluteus maximus
-  U(ellipsoid([0.112 * hp, 0.920, -0.020], [0.046, 0.072, 0.062]), 0.05);         // gluteus medius / hip
+  U(ellipsoid([0.068 * hp, 0.866, -0.058], [0.078 * P.glute, 0.086, 0.065 * P.glute], [0.1, 0, 0.1]), 0.05); // gluteus maximus
+  U(ellipsoid([0.108 * hp, 0.905, -0.020], [0.048, 0.075, 0.062]), 0.06);         // gluteus medius / hip
   S(roundCone([0, 1.005, -0.112], [0, 1.395, -0.120], 0.012, 0.012), 0.03);       // spinal groove
 
   // ---------------- neck & shoulder girdle ---------------------------------
@@ -370,30 +370,30 @@ export function buildBody(opts = {}) {
     [0.00, 0.026, 0.018, 0.019],
     [0.15, 0.031, 0.019, 0.018],
     [0.35, 0.036, 0.018, 0.016],
-    [uK - 0.06, 0.040, 0.016, 0.014],
-    [uK, 0.039, 0.013, 0.012],
-    [uK + 0.06, 0.038, 0.012, 0.011],
+    [uK - 0.06, 0.040, 0.0155, 0.014],
+    [uK, 0.039, 0.0140, 0.0125],
+    [uK + 0.06, 0.038, 0.0125, 0.011],
     [0.76, 0.034, 0.010, 0.009],
     [0.90, 0.027, 0.009, 0.008],
     [0.96, 0.020, 0.0075, 0.007],
     [1.00, 0.006, 0.003, 0.003],
   ]), 0.012);
   const sideOut = norm3(cross3([0, 0, 1], handDir)); // lateral (away from the torso) for the left hand
-  const thumbBase = add3(add3(add3(wrist, handDir, 0.024), sideOut, 0.019), [0, 0, 1], 0.008);
-  const thumbDir = norm3(add3(add3(handDir, sideOut, 0.40), [0, 0, 1], 0.45));
+  const thumbBase = add3(add3(add3(wrist, handDir, 0.024), sideOut, 0.021), [0, 0, 1], 0.005);
+  const thumbDir = norm3(add3(add3(handDir, sideOut, 0.32), [0, 0, 1], 0.30));
   U(ellipsoid(add3(add3(add3(wrist, handDir, 0.036), sideOut, 0.013), [0, 0, 1], 0.008), [0.015, 0.026, 0.011], [0, 0, 0.40]), 0.012); // thenar
   U(roundCone(thumbBase, add3(thumbBase, thumbDir, 0.034), 0.0125, 0.010), 0.01);
   U(roundCone(add3(thumbBase, thumbDir, 0.034), add3(thumbBase, thumbDir, 0.058), 0.010, 0.0082), 0.004);
 
   // leg: hip → knee → ankle
-  const legA = [hipJ[0] - 0.006, 0.975, hipJ[2] - 0.002], legB = [ankle[0], ankle[1] - 0.02, ankle[2]];
+  const legA = [hipJ[0] - 0.006, 0.99, hipJ[2] - 0.002], legB = [ankle[0], ankle[1] - 0.02, ankle[2]];
   const uKn = chainU(legA, legB, knee);
   const uCalf = chainU(legA, legB, [knee[0], 0.36, 0]);
   U(chainLoft([legA, knee, legB], [0, 0, 1], [
-    [0.00, 0.060 * lm, 0.060 * lm, 0.060 * lm, 0, 0.020],
-    [0.04, 0.088 * lm, 0.082 * lm, 0.088 * lm, 0, 0.010],
-    [0.08, 0.093 * lm, 0.087 * lm, 0.090 * lm, 0, 0.008],
-    [0.20, 0.086 * lm, 0.083 * lm, 0.081 * lm, 0.004, 0.005],
+    [0.00, 0.035 * lm, 0.035 * lm, 0.035 * lm, 0, 0.030],
+    [0.06, 0.068 * lm, 0.068 * lm, 0.072 * lm, 0, 0.016],
+    [0.13, 0.088 * lm, 0.087 * lm, 0.090 * lm, 0, 0.010],
+    [0.20, 0.084 * lm, 0.083 * lm, 0.081 * lm, 0.004, 0.006],
     [0.34, 0.073 * lm, 0.073 * lm, 0.068 * lm, 0.004, 0.002],
     [uKn - 0.08, 0.057 * lm, 0.059 * lm, 0.054 * lm],
     [uKn - 0.02, 0.051 * lm, 0.055 * lm, 0.050 * lm],
@@ -405,10 +405,10 @@ export function buildBody(opts = {}) {
     [0.86, 0.033 * lm, 0.031 * lm, 0.035 * lm],
     [0.95, 0.027, 0.028, 0.029],
     [1.00, 0.026, 0.027, 0.028],
-  ]), 0.045);
+  ]), 0.06);
   U(ellipsoid([knee[0], knee[1] + 0.012, knee[2] + 0.044], [0.024, 0.029, 0.014]), 0.016); // patella
-  U(ellipsoid([ankle[0] + 0.025, ankle[1] - 0.006, ankle[2] - 0.004], [0.011, 0.015, 0.013]), 0.014); // medial malleolus
-  U(ellipsoid([ankle[0] - 0.024, ankle[1] - 0.014, ankle[2] - 0.008], [0.011, 0.015, 0.013]), 0.014); // lateral malleolus
+  U(ellipsoid([ankle[0] - 0.024, ankle[1] - 0.004, ankle[2] + 0.002], [0.011, 0.015, 0.013]), 0.014); // medial malleolus (−x side of the left leg)
+  U(ellipsoid([ankle[0] + 0.025, ankle[1] - 0.014, ankle[2] - 0.008], [0.011, 0.015, 0.013]), 0.014); // lateral malleolus
   const heel = [0.113, 0.036, -0.075];
   const toe = [0.145, 0.020, 0.185];
   U(loft(heel, toe, [0, 1, 0], [
@@ -427,19 +427,36 @@ export function buildBody(opts = {}) {
   const head = [];
   const HU = (p, k) => head.push({ ...p, k, op: 0 });
   const HS = (p, k) => head.push({ ...p, k, op: 1 });
-  HU(ellipsoid([0, 1.655, -0.012], [0.077, 0.094, 0.098]), 0);          // cranium
-  HU(ellipsoid([0, 1.668, 0.028], [0.068, 0.070, 0.064]), 0.03);        // forehead
-  HU(ellipsoid([0, 1.594, 0.014], [0.052, 0.062, 0.064]), 0.03);        // mid / lower face
-  HU(ellipsoid([0, 1.537, 0.055], [0.021, 0.017, 0.019]), 0.025);       // chin
-  HU(roundCone([0.050, 1.566, -0.012], [0.016, 1.534, 0.052], 0.010, 0.009), 0.028); // mandible
-  HU(ellipsoid([0.050, 1.622, 0.046], [0.018, 0.013, 0.018]), 0.03);    // zygoma
-  HU(roundCone([0.046, 1.659, 0.074], [0.000, 1.663, 0.086], 0.008, 0.009), 0.025); // brow ridge
-  HS(ellipsoid([0.031, 1.638, 0.097], [0.016, 0.009, 0.010]), 0.016);   // eye socket (shallow)
-  HU(ellipsoid([0.031, 1.6375, 0.080], [0.011, 0.0095, 0.010]), 0.010); // closed eye
-  HU(roundCone([0, 1.647, 0.089], [0, 1.606, 0.104], 0.0065, 0.0105), 0.014); // nose
-  HU(ellipsoid([0.010, 1.603, 0.095], [0.0075, 0.0055, 0.0065]), 0.008);  // ala
-  HU(ellipsoid([0, 1.568, 0.079], [0.017, 0.007, 0.007]), 0.018);       // lips (subtle)
-  HU(ellipsoid([0.075, 1.624, -0.014], [0.0085, 0.025, 0.015], [0, 0.25, 0]), 0.008); // ear
+  // head: a loft of transverse sections (y, half-width, front, back, centre z)
+  // giving the sagittal profile forehead → brow → orbit → cheek → mouth → chin,
+  // plus a few features. Stylised, calm mannequin face.
+  const HY0 = 1.50, HY1 = 1.751;
+  const Hk = (y, w, fz, bz) => [(y - HY0) / (HY1 - HY0), w, (fz - bz) / 2, (fz - bz) / 2, (fz + bz) / 2];
+  HU(loft([0, HY0, 0], [0, HY1, 0], [0, 0, 1], [
+    Hk(1.500, 0.010, 0.030, 0.010),
+    Hk(1.512, 0.024, 0.052, -0.004),
+    Hk(1.524, 0.036, 0.070, -0.020),
+    Hk(1.538, 0.044, 0.077, -0.036),
+    Hk(1.554, 0.050, 0.080, -0.058),
+    Hk(1.572, 0.058, 0.082, -0.078),
+    Hk(1.592, 0.064, 0.085, -0.090),
+    Hk(1.612, 0.068, 0.083, -0.098),
+    Hk(1.632, 0.071, 0.080, -0.103),
+    Hk(1.652, 0.074, 0.085, -0.106),
+    Hk(1.668, 0.076, 0.088, -0.107),
+    Hk(1.692, 0.076, 0.083, -0.104),
+    Hk(1.716, 0.069, 0.071, -0.094),
+    Hk(1.735, 0.053, 0.050, -0.074),
+    Hk(1.746, 0.030, 0.026, -0.044),
+    Hk(1.751, 0.006, 0.004, -0.012),
+  ], 2.3), 0);
+  HU(ellipsoid([0, 1.531, 0.066], [0.017, 0.012, 0.012]), 0.016);       // mental protuberance
+  HU(ellipsoid([0.050, 1.620, 0.050], [0.017, 0.011, 0.015]), 0.025);   // zygoma (soft)
+  HS(ellipsoid([0.032, 1.639, 0.094], [0.016, 0.0095, 0.013]), 0.012);   // orbit
+  HU(ellipsoid([0.032, 1.6385, 0.073], [0.0105, 0.009, 0.009]), 0.008); // eyelid mound
+  HU(roundCone([0, 1.648, 0.086], [0, 1.608, 0.099], 0.0065, 0.0105), 0.014); // nose
+  HU(ellipsoid([0, 1.566, 0.080], [0.017, 0.0055, 0.0065]), 0.01);      // lips (subtle)
+  HU(ellipsoid([0.075, 1.624, -0.016], [0.0085, 0.025, 0.015], [0, 0.25, 0]), 0.008); // ear
   const headPrims = head;
 
   // ---------------- assemble ----------------------------------------------
@@ -450,7 +467,7 @@ export function buildBody(opts = {}) {
   const groups = [prims, headPrims].map((list) => ({
     f: list.map((p) => p.f), k: list.map((p) => p.k), op: list.map((p) => p.op), lb: list.map((p) => p.lb), n: list.length,
   }));
-  const HEAD_K = 0.035;
+  const HEAD_K = 0.026;
   const combineIdx = (g, idx, n, x, y, z) => {
     let d = Infinity;
     for (let j = 0; j < n; j++) {

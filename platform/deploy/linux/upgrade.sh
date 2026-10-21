@@ -188,7 +188,9 @@ rollback() {
   fi
   service_ctl start || true
   YH_HEALTH_PROBE="${OLD_RELEASE}/deploy/common/healthcheck.mjs"; export YH_HEALTH_PROBE
-  if health_check "${STATE_NODE_BIN}" "${ENV_FILE}" "${HEALTH_RETRIES}"; then
+  if [ "${INIT_SYSTEM}" = none ]; then
+    warn "ROLLED BACK files/DB to ${OLD_VERSION}; no init system — start the service manually and verify health."
+  elif health_check "${STATE_NODE_BIN}" "${ENV_FILE}" "${HEALTH_RETRIES}"; then
     warn "ROLLED BACK: ${OLD_VERSION} is running and healthy. The failed release remains under ${PREFIX}/releases for analysis."
   else
     err "ROLLBACK INCOMPLETE: service unhealthy. Restore from the encrypted backup (restore.sh) — docs/OPERATIONS.md §8."
@@ -217,7 +219,11 @@ NEW_RELEASE="$(cd -- "${PREFIX}/current" && pwd -P)"
 # ------------------------------------------------------------------------------------------------
 log "step 5/6: migrations + catalog"
 node_script "${STATE_NODE_BIN}" "${SVC_USER}" "${ENV_FILE}" "${PREFIX}/current" migrate
-node_script "${STATE_NODE_BIN}" "${SVC_USER}" "${ENV_FILE}" "${PREFIX}/current" catalog:load
+if [ -f "${PREFIX}/current/data/catalog/points.json" ] || [ -f "${PREFIX}/current/data/catalog/manifest.json" ] || [ "${DRY_RUN}" = 1 ]; then
+  node_script "${STATE_NODE_BIN}" "${SVC_USER}" "${ENV_FILE}" "${PREFIX}/current" catalog:load
+else
+  warn "no catalog JSON in the new release — catalog load skipped"
+fi
 
 # ------------------------------------------------------------------------------------------------
 # 6. Start + verify

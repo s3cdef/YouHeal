@@ -57,8 +57,9 @@ _on_err() {
 }
 _on_exit() {
   local rc=$?
-  if [ -n "${YH_TMP_DIR}" ] && [ -d "${YH_TMP_DIR}" ]; then rm -rf -- "${YH_TMP_DIR}"; fi
+  # hook first (rollback may need files in the temp dir), then clean up
   if declare -F on_exit_hook >/dev/null 2>&1; then on_exit_hook "${rc}" || true; fi
+  if [ -n "${YH_TMP_DIR}" ] && [ -d "${YH_TMP_DIR}" ]; then rm -rf -- "${YH_TMP_DIR}"; fi
   if [ -n "${LOG_FILE}" ]; then printf '%s ----- exit %s -----\n' "$(_ts)" "${rc}" >&2; fi
   exit "${rc}"
 }

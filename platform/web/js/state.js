@@ -6,6 +6,7 @@ export const state = {
   user: null,
   org: null,
   csrf: null,
+  restriction: null, // 'mfa' | 'password' | null (from /auth/me)
 };
 
 export const DEFAULT_POLARITY = { negative: '#2563EB', positive: '#DC2626' };
@@ -16,8 +17,11 @@ export function polarity() {
 }
 
 export function hasRole(...roles) { return !!state.user && roles.includes(state.user.role); }
+// Mirrors server/lib/rbac.js PERM. Assistant: patients + intake + session summaries (no clinical detail).
+// Auditor: audit log + reports only (no patient directory).
 export const can = {
   findings: () => hasRole('practitioner', 'admin'),
+  clinical: () => hasRole('practitioner', 'admin'),
   patients: () => hasRole('practitioner', 'admin', 'assistant'),
   intake: () => hasRole('practitioner', 'admin', 'assistant'),
   scan: () => hasRole('practitioner', 'admin'),
@@ -25,6 +29,19 @@ export const can = {
   audit: () => hasRole('admin', 'auditor'),
   reports: () => hasRole('practitioner', 'admin', 'auditor'),
 };
+
+/** Normalize a session (summary or full) across API revisions: sessionDate/startedAt, findingCount/findingsCount. */
+export function normSession(s) {
+  if (!s) return s;
+  const startedAt = s.sessionDate || s.startedAt || s.createdAt;
+  const findingsCount = s.findingCount ?? s.findingsCount ?? (s.findings ? s.findings.length : 0);
+  return { ...s, startedAt, sessionDate: startedAt, findingsCount, reportHash: s.reportSha256 || s.reportHash || null };
+}
+/** Qualifiers may be an array (legacy) or { tracking, impact }. */
+export function normQualifiers(q) {
+  if (Array.isArray(q)) return { tracking: q, impact: q };
+  return { tracking: (q && q.tracking) || [], impact: (q && q.impact) || [] };
+}
 
 // ---------------- Catalog cache ----------------
 const cache = {
@@ -44,6 +61,7 @@ export function loadCore() {
     ]);
     const pts = new Map(items(points).map((p) => [p.id, p]));
     const prs = new Map(items(pairs).map((p) => [p.id, p]));
+    for (const p of items(protocols)) if (p.count === undefined && p.pairCount !== undefined) p.count = p.pairCount;
     return { points: pts, pointList: items(points), regions: items(regions), pairs: prs, protocols: items(protocols) };
   })().catch((e) => { cache.core = null; throw e; });
   return cache.core;
@@ -54,7 +72,9 @@ export async function getPair(id) {
   return cache.pairDetail.get(id);
 }
 export async function getPointPairs(id) {
-  if (!cache.pointPairs.has(id)) cache.pointPairs.set(id, api.get(`/catalog/points/${encodeURIComponent(id)}/pairs`).then(items).catch((e) => { cache.pointPairs.delete(id); throw e; }));
+  // server: { point, items:[{ role, pair }] } → flatten to pair summaries carrying `role`
+  const flat = (res) => items(res).map((x) => (x && x.pair ? { ...x.pair, role: x.role } : x));
+  if (!cache.pointPairs.has(id)) cache.pointPairs.set(id, api.get(`/catalog/points/${encodeURIComponent(id)}/pairs`).then(flat).catch((e) => { cache.pointPairs.delete(id); throw e; }));
   return cache.pointPairs.get(id);
 }
 export async function getProtocol(id) {
@@ -73,6 +93,7 @@ export function protocolPairIds(proto) {
   for (const it of src) {
     if (typeof it === 'string') out.push(it);
     else if (it.pairId) out.push(it.pairId);
+    else if (it.pair && it.pair.id && !it.pairId) out.push(it.pair.id);
     else if (it.pair && typeof it.pair === 'string') out.push(it.pair);
     else if (it.pair && it.pair.id) out.push(it.pair.id);
     else if (it.id && it.number !== undefined) out.push(it.id);
