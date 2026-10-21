@@ -1,0 +1,126 @@
+/*
+ * YOU HEAL Clinical — 3D body viewer styles.
+ * Host pages MUST link this file (the viewer never injects <style>; CSP style-src 'self').
+ *   <link rel="stylesheet" href="/js/viewer3d/viewer.css">
+ * Theme with CSS custom properties on the container or any ancestor.
+ */
+.yh-viewer {
+  --yh-viewer-bg: radial-gradient(ellipse at 50% 38%, #ffffff 0%, #f1f4f8 55%, #e3e8ef 100%);
+  --yh-viewer-tooltip-bg: rgba(15, 23, 42, 0.92);
+  --yh-viewer-tooltip-fg: #ffffff;
+  --yh-viewer-label-bg: rgba(255, 255, 255, 0.94);
+  --yh-viewer-label-fg: #0f172a;
+  --yh-viewer-focus: #0ea5e9;
+  position: relative;
+  overflow: hidden;
+  background: var(--yh-viewer-bg);
+  min-height: 240px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.yh-viewer__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+  cursor: grab;
+}
+.yh-viewer__canvas:active { cursor: grabbing; }
+.yh-viewer__canvas.is-pointer { cursor: pointer; }
+.yh-viewer__canvas:focus-visible { box-shadow: inset 0 0 0 3px var(--yh-viewer-focus); }
+
+.yh-viewer__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.yh-viewer__tooltip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: var(--yh-viewer-tooltip-bg);
+  color: var(--yh-viewer-tooltip-fg);
+  font: 600 12.5px/1.25 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+  will-change: transform;
+}
+.yh-viewer__tooltip[hidden] { display: none; }
+
+.yh-viewer__label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--yh-viewer-label-bg);
+  color: var(--yh-viewer-label-fg);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  font: 600 11.5px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+}
+.yh-viewer__label[hidden] { display: none; }
+
+.yh-viewer__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #475569;
+  font: 500 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Visually hidden but focusable accessible mirror of the visible points. */
+.yh-viewer__a11y,
+.yh-viewer__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  list-style: none;
+}
+
+/* ---------------- SVG fallback ---------------- */
+.yh-viewer__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.yh-viewer__svg:focus-visible { outline: 3px solid var(--yh-viewer-focus); outline-offset: -3px; }
+.yh-viewer__svg .yh-body { fill: url(#yh-skin); stroke: #b98e70; stroke-width: 0.004; }
+.yh-viewer__svg .yh-pt { fill: #1e3a5f; stroke: #ffffff; stroke-width: 0.0028; cursor: pointer; }
+.yh-viewer__svg .yh-pt.is-hl { fill: #f59e0b; }
+.yh-viewer__svg .yh-pt.is-hover { fill: #0ea5e9; }
+.yh-viewer__svg .yh-pt.is-internal { fill: none; stroke: #7c3aed; stroke-width: 0.004; }
+.yh-viewer__svg .yh-glyph { stroke: #ffffff; stroke-width: 0.004; stroke-linecap: square; }
+.yh-viewer__svg .yh-arc { fill: none; stroke-width: 0.004; stroke-linecap: round; }
+.yh-viewer__note {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #334155;
+  font: 500 11.5px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yh-viewer * { transition: none !important; animation: none !important; }
+}
