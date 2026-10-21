@@ -122,7 +122,7 @@ if [ "${DRY_RUN}" = 1 ]; then
   run tar -C "${SRC_DIR}" -cf - "(excludes)" . \| tar -C "${STAGE}/app" -xf -
 else
   tar -C "${SRC_DIR}" -cf - --exclude=./data/sources --exclude=./data/db --exclude=./data/keys --exclude=./data/backups \
-    --exclude=./data/tls --exclude=./node_modules --exclude=./.git --exclude=./tests --exclude=./importer --exclude=./dist \
+    --exclude=./data/tls --exclude=./data/i18n/_work --exclude=./node_modules --exclude=./.git --exclude=./tests --exclude=./importer --exclude=./dist \
     --exclude='*.sqlite' --exclude='*.sqlite-wal' --exclude='*.sqlite-shm' --exclude=./.env --exclude='*.yhbak' . \
     | tar -C "${STAGE}/app" -xf -
 fi

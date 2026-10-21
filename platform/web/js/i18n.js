@@ -44,6 +44,11 @@ export async function loadPacks(force = false) {
 export function getPacks() { return packs || FALLBACK_PACKS; }
 export function packInfo(locale) { return getPacks().find((p) => p.locale === locale) || null; }
 export function localeLabel(locale) { const p = packInfo(locale); return (p && (p.nativeName || p.name)) || String(locale || '').toUpperCase(); }
+/** Name of a language in the active locale (e.g. "inglés" while rendering Spanish), else its native name. */
+export function languageName(locale) {
+  try { const n = new Intl.DisplayNames([intlLocale()], { type: 'language' }).of(locale); if (n && n !== locale) return n; } catch { /* older engines */ }
+  return localeLabel(locale);
+}
 export function isLocale(locale) { return !!locale && getPacks().some((p) => p.locale === locale); }
 
 async function load(locale) {

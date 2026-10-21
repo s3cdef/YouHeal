@@ -667,7 +667,7 @@
   "id": "esofago",
   "name": {
    "es": "Esófago",
-   "en": "Oesophagus (esophagus)"
+   "en": "Esophagus"
   },
   "laterality": "bilateral"
  },
@@ -883,7 +883,7 @@
   "id": "hiato-esofagico",
   "name": {
    "es": "Hiato Esofágico",
-   "en": "Oesophageal hiatus"
+   "en": "Esophageal hiatus"
   },
   "laterality": "central"
  },
@@ -971,7 +971,7 @@
   "id": "cardias",
   "name": {
    "es": "Cardias",
-   "en": "Cardia (gastro-oesophageal junction)"
+   "en": "Cardia (gastro-esophageal junction)"
   },
   "laterality": "central"
  },

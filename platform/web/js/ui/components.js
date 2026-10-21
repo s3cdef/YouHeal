@@ -166,7 +166,7 @@ export function textarea(props = {}) { return el('textarea.input.textarea', { ro
 export function select(options, props = {}) {
   return el('select.input.select', props, options.map((o) => (o.group
     ? el('optgroup', { label: o.group }, o.options.map((x) => el('option', { value: x.value, selected: x.selected || null }, x.label)))
-    : el('option', { value: o.value, selected: o.selected || null, disabled: o.disabled || null }, o.label))));
+    : el('option', { value: o.value, selected: o.selected || null, disabled: o.disabled || null, lang: o.lang || null }, o.label))));
 }
 
 /**
@@ -179,7 +179,7 @@ export function languagePicker({ value, onChange, label, size = '', names = fals
     return segmented({ name, label, value, size, onChange,
       options: list.map((p) => { const nat = p.nativeName || p.name || p.locale; return { value: p.locale, label: names ? nat : p.locale.toUpperCase(), title: nat, ariaLabel: nat, lang: p.locale }; }) });
   }
-  const s = select(list.map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, selected: p.locale === value })), { aria: { label } });
+  const s = select(list.map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, lang: p.locale, selected: p.locale === value })), { aria: { label } });
   s.addEventListener('change', () => onChange && onChange(s.value));
   s.setValue = (v) => { s.value = v; };
   return s;
@@ -187,7 +187,7 @@ export function languagePicker({ value, onChange, label, size = '', names = fals
 
 /** <option> list of the installed language packs (native names), for form selects. */
 export function languageOptions(value, { blank = null } = {}) {
-  const opts = getPacks().map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, selected: p.locale === value }));
+  const opts = getPacks().map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, lang: p.locale, selected: p.locale === value }));
   return blank ? [{ value: '', label: blank, selected: !value }, ...opts] : opts;
 }
 

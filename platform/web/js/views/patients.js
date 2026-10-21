@@ -2,7 +2,7 @@
 import { el, mount } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, ValidationError } from '../api.js';
-import { t, fmtDate, ageFrom, localeLabel } from '../i18n.js';
+import { t, fmtDate, ageFrom, languageName } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
 import { can, state, searchPatients, patientSearchMemory } from '../state.js';
 import { table, emptyState, field, input, textarea, select, languageOptions, alertBox, setLoading, skeleton, card } from '../ui/components.js';
@@ -91,7 +91,7 @@ export async function renderPatientForm({ main, params }) {
       mk('address', t('patient.address'), textarea({ rows: 2 }), { optional: true, cls: 'span-2' }))] }),
     card({ title: t('patients.secClinical'), icon: 'clipboard', children: [el('div.grid-2',
       mk('mrn', t('patient.mrn'), input({ autocomplete: 'off', class: 'mono', pattern: '[A-Za-z0-9][A-Za-z0-9-]{0,31}', readOnly: editing }), { optional: !editing, hint: editing ? t('patient.mrnLocked') : t('patient.mrnHint') }),
-      mk('preferredLanguage', t('patient.preferredLanguage'), select(languageOptions(patient.preferredLanguage || '', { blank: t('patient.languageClinicDefault', { lang: localeLabel((state.org && state.org.defaultLocale) || 'en') }) })), { hint: t('patient.preferredLanguageHint') }),
+      mk('preferredLanguage', t('patient.preferredLanguage'), select(languageOptions(patient.preferredLanguage || '', { blank: t('patient.languageClinicDefault', { lang: languageName((state.org && state.org.defaultLocale) || 'en') }) })), { hint: t('patient.preferredLanguageHint') }),
       mk('notes', t('patient.notes'), textarea({ rows: 3 }), { optional: true, cls: 'span-2', hint: t('patient.notesHint') }))] }),
     errBox,
     el('div.form-actions.sticky-actions',

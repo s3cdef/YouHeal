@@ -3,7 +3,7 @@
 import { el, mount } from '../ui/dom.js';
 import { icon, brandMark } from '../ui/icons.js';
 import { api, errorMessage } from '../api.js';
-import { t, locText, locNode, fmtDate, fmtDateTime, getLocale, loc, vocab, inLocale, ensureLocale, isLocale, localeLabel } from '../i18n.js';
+import { t, locText, locNode, fmtDate, fmtDateTime, getLocale, loc, vocab, inLocale, ensureLocale, isLocale, languageName } from '../i18n.js';
 import { loadCore, polarity, can, state, reportLocales } from '../state.js';
 import { ratingsRow, skeleton, statusBadge, alertBox, languagePicker } from '../ui/components.js';
 import { renderSnapshots } from '../bodymap/host.js';
@@ -32,6 +32,7 @@ export async function renderReport({ main, params }) {
     try { preferred = (await api.get(`/patients/${encodeURIComponent(rep.patient.id)}`)).preferredLanguage || null; } catch { /* keep default */ }
   }
   const wanted = reportLocales.get(params.id) || signedLocale || preferred || (state.org && state.org.defaultLocale) || getLocale();
+  const uiLocale = getLocale();
   let rl = isLocale(wanted) && (await ensureLocale(wanted)) ? wanted : getLocale();
   let imageSlots = null;
   const imagesReady = loadImages();
@@ -240,7 +241,7 @@ export async function renderReport({ main, params }) {
     const superseded = rep.supersededBy ? el('div.rpt-superseded', icon('alert', { size: 16 }), el('span', t('report.supersededBanner')), ' ', el('a.no-print', { href: `#/sessions/${rep.supersededBy}/report` }, t('report.openLatest'))) : null;
     const paper = el('article.report', { lang: rl, aria: { label: t('report.title') } }, watermark,
       superseded,
-      translated ? el('div.rpt-translation', icon('globe', { size: 16 }), el('span', el('strong', t('report.translationTitle', { code: rl.toUpperCase() })), ' — ', t('report.translationBody', { lang: localeLabel(signedLocale) }))) : null,
+      translated ? el('div.rpt-translation', icon('globe', { size: 16 }), el('span', el('strong', t('report.translationTitle', { code: rl.toUpperCase() })), ' — ', t('report.translationBody', { lang: languageName(signedLocale) }))) : null,
       !isFinal ? el('div.rpt-draft-banner', icon('alert', { size: 16 }), t('report.draftBanner')) : null,
       integrity === 'mismatch' ? el('div.rpt-superseded.is-danger', icon('alert', { size: 16 }), t('report.integrityMismatch')) : null,
       header, blocks, results, maps,
@@ -250,17 +251,21 @@ export async function renderReport({ main, params }) {
     paper.style.setProperty('--pol-pos', pol.positive);
 
     const back2 = status === 'draft' && can.clinical() ? `#/sessions/${params.id}` : pt.id && can.patients() ? `#/patients/${pt.id}/reports` : '#/settings/audit';
-    const langMenu = languagePicker({ name: 'report-locale', label: t('report.language'), value: rl, size: 'sm', onChange: (v) => switchTo(v) });
-    const toolbar = el('div.report-toolbar.no-print',
-      el('a.btn.btn-ghost', { href: back2 }, icon('arrowLeft', { size: 18 }), t('common.back')),
-      el('div.report-toolbar-mid', statusBadge(status), hash16 ? el('span.mono.muted.small', `SHA-256 ${hash16}…`) : null, integrity ? el(`span.integrity-pill.is-${integrity}`, icon(integrity === 'verified' ? 'shield' : 'alert', { size: 14 }), t(`report.integrity.${integrity}`)) : null),
-      el('div.report-toolbar-end',
-        el('div.report-lang', el('span.label', { id: 'report-lang-label' }, t('report.language')), langMenu),
-        el('button.btn.btn-primary', { type: 'button', onClick: () => window.print() }, icon('print', { size: 18 }), t('report.print'))));
+    // Page chrome (toolbar, notices) stays in the UI language; only the paper follows the report language.
+    const chrome = inLocale(uiLocale, () => {
+      const langMenu = languagePicker({ name: 'report-locale', label: t('report.language'), value: rl, size: 'sm', onChange: (v) => switchTo(v) });
+      const toolbar = el('div.report-toolbar.no-print',
+        el('a.btn.btn-ghost', { href: back2 }, icon('arrowLeft', { size: 18 }), t('common.back')),
+        el('div.report-toolbar-mid', statusBadge(status), hash16 ? el('span.mono.muted.small', `SHA-256 ${hash16}…`) : null, integrity ? el(`span.integrity-pill.is-${integrity}`, icon(integrity === 'verified' ? 'shield' : 'alert', { size: 14 }), t(`report.integrity.${integrity}`)) : null),
+        el('div.report-toolbar-end',
+          el('div.report-lang', el('span.label', { aria: { hidden: 'true' } }, t('report.language')), langMenu),
+          el('button.btn.btn-primary', { type: 'button', onClick: () => window.print() }, icon('print', { size: 18 }), t('report.print'))));
+      return [toolbar,
+        translated ? alertBox({ tone: 'info', ic: 'globe', title: t('report.translationTitle', { code: rl.toUpperCase() }), children: [el('p', t('report.translationBody', { lang: languageName(signedLocale) }))] }) : null,
+        !isFinal ? alertBox({ tone: 'warn', ic: 'alert', title: t('report.draftTitle'), children: [el('p', t('report.draftBody'))] }) : null];
+    });
     imageSlots = { front, back, paper };
-    mount(main, el('div.page.page-report', toolbar,
-      translated ? alertBox({ tone: 'info', ic: 'globe', title: t('report.translationTitle', { code: rl.toUpperCase() }), children: [el('p', t('report.translationBody', { lang: localeLabel(signedLocale) }))] }) : null,
-      !isFinal ? alertBox({ tone: 'warn', ic: 'alert', title: t('report.draftTitle'), children: [el('p', t('report.draftBody'))] }) : null,
+    mount(main, el('div.page.page-report', ...chrome,
       el('div.paper-wrap', paper)));
 
   }

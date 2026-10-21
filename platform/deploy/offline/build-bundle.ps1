@@ -98,7 +98,7 @@ try {
         if (Test-Path -LiteralPath $stage) { Remove-Item -LiteralPath $stage -Recurse -Force }
         New-Item -ItemType Directory -Path (Join-Path $stage 'runtime') -Force | Out-Null
     }
-    $exclude = @('data\sources', 'data\db', 'data\keys', 'data\backups', 'data\tls', 'node_modules', '.git', 'tests', 'importer', 'dist') | ForEach-Object { Join-Path $Source $_ }
+    $exclude = @('data\sources', 'data\db', 'data\keys', 'data\backups', 'data\tls', 'data\i18n\_work', 'node_modules', '.git', 'tests', 'importer', 'dist') | ForEach-Object { Join-Path $Source $_ }
     $rc = @($Source, (Join-Path $stage 'app'), '/E', '/NFL', '/NDL', '/NJH', '/NJS', '/NP', '/R:1', '/W:1', '/XD') + $exclude + @('/XF', '*.sqlite', '*.sqlite-wal', '*.sqlite-shm', '.env', '*.yhbak')
     Invoke-YHNative -FilePath "$env:SystemRoot\System32\robocopy.exe" -ArgumentList $rc -AllowedExitCodes @(0, 1, 2, 3, 4, 5, 6, 7)
 

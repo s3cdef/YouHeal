@@ -3,7 +3,7 @@
 import { el, mount, clear } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage } from '../api.js';
-import { t, fmtNumber, fmtDateTime, loadPacks, localeLabel, intlLocale } from '../i18n.js';
+import { t, fmtNumber, fmtDateTime, loadPacks, languageName, intlLocale } from '../i18n.js';
 import { card, select, input, textarea, chip, emptyState, skeleton, setLoading, alertBox } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { confirmDialog } from '../ui/modal.js';
@@ -60,22 +60,22 @@ function packCard(p, cov) {
       const seg = el(`span.lp-seg.is-${s}`); seg.style.width = `${(n / fields) * 100}%`; bar.append(seg);
     }
   } else { const seg = el('span.lp-seg.is-baseline'); seg.style.width = `${percent}%`; bar.append(seg); }
-  return el('article.lp-card', { lang: p.locale, data: { locale: p.locale } },
+  return el('article.lp-card', { data: { locale: p.locale } },
     el('div.lp-card-head',
-      el('div', el('h3.lp-name', p.nativeName || p.name || p.locale), el('p.muted.small', { lang: document.documentElement.lang }, `${p.name || ''} · ${p.locale}${p.dir === 'rtl' ? ' · RTL' : ''}`)),
+      el('div', el('h3.lp-name', { lang: p.locale }, p.nativeName || p.name || p.locale), el('p.muted.small', `${languageName(p.locale)} · ${p.locale}${p.dir === 'rtl' ? ' · RTL' : ''}`)),
       chip(isBase ? t('langpacks.baseline') : t('langpacks.mirror'), isBase ? 'gold' : 'slate')),
-    el('p.lp-percent', { lang: document.documentElement.lang }, el('strong', pct(percent)), ' ', el('span.muted', isBase ? t('langpacks.baselineNote') : t('langpacks.translated'))),
+    el('p.lp-percent', el('strong', pct(percent)), ' ', el('span.muted', isBase ? t('langpacks.baselineNote') : t('langpacks.translated'))),
     bar,
-    !isBase ? el('ul.lp-legend', { lang: document.documentElement.lang }, STATUSES.map((s) => {
+    !isBase ? el('ul.lp-legend', STATUSES.map((s) => {
       const n = by[s] ?? (s === 'missing' ? c.missing : s === 'stale' ? c.stale : null);
       return n === null || n === undefined ? null : el('li', el(`span.lp-dot.is-${s}`, { aria: { hidden: 'true' } }), t(`langpacks.status.${s}`), ' ', el('strong', fmtNumber(n)));
     })) : null,
-    !isBase ? el('a.btn.btn-ghost.btn-sm.lp-export', { href: `/api/v1/i18n/packs/${encodeURIComponent(p.locale)}/export`, download: `catalog.${p.locale}.json`, lang: document.documentElement.lang },
+    !isBase ? el('a.btn.btn-ghost.btn-sm.lp-export', { href: `/api/v1/i18n/packs/${encodeURIComponent(p.locale)}/export`, download: `catalog.${p.locale}.json` },
       icon('download', { size: 16 }), t('langpacks.export')) : null);
 }
 
 function reviewPanel(root, mirrors, coverage) {
-  const locSel = select(mirrors.map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale })), { id: 'lp-locale' });
+  const locSel = select(mirrors.map((p) => ({ value: p.locale, label: p.nativeName || p.name || p.locale, lang: p.locale })), { id: 'lp-locale' });
   const firstCov = coverage.get(mirrors[0].locale);
   const startStatus = firstCov && (firstCov.byStatus?.stale || firstCov.stale?.length) ? 'stale' : 'missing';
   const statusSel = select([{ value: '', label: t('langpacks.allStatuses') }, ...STATUSES.map((s) => ({ value: s, label: t(`langpacks.status.${s}`), selected: s === startStatus }))], { id: 'lp-status' });
@@ -141,8 +141,8 @@ function stringRow(row, locale, refresh) {
       row.override ? chip(t('langpacks.overridden'), 'gold', 'chip-sm') : null,
       row.editedAt ? el('span.muted.small', fmtDateTime(row.editedAt)) : null),
     el('div.lp-row-body',
-      el('div.lp-src', el('span.label', t('langpacks.baselineText', { lang: localeLabel('es') })), el('p.lp-src-text', { lang: 'es' }, row.baseline || '—')),
-      el('div.lp-dst', el('label.label', { for: id }, t('langpacks.translationText', { lang: localeLabel(locale) })), ta,
+      el('div.lp-src', el('span.label', t('langpacks.baselineText', { lang: languageName('es') })), el('p.lp-src-text', { lang: 'es' }, row.baseline || '—')),
+      el('div.lp-dst', el('label.label', { for: id }, t('langpacks.translationText', { lang: languageName(locale) })), ta,
         row.status === 'stale' && row.text ? el('p.field-hint', t('langpacks.staleHint')) : null)),
     el('div.lp-row-actions', revert, save));
 }

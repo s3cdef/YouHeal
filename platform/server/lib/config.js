@@ -157,7 +157,10 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
     setupTokenFile: path.join(dataDir, 'setup-token'),
     catalogDir: env.YH_CATALOG_DIR ? resolve(env.YH_CATALOG_DIR) : path.join(dataDir, 'catalog'),
     catalogStrict: bool(env, 'YH_CATALOG_STRICT', true),
-    i18nDir: env.YH_I18N_DIR ? resolve(env.YH_I18N_DIR) : path.join(dataDir, 'i18n', 'packs'),
+    // Language packs ship with the app next to the catalog (<app>/data/{catalog,i18n/packs}), so by default they
+    // are looked up beside YH_CATALOG_DIR rather than in the runtime data dir (/var/lib/youheal holds no packs).
+    i18nDir: env.YH_I18N_DIR ? resolve(env.YH_I18N_DIR)
+      : path.join(env.YH_CATALOG_DIR ? path.dirname(resolve(env.YH_CATALOG_DIR)) : dataDir, 'i18n', 'packs'),
     catalogLicenses: parseLicenses(env.YH_CATALOG_LICENSES),
     webDir: env.YH_WEB_DIR ? resolve(env.YH_WEB_DIR) : path.join(ROOT_DIR, 'web'),
     staticMaxAge: int(env, 'YH_STATIC_MAX_AGE', 300, 0, 31536000),
