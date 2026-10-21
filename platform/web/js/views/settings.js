@@ -280,7 +280,9 @@ async function audit(panel) {
         { key: 'target', label: t('settings.target'), cls: 'small', render: (a) => {
           const id2 = a.targetId || a.target; if (!id2) return '—';
           const label = `${a.targetType ? a.targetType + ' · ' : ''}${String(id2).slice(0, 8)}…`;
-          return a.targetType === 'session' && can.reports() ? el('a.mono', { href: `#/sessions/${id2}/report`, title: t('settings.openReport') }, label) : el('span.mono', { title: String(id2) }, label);
+          // auditors can only open signed reports: link from finalize/amend/report rows, not draft activity
+          const signedRow = can.clinical() || /^(session\.finalize|session\.amend|report\.)/.test(a.action);
+          return a.targetType === 'session' && can.reports() && signedRow ? el('a.mono', { href: `#/sessions/${id2}/report`, title: t('settings.openReport') }, label) : el('span.mono', { title: String(id2) }, label);
         } },
         { key: 'ip', label: 'IP', cls: 'mono small' },
         { key: 'hash', label: t('report.hash'), cls: 'mono small', render: (a) => (a.hash ? `${a.hash.slice(0, 12)}…` : '—') },

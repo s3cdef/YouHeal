@@ -22,6 +22,7 @@ export class ValidationError extends ApiError { constructor(...a) { super(...a);
 export class ConflictError extends ApiError { constructor(...a) { super(...a); this.name = 'ConflictError'; } }
 export class RateLimitError extends ApiError { constructor(...a) { super(...a); this.name = 'RateLimitError'; } }
 export class LockedError extends ApiError { constructor(...a) { super(...a); this.name = 'LockedError'; } }
+export class HostRejectedError extends ApiError { constructor(...a) { super(...a); this.name = 'HostRejectedError'; } }
 export class RestrictedError extends ApiError { constructor(...a) { super(...a); this.name = 'RestrictedError'; } }
 export class NetworkError extends ApiError { constructor(msg) { super(0, 'NETWORK', msg); this.name = 'NetworkError'; } }
 
@@ -40,6 +41,7 @@ function errorFor(status, body) {
   if (status === 404) return new NotFoundError(...args);
   if (status === 409) return new ConflictError(...args);
   if (status === 429) return new RateLimitError(...args);
+  if (status === 421) return new HostRejectedError(...args);
   if (status === 400 || status === 422) return new ValidationError(...args);
   return new ApiError(...args);
 }
@@ -73,6 +75,8 @@ export async function request(method, path, { query, body, auth = true, timeoutM
   if (res.status !== 204 && ct.includes('application/json')) { try { data = await res.json(); } catch { data = null; } }
   if (!res.ok) {
     const err = errorFor(res.status, data);
+    const ra = Number(res.headers.get('retry-after'));
+    if (Number.isFinite(ra) && ra > 0) err.retryAfter = ra;
     if (err instanceof AuthError && auth) emit('unauthorized', err);
     if (err instanceof RestrictedError) emit('restricted', err);
     throw err;
@@ -96,11 +100,14 @@ export function items(res) { if (Array.isArray(res)) return res; return (res && 
 export function errorMessage(err) {
   if (!err) return t('errors.generic');
   if (err instanceof NetworkError) return err.message;
+  if (err instanceof HostRejectedError) return t('errors.hostRejected');
+  if (err instanceof RateLimitError && err.code !== 'ACCOUNT_LOCKED') return err.retryAfter ? t('errors.rateLimitedFor', { s: err.retryAfter }) : t('errors.rateLimited');
   const byCode = err.code && t(`errors.codes.${err.code}`);
   if (byCode && byCode !== `errors.codes.${err.code}`) return byCode;
   if (err instanceof ForbiddenError) return t('errors.forbidden');
   if (err instanceof NotFoundError) return t('errors.notFound');
-  if (err instanceof RateLimitError) return t('errors.rateLimited');
+  if (err instanceof RateLimitError) return err.retryAfter ? t('errors.rateLimitedFor', { s: err.retryAfter }) : t('errors.rateLimited');
+  if (err instanceof HostRejectedError) return t('errors.hostRejected');
   return err.message || t('errors.generic');
 }
 

@@ -4,7 +4,7 @@ import { icon } from '../ui/icons.js';
 import { api, items } from '../api.js';
 import { t, fmtTime, fmtDate, fmtRelativeDay, locText, parseDateOnly } from '../i18n.js';
 import { navigate } from '../router.js';
-import { state, can, normSession } from '../state.js';
+import { state, can, normSession, searchPatients } from '../state.js';
 import { combobox } from '../ui/combobox.js';
 import { card, emptyState, statusBadge, skeleton, chip } from '../ui/components.js';
 import { pageHeader, fullName, avatar, demographics, todayISO, addDaysISO, methodologyLabel, errorPanel } from './common.js';
@@ -19,7 +19,7 @@ export function quickSearch({ autofocus = false } = {}) {
     label: t('dashboard.searchLabel'), placeholder: can.patients() ? t('dashboard.searchPlaceholder') : t('dashboard.searchPlaceholderCatalog'), size: 'lg',
     source: async (q) => {
       const [pts, cat] = await Promise.all([
-        can.patients() ? api.get('/patients', { q, limit: 6 }).then(items).catch(() => []) : [],
+        can.patients() ? searchPatients({ q, limit: 6 }).then(items).catch(() => []) : [],
         api.get('/catalog/search', { q, limit: 12 }).then(items).catch(() => []),
       ]);
       return [

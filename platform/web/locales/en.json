@@ -104,7 +104,9 @@
   "doneSub": "Sign in with the administrator account you just created.",
   "mfaNextTitle": "Next: two-step verification",
   "mfaNext": "Administrators must protect their account with an authenticator app (such as Google Authenticator, Microsoft Authenticator or 1Password). You will be guided right after signing in.",
-  "signInNow": "Sign in"
+  "signInNow": "Sign in",
+  "token": "Setup token",
+  "tokenHint": "Printed in the server log at first start and stored in the data folder as setup-token."
  },
  "mfa": {
   "title": "Set up two-step verification",
@@ -219,7 +221,9 @@
   "noMatchBody": "Check the spelling of the full last name, try the MRN or date of birth, or browse by letter.",
   "secIdentity": "Identity",
   "secContact": "Contact",
-  "secClinical": "Clinical record"
+  "secClinical": "Clinical record",
+  "colLastScan": "Last scan",
+  "colSessions": "Sessions"
  },
  "patient": {
   "name": "Patient",
@@ -527,7 +531,7 @@
   "finalizeNoFindings": "No findings were recorded. You can still sign a session with no findings.",
   "attestation": "I attest that I personally performed this scan and that these findings are complementary, non-diagnostic observations recorded accurately.",
   "attestRequired": "Confirm the attestation to sign.",
-  "signatureName": "Type your full name to sign",
+  "signatureName": "Electronic signature",
   "signatureHint": "Must match your account name: {name}",
   "signatureMismatch": "Type your name exactly as it appears on your account: {name}",
   "finalizeLock": "After signing, the report is sealed with a SHA-256 fingerprint and can only be changed through an amendment.",
@@ -547,7 +551,12 @@
   "kSearch": "Find a point",
   "kViews": "Front · Back · Left · Right",
   "kClose": "Close panel",
-  "restored": "Checklist restored — {checked} of {total} checked"
+  "restored": "Checklist restored — {checked} of {total} checked",
+  "signatureFixed": "Your account name is used as the electronic signature.",
+  "reauthPassword": "Confirm with your password",
+  "reauthHint": "Re-entering your password confirms that you are the one signing.",
+  "reauthWrong": "That password is not correct.",
+  "signatureServerMismatch": "The signature must match the signed-in practitioner’s name."
  },
  "viewer": {
   "bodyMap": "Body map",
@@ -847,7 +856,9 @@
   "generalNote": "Summaries of the general guidance — your practitioner can provide the full recommendation sheets.",
   "matchedAlways": "always included",
   "matchedBy": "matched by {pairs}",
-  "showFullText": "Show full text"
+  "showFullText": "Show full text",
+  "auditorOnlyFinalTitle": "Only signed reports are available",
+  "auditorOnlyFinal": "Auditors can open final and amended reports. This session has not been signed yet."
  },
  "settings": {
   "title": "Settings",
@@ -1009,7 +1020,12 @@
    "CSRF": "Your session token expired. Reload the page and try again.",
    "MFA_ENROLLMENT_REQUIRED": "Set up two-step verification to continue.",
    "PASSWORD_CHANGE_REQUIRED": "Choose a new password to continue.",
-   "PATIENT_ARCHIVED": "This patient is archived."
-  }
+   "PATIENT_ARCHIVED": "This patient is archived.",
+   "SIGNATURE_MISMATCH": "The signature must match the signed-in practitioner’s name.",
+   "SETUP_TOKEN_INVALID": "The setup token is not correct. Check the server log or the setup-token file in the data folder.",
+   "SETUP_TOKEN_REQUIRED": "Enter the setup token from the server log or the setup-token file in the data folder."
+  },
+  "rateLimitedFor": "Too many requests — please wait {s} seconds and try again.",
+  "hostRejected": "This address is not allowed for the clinic server. Open YOU HEAL Clinical using the address configured by your administrator."
  }
 }

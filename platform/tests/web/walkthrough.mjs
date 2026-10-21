@@ -33,7 +33,7 @@ function totp(secret, offset = 0) {
 
 // Obviously fictitious demo identities only.
 /** Runs in the page: creates obviously fictitious patients, intakes and backdated sessions through /api/v1. */
-async function seedDemo() {
+async function seedDemo(password) {
   const me = await (await fetch('/api/v1/auth/me')).json();
   const H = { 'content-type': 'application/json', 'x-csrf-token': me.csrfToken };
   const j = async (m, u, b) => { const r = await fetch(`/api/v1${u}`, { method: m, headers: H, body: b ? JSON.stringify(b) : undefined }); const d = await r.json().catch(() => null); if (!r.ok) throw new Error(`${m} ${u} ${r.status} ${JSON.stringify(d)}`); return d; };
@@ -55,7 +55,7 @@ async function seedDemo() {
   const session = async (p, daysAgo, pairs, { protocolIds = [], chief, finalize = true, statuses = [] } = {}) => {
     const s = await j('POST', `/patients/${p.id}/sessions`, { methodology: 'biomagnetism', protocolIds, chiefComplaint: chief, symptoms: [], sessionDate: day(daysAgo, daysAgo ? 10 : Math.max(8, new Date().getHours() - 1)) });
     for (const [i, pid] of pairs.entries()) await j('POST', `/sessions/${s.id}/findings`, { pairId: pid, status: statuses[i] || 'found', dwellMinutes: 15, phenomena: i === 0 && daysAgo > 10 ? ['infiltrate'] : [] });
-    if (finalize) await j('POST', `/sessions/${s.id}/finalize`, { signatureName: me.user.name });
+    if (finalize) await j('POST', `/sessions/${s.id}/finalize`, { signatureName: me.user.name, password });
     count++;
   };
   const mary = await patient('Mary', 'Example', '1979-04-12', 'female', { relative: rel ? [rel.id] : [], absolute: [] });
@@ -86,7 +86,9 @@ async function main() {
   if (!base) {
     const port = 4300 + Math.floor(Math.random() * 500);
     child = spawn(process.execPath, [path.join(__dirname, 'mock-server.mjs'), '--port', String(port), '--latency', '20'], { stdio: ['ignore', 'pipe', 'inherit'] });
-    await new Promise((r) => child.stdout.on('data', (d) => { if (String(d).includes('mock on')) r(); }));
+    let out = '';
+    await new Promise((r) => child.stdout.on('data', (d) => { out += String(d); if (out.includes('mock on')) r(); }));
+    const m = /setup token: (\S+)/.exec(out); if (m) process.env.SETUP_TOKEN = m[1];
     base = `http://127.0.0.1:${port}`;
   }
   const problems = problems_;
@@ -111,7 +113,12 @@ async function main() {
   globalThis.__page = page;
   await page.goto(`${base}/`);
 
-  // 1. setup wizard
+  // 1. setup wizard (hardened servers ask for the one-time setup token from the log / data folder)
+  await page.getByLabel('Clinic name').waitFor();
+  if (await page.getByLabel(/^Setup token/).count()) {
+    const token = process.env.SETUP_TOKEN || (process.env.SETUP_TOKEN_FILE && fs.existsSync(process.env.SETUP_TOKEN_FILE) ? fs.readFileSync(process.env.SETUP_TOKEN_FILE, 'utf8').trim() : '');
+    await page.getByLabel(/^Setup token/).fill(token);
+  }
   await page.getByLabel('Clinic name').fill(ADMIN.org);
   await shot(page, '01-setup-clinic');
   await page.getByRole('button', { name: 'Continue' }).click();
@@ -144,7 +151,7 @@ async function main() {
   }
 
   // 4. dashboard (optionally seed fictitious demo records through the public API first)
-  if (process.env.SEED === '1') { const n = await page.evaluate(seedDemo); console.log(`  🌱 seeded ${n} demo sessions via API`); await page.reload(); }
+  if (process.env.SEED === '1') { const n = await page.evaluate(seedDemo, ADMIN.password); console.log(`  🌱 seeded ${n} demo sessions via API`); await page.reload(); }
   await page.locator('.dash-grid .card').first().waitFor();
   await shot(page, '06-dashboard');
 
@@ -256,7 +263,7 @@ async function main() {
   await page.locator('.scan-bar').getByRole('button', { name: 'Finalize & sign' }).click();
   const fin = page.locator('dialog[open]');
   await fin.locator('#attest').check();
-  await fin.getByLabel('Type your full name to sign').fill(ADMIN.name);
+  await fin.getByLabel('Confirm with your password').fill(ADMIN.password);
   await shot(page, '15-finalize');
   await fin.getByRole('button', { name: 'Sign and finalize' }).click();
 
@@ -270,8 +277,11 @@ async function main() {
   await page.emulateMedia({ media: 'screen' });
 
   // 11. other views (demo data seeded by the mock)
-  await page.goto(`${base}/#/patients?q=Example`);
-  await page.locator('tbody tr').first().waitFor();
+  await page.goto(`${base}/#/patients`);
+  await page.getByLabel('Last name or MRN').fill('Example');
+  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await page.locator('.results-count', { hasText: 'Example' }).waitFor();
+  if ((await page.evaluate(() => location.href)).includes('Example')) problems.push('[desktop] patient search term leaked into the URL');
   await shot(page, '18-patients');
   await page.locator('tbody tr').first().click();
   await page.getByRole('tab', { name: /Sessions/ }).click();

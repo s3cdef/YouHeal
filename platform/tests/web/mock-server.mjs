@@ -20,6 +20,7 @@ const PORT = Number(process.env.PORT || argVal('--port', 4173));
 const DEMO = !args.includes('--no-demo');
 const LATENCY = Number(argVal('--latency', 60));
 const NO_MFA = args.includes('--no-mfa');
+const SETUP_TOKEN = args.includes('--no-setup-token') ? null : crypto.randomBytes(12).toString('base64url');
 
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'";
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.glb': 'model/gltf-binary', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
@@ -294,10 +295,11 @@ const list = (arr, q, def = 500) => { const limit = Math.min(Number(q.limit || d
 
 // ---- public
 R('GET', '/health', null, (c) => send(c.res, 200, { status: 'ok', version: '0.0.0-mock', catalogVersion: '2026.10.0-mock' }));
-R('GET', '/setup/status', null, (c) => send(c.res, 200, { needsSetup: db.users.length === 0 }));
+R('GET', '/setup/status', null, (c) => send(c.res, 200, { needsSetup: db.users.length === 0, tokenRequired: !!SETUP_TOKEN && db.users.length === 0 }));
 R('POST', '/setup', null, (c) => {
   if (db.users.length) return err(c.res, 409, 'ALREADY_SETUP', 'Setup has already been completed');
   const { org, admin } = c.body;
+  if (SETUP_TOKEN && c.body.setupToken !== SETUP_TOKEN) return err(c.res, 403, 'SETUP_TOKEN_INVALID', 'Setup token is missing or incorrect', { setupToken: 'is incorrect' });
   const fields = {};
   if (!org?.name) fields['org.name'] = 'is required';
   if (!admin?.email || !/^[^\s@]+@[^\s@]+$/.test(admin.email)) fields['admin.email'] = 'must be a valid email';
@@ -455,18 +457,20 @@ R('GET', '/catalog/glossary', 'any', (c) => send(c.res, 200, list(C.glossary, c.
 // ---- patients (blind-index semantics: exact last name / MRN, ?dob=, or first letter)
 const PATIENT_FIELDS = ['firstName', 'lastName', 'dob', 'sex', 'phone', 'email', 'address', 'mrn', 'notes'];
 const SEXES = ['female', 'male', 'other', 'unknown'];
-R('GET', '/patients', 'patientRead', (c) => {
-  const q = (c.query.q || '').trim();
+const patientSearch = (c, src) => {
+  const q = (src.q || '').trim();
   let arr = [...db.patients].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   let mode = 'list';
-  if (c.query.dob) { arr = arr.filter((p) => p.dob === c.query.dob); mode = 'dob'; }
+  if (src.dob) { arr = arr.filter((p) => p.dob === src.dob); mode = 'dob'; }
   if (q.length === 1 && /\p{L}/u.test(q)) { arr = arr.filter((p) => norm(p.lastName).startsWith(norm(q))); mode = 'letter'; }
   else if (q) { arr = arr.filter((p) => norm(p.lastName) === norm(q) || norm(p.mrn) === norm(q)); mode = 'exact'; }
   if (mode !== 'list') arr.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
   audit(c.user, 'patient.search', null, { detail: { mode } });
   const enrich = (p) => { const ss = db.scanSessions.filter((s) => s.patientId === p.id && !s.supersededBy); return { ...patientSummary(p), sessionCount: ss.length, lastSessionDate: ss.map((s) => s.sessionDate).sort().pop() || null }; };
-  send(c.res, 200, list(arr.map(enrich), c.query, 25));
-});
+  send(c.res, 200, list(arr.map(enrich), { limit: src.limit, offset: src.offset }, 25));
+};
+R('GET', '/patients', 'patientRead', (c) => patientSearch(c, c.query));
+R('POST', '/patients/search', 'patientRead', (c) => { if (!strict(c.res, c.body, ['q', 'dob', 'limit', 'offset'])) return; patientSearch(c, c.body); });
 function checkPatient(res, b, create) {
   if (!strict(res, b, [...PATIENT_FIELDS, ...(create ? [] : ['archived'])])) return false;
   const fields = {};
@@ -588,8 +592,10 @@ R('DELETE', '/sessions/:id/findings/:fid', 'clinical', (c) => {
 R('POST', '/sessions/:id/finalize', 'clinical', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
   if (locked(c, s)) return;
-  if (!strict(c.res, c.body, ['signatureName'])) return;
+  if (!strict(c.res, c.body, ['signatureName', 'password'])) return;
   if (!c.body.signatureName) return err(c.res, 400, 'VALIDATION', 'Invalid input', { signatureName: 'is required' });
+  if (!c.body.password || !checkPw(c.body.password, c.user.pw)) return err(c.res, 403, 'REAUTH_FAILED', 'Password is incorrect', { password: 'is incorrect' });
+  if (c.body.signatureName.trim().toLowerCase() !== c.user.name.trim().toLowerCase()) return err(c.res, 422, 'SIGNATURE_MISMATCH', 'Signature must match the signed-in practitioner');
   finalizeSession(s, c.body.signatureName, c.user);
   audit(c.user, 'session.finalize', s.id, { detail: { sha256: s.reportSha256 } });
   send(c.res, 200, { ok: true, status: s.status, sha256: s.reportSha256, hashShort: s.reportSha256.slice(0, 16), finalizedAt: s.finalizedAt, session: sessionView(s) });
@@ -608,6 +614,7 @@ R('POST', '/sessions/:id/amend', 'clinical', (c) => {
 });
 R('GET', '/sessions/:id/report', 'report', (c) => {
   const s = getSes(c); if (!s) return err(c.res, 404, 'NOT_FOUND', 'Session not found');
+  if (c.user.role === 'auditor' && s.status === 'draft') return err(c.res, 403, 'FORBIDDEN', 'Auditors can only open signed reports');
   audit(c.user, 'report.read', s.id);
   if (s.status === 'draft') return send(c.res, 200, { ...assembleReport(s), hash: null, integrity: null, supersededBy: s.supersededBy });
   const integrity = sha256(s.snapshot) === s.reportSha256 ? 'verified' : 'mismatch';
@@ -710,5 +717,8 @@ if (args.includes('--seeded')) {
   db.users.push(u); if (DEMO) seedDemo(u);
 }
 
-server.listen(PORT, '127.0.0.1', () => console.log(`[mock] YOU HEAL Clinical mock on http://127.0.0.1:${PORT}  (demo=${DEMO})`));
+server.listen(PORT, '127.0.0.1', () => {
+  if (SETUP_TOKEN && !args.includes('--seeded')) console.log(`[mock] setup token: ${SETUP_TOKEN}`);
+  console.log(`[mock] YOU HEAL Clinical mock on http://127.0.0.1:${PORT}  (demo=${DEMO})`);
+});
 export default server;

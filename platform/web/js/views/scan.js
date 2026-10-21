@@ -824,8 +824,11 @@ export async function renderScan({ main, params }) {
     if (!ok) { toast(t('scan.cannotFinalizeUnsaved'), { tone: 'error' }); return; }
     const counts = Object.fromEntries(FINDING_STATES.map((s) => [s, st.findings.filter((f) => f.status === s).length]));
     const expected = (state.user && state.user.name) || '';
-    const sig = input({ autocomplete: 'off', id: 'sig-name', placeholder: expected });
-    const fSig = field({ label: t('scan.signatureName'), input: sig, hint: t('scan.signatureHint', { name: expected }), required: true });
+    // Signature = the signed-in user's name (read-only); re-entering the password re-authenticates the signer.
+    const sig = input({ id: 'sig-name', value: expected, readOnly: true, aria: { readonly: 'true' } });
+    const fSig = field({ label: t('scan.signatureName'), input: sig, hint: t('scan.signatureFixed') });
+    const pw = input({ type: 'password', id: 'sig-password', autocomplete: 'current-password' });
+    const fPw = field({ label: t('scan.reauthPassword'), input: pw, hint: t('scan.reauthHint'), required: true });
     const attest = el('input', { type: 'checkbox', id: 'attest' });
     const errSlot = el('div', { aria: { live: 'assertive' } });
     const m = openModal({
@@ -837,23 +840,32 @@ export async function renderScan({ main, params }) {
           el('dt', t('scan.followUp')), el('dd', followInput.value ? fmtDate(followInput.value) : '—')),
         !st.findings.length ? alertBox({ tone: 'warn', children: [el('p', t('scan.finalizeNoFindings'))] }) : null,
         el('label.check.attest', attest, el('span', t('scan.attestation'))),
-        fSig, errSlot,
+        el('div.grid-2', fSig, fPw), errSlot,
         el('p.muted.small', t('scan.finalizeLock'))),
       actions: [
         { label: t('common.cancel'), value: null, variant: 'ghost' },
         { label: t('scan.signFinalize'), value: 'ok', variant: 'primary', icon: 'shield', onClick: async () => {
-          fSig.setError(null); clear(errSlot);
+          fSig.setError(null); fPw.setError(null); clear(errSlot);
           if (!attest.checked) { errSlot.append(alertBox({ tone: 'danger', children: [el('p', t('scan.attestRequired'))] })); attest.focus(); return false; }
-          const typed = sig.value.trim();
-          if (!typed) { fSig.setError(t('validation.required')); sig.focus(); return false; }
-          if (expected && typed.toLowerCase().replace(/\s+/g, ' ') !== expected.toLowerCase().replace(/\s+/g, ' ')) { fSig.setError(t('scan.signatureMismatch', { name: expected })); sig.focus(); return false; }
+          if (!pw.value) { fPw.setError(t('validation.required')); pw.focus(); return false; }
+          const typed = expected;
           try {
             // Body-map images become part of the immutable report snapshot, so upload them while still a draft.
             await uploadBodyMaps().catch((e) => console.warn('body map upload failed', e));
-            const res = await api.post(`/sessions/${session.id}/finalize`, { signatureName: typed });
+            const post = (body) => api.post(`/sessions/${session.id}/finalize`, body, { auth: false }); // a wrong password must not sign the user out
+            let res;
+            try { res = await post({ signatureName: typed, password: pw.value }); } catch (e1) {
+              // transitional: servers predating re-authentication reject the unknown `password` field
+              if (e1.code === 'VALIDATION' && e1.fields && /not an allowed field/.test(e1.fields.password || '')) res = await post({ signatureName: typed });
+              else throw e1;
+            }
             m.hashShort = res && (res.hashShort || (res.sha256 || '').slice(0, 16));
             return true;
-          } catch (err) { errSlot.append(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] })); return false; }
+          } catch (err) {
+            if (err.status === 401 || err.code === 'REAUTH_FAILED') { fPw.setError(t('scan.reauthWrong')); pw.value = ''; pw.focus(); return false; }
+            if (err.status === 422 || err.code === 'SIGNATURE_MISMATCH') { fSig.setError(t('scan.signatureServerMismatch')); return false; }
+            errSlot.append(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] })); return false;
+          }
         } },
       ],
     });

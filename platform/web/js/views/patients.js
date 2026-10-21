@@ -4,16 +4,18 @@ import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, ValidationError } from '../api.js';
 import { t, fmtDate, ageFrom } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
-import { can } from '../state.js';
+import { can, searchPatients, patientSearchMemory } from '../state.js';
 import { table, emptyState, field, input, textarea, select, alertBox, setLoading, skeleton, card } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { confirmDialog } from '../ui/modal.js';
 import { pageHeader, fullName, avatar, errorPanel, todayISO } from './common.js';
 
-export async function renderPatientList({ main, query }) {
+export async function renderPatientList({ main }) {
   // Server search is blind-index exact match (PHI is encrypted): exact last name, exact MRN, exact DOB, or first letter.
-  let q = query.q || '';
-  let dob = query.dob || '';
+  // Terms stay in memory only (never in the hash/URL/history).
+  let q = patientSearchMemory.q;
+  let dob = patientSearchMemory.dob;
+  if (location.hash.includes('?')) history.replaceState(null, '', '#/patients');
   const search = el('input.input.input-lg', { type: 'search', id: 'patient-search', placeholder: t('patients.searchPlaceholder'), value: q, autocomplete: 'off', spellcheck: 'false', aria: { describedby: 'patient-search-hint' } });
   const dobIn = el('input.input.input-lg', { type: 'date', id: 'patient-dob', value: dob, max: todayISO() });
   const go = el('button.btn.btn-primary.btn-lg', { type: 'submit' }, icon('search', { size: 18 }), t('common.search'));
@@ -34,10 +36,9 @@ export async function renderPatientList({ main, query }) {
 
   async function load() {
     letters.querySelectorAll('.alpha-btn').forEach((b) => b.setAttribute('aria-pressed', b.textContent === q.toUpperCase() ? 'true' : 'false'));
-    const url = new URLSearchParams(); if (q) url.set('q', q); if (dob) url.set('dob', dob);
-    history.replaceState(null, '', `#/patients${url.toString() ? '?' + url.toString() : ''}`);
+    patientSearchMemory.q = q; patientSearchMemory.dob = dob;
     let res;
-    try { res = await api.get('/patients', { q, dob, limit: 200 }); } catch (err) { mount(results, errorPanel(err, load)); return; }
+    try { res = await searchPatients({ q, dob, limit: 200 }); } catch (err) { mount(results, errorPanel(err, load)); return; }
     const list = items(res);
     const mode = dob ? 'dob' : q.length === 1 ? 'letter' : q ? 'exact' : 'recent';
     count.textContent = t(`patients.count_${mode}`, { count: list.length, total: res.total ?? list.length, q, dob: dob ? fmtDate(dob) : '' });

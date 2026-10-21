@@ -72,23 +72,31 @@ function applyFieldErrors(err, map) {
 // ---------------- Setup wizard ----------------
 export async function renderSetup({ main }) {
   let step = 0;
-  const data = { orgName: '', name: '', email: '', password: '' };
+  let setupTokenField = null;
+  const data = { orgName: '', name: '', email: '', password: '', setupToken: '' };
+  // Hardened servers require the one-time setup token printed in the server log / data folder.
+  let tokenRequired = false;
+  try { tokenRequired = !!(await api.get('/setup/status', null, { auth: false })).tokenRequired; } catch { /* keep false */ }
 
   function draw() {
     const steps = stepper([t('setup.stepClinic'), t('setup.stepAdmin'), t('setup.stepSecure')], step);
     if (step === 0) {
       const org = input({ autocomplete: 'organization', value: data.orgName });
       const f = field({ label: t('setup.orgName'), input: org, hint: t('setup.orgNameHint'), required: true });
+      const tok = tokenRequired ? input({ autocomplete: 'off', spellcheck: 'false', class: 'mono', value: data.setupToken }) : null;
+      const fTok = tok ? field({ label: t('setup.token'), input: tok, hint: t('setup.tokenHint'), required: true }) : null;
+      setupTokenField = fTok;
       const form = el('form.form', { novalidate: true },
-        f,
+        fTok, f,
         el('div.form-actions', el('button.btn.btn-primary.btn-lg.btn-block', { type: 'submit' }, t('common.continue'), icon('chevronRight', { size: 18 }))));
       form.addEventListener('submit', (e) => {
         e.preventDefault();
+        if (tok) { fTok.setError(null); if (!tok.value.trim()) { fTok.setError(t('validation.required')); tok.focus(); return; } data.setupToken = tok.value.trim(); }
         if (!org.value.trim()) { f.setError(t('validation.required')); org.focus(); return; }
         data.orgName = org.value.trim(); step = 1; draw();
       });
       mount(main, authCard({ title: t('setup.title'), sub: t('setup.sub'), steps, children: [form] }));
-      org.focus();
+      (tok || org).focus();
       return;
     }
     if (step === 1) {
@@ -120,9 +128,10 @@ export async function renderSetup({ main }) {
         data.name = name.value.trim(); data.email = email.value.trim(); data.password = pw.input.value;
         setLoading(submit, true);
         try {
-          await api.post('/setup', { org: { name: data.orgName }, admin: { email: data.email, name: data.name, password: data.password } }, { auth: false });
+          await api.post('/setup', { org: { name: data.orgName }, admin: { email: data.email, name: data.name, password: data.password }, ...(tokenRequired ? { setupToken: data.setupToken } : {}) }, { auth: false });
           step = 2; draw();
         } catch (err) {
+          if (/SETUP_TOKEN/.test(err.code || '') || (err.fields && err.fields.setupToken)) { step = 0; draw(); if (setupTokenField) setupTokenField.setError(errorMessage(err)); return; }
           if (!applyFieldErrors(err, { email: fEmail, password: fPw, name: fName, 'admin.email': fEmail, 'admin.password': fPw, 'admin.name': fName })) errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] }));
         } finally { setLoading(submit, false); }
       });

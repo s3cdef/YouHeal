@@ -43,6 +43,23 @@ export function normQualifiers(q) {
   return { tracking: (q && q.tracking) || [], impact: (q && q.impact) || [] };
 }
 
+// ---------------- Patient search ----------------
+// PHI search terms go in a POST body (CONTRACT §5 security remediation) — never in a URL, hash or history.
+// The last search lives only in memory for the lifetime of the page.
+export const patientSearchMemory = { q: '', dob: '' };
+let searchViaPost = true;
+export async function searchPatients({ q = '', dob = '', limit = 50 } = {}) {
+  if (!q && !dob) return api.get('/patients', { limit });
+  if (searchViaPost) {
+    try { return await api.post('/patients/search', { q: q || undefined, dob: dob || undefined, limit }); } catch (err) {
+      // Older servers without the endpoint: fall back once to the GET form (API query only; never the app URL).
+      if (!(err && (err.status === 404 || err.status === 405))) throw err;
+      searchViaPost = false;
+    }
+  }
+  return api.get('/patients', { q, dob, limit });
+}
+
 // ---------------- Catalog cache ----------------
 const cache = {
   core: null,

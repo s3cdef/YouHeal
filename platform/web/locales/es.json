@@ -104,7 +104,9 @@
   "doneSub": "Inicie sesión con la cuenta de administrador que acaba de crear.",
   "mfaNextTitle": "Siguiente: verificación en dos pasos",
   "mfaNext": "Los administradores deben proteger su cuenta con una aplicación autenticadora (Google Authenticator, Microsoft Authenticator, 1Password…). Se le guiará al iniciar sesión.",
-  "signInNow": "Iniciar sesión"
+  "signInNow": "Iniciar sesión",
+  "token": "Token de configuración",
+  "tokenHint": "Se imprime en el registro del servidor al primer arranque y se guarda en la carpeta de datos como setup-token."
  },
  "mfa": {
   "title": "Active la verificación en dos pasos",
@@ -219,7 +221,9 @@
   "noMatchBody": "Revise el apellido completo, pruebe con el MRN o la fecha de nacimiento, o busque por letra.",
   "secIdentity": "Identidad",
   "secContact": "Contacto",
-  "secClinical": "Expediente"
+  "secClinical": "Expediente",
+  "colLastScan": "Último rastreo",
+  "colSessions": "Sesiones"
  },
  "patient": {
   "name": "Paciente",
@@ -527,7 +531,7 @@
   "finalizeNoFindings": "No se registraron hallazgos. Puede firmar una sesión sin hallazgos.",
   "attestation": "Declaro que realicé personalmente este rastreo y que estos hallazgos son observaciones complementarias, no diagnósticas, registradas con exactitud.",
   "attestRequired": "Confirme la declaración para firmar.",
-  "signatureName": "Escriba su nombre completo para firmar",
+  "signatureName": "Firma electrónica",
   "signatureHint": "Debe coincidir con el nombre de su cuenta: {name}",
   "signatureMismatch": "Escriba su nombre tal como aparece en su cuenta: {name}",
   "finalizeLock": "Al firmar, el informe se sella con una huella SHA-256 y solo puede cambiarse mediante una enmienda.",
@@ -547,7 +551,12 @@
   "kSearch": "Buscar un punto",
   "kViews": "Frente · Espalda · Izquierda · Derecha",
   "kClose": "Cerrar panel",
-  "restored": "Lista restaurada — {checked} de {total} revisados"
+  "restored": "Lista restaurada — {checked} de {total} revisados",
+  "signatureFixed": "El nombre de su cuenta se usa como firma electrónica.",
+  "reauthPassword": "Confirme con su contraseña",
+  "reauthHint": "Volver a ingresar su contraseña confirma que es usted quien firma.",
+  "reauthWrong": "La contraseña no es correcta.",
+  "signatureServerMismatch": "La firma debe coincidir con el nombre del terapeuta que inició sesión."
  },
  "viewer": {
   "bodyMap": "Mapa corporal",
@@ -847,7 +856,9 @@
   "generalNote": "Resumen de las recomendaciones generales — su terapeuta puede entregarle las hojas completas.",
   "matchedAlways": "siempre incluida",
   "matchedBy": "relacionada con {pairs}",
-  "showFullText": "Ver texto completo"
+  "showFullText": "Ver texto completo",
+  "auditorOnlyFinalTitle": "Solo están disponibles los informes firmados",
+  "auditorOnlyFinal": "Los auditores pueden abrir informes finales y enmendados. Esta sesión aún no se ha firmado."
  },
  "settings": {
   "title": "Ajustes",
@@ -1009,7 +1020,12 @@
    "CSRF": "Su token de sesión expiró. Recargue la página e intente de nuevo.",
    "MFA_ENROLLMENT_REQUIRED": "Active la verificación en dos pasos para continuar.",
    "PASSWORD_CHANGE_REQUIRED": "Elija una nueva contraseña para continuar.",
-   "PATIENT_ARCHIVED": "Este paciente está archivado."
-  }
+   "PATIENT_ARCHIVED": "Este paciente está archivado.",
+   "SIGNATURE_MISMATCH": "La firma debe coincidir con el nombre del terapeuta que inició sesión.",
+   "SETUP_TOKEN_INVALID": "El token de configuración no es correcto. Revise el registro del servidor o el archivo setup-token en la carpeta de datos.",
+   "SETUP_TOKEN_REQUIRED": "Ingrese el token de configuración del registro del servidor o del archivo setup-token en la carpeta de datos."
+  },
+  "rateLimitedFor": "Demasiadas solicitudes — espere {s} segundos e intente de nuevo.",
+  "hostRejected": "Esta dirección no está permitida para el servidor de la clínica. Abra YOU HEAL Clínica con la dirección configurada por su administrador."
  }
 }

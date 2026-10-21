@@ -17,7 +17,11 @@ function cssString(s) { return `"${String(s).replace(/\\/g, '\\\\').replace(/"/g
 export async function renderReport({ main, params }) {
   mount(main, el('div.page', skeleton(10)));
   let rep; let core;
-  try { [rep, core] = await Promise.all([api.get(`/sessions/${encodeURIComponent(params.id)}/report`), loadCore()]); } catch (err) { mount(main, el('div.page', errorPanel(err, () => renderReport({ main, params })))); return null; }
+  try { [rep, core] = await Promise.all([api.get(`/sessions/${encodeURIComponent(params.id)}/report`), loadCore()]); } catch (err) {
+    // Auditors may only open signed (final/amended) reports.
+    if (err.status === 403 && !can.clinical()) { mount(main, el('div.page', alertBox({ tone: 'info', ic: 'lock', title: t('report.auditorOnlyFinalTitle'), children: [el('p', t('report.auditorOnlyFinal'))] }), el('a.btn.btn-secondary', { href: '#/settings/audit' }, icon('arrowLeft', { size: 18 }), t('common.back')))); return null; }
+    mount(main, el('div.page', errorPanel(err, () => renderReport({ main, params })))); return null;
+  }
 
   const status = String(rep.status || 'DRAFT').toLowerCase(); // draft | final | amended
   const isFinal = status !== 'draft';
