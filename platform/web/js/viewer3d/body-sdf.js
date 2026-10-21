@@ -106,7 +106,7 @@ export function roundCone(a, b, r1, r2) {
   };
 }
 
-const TABLE = 192;
+const TABLE = 320;
 
 /**
  * Loft: elliptical (or super-elliptical, exponent n) cross-section swept along
@@ -307,12 +307,13 @@ export function buildBody(opts = {}) {
   const S = (p, k) => prims.push({ ...p, k, op: 1 }); // smooth subtraction
 
   // ---------------- torso (loft along y, front = +z, soft super-ellipse) ---
-  const Y0 = 0.825, Y1 = 1.505;
+  const Y0 = 0.765, Y1 = 1.505;
   const T = (y, w, f, b, off) => [(y - Y0) / (Y1 - Y0), w, f, b, off];
   U(loft([0, Y0, 0], [0, Y1, 0], [0, 0, 1], [
-    T(0.825, 0.030, 0.025, 0.035, -0.014),
-    T(0.845, 0.085 * hp, 0.062, 0.075, -0.016),
-    T(0.880, 0.130 * hp, 0.084, 0.093, -0.016),
+    T(0.765, 0.050, 0.040, 0.050, -0.016),
+    T(0.800, 0.085 * hp, 0.056, 0.068, -0.016),
+    T(0.840, 0.115 * hp, 0.072, 0.085, -0.016),
+    T(0.880, 0.136 * hp, 0.084, 0.094, -0.016),
     T(0.925, 0.150 * hp, 0.092, 0.098, -0.014),
     T(0.970, 0.145 * hp, 0.090, 0.090, -0.010),
     T(1.025, 0.143 * (hp + wa) / 2, 0.090, 0.082, -0.002),
@@ -351,36 +352,32 @@ export function buildBody(opts = {}) {
   // ---------------- limbs: one loft per limb along the chord of its joint
   // chain; the joint deviation is encoded as centre offsets, so knees and
   // elbows are seamless (no overlapping parts).
-  const uaA = add3(shoulderJ, armDir, -0.02), wristEnd = add3(wrist, foreDir, 0.012);
-  const uE = chainU(uaA, wristEnd, elbow);
-  U(chainLoft([uaA, elbow, wristEnd], [0, 0, 1], [
+  // whole upper limb in one loft: shoulder → elbow → wrist → knuckles → fingertip
+  // (palm faces +z, fingers fused; no seams at elbow or wrist)
+  const uaA = add3(shoulderJ, armDir, -0.02);
+  const Ua = (p, q, t) => chainU(uaA, fingertip, [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t]);
+  U(chainLoft([uaA, elbow, wrist, knuckle, fingertip], [0, 0, 1], [
     [0.00, 0.047 * lm, 0.047 * lm, 0.047 * lm],
-    [0.10, 0.046 * lm, 0.046 * lm, 0.045 * lm],
-    [0.28, 0.041 * lm, 0.046 * lm, 0.042 * lm, 0.002],
-    [uE - 0.12, 0.036 * lm, 0.040 * lm, 0.038 * lm],
-    [uE - 0.03, 0.034 * lm, 0.034 * lm, 0.035 * lm],
-    [uE, 0.034 * lm, 0.033 * lm, 0.035 * lm],
-    [uE + 0.05, 0.037 * lm, 0.034 * lm, 0.035 * lm],
-    [uE + 0.12, 0.041 * lm, 0.035 * lm, 0.034 * lm, 0.002],
-    [uE + 0.25, 0.035 * lm, 0.029 * lm, 0.029 * lm],
-    [0.95, 0.0285 * lm, 0.021 * lm, 0.021 * lm],
-    [1.00, 0.027 * lm, 0.019 * lm, 0.020 * lm],
-  ]), 0.035);
-  // hand: palm + fused fingers in one loft (fingers curl slightly forward)
-  const handA = add3(wrist, handDir, -0.014);
-  const uK = chainU(handA, fingertip, knuckle);
-  U(chainLoft([handA, knuckle, fingertip], [0, 0, 1], [
-    [0.00, 0.026, 0.018, 0.019],
-    [0.15, 0.031, 0.019, 0.018],
-    [0.35, 0.036, 0.018, 0.016],
-    [uK - 0.06, 0.040, 0.0155, 0.014],
-    [uK, 0.039, 0.0140, 0.0125],
-    [uK + 0.06, 0.038, 0.0125, 0.011],
-    [0.76, 0.034, 0.010, 0.009],
-    [0.90, 0.027, 0.009, 0.008],
-    [0.96, 0.020, 0.0075, 0.007],
+    [Ua(uaA, elbow, 0.10), 0.046 * lm, 0.046 * lm, 0.045 * lm],
+    [Ua(uaA, elbow, 0.30), 0.041 * lm, 0.046 * lm, 0.042 * lm, 0.002],
+    [Ua(uaA, elbow, 0.75), 0.036 * lm, 0.040 * lm, 0.038 * lm],
+    [Ua(uaA, elbow, 0.93), 0.034 * lm, 0.034 * lm, 0.035 * lm],
+    [Ua(elbow, wrist, 0.0), 0.034 * lm, 0.033 * lm, 0.035 * lm],
+    [Ua(elbow, wrist, 0.18), 0.038 * lm, 0.034 * lm, 0.035 * lm],
+    [Ua(elbow, wrist, 0.33), 0.041 * lm, 0.035 * lm, 0.034 * lm, 0.002],
+    [Ua(elbow, wrist, 0.65), 0.035 * lm, 0.029 * lm, 0.029 * lm],
+    [Ua(elbow, wrist, 0.92), 0.0285 * lm, 0.021 * lm, 0.021 * lm],
+    [Ua(wrist, knuckle, 0.0), 0.027, 0.019, 0.020],
+    [Ua(wrist, knuckle, 0.25), 0.031, 0.019, 0.018],
+    [Ua(wrist, knuckle, 0.60), 0.036, 0.018, 0.016],
+    [Ua(wrist, knuckle, 0.88), 0.040, 0.0155, 0.014],
+    [Ua(knuckle, fingertip, 0.0), 0.039, 0.014, 0.0125],
+    [Ua(knuckle, fingertip, 0.15), 0.038, 0.0125, 0.011],
+    [Ua(knuckle, fingertip, 0.50), 0.034, 0.010, 0.009],
+    [Ua(knuckle, fingertip, 0.80), 0.027, 0.009, 0.008],
+    [Ua(knuckle, fingertip, 0.92), 0.020, 0.0075, 0.007],
     [1.00, 0.006, 0.003, 0.003],
-  ]), 0.012);
+  ]), 0.035);
   const sideOut = norm3(cross3([0, 0, 1], handDir)); // lateral (away from the torso) for the left hand
   const thumbBase = add3(add3(add3(wrist, handDir, 0.024), sideOut, 0.021), [0, 0, 1], 0.005);
   const thumbDir = norm3(add3(add3(handDir, sideOut, 0.32), [0, 0, 1], 0.30));

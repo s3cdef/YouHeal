@@ -2,6 +2,7 @@
 // Requires Playwright + Chromium (not a repo dependency). Usage:
 //   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node tests/viewer3d/shoot.mjs [name=query ...]
 // Set PLAYWRIGHT_MODULE to the playwright entry if it is not resolvable.
+// PREVIEW_DIR=docs/previews/3d additionally writes <name>.jpg (quality 82) for committed previews.
 import { spawn } from 'node:child_process';
 import { mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
@@ -29,7 +30,7 @@ const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable
 const problems = [];
 try {
   for (const [name, query] of Object.entries(shots)) {
-    const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1 });
+    const page = await browser.newPage({ viewport: process.env.PREVIEW_DIR ? { width: 1520, height: 1180 } : { width: 1280, height: 900 }, deviceScaleFactor: 1 });
     page.on('console', (m) => { if (['error', 'warning'].includes(m.type())) problems.push(`[${name}] ${m.type()}: ${m.text()}`); });
     page.on('pageerror', (e) => problems.push(`[${name}] pageerror: ${e.message}`));
     const t0 = Date.now();
@@ -38,6 +39,10 @@ try {
     await page.waitForTimeout(1200);
     const file = join(out, `viewer-${name}.png`);
     await page.locator('#viewer').screenshot({ path: file });
+    if (process.env.PREVIEW_DIR) {
+      await mkdir(process.env.PREVIEW_DIR, { recursive: true });
+      await page.locator('#viewer').screenshot({ path: join(process.env.PREVIEW_DIR, `${name}.jpg`), type: 'jpeg', quality: 82 });
+    }
     console.log(`${name}: ${file} (${Date.now() - t0} ms)`);
     await page.close();
   }
