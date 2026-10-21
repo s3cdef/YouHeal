@@ -106,7 +106,8 @@ function suggest({ symptoms = [], text = '' }) {
     if (norm(textOf(p.name)).includes(t)) { bump(p.id, 0.35 * fWeight(p), { type: 'text', token: t, field: 'name' }); continue; }
     if (p.relations.some((r) => norm(textOf(entById.get(r.entity)?.name)).includes(t))) bump(p.id, 0.35 * fWeight(p), { type: 'text', token: t, field: 'relation' });
   }
-  return [...scores.values()].map((x) => ({ ...x, score: Math.round(x.score * 1000) / 1000, pair: pairSummary(pairsById.get(x.pairId)) })).sort((a, b) => b.score - a.score).slice(0, 25);
+  const top = Math.max(1e-9, ...[...scores.values()].map((x) => x.score));
+  return [...scores.values()].map((x) => ({ ...x, score: Math.round(x.score * 1000) / 1000, score01: Math.round((x.score / top) * 1000) / 1000, pair: pairSummary(pairsById.get(x.pairId)) })).sort((a, b) => b.score - a.score).slice(0, 25);
 }
 
 // ---------------------------------------------------------------- domain helpers
@@ -115,16 +116,18 @@ const publicUser = (u) => ({ id: u.id, email: u.email, name: u.name, role: u.rol
 const ageAt = (dob, at = new Date().toISOString()) => { if (!dob) return null; const [y, m, d] = dob.split('-').map(Number); const [ay, am, ad] = at.slice(0, 10).split('-').map(Number); let a = ay - y; if (am < m || (am === m && ad < d)) a--; return a; };
 const patientSummary = (p) => ({ id: p.id, mrn: p.mrn, firstName: p.firstName, lastName: p.lastName, dob: p.dob, age: ageAt(p.dob), sex: p.sex, archived: false, createdAt: p.createdAt });
 const restrictionOf = (u) => (u.mustChangePassword ? 'password' : u.role === 'admin' && !u.mfaEnabled && !NO_MFA ? 'mfa' : null);
-const mePayload = (u, csrf) => ({ user: publicUser(u), org: db.org, csrfToken: csrf, mfaEnrollmentRequired: restrictionOf(u) === 'mfa', passwordChangeRequired: restrictionOf(u) === 'password', session: { idleTimeoutSec: 900 } });
+const orgPublic = () => (db.org ? (({ logo, ...rest }) => ({ ...rest, hasLogo: !!logo }))(db.org) : null);
+const mePayload = (u, csrf) => ({ user: publicUser(u), org: orgPublic(), csrfToken: csrf, mfaEnrollmentRequired: restrictionOf(u) === 'mfa', passwordChangeRequired: restrictionOf(u) === 'password', session: { idleTimeoutSec: 900 } });
 const nextMrn = () => `YH-${String(db.patients.length + 1).padStart(6, '0')}`;
 const addDays = (iso, n) => { const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const userName = (uid) => { const u = db.users.find((x) => x.id === uid); return u ? { id: u.id, name: u.name } : null; };
 function sessionSummary(s) {
   return { id: s.id, patientId: s.patientId, status: s.status, revision: s.revision, parentId: s.parentId, supersededBy: s.supersededBy,
     methodology: s.methodology, sessionDate: s.sessionDate, followUpDate: s.followUpDate, practitioner: userName(s.practitionerId),
-    findingCount: s.findings.length, finalizedAt: s.finalizedAt, reportSha256: s.reportSha256, createdAt: s.createdAt };
+    findingCount: s.findings.length, findingsCount: s.findings.length, startedAt: s.sessionDate, finalizedAt: s.finalizedAt, reportSha256: s.reportSha256, createdAt: s.createdAt };
 }
-const sessionView = (s) => ({ ...sessionSummary(s), protocolIds: s.protocolIds, symptoms: s.symptoms, chiefComplaint: s.chiefComplaint, vitals: s.vitals, notes: s.notes,
+const withChief = (s, user) => ({ ...sessionSummary(s), ...(ROLE_SETS.clinical.includes(user.role) ? { chiefComplaint: s.chiefComplaint } : {}) });
+const sessionView = (s) => ({ ...sessionSummary(s), scanState: s.scanState ?? null, protocolIds: s.protocolIds, symptoms: s.symptoms, chiefComplaint: s.chiefComplaint, vitals: s.vitals, notes: s.notes,
   amendReason: s.amendReason, signatureName: s.signatureName, finalizedBy: userName(s.finalizedBy), updatedAt: s.updatedAt,
   images: { front: !!db.reportImages.get(s.id)?.front, back: !!db.reportImages.get(s.id)?.back }, findings: s.findings.map((f) => ({ ...f })) });
 
@@ -167,7 +170,7 @@ function assembleReport(s, over = {}) {
     reportNumber: `${pt.mrn}-${s.sessionDate.slice(0, 10).replace(/-/g, '')}-R${s.revision}`,
     status: status === 'draft' ? 'DRAFT' : status === 'amended' ? 'AMENDED' : 'FINAL', revision: s.revision,
     amendment: parent ? { parentId: parent.id, parentRevision: parent.revision, parentSha256: parent.reportSha256, reason: s.amendReason } : null,
-    org: { name: db.org.name, legalName: db.org.legalName, address: db.org.address, phone: db.org.phone, email: db.org.email, website: db.org.website, license: db.org.license, reportFooter: db.org.reportFooter },
+    org: { name: db.org.name, legalName: db.org.legalName, address: db.org.address, phone: db.org.phone, email: db.org.email, website: db.org.website, license: db.org.license, reportFooter: db.org.reportFooter, logo: db.org.logo || null },
     polarity: db.org.polarity,
     patient: { id: pt.id, mrn: pt.mrn, firstName: pt.firstName, lastName: pt.lastName, fullName: `${pt.firstName} ${pt.lastName}`, dob: pt.dob, age: ageAt(pt.dob, s.sessionDate), sex: pt.sex },
     practitioner: pr ? { id: pr.id, name: pr.name, email: pr.email, role: pr.role } : null,
@@ -178,7 +181,8 @@ function assembleReport(s, over = {}) {
     findings, groups,
     totals: { findings: findings.length, byStatus: Object.fromEntries(['found', 'impacted', 'cleared'].map((st) => [st, findings.filter((f) => f.status === st).length])) },
     bodyMap: { magnets, images: { front: img.front || null, back: img.back || null } },
-    recommendations: { pairSpecific, general: C.recommendations },
+    recommendations: { pairSpecific, general: generalRecs(findings) },
+    generalRecommendations: generalRecs(findings),
     followUp: { date: s.followUpDate, note: { en: 'A follow-up scan is recommended after one week (reservoir release).', es: 'Se recomienda un rastreo de control a la semana (liberación de reservorios).' } },
     attestation: status === 'draft' ? null : { signatureName: over.signatureName ?? s.signatureName, finalizedAt: over.finalizedAt ?? s.finalizedAt, finalizedBy: finalizer,
       statement: { en: 'I attest that this report accurately reflects the findings of the session described above.', es: 'Certifico que este informe refleja fielmente los hallazgos de la sesión descrita.' } },
@@ -187,6 +191,11 @@ function assembleReport(s, over = {}) {
     catalog: { version: '2026.10.0-mock', sources: [...new Set(findings.map((f) => pairsById.get(f.pairId)?.source?.doc).filter(Boolean))].map((x) => sourceById.get(x)).filter(Boolean).map((x) => ({ id: x.id, title: x.title, license_status: x.license_status, notice: x.notice })) },
     generatedAt: status === 'draft' ? now() : (over.finalizedAt ?? s.finalizedAt),
   };
+}
+function generalRecs(findings) {
+  const pick = (r, matchedBy) => ({ id: r.id, title: r.title, summary: Object.fromEntries(Object.entries(r.body).map(([k, v]) => [k, (/^.*?[.!?](?=\s|$)/.exec(v) || [v])[0]])), body: r.body, matchedBy });
+  const ids = findings.map((f) => f.pairId).filter(Boolean);
+  return [pick(C.recommendations[0], [{ rule: 'always', pairIds: [] }]), ...(ids.length ? [pick(C.recommendations[1], [{ rule: 'rec-followup', pairIds: ids.slice(0, 2) }])] : [])];
 }
 function finalizeSession(s, signatureName, user, when = new Date()) {
   const status = s.parentId ? 'amended' : 'final';
@@ -348,7 +357,11 @@ R('POST', '/auth/mfa/disable', 'any', (c) => {
 });
 R('PATCH', '/auth/prefs', 'any', (c) => { if (!strict(c.res, c.body, ['locale', 'theme'])) return; if (c.body.locale) c.user.locale = c.body.locale; if (c.body.theme) c.user.theme = c.body.theme; send(c.res, 200, { ok: true, user: publicUser(c.user) }); });
 
-R('GET', '/users', 'admin', (c) => send(c.res, 200, list(db.users.map(publicUser), c.query)));
+R('GET', '/users', 'audit', (c) => {
+  if (c.query.minimal === '1') return send(c.res, 200, { items: db.users.map((u) => ({ id: u.id, name: u.name })), total: db.users.length });
+  if (c.user.role !== 'admin') return err(c.res, 403, 'FORBIDDEN', 'Your role cannot perform this action');
+  send(c.res, 200, list(db.users.map(publicUser), c.query));
+});
 R('POST', '/users', 'admin', (c) => {
   if (!strict(c.res, c.body, ['email', 'name', 'role', 'password', 'mustChangePassword', 'locale'])) return;
   const { email, name, role } = c.body; let { password } = c.body;
@@ -371,10 +384,11 @@ R('PATCH', '/users/:id', 'admin', (c) => {
   if (c.body.resetMfa) { u.mfaEnabled = false; delete u.mfaSecret; }
   audit(c.user, 'user.update', u.id); send(c.res, 200, { user: publicUser(u) });
 });
-R('GET', '/org', 'any', (c) => send(c.res, 200, db.org));
+R('GET', '/org', 'any', (c) => send(c.res, 200, { ...db.org, logo: db.org.logo || null }));
 R('PATCH', '/org', 'admin', (c) => {
-  const allowed = ['name', 'legalName', 'address', 'phone', 'email', 'website', 'license', 'reportFooter', 'polarity', 'defaultLocale'];
+  const allowed = ['name', 'legalName', 'address', 'phone', 'email', 'website', 'license', 'reportFooter', 'polarity', 'defaultLocale', 'logo'];
   if (!strict(c.res, c.body, allowed)) return;
+  if (c.body.logo && (!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(c.body.logo) || c.body.logo.length > Math.ceil(200 * 1024 * 4 / 3) + 64)) return err(c.res, 400, 'VALIDATION', 'Invalid logo', { logo: 'must be a PNG/JPEG/WebP data URL ≤ 200 KB' });
   if (c.body.website && !/^https?:\/\/\S+$/.test(c.body.website)) return err(c.res, 400, 'VALIDATION', 'Invalid input', { website: 'must start with http:// or https://' });
   for (const k of allowed) if (k in c.body) db.org[k] = c.body[k];
   audit(c.user, 'org.update'); send(c.res, 200, db.org);
@@ -450,7 +464,8 @@ R('GET', '/patients', 'patientRead', (c) => {
   else if (q) { arr = arr.filter((p) => norm(p.lastName) === norm(q) || norm(p.mrn) === norm(q)); mode = 'exact'; }
   if (mode !== 'list') arr.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
   audit(c.user, 'patient.search', null, { detail: { mode } });
-  send(c.res, 200, list(arr.map(patientSummary), c.query, 25));
+  const enrich = (p) => { const ss = db.scanSessions.filter((s) => s.patientId === p.id && !s.supersededBy); return { ...patientSummary(p), sessionCount: ss.length, lastSessionDate: ss.map((s) => s.sessionDate).sort().pop() || null }; };
+  send(c.res, 200, list(arr.map(enrich), c.query, 25));
 });
 function checkPatient(res, b, create) {
   if (!strict(res, b, [...PATIENT_FIELDS, ...(create ? [] : ['archived'])])) return false;
@@ -503,8 +518,21 @@ R('POST', '/patients/:id/consents', 'intake', (c) => {
 });
 
 // ---- sessions (no cross-patient GET /sessions in the real API)
-const SESSION_PATCH = ['methodology', 'protocolIds', 'chiefComplaint', 'symptoms', 'vitals', 'notes', 'sessionDate', 'followUpDate'];
-R('GET', '/patients/:id/sessions', 'patientRead', (c) => { const arr = db.scanSessions.filter((s) => s.patientId === c.params.id).sort((a, b) => b.sessionDate.localeCompare(a.sessionDate) || b.revision - a.revision).map(sessionSummary); send(c.res, 200, { items: arr, total: arr.length }); });
+const SESSION_PATCH = ['methodology', 'protocolIds', 'chiefComplaint', 'symptoms', 'vitals', 'notes', 'sessionDate', 'followUpDate', 'scanState'];
+R('GET', '/patients/:id/sessions', 'patientRead', (c) => { const arr = db.scanSessions.filter((s) => s.patientId === c.params.id).sort((a, b) => b.sessionDate.localeCompare(a.sessionDate) || b.revision - a.revision).map((s) => withChief(s, c.user)); send(c.res, 200, { items: arr, total: arr.length }); });
+// Cross-patient listing for the dashboard (CONTRACT §5).
+R('GET', '/sessions', 'patientRead', (c) => {
+  const q = c.query;
+  const day = (v, end) => (v && v.length === 10 ? new Date(`${v}T00:00:00`).getTime() + (end ? 86400000 : 0) : v ? Date.parse(v) : null);
+  const from = day(q.from, false); const to = day(q.to, true);
+  const st = q.status ? q.status.split(',') : null;
+  let arr = db.scanSessions.filter((s) => (from === null || Date.parse(s.sessionDate) >= from) && (to === null || Date.parse(s.sessionDate) < to)
+    && (!st || st.includes(s.status)) && (!q.followUpTo || (s.followUpDate && s.followUpDate <= q.followUpTo)) && (!q.patientId || s.patientId === q.patientId) && (!(q.latest === '1') || !s.supersededBy));
+  arr.sort(q.followUpTo ? (a, b) => a.followUpDate.localeCompare(b.followUpDate) || b.sessionDate.localeCompare(a.sessionDate) : (a, b) => b.sessionDate.localeCompare(a.sessionDate));
+  const items2 = arr.map((s) => { const pt = db.patients.find((p) => p.id === s.patientId); return { ...withChief(s, c.user), patient: pt ? { id: pt.id, mrn: pt.mrn, name: `${pt.firstName} ${pt.lastName}`, firstName: pt.firstName, lastName: pt.lastName } : null, patientName: pt ? `${pt.firstName} ${pt.lastName}` : null }; });
+  audit(c.user, 'session.list');
+  send(c.res, 200, list(items2, q, 50));
+});
 R('POST', '/patients/:id/sessions', 'clinical', (c) => {
   if (!strict(c.res, c.body, SESSION_PATCH)) return;
   const p = db.patients.find((x) => x.id === c.params.id); if (!p) return err(c.res, 404, 'NOT_FOUND', 'Patient not found');

@@ -546,7 +546,8 @@
   "kOpen": "Open pair details",
   "kSearch": "Find a point",
   "kViews": "Front · Back · Left · Right",
-  "kClose": "Close panel"
+  "kClose": "Close panel",
+  "restored": "Checklist restored — {checked} of {total} checked"
  },
  "viewer": {
   "bodyMap": "Body map",
@@ -843,7 +844,10 @@
   "print": "Print / Save as PDF",
   "signedOn2": "Signed",
   "imagesNotSaved": "Body maps could not be stored with the report.",
-  "generalNote": "Summaries of the general guidance — your practitioner can provide the full recommendation sheets."
+  "generalNote": "Summaries of the general guidance — your practitioner can provide the full recommendation sheets.",
+  "matchedAlways": "always included",
+  "matchedBy": "matched by {pairs}",
+  "showFullText": "Show full text"
  },
  "settings": {
   "title": "Settings",

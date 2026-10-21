@@ -78,22 +78,25 @@ export async function renderDashboard({ main }) {
   const today = todayISO();
   const tomorrow = addDaysISO(today, 1);
   async function load() {
-    const patients = items(await api.get('/patients', { limit: 50 }));
-    const byId = new Map(patients.map((p) => [p.id, p]));
-    // CONTRACT §5 has no cross-patient session listing yet, so aggregate per-patient session summaries
-    // for the most recently added patients. (Backend gap: GET /sessions?from&to&status&followUpTo.)
-    const lists = await Promise.all(patients.slice(0, 40).map((p) => api.get(`/patients/${encodeURIComponent(p.id)}/sessions`).then(items).catch(() => [])));
-    let sessions = lists.flat();
-    sessions = sessions.map(normSession).map((s) => ({ ...s, patient: s.patient || byId.get(s.patientId) || null })).filter((s) => !s.supersededBy);
-    sessions.sort((x, y) => String(y.startedAt).localeCompare(String(x.startedAt)));
-    const isToday = (iso) => iso && todayISO(new Date(iso)) === today;
-    const latestByPatient = new Map();
-    for (const s of sessions) if (!latestByPatient.has(s.patientId)) latestByPatient.set(s.patientId, s);
-    const todays = sessions.filter((s) => isToday(s.startedAt)).sort((x, y) => String(x.startedAt).localeCompare(String(y.startedAt)));
-    const drafts = sessions.filter((s) => s.status === 'draft');
-    const follow = [...latestByPatient.values()].filter((s) => s.status !== 'draft' && s.followUpDate && s.followUpDate <= addDaysISO(today, 7)).sort((x, y) => x.followUpDate.localeCompare(y.followUpDate));
-    for (const p of patients) { const l = latestByPatient.get(p.id); p.lastSessionAt = l ? l.startedAt : null; }
-    return { todays, drafts, follow, patients };
+    // CONTRACT §5 GET /sessions (cross-patient; auditors get 403 and never reach this view).
+    const norm = (r) => items(r).map(normSession).map((x) => ({ ...x, patient: x.patient || (x.patientName ? { name: x.patientName } : null) }));
+    const [todays, drafts, follow, patients] = await Promise.all([
+      api.get('/sessions', { from: today, to: today, limit: 100 }).then(norm),
+      api.get('/sessions', { status: 'draft', latest: 1, limit: 50 }).then(norm),
+      api.get('/sessions', { followUpTo: addDaysISO(today, 7), latest: 1, limit: 100 }).then(norm),
+      api.get('/patients', { limit: 50 }).then(items),
+    ]);
+    todays.sort((x, y) => String(x.startedAt).localeCompare(String(y.startedAt)));
+    for (const p of patients) if (p.lastSessionAt === undefined) p.lastSessionAt = p.lastSessionDate || null;
+    // Follow-ups: one row per patient, and only when it is their MOST RECENT session (a newer visit supersedes
+    // an older follow-up date). The server sorts by follow-up date, so pick the newest session per patient here.
+    const lastByPatient = new Map(patients.map((p) => [p.id, p.lastSessionDate || null]));
+    const newest = new Map();
+    for (const x of follow) { const cur = newest.get(x.patientId); if (!cur || String(x.startedAt) > String(cur.startedAt)) newest.set(x.patientId, x); }
+    const followUps = [...newest.values()]
+      .filter((x) => x.status !== 'draft' && x.followUpDate && (!lastByPatient.get(x.patientId) || String(x.startedAt) >= String(lastByPatient.get(x.patientId))))
+      .sort((x, y) => x.followUpDate.localeCompare(y.followUpDate));
+    return { todays, drafts, follow: followUps, patients };
   }
   let data;
   try { data = await load(); } catch (err) { mount(grid, errorPanel(err, () => renderDashboard({ main }))); statsSlot.remove(); return null; }

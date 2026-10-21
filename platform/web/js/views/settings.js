@@ -9,6 +9,7 @@ import { toast } from '../ui/toast.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { pageHeader, applyTheme, getTheme, errorPanel } from './common.js';
 import { navigate } from '../router.js';
+import { showSidebarLogo } from '../app.js';
 
 const ROLES = ['admin', 'practitioner', 'assistant', 'auditor'];
 
@@ -102,7 +103,7 @@ async function clinic(panel) {
   fileIn.addEventListener('change', () => {
     const file = fileIn.files && fileIn.files[0]; if (!file) return;
     if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { toast(t('settings.logoType'), { tone: 'error' }); return; }
-    if (file.size > 200 * 1024) { toast(t('settings.logoTooBig'), { tone: 'error' }); return; }
+    if (file.size > 200 * 1024) { toast(t('settings.logoTooBig'), { tone: 'error' }); fileIn.value = ''; return; }
     const r = new FileReader();
     r.onload = () => { logo = String(r.result); renderLogo(); };
     r.readAsDataURL(file);
@@ -151,7 +152,9 @@ async function clinic(panel) {
     setLoading(btn, true);
     try {
       const saved = await api.patch('/org', data);
-      state.org = { ...(state.org || {}), ...(saved || data) };
+      state.org = { ...(state.org || {}), ...(saved || data), hasLogo: !!logo };
+      state.orgLogo = logo || null;
+      showSidebarLogo();
       document.documentElement.style.setProperty('--pol-neg', data.polarity.negative);
       document.documentElement.style.setProperty('--pol-pos', data.polarity.positive);
       toast(t('settings.clinicSaved'), { tone: 'success' });
@@ -239,8 +242,7 @@ async function users(panel) {
 // ---------------- Audit ----------------
 async function audit(panel) {
   const actor = select([{ value: '', label: t('settings.allUsers') }], { id: 'audit-actor' });
-  if (can.admin()) api.get('/users').then((r) => { for (const u of items(r)) actor.append(el('option', { value: u.id }, `${u.name} · ${u.email}`)); }).catch(() => {});
-  else actor.disabled = true;
+  api.get('/users', { minimal: 1 }).then((r) => { for (const u of items(r)) actor.append(el('option', { value: u.id }, u.email ? `${u.name} · ${u.email}` : u.name)); }).catch(() => { actor.disabled = true; });
   const action = input({ type: 'search', id: 'audit-action', placeholder: t('settings.auditAction'), spellcheck: 'false' });
   const verifyBtn = el('button.btn.btn-secondary', { type: 'button' }, icon('shield', { size: 18 }), t('settings.verify'));
   const verifyOut = el('div', { aria: { live: 'polite' } });

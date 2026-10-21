@@ -150,11 +150,31 @@ export async function renderReport({ main, params }) {
     return n;
   };
   const pairRecs = (rep.recommendations && (rep.recommendations.pairSpecific || rep.recommendations.pairs)) || [];
-  const genRecs = (rep.recommendations && rep.recommendations.general) || [];
+  // Server pre-filters general sections to those relevant to the found pairs (CONTRACT §5).
+  const genRecs = rep.generalRecommendations || (rep.recommendations && rep.recommendations.general) || [];
+  const pairLabel = (pid) => {
+    const f = findings.find((x) => x.pairId === pid);
+    const p = (f && f.pair) || core.pairs.get(pid);
+    return p && p.number ? `PB ${p.number}` : p ? locText(p.name) : pid;
+  };
+  const matchedNote = (r) => {
+    const m = r.matchedBy || [];
+    if (m.some((x) => x.rule === 'always')) return t('report.matchedAlways');
+    const ids = [...new Set(m.flatMap((x) => x.pairIds || []))];
+    return ids.length ? t('report.matchedBy', { pairs: ids.map(pairLabel).join(', ') }) : null;
+  };
   const recommendations = el('section.rpt-section',
     el('h2.rpt-h2', t('report.recommendations')),
-    pairRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.pairSpecific')), el('ul', pairRecs.flatMap((r) => (r.items || [r.text]).map((txt) => el('li', el('strong', `${r.number ? `PB ${r.number} ` : ''}${locText(r.name || r.pairName)}: `), locNode(txt)))))) : null,
-    genRecs.length ? el('div.rpt-recs.rpt-gen', el('h3.rpt-h3', t('report.general')), el('ul', genRecs.map((r) => el('li', el('strong', `${locText(r.title)}: `), excerpt(r.body)))),
+    pairRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.pairSpecific')), el('ul', pairRecs.map((r) => el('li',
+      el('strong', `${r.number ? `PB ${r.number} ` : ''}${locText(r.name || r.pairName)}: `),
+      (r.items || [r.text]).map((txt, i) => [i ? el('span.rpt-sep', ' · ') : null, locNode(txt)]))))) : null,
+    genRecs.length ? el('div.rpt-recs.rpt-gen', el('h3.rpt-h3', t('report.general')), el('ul', genRecs.map((r) => {
+      const note = matchedNote(r);
+      return el('li',
+        el('strong', `${locText(r.title)}: `), r.summary ? locNode(r.summary) : excerpt(r.body),
+        note ? el('span.rpt-matched', ` (${note})`) : null,
+        r.body ? el('details.rpt-gen-body.no-print', el('summary', t('report.showFullText')), el('div.rpt-gen-full', locNode(r.body, 'p'))) : null);
+    })),
       el('p.muted.small', t('report.generalNote'))) : null,
     !pairRecs.length && !genRecs.length ? el('p.muted', '—') : null);
 

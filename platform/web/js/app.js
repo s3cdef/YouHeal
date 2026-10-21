@@ -46,7 +46,7 @@ export async function afterLogin() {
 
 export async function signOut({ expired = false } = {}) {
   try { await api.post('/auth/logout', {}, { auth: false }); } catch { /* ignore */ }
-  state.user = null; state.org = null; setCsrf(null); stopIdleWatch(); clearCatalogCache();
+  state.user = null; state.org = null; state.orgLogo = undefined; setCsrf(null); stopIdleWatch(); clearCatalogCache();
   shellEls = null;
   pendingNotice = expired ? t('auth.sessionExpired') : t('auth.signedOut');
   navigate('/login');
@@ -119,13 +119,28 @@ function buildShell() {
         el('div.side-user-text', el('span.side-user-name', user.name || user.email || ''), el('span.side-user-role', user.role ? t(`roles.${user.role}`) : '')),
         el('button.icon-btn', { type: 'button', aria: { label: t('auth.signOut') }, title: t('auth.signOut'), onClick: () => signOut() }, icon('logout')),
       ),
-      state.org && state.org.name ? el('p.side-org', state.org.name) : null,
+      state.org && state.org.name ? el('div.side-org', el('span.side-org-logo', { hidden: true }), el('span.side-org-name', state.org.name)) : null,
     ),
   );
   const main = el('main#main.main', { tabindex: '-1' });
   const shell = el('div.shell', side, el('div.main-col', main));
   mount(app, shell);
+  showSidebarLogo();
   shellEls = { shell, main, nav };
+}
+
+/** Clinic logo in the sidebar: /auth/me only says hasLogo, so fetch GET /org once. */
+export async function showSidebarLogo(force = false) {
+  const slot = document.querySelector('.side-org-logo');
+  if (!slot) return;
+  if (force) state.orgLogo = undefined;
+  if (state.orgLogo === undefined) {
+    state.orgLogo = null;
+    if (state.org && state.org.hasLogo) { try { state.orgLogo = (await api.get('/org')).logo || null; } catch { state.orgLogo = null; } }
+  }
+  clear(slot);
+  if (state.orgLogo) slot.append(el('img', { src: state.orgLogo, alt: '' }));
+  slot.hidden = !state.orgLogo;
 }
 
 function setActiveNav(id) {

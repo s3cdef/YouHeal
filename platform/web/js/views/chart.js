@@ -91,6 +91,7 @@ function overview({ patient, sessions, consents, panel, sessionDetails }) {
         el('div.latest',
           el('p.latest-date', fmtDateTime(latestS.startedAt), ' ', statusBadge(latestS.status)),
           el('p', methodologyLabel(latestS.methodology), latestS.practitioner ? ` · ${latestS.practitioner.name}` : ''),
+          latestS.chiefComplaint ? el('p.muted', latestS.chiefComplaint) : null,
           el('p.muted', t('dashboard.findingsCount', { count: latestS.findingsCount || 0 })),
           followDue ? el('p.follow', icon('clock', { size: 16 }), t('chart.followUpDue', { when: fmtRelativeDay(followDue), date: fmtDate(followDue) })) : null,
           can.clinical() ? el('div.btn-row',
@@ -261,10 +262,11 @@ function sessionsTab({ patient, sessions, panel, sessionDetails }) {
       columns: [
         { key: 'date', label: t('session.date'), render: (s) => fmtDateTime(s.startedAt) },
         { key: 'methodology', label: t('session.methodology'), render: (s) => methodologyLabel(s.methodology) },
+        can.clinical() ? { key: 'chief', label: t('session.chiefComplaint'), render: (s) => (s.chiefComplaint ? el('span.cell-clamp', s.chiefComplaint) : el('span.muted', '—')) } : null,
         { key: 'by', label: t('report.practitioner'), render: (s) => s.practitioner?.name || '—' },
         { key: 'findings', label: t('session.findings'), align: 'right', render: (s) => String(s.findingsCount || 0) },
         { key: 'status', label: t('session.status'), render: (s) => el('span.cell-stack', statusBadge(s.status), s.revision > 1 ? el('span.muted.small', t('report.revision', { n: s.revision })) : null, s.supersededBy ? el('span.muted.small', t('chart.superseded')) : null) },
-        { key: 'act', label: el('span.sr-only', t('common.actions')), align: 'right', render: (s) => (!can.clinical() ? null : s.status === 'draft'
+        { key: 'act', label: el('span.sr-only', t('common.actions')), align: 'right', render: (s) => (!can.clinical() ? '' : s.status === 'draft'
           ? el('a.btn.btn-sm.btn-primary', { href: `#/sessions/${s.id}` }, t('dashboard.resume'))
           : el('a.btn.btn-sm.btn-secondary', { href: `#/sessions/${s.id}/report` }, icon('file', { size: 16 }), t('chart.report'))) },
       ],

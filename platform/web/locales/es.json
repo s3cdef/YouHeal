@@ -546,7 +546,8 @@
   "kOpen": "Abrir detalle del par",
   "kSearch": "Buscar un punto",
   "kViews": "Frente · Espalda · Izquierda · Derecha",
-  "kClose": "Cerrar panel"
+  "kClose": "Cerrar panel",
+  "restored": "Lista restaurada — {checked} de {total} revisados"
  },
  "viewer": {
   "bodyMap": "Mapa corporal",
@@ -843,7 +844,10 @@
   "print": "Imprimir / Guardar PDF",
   "signedOn2": "Firmado",
   "imagesNotSaved": "No se pudieron guardar los mapas corporales con el informe.",
-  "generalNote": "Resumen de las recomendaciones generales — su terapeuta puede entregarle las hojas completas."
+  "generalNote": "Resumen de las recomendaciones generales — su terapeuta puede entregarle las hojas completas.",
+  "matchedAlways": "siempre incluida",
+  "matchedBy": "relacionada con {pairs}",
+  "showFullText": "Ver texto completo"
  },
  "settings": {
   "title": "Ajustes",

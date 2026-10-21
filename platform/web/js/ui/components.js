@@ -38,7 +38,8 @@ export function tabs({ tabs: list, active, onChange, label, variant = '' }) {
 
 // ---------- Data table ----------
 /** table({ columns:[{key,label,render,cls,align}], rows, onRowClick, caption, empty, rowLabel, dense }) */
-export function table({ columns, rows, onRowClick, caption, empty, rowLabel, dense = false, cls = '' }) {
+export function table({ columns: cols, rows, onRowClick, caption, empty, rowLabel, dense = false, cls = '' }) {
+  const columns = cols.filter(Boolean);
   if (!rows.length && empty) return empty;
   const thead = el('thead', el('tr', columns.map((c) => el('th', { scope: 'col', class: [c.cls, c.align ? 'ta-' + c.align : ''].filter(Boolean).join(' ') || null }, c.label))));
   const tbody = el('tbody');

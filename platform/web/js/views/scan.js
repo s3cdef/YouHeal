@@ -121,15 +121,28 @@ export async function renderScan({ main, params }) {
     return { trackingSide: map(pair.tracking.side, 'tracking'), impactSide: map(pair.impact.side, 'impact') };
   };
 
+  // Runner state (checklist, not-present marks, cursor, directed-scan input) is saved on the draft as
+  // `scanState` (CONTRACT §5, encrypted server-side) through the same autosave queue, debounced ~1 s.
   let lastProtocolIds = JSON.stringify(session.protocolIds || []);
+  const SRC = { protocol: 'p', directed: 'd', manual: 'm' };
+  const snapshotState = () => ({
+    v: 1,
+    checklist: st.checklist.map((c) => ({ p: c.pairId, s: SRC[c.source] || 'm', ...(c.protocolId ? { r: c.protocolId } : {}) })),
+    marks: Object.fromEntries([...st.notPresent].map((id) => [id, 'not-present'])),
+    cursor: st.cursor,
+    activeProtocolIds: st.activeProtocols,
+    directedText: directed.text || '', // only ever runs debounced, after `directed` is initialised
+    directedSymptoms: [...st.symptoms],
+  });
   const persistScanState = debounce(() => {
-    runnerMemory.set(session.id, { checklist: st.checklist, notPresent: [...st.notPresent], cursor: st.cursor, activeProtocols: st.activeProtocols });
+    const scanState = snapshotState();
+    runnerMemory.set(session.id, scanState);
     if (readOnly) return;
+    const body = { scanState };
     const protocolIds = st.activeProtocols.filter((p) => p !== '__h2t');
-    if (JSON.stringify(protocolIds) === lastProtocolIds) return;
-    lastProtocolIds = JSON.stringify(protocolIds);
-    patchSession({ protocolIds });
-  }, 600);
+    if (JSON.stringify(protocolIds) !== lastProtocolIds) { lastProtocolIds = JSON.stringify(protocolIds); body.protocolIds = protocolIds; }
+    patchSession(body);
+  }, 1000);
   const onSaveError = (err) => {
     if (err && (err.code === 'SESSION_LOCKED' || err.status === 409)) { toast(t('scan.lockedElsewhere'), { tone: 'error', timeout: 10000 }); setTimeout(() => renderScan({ main, params }), 300); return; }
     toast(errorMessage(err), { tone: 'error' });
@@ -245,11 +258,16 @@ export async function renderScan({ main, params }) {
 
   // ---------- initial checklist ----------
   const ss = runnerMemory.get(session.id) || session.scanState || {};
-  if (Array.isArray(ss.checklist) && ss.checklist.length) {
-    st.checklist = ss.checklist.filter((c) => core.pairs.has(c.pairId));
-    st.notPresent = new Set(ss.notPresent || []);
+  const FROM_SRC = { p: 'protocol', d: 'directed', m: 'manual' };
+  const savedChecklist = Array.isArray(ss.checklist) ? ss.checklist.map((c) => (c.p ? { pairId: c.p, source: FROM_SRC[c.s] || 'manual', protocolId: c.r } : c)) : [];
+  const restoredText = typeof ss.directedText === 'string' ? ss.directedText : '';
+  let restored = false;
+  if (savedChecklist.length) {
+    restored = true;
+    st.checklist = savedChecklist.filter((c) => core.pairs.has(c.pairId));
+    st.notPresent = new Set(ss.marks ? Object.keys(ss.marks).filter((k) => ss.marks[k] === 'not-present') : (ss.notPresent || []));
     st.cursor = Math.min(ss.cursor || 0, Math.max(0, st.checklist.length - 1));
-    st.activeProtocols = ss.activeProtocols || [...(session.protocolIds || [])];
+    st.activeProtocols = ss.activeProtocolIds || ss.activeProtocols || [...(session.protocolIds || [])];
   } else {
     for (const pid of session.protocolIds || []) {
       try {
@@ -408,18 +426,18 @@ export async function renderScan({ main, params }) {
   }
 
   // ---- directed scan
-  const directed = { text: '', results: null, loading: false };
+  const directed = { text: restoredText, results: null, loading: false };
   function directedPanel() {
     const chips = el('div.sym-chips');
     const resultsEl = el('div.suggest-results', { aria: { live: 'polite' } });
     const cb = combobox({
       label: t('scan.symptomSearch'), placeholder: t('scan.symptomPlaceholder'), hideLabel: false,
       source: async (q) => items(await api.get('/catalog/symptoms', { q })).filter((s) => !st.symptoms.includes(s.id)).slice(0, 10).map((s) => ({ id: s.id, label: locText(s.name), sublabel: vocab("systems", s.system) })),
-      onSelect: (it) => { if (!st.symptoms.includes(it.id)) { st.symptoms.push(it.id); patchSession({ symptoms: st.symptoms }); renderSymptomChips(); } },
+      onSelect: (it) => { if (!st.symptoms.includes(it.id)) { st.symptoms.push(it.id); patchSession({ symptoms: st.symptoms }); renderSymptomChips(); persistScanState(); } },
       onEnterText: (txt) => { freeText.value = freeText.value ? `${freeText.value}, ${txt}` : txt; directed.text = freeText.value; },
     });
     const freeText = textarea({ rows: 2, id: 'directed-text', placeholder: t('scan.freeTextPlaceholder'), value: directed.text });
-    freeText.addEventListener('input', () => { directed.text = freeText.value; });
+    freeText.addEventListener('input', () => { directed.text = freeText.value; persistScanState(); });
     const go = el('button.btn.btn-primary.btn-block', { type: 'button' }, icon('sparkles', { size: 18 }), t('scan.suggest'));
     go.addEventListener('click', async () => {
       if (!st.symptoms.length && !freeText.value.trim()) { toast(t('scan.suggestNeedInput'), { tone: 'warn' }); cb.focus(); return; }
@@ -458,7 +476,7 @@ export async function renderScan({ main, params }) {
       el('ol.suggest-list', res.map((r) => {
         const pair = pairOf(r.pairId); if (!pair) return null;
         const inScan = st.checklist.some((c) => c.pairId === r.pairId);
-        const pct = Math.round(((Number(r.score) || 0) / maxScore) * 100); // relative to the best match
+        const pct = Math.round((r.score01 !== undefined ? Number(r.score01) : (Number(r.score) || 0) / maxScore) * 100); // score01 = score / top score
         return el('li.suggest-item',
           el('div.suggest-top', el('span.pair-num', pairNum(pair)), el('span.suggest-name', locNode(pair.name)), categoryChip(pair.category)),
           el('div.score', { role: 'img', aria: { label: t('scan.score', { pct }) } }, el('span.score-bar', { style: { width: `${Math.max(6, pct)}%` } }), el('span.score-num', `${pct}%`)),
@@ -902,8 +920,12 @@ export async function renderScan({ main, params }) {
   window.addEventListener('beforeunload', beforeUnload);
   disposers.push(() => window.removeEventListener('beforeunload', beforeUnload));
 
-  function renderAll() { renderChecklist(); renderFindings(); syncViewer(); if (st.drawerPoint && !drawer.hidden) { /* keep drawer as is */ } }
+  function renderAll() { renderChecklist(); renderFindings(); syncViewer(); }
   renderAll();
+  if (restored && !readOnly) {
+    const checked = st.checklist.filter((c) => stateOf(c.pairId) !== 'candidate').length;
+    toast(t('scan.restored', { checked, total: st.checklist.length }), { tone: 'info', timeout: 4000 });
+  }
   void viewerKind; void ratingsRow;
   return () => { for (const d of disposers) { try { d(); } catch { /* ignore */ } } };
 }

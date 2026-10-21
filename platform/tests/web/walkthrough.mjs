@@ -148,6 +148,28 @@ async function main() {
   await page.locator('.dash-grid .card').first().waitFor();
   await shot(page, '06-dashboard');
 
+  // 4b. clinic logo (generated in-page: an obviously fictitious "Demo Clinic" mark) → sidebar + report header
+  await page.goto(`${base}/#/settings/clinic`);
+  await page.locator('#logo-file').waitFor({ state: 'attached' });
+  await page.evaluate(async () => {
+    const c = document.createElement('canvas'); c.width = 240; c.height = 240; const g = c.getContext('2d');
+    g.fillStyle = '#0F4C55'; g.beginPath(); g.roundRect(0, 0, 240, 240, 48); g.fill();
+    g.strokeStyle = '#D4AF6A'; g.lineWidth = 6; for (const r of [70, 50, 30]) { g.beginPath(); g.ellipse(120, 112, r * 1.25, r, 0, 0, Math.PI * 2); g.stroke(); }
+    g.fillStyle = '#F1ECE2'; g.font = '700 46px system-ui, sans-serif'; g.textAlign = 'center'; g.fillText('DEMO', 120, 205);
+    const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
+    const dt = new DataTransfer(); dt.items.add(new File([blob], 'demo-logo.png', { type: 'image/png' }));
+    const input = document.getElementById('logo-file'); input.files = dt.files; input.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await page.locator('.logo-preview img').waitFor();
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await page.getByText('Clinic profile saved').waitFor();
+  await page.locator('.side-org-logo img').waitFor();
+  await page.goto(`${base}/#/`);
+  await page.locator('.dash-grid .card').first().waitFor();
+  await page.locator('.side-org-logo img').waitFor();
+  await page.locator('.toast-close').evaluateAll((bs) => bs.forEach((b) => b.click()));
+  await shot(page, '06-dashboard', { wait: 400 }); // re-shot with the clinic logo in the sidebar
+
   // 5. create patient
   await page.getByRole('link', { name: 'New patient' }).first().click();
   await page.getByLabel('First name').fill(PATIENT.first);
@@ -217,6 +239,18 @@ async function main() {
   await page.locator('.finding-details .chip-toggle', { hasText: 'Infiltrate' }).click();
   await page.waitForTimeout(800);
   await shot(page, '14-finding-details');
+  // reload: checklist marks, cursor and directed input come back from the draft's scanState
+  await page.waitForFunction(() => document.querySelector('.save-status')?.dataset.state === 'saved', null, { timeout: 15000 });
+  await page.waitForTimeout(1600); // scanState debounce (~1 s) + save
+  await page.waitForFunction(() => document.querySelector('.save-status')?.dataset.state === 'saved', null, { timeout: 15000 });
+  await page.reload();
+  await page.locator('.ck-item').first().waitFor();
+  await waitViewer(page);
+  const restoredMarks = await page.locator('.ck-item.state-not-present').count();
+  if (!restoredMarks) problems.push('[desktop] scanState: not-present mark was not restored after reload');
+  await page.getByRole('tab', { name: 'Directed' }).click();
+  await page.getByRole('tab', { name: 'Protocol' }).click();
+  await shot(page, '14b-scan-state-restored');
 
   // 9. finalize & sign
   await page.locator('.scan-bar').getByRole('button', { name: 'Finalize & sign' }).click();

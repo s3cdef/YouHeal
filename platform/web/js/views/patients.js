@@ -53,7 +53,8 @@ export async function renderPatientList({ main, query }) {
         { key: 'dob', label: t('patients.colDob'), render: (p) => el('span', fmtDate(p.dob), el('span.muted', ` · ${t('patient.ageYears', { age: p.age ?? ageFrom(p.dob) ?? '—' })}`)) },
         { key: 'sex', label: t('patients.colSex'), render: (p) => (p.sex ? t(`sex.${p.sex}`) : '—') },
         { key: 'mrn', label: t('patients.colMrn'), cls: 'mono' },
-        { key: 'added', label: t('patients.colAdded'), render: (p) => (p.createdAt ? fmtDate(p.createdAt) : '—') },
+        { key: 'last', label: t('patients.colLastScan'), render: (p) => (p.lastSessionDate ? fmtDate(p.lastSessionDate) : el('span.muted', t('dashboard.noScans'))) },
+        { key: 'sessions', label: t('patients.colSessions'), align: 'right', render: (p) => String(p.sessionCount ?? '—') },
       ],
     }));
   }
