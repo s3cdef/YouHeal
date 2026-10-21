@@ -248,7 +248,7 @@ async function audit(panel) {
   const more = el('button.btn.btn-ghost', { type: 'button', hidden: true }, t('settings.loadMore'));
   let rows = []; let offset = 0; let total = 0;
   mount(panel,
-    card({ title: t('settings.integrity'), icon: 'shield', sub: t('settings.integritySub'), actions: el('div.btn-row', verifyBtn, can.admin() ? el('a.btn.btn-ghost', { href: '/api/v1/admin/backup', download: '' }, icon('upload', { size: 18 }), t('settings.backup')) : null), children: [verifyOut] }),
+    card({ title: t('settings.integrity'), icon: 'shield', sub: t('settings.integritySub'), actions: el('div.btn-row', verifyBtn, can.admin() ? el('a.btn.btn-ghost', { href: '/api/v1/admin/backup', download: '' }, icon('download', { size: 18 }), t('settings.backup')) : null), children: [verifyOut] }),
     card({ title: t('settings.tabAudit'), icon: 'list', children: [
       el('div.filters', el('div.filter', el('label.label', { for: 'audit-actor' }, t('settings.actor')), actor), el('div.filter', el('label.label', { for: 'audit-action' }, t('settings.action')), action)),
       results, more] }));

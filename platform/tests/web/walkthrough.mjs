@@ -32,6 +32,50 @@ function totp(secret, offset = 0) {
 }
 
 // Obviously fictitious demo identities only.
+/** Runs in the page: creates obviously fictitious patients, intakes and backdated sessions through /api/v1. */
+async function seedDemo() {
+  const me = await (await fetch('/api/v1/auth/me')).json();
+  const H = { 'content-type': 'application/json', 'x-csrf-token': me.csrfToken };
+  const j = async (m, u, b) => { const r = await fetch(`/api/v1${u}`, { method: m, headers: H, body: b ? JSON.stringify(b) : undefined }); const d = await r.json().catch(() => null); if (!r.ok) throw new Error(`${m} ${u} ${r.status} ${JSON.stringify(d)}`); return d; };
+  const protoIds = async (id) => { const p = await j('GET', `/catalog/protocols/${id}`); return (p.pairs || []).map((x) => x.pairId); };
+  const protos = (await j('GET', '/catalog/protocols?limit=5000')).items;
+  const leg = protos.find((p) => p.kind === 'application') || protos[0];
+  const gi = protos.find((p) => p.kind === 'top10' && /gastro/i.test(p.id)) || protos.find((p) => p.kind === 'top10') || protos[1];
+  const legPairs = await protoIds(leg.id); const giPairs = await protoIds(gi.id);
+  const contra = (await j('GET', '/catalog/contraindications?limit=500')).items;
+  const abs = contra.find((c) => c.kind === 'absolute'); const rel = contra.find((c) => c.kind === 'relative');
+  const day = (n, h = 10) => { const d = new Date(); d.setDate(d.getDate() - n); d.setHours(h, 15, 0, 0); return d.toISOString(); };
+  const answers = { techniqueExplained: true, questionsAnswered: true, understandsScope: true, continuesMedical: true, authorizesPlacement: true, followUpInformed: true, reason: 'Demo record' };
+  let count = 0;
+  const patient = async (firstName, lastName, dob, sex, ci = { relative: [], absolute: [] }) => {
+    const p = await j('POST', '/patients', { firstName, lastName, dob, sex, phone: '(555) 010-0000', email: `${firstName.toLowerCase()}@example.test` });
+    await j('POST', `/patients/${p.id}/consents`, { type: 'intake', answers, contraindications: ci, signatureName: `${firstName} ${lastName}`, signedAt: day(20) });
+    return p;
+  };
+  const session = async (p, daysAgo, pairs, { protocolIds = [], chief, finalize = true, statuses = [] } = {}) => {
+    const s = await j('POST', `/patients/${p.id}/sessions`, { methodology: 'biomagnetism', protocolIds, chiefComplaint: chief, symptoms: [], sessionDate: day(daysAgo, daysAgo ? 10 : Math.max(8, new Date().getHours() - 1)) });
+    for (const [i, pid] of pairs.entries()) await j('POST', `/sessions/${s.id}/findings`, { pairId: pid, status: statuses[i] || 'found', dwellMinutes: 15, phenomena: i === 0 && daysAgo > 10 ? ['infiltrate'] : [] });
+    if (finalize) await j('POST', `/sessions/${s.id}/finalize`, { signatureName: me.user.name });
+    count++;
+  };
+  const mary = await patient('Mary', 'Example', '1979-04-12', 'female', { relative: rel ? [rel.id] : [], absolute: [] });
+  await session(mary, 14, legPairs.slice(0, 3), { protocolIds: [leg.id], chief: 'Heavy legs, evening ankle swelling', statuses: ['cleared', 'cleared', 'impacted'] });
+  await session(mary, 7, [legPairs[0], legPairs[2], legPairs[5] || legPairs[1]].filter(Boolean), { protocolIds: [leg.id], chief: 'Follow-up: leg circulation', statuses: ['cleared', 'impacted', 'impacted'] });
+  const john = await patient('John', 'Demo', '1964-09-30', 'male');
+  await session(john, 1, giPairs.slice(0, 2), { protocolIds: [gi.id], chief: 'Gastritis, bloating after meals', finalize: false });
+  await patient('Ana', 'Prueba', '1991-01-22', 'female', { relative: [], absolute: abs ? [abs.id] : [] });
+  const robert = await patient('Robert', 'Testcase', '1958-06-05', 'male');
+  await session(robert, 35, legPairs.slice(4, 5), { chief: 'Low-back pain', statuses: ['cleared'] });
+  await session(robert, 0, legPairs.slice(4, 6), { chief: 'Low-back pain radiating to the right leg', statuses: ['impacted', 'cleared'] });
+  return count;
+}
+
+async function waitViewer(page) {
+  // 3D mesh builds in a worker (~1 s, slower under SwiftShader); the 2D fallback is immediate.
+  await page.waitForFunction(() => !document.querySelector('.viewer-loading') && !Array.from(document.querySelectorAll('.yh-viewer__loading')).some((n) => n.offsetParent !== null && !n.hidden), null, { timeout: 30000 }).catch(() => {});
+  await page.waitForTimeout(800);
+}
+
 const ADMIN = { org: 'YOU HEAL Demo Clinic', name: 'Dr. Alex Demo', email: 'admin@clinic.test', password: 'Magnets-align-at-528hz' };
 const PATIENT = { first: 'Jane', last: 'Sample', dob: '1980-01-01' };
 
@@ -99,7 +143,8 @@ async function main() {
     await page.getByRole('button', { name: 'Continue' }).click();
   }
 
-  // 4. dashboard
+  // 4. dashboard (optionally seed fictitious demo records through the public API first)
+  if (process.env.SEED === '1') { const n = await page.evaluate(seedDemo); console.log(`  🌱 seeded ${n} demo sessions via API`); await page.reload(); }
   await page.locator('.dash-grid .card').first().waitFor();
   await shot(page, '06-dashboard');
 
@@ -138,7 +183,7 @@ async function main() {
   // 8. workspace
   await page.locator('.scan-bar').waitFor();
   await page.locator('.ck-item').first().waitFor();
-  await page.waitForTimeout(2500); // let the 3D viewer settle
+  await waitViewer(page);
   await shot(page, '10-scan-workspace');
   await page.locator('.ck-item.is-current').focus();
   await page.keyboard.press('f'); await page.waitForTimeout(200);
@@ -162,8 +207,8 @@ async function main() {
   // directed scan
   await page.getByRole('tab', { name: 'Directed' }).click();
   const symBox = page.getByRole('combobox', { name: 'Reported symptoms' });
-  await symBox.fill('cramp'); await page.locator('.directed-panel .combo-option').first().click();
-  await symBox.fill('heavy'); await page.locator('.directed-panel .combo-option').first().click().catch(() => {});
+  await symBox.fill('fatig'); await page.locator('.directed-panel .combo-option').first().click();
+  await symBox.fill('head'); await page.locator('.directed-panel .combo-option').first().click().catch(() => {});
   await page.getByRole('button', { name: 'Suggest pairs' }).click();
   await page.locator('.suggest-item').first().waitFor();
   await shot(page, '13-directed-scan');
@@ -191,7 +236,7 @@ async function main() {
   await page.emulateMedia({ media: 'screen' });
 
   // 11. other views (demo data seeded by the mock)
-  await page.goto(`${base}/#/patients?q=Gonz%C3%A1lez`);
+  await page.goto(`${base}/#/patients?q=Example`);
   await page.locator('tbody tr').first().waitFor();
   await shot(page, '18-patients');
   await page.locator('tbody tr').first().click();
@@ -205,8 +250,9 @@ async function main() {
   await page.locator('dialog[open] .pair-detail').waitFor();
   await shot(page, '21-catalog-pair-sheet');
   await page.keyboard.press('Escape');
-  await page.goto(`${base}/#/catalog/protocols`);
-  await page.locator('.proto-item').first().click();
+  await page.goto(`${base}/#/catalog/protocols?open=app-19-circulacion-de-piernas`);
+  await page.locator('.proto-pairs').waitFor();
+  await shot(page, '22a-catalog-protocols');
   await page.getByRole('link', { name: 'Protocol card' }).click();
   await page.locator('.pc-img img').first().waitFor({ timeout: 20000 }).catch(() => {});
   await shot(page, '22-protocol-card');
@@ -223,7 +269,7 @@ async function main() {
   await page.locator('.dash-grid .card').first().waitFor();
   await shot(page, '25-dashboard-dark');
   const sessionUrl = await (async () => { await page.goto(`${base}/#/`); await page.locator('.list-row-link').first().waitFor(); return page.locator('.list-row-link[href^="#/sessions/"]:not([href$="/report"])').first().getAttribute('href'); })();
-  if (sessionUrl) { await page.goto(`${base}/${sessionUrl}`); await page.locator('.scan-bar').waitFor(); await page.waitForTimeout(2000); await shot(page, '26-scan-dark'); }
+  if (sessionUrl) { await page.goto(`${base}/${sessionUrl}`); await page.locator('.scan-bar').waitFor(); await waitViewer(page); await shot(page, '26-scan-dark'); }
   await page.evaluate(() => { document.documentElement.dataset.theme = 'light'; });
   // Spanish
   await page.goto(`${base}/#/catalog/pairs`);
@@ -245,7 +291,7 @@ async function main() {
   await shot(tpage, '30-tablet-dashboard');
   if (sessionUrl) {
     await tpage.goto(`${base}/${sessionUrl}`);
-    await tpage.locator('.scan-bar').waitFor(); await tpage.waitForTimeout(2000);
+    await tpage.locator('.scan-bar').waitFor(); await waitViewer(tpage);
     await shot(tpage, '31-tablet-scan');
     await tpage.getByRole('button', { name: 'Protocol runner' }).first().click();
     await shot(tpage, '32-tablet-scan-protocol');

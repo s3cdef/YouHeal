@@ -116,6 +116,9 @@ export function pole(polarity, { small = false } = {}) {
   return el(`span.pole.${neg ? 'pole-neg' : 'pole-pos'}${small ? '.pole-sm' : ''}`, { role: 'img', aria: { label: neg ? t('polarity.negative') : t('polarity.positive') } }, neg ? '−' : '+');
 }
 
+/** "#36" for numbered guide pairs, "CX" for compendium pairs (level 0, number null). */
+export function pairNum(p, { hash = true } = {}) { return p && p.number ? `${hash ? '#' : ''}${p.number}` : 'CX'; }
+
 export function sideLabel(side) { return side ? vocab('sides', side) : ''; }
 
 /** "Timo (−)  →  Recto (+)" pair line */

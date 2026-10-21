@@ -6,7 +6,7 @@ import { t, locText, locNode, getLocale, fmtDuration, ageFrom, fmtDate, vocab } 
 import { navigate, setLeaveGuard } from '../router.js';
 import { state, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, getList, normSession, normQualifiers } from '../state.js';
 import { combobox } from '../ui/combobox.js';
-import { tabs, segmented, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, ratingsRow, statusBadge } from '../ui/components.js';
+import { tabs, segmented, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, ratingsRow, statusBadge, pairNum } from '../ui/components.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { toast, announce } from '../ui/toast.js';
 import { createViewer, renderSnapshots } from '../bodymap/host.js';
@@ -91,7 +91,7 @@ export async function renderScan({ main, params }) {
     notPresent: new Set(),
     cursor: 0,
     activeProtocols: [],
-    showAll: true,
+    showAll: false, // default: only the points of the checklist + findings (the full catalog has ~300 points)
     view: 'anterior',
     drawerPoint: null,
     expandedFinding: null,
@@ -232,8 +232,11 @@ export async function renderScan({ main, params }) {
     const cur = st.checklist[st.cursor];
     const pair = pairOf(cur.pairId);
     if (pair && viewer) {
+      // Highlight only — moving the camera on every j/k would disorient the practitioner mid-scan.
       viewer.highlight([pair.tracking.point, pair.impact.point], { pulse: true });
-      if (viewer.focusPoint) viewer.focusPoint(pair.tracking.point, defaultSides(pair).trackingSide);
+      const tp = pointsMap.get(pair.tracking.point);
+      const want = tp && tp.view === 'posterior' ? 'posterior' : 'anterior';
+      if ((st.view === 'anterior' || st.view === 'posterior') && st.view !== want) { st.view = want; viewSeg.setValue(want); viewer.setView(want); }
     }
     syncViewer();
     if (focus) { const li = checklistEl.querySelector('.ck-item.is-current'); if (li) { li.scrollIntoView({ block: 'nearest' }); if (document.activeElement && checklistEl.contains(document.activeElement)) li.focus({ preventScroll: true }); } }
@@ -270,25 +273,27 @@ export async function renderScan({ main, params }) {
   });
   const elapsed = el('span.timer-value', '0:00');
   const startedAt = new Date(session.startedAt).getTime();
-  const tickElapsed = () => { elapsed.textContent = fmtDuration((session.finalizedAt ? new Date(session.finalizedAt).getTime() : Date.now()) - startedAt); };
+  // A live timer only makes sense for a session in progress today; older drafts/finalized show their date.
+  const live = !readOnly && Date.now() - startedAt < 12 * 3600 * 1000;
+  const tickElapsed = () => { elapsed.textContent = live ? fmtDuration(Date.now() - startedAt) : fmtDate(session.startedAt, { month: 'short', day: 'numeric' }); };
   tickElapsed();
   const tick = setInterval(() => { tickElapsed(); tickTimers(); }, 1000);
   disposers.push(() => clearInterval(tick));
 
-  const leftToggle = el('button.btn.btn-secondary.pane-toggle.pane-toggle-left', { type: 'button', aria: { expanded: 'false', controls: 'scan-left' } }, icon('list', { size: 18 }), el('span', t('scan.protocolPane')));
-  const rightToggle = el('button.btn.btn-secondary.pane-toggle.pane-toggle-right', { type: 'button', aria: { expanded: 'false', controls: 'scan-right' } }, icon('clipboard', { size: 18 }), el('span', t('scan.sessionPane')), el('span.badge-count', String(st.findings.length)));
-  const finalizeBtn = el('button.btn.btn-primary', { type: 'button', onClick: () => finalize() }, icon('shield', { size: 18 }), el('span', t('scan.finalize')));
+  const leftToggle = el('button.btn.btn-secondary.pane-toggle.pane-toggle-left', { type: 'button', title: t('scan.protocolPane'), aria: { expanded: 'false', controls: 'scan-left', label: t('scan.protocolPane') } }, icon('list', { size: 18 }), el('span', t('scan.protocolPane')));
+  const rightToggle = el('button.btn.btn-secondary.pane-toggle.pane-toggle-right', { type: 'button', title: t('scan.sessionPane'), aria: { expanded: 'false', controls: 'scan-right', label: t('scan.sessionPane') } }, icon('clipboard', { size: 18 }), el('span', t('scan.sessionPane')), el('span.badge-count', String(st.findings.length)));
+  const finalizeBtn = el('button.btn.btn-primary', { type: 'button', title: t('scan.finalize'), aria: { label: t('scan.finalize') }, onClick: () => finalize() }, icon('shield', { size: 18 }), el('span', t('scan.finalize')));
   const bar = el('header.scan-bar',
     el('a.icon-btn', { href: `#/patients/${session.patientId}/sessions`, aria: { label: t('scan.backToChart') }, title: t('scan.backToChart') }, icon('arrowLeft')),
     el('div.scan-id',
       el('h1.scan-title', { tabindex: '-1' }, fullName(patient)),
       el('p.scan-meta', [age !== null ? t('patient.ageYears', { age }) : null, patient.sex ? t(`sex.${patient.sex}`) : null, methodologyLabel(session.methodology)].filter(Boolean).join(' · '), ' ', statusBadge(session.status), flagSlot)),
     el('div.scan-bar-mid',
-      el('span.session-timer', { title: t('scan.elapsed') }, icon('clock', { size: 16 }), el('span.sr-only', t('scan.elapsed')), elapsed),
+      el(`span.session-timer${live ? '' : '.is-date'}`, { title: live ? t('scan.elapsed') : t('session.date') }, icon(live ? 'clock' : 'calendar', { size: 16 }), el('span.sr-only', live ? t('scan.elapsed') : t('session.date')), elapsed),
       readOnly ? null : saveStatus),
     el('div.scan-bar-actions', leftToggle, rightToggle,
       el('button.icon-btn', { type: 'button', aria: { label: t('scan.shortcuts') }, title: t('scan.shortcuts'), onClick: () => showShortcuts() }, icon('keyboard')),
-      el('a.btn.btn-ghost', { href: `#/sessions/${session.id}/report` }, icon('file', { size: 18 }), el('span.hide-md', readOnly ? t('chart.viewReport') : t('scan.preview'))),
+      el('a.btn.btn-ghost', { href: `#/sessions/${session.id}/report`, title: readOnly ? t('chart.viewReport') : t('scan.preview'), aria: { label: readOnly ? t('chart.viewReport') : t('scan.preview') } }, icon('file', { size: 18 }), el('span.hide-md', readOnly ? t('chart.viewReport') : t('scan.preview'))),
       readOnly ? null : finalizeBtn));
 
   const left = el('aside#scan-left.scan-left', { aria: { label: t('scan.protocolPane') } });
@@ -383,8 +388,8 @@ export async function renderScan({ main, params }) {
       const pair = pairOf(c.pairId); if (!pair) return;
       const s = stateOf(c.pairId);
       const current = i === st.cursor;
-      const li = el(`li.ck-item.state-${s}${current ? '.is-current' : ''}`, { tabindex: current ? '0' : '-1', aria: { current: current ? 'step' : null, label: `${pair.number}. ${locText(pair.name)} — ${t(`state.${s}`)}` }, data: { idx: i } },
-        el('span.ck-num', String(pair.number)),
+      const li = el(`li.ck-item.state-${s}${current ? '.is-current' : ''}`, { tabindex: current ? '0' : '-1', aria: { current: current ? 'step' : null, label: `${pairNum(pair, { hash: false })}. ${locText(pair.name)} — ${t(`state.${s}`)}` }, data: { idx: i } },
+        el('span.ck-num', pairNum(pair, { hash: false })),
         el('span.ck-main', pairPoles(pair, pointsMap, { compact: true, sides: findingFor(c.pairId) ? { tracking: findingFor(c.pairId).trackingSide, impact: findingFor(c.pairId).impactSide } : null }), c.source === 'directed' ? el('span.ck-src', icon('sparkles', { size: 12 }), t('scan.fromDirected')) : null),
         stateBadge(s));
       li.addEventListener('click', (e) => { if (e.target.closest('button')) return; setCursor(i); li.focus(); openPointDrawer(pair.tracking.point, { pairId: pair.id }); });
@@ -444,6 +449,7 @@ export async function renderScan({ main, params }) {
   }
   function renderSuggestions(box) {
     const res = directed.results || [];
+    const maxScore = Math.max(...res.map((r) => Number(r.score) || 0), 1e-9);
     if (!res.length) { mount(box, emptyState({ icon: 'search', title: t('scan.noSuggestions'), compact: true })); return; }
     const addTop = el('button.btn.btn-sm.btn-secondary', { type: 'button', disabled: readOnly }, icon('plus', { size: 16 }), t('scan.addTop', { n: Math.min(5, res.length) }));
     addTop.addEventListener('click', () => { let n = 0; for (const r of res.slice(0, 5)) if (addToChecklist(r.pairId)) n++; renderLeft(); renderSuggestions(box); syncViewer(); toast(t('scan.addedToScan', { count: n }), { tone: 'success' }); });
@@ -452,9 +458,9 @@ export async function renderScan({ main, params }) {
       el('ol.suggest-list', res.map((r) => {
         const pair = pairOf(r.pairId); if (!pair) return null;
         const inScan = st.checklist.some((c) => c.pairId === r.pairId);
-        const pct = Math.round((r.score || 0) * 100);
+        const pct = Math.round(((Number(r.score) || 0) / maxScore) * 100); // relative to the best match
         return el('li.suggest-item',
-          el('div.suggest-top', el('span.pair-num', `#${pair.number}`), el('span.suggest-name', locNode(pair.name)), categoryChip(pair.category)),
+          el('div.suggest-top', el('span.pair-num', pairNum(pair)), el('span.suggest-name', locNode(pair.name)), categoryChip(pair.category)),
           el('div.score', { role: 'img', aria: { label: t('scan.score', { pct }) } }, el('span.score-bar', { style: { width: `${Math.max(6, pct)}%` } }), el('span.score-num', `${pct}%`)),
           el('ul.matched', (r.matched || []).map((m) => el(`li.chip.chip-sm.${m.type === 'symptom' ? 'tone-sky' : 'tone-slate'}`, matchedLabel(m)))),
           el('div.suggest-actions',
@@ -486,7 +492,7 @@ export async function renderScan({ main, params }) {
   const viewSeg = segmented({ name: 'view', label: t('viewer.view'), value: st.view, size: 'sm',
     options: ['anterior', 'posterior', 'left', 'right'].map((v) => ({ value: v, label: t(`viewer.viewsShort.${v}`), title: t(`viewer.views.${v}`) })),
     onChange: (v) => { st.view = v; viewer && viewer.setView(v); } });
-  const allToggle = toggleSwitch({ label: t('viewer.allPoints'), checked: st.showAll, onChange: (v) => { st.showAll = v; viewer && viewer.setShowAllPoints(v); } });
+  const allToggle = toggleSwitch({ label: t('viewer.allPoints'), checked: st.showAll, onChange: (v) => { st.showAll = v; applyPointFilter(); } });
   const pointSearch = combobox({
     label: t('viewer.findPoint'), placeholder: t('viewer.findPoint'), size: 'sm', iconName: 'target',
     source: async (q) => {
@@ -550,8 +556,25 @@ export async function renderScan({ main, params }) {
     }
     return { mags, prs };
   }
+  function scanPointIds() {
+    const ids = new Set();
+    for (const c of st.checklist) { const p = pairOf(c.pairId); if (p) { ids.add(p.tracking.point); ids.add(p.impact.point); } }
+    for (const f of st.findings) { ids.add(f.trackingPoint); ids.add(f.impactPoint); const mm = pairMagnets.get(f.pairId); if (mm) for (const m of mm) ids.add(m.point); }
+    return [...ids].filter(Boolean);
+  }
+  let lastFilter = null;
+  function applyPointFilter() {
+    if (!viewer) return;
+    try {
+      viewer.setShowAllPoints(true);
+      if (st.showAll) { lastFilter = null; viewer.setPointFilter(null); return; }
+      const ids = scanPointIds(); const key = ids.sort().join('|');
+      if (key !== lastFilter) { lastFilter = key; viewer.setPointFilter(ids); }
+    } catch (e) { console.warn(e); }
+  }
   function syncViewer() {
     if (!viewer) return;
+    applyPointFilter();
     const { mags, prs } = magnetsAndPairs();
     try { viewer.setMagnets(mags); viewer.setPairs(prs); } catch (e) { console.warn(e); }
   }
@@ -565,7 +588,7 @@ export async function renderScan({ main, params }) {
     if (!root.isConnected) { v.dispose(); return; }
     viewer = v; viewerKind = kind;
     const ld = viewerHost.querySelector('.viewer-loading'); if (ld) ld.remove();
-    viewer.setView(st.view); viewer.setShowAllPoints(st.showAll);
+    viewer.setView(st.view); applyPointFilter();
     const notes = [];
     if (kind === '2d') notes.push(t('viewer.fallbackNote'));
     if (core.positioned < core.pointList.length) notes.push(t('viewer.missingAnatomy', { n: core.pointList.length - core.positioned }));
@@ -583,6 +606,7 @@ export async function renderScan({ main, params }) {
     const p = pointsMap.get(pointId); if (!p) return;
     st.drawerPoint = pointId;
     drawer.hidden = false; drawer.classList.add('is-open');
+    if (!pointList.hidden && stage.clientWidth < 760) { pointList.hidden = true; listToggle.setAttribute('aria-expanded', 'false'); }
     const altName = getLocale() === 'es' ? p.name.en : p.name.es;
     const body = el('div.drawer-body', skeleton(5));
     mount(drawer,
@@ -599,7 +623,7 @@ export async function renderScan({ main, params }) {
     try { list = await getPointPairs(pointId); } catch (err) { mount(body, alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] })); return; }
     if (st.drawerPoint !== pointId) return;
     if (!list.length) { mount(body, emptyState({ icon: 'target', title: t('scan.noPairsAtPoint'), compact: true })); return; }
-    const sorted = [...list].sort((a, b) => (b.id === pairId) - (a.id === pairId) || a.number - b.number);
+    const sorted = [...list].sort((a, b) => (b.id === pairId) - (a.id === pairId) || (a.number ?? 1e9) - (b.number ?? 1e9));
     mount(body,
       el('p.pd-label', t('scan.pairsAtPoint', { count: list.length })),
       el('ul.drawer-pairs', sorted.map((summary) => pairAccordion(summary, pointId, summary.id === pairId))));
@@ -614,7 +638,7 @@ export async function renderScan({ main, params }) {
     const s = stateOf(summary.id);
     const panelId = nextId('pa');
     const btn = el('button.pa-toggle', { type: 'button', aria: { expanded: expanded ? 'true' : 'false', controls: panelId } },
-      el('span.pa-left', el('span.pair-num', `#${summary.number}`), el('span.pa-name', locNode(summary.name)),
+      el('span.pa-left', el('span.pair-num', pairNum(summary)), el('span.pa-name', locNode(summary.name)),
         el(`span.role-tag.role-${role}`, role === 'tracking' ? t('pair.roleTrackingShort') : role === 'impact' ? t('pair.roleImpactShort') : t('pair.roleBoth'))),
       el('span.pa-right', categoryChip(summary.category), s !== 'candidate' ? stateBadge(s) : null, icon('chevronDown', { size: 18, cls: 'pa-chev' })));
     const panel = el('div.pa-panel', { id: panelId, hidden: !expanded });
@@ -666,7 +690,7 @@ export async function renderScan({ main, params }) {
       el('section.sp-section.sp-findings', el('div.sp-head', el('h3.sp-label', t('session.findings')), findingsCount), findingsEl),
       el('section.sp-section.grid-2',
         el('div.field', el('label.sp-label', { for: 'follow-up' }, t('scan.followUp')), followInput, el('p.field-hint', t('scan.followUpHint'))),
-        el('div.field', el('span.sp-label', t('scan.elapsed')), el('p.static.big-timer', elapsed.cloneNode(true)))),
+        live ? el('div.field', el('span.sp-label', t('scan.elapsed')), el('p.static.big-timer', elapsed.cloneNode(true))) : null),
       el('section.sp-section', el('label.sp-label', { for: 'session-notes' }, t('scan.sessionNotes')), notes)),
     readOnly ? null : el('div.pane-foot', el('button.btn.btn-primary.btn-lg.btn-block', { type: 'button', onClick: () => finalize() }, icon('shield', { size: 20 }), t('scan.finalize'))));
   const bigTimer = right.querySelector('.big-timer .timer-value');
@@ -697,7 +721,7 @@ export async function renderScan({ main, params }) {
       el('div.finding-top',
         el('span.finding-idx', { aria: { hidden: 'true' } }, String(i + 1)),
         el('div.finding-main',
-          el('p.finding-name', pair ? el('span.pair-num', `#${pair.number}`) : null, pair ? locNode(pair.name) : `${f.trackingPoint} – ${f.impactPoint}`),
+          el('p.finding-name', pair ? el('span.pair-num', pairNum(pair)) : null, pair ? locNode(pair.name) : `${f.trackingPoint} – ${f.impactPoint}`),
           pairPoles(pair || { tracking: { point: f.trackingPoint }, impact: { point: f.impactPoint } }, pointsMap, { compact: true, sides: { tracking: f.trackingSide, impact: f.impactSide } }),
           pair ? el('div.finding-chips', categoryChip(pair.category), (f.phenomena || []).map((p) => chip(t(`phenomena.${p}`), 'violet', 'chip-sm'))) : null),
         el('button.icon-btn.finding-expand', { type: 'button', aria: { expanded: open ? 'true' : 'false', controls: detailsId, label: t('scan.findingDetails', { n: i + 1 }) } }, icon('chevronDown', { size: 18 }))),

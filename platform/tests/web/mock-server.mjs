@@ -200,16 +200,16 @@ function finalizeSession(s, signatureName, user, when = new Date()) {
 
 function seedDemo(admin) {
   const mkU = (email, name, role, locale) => { const u = { id: crypto.randomUUID(), email, name, role, locale, theme: 'system', pw: hashPw('correct-horse-battery'), mfaEnabled: false, active: true, createdAt: now() }; db.users.push(u); return u; };
-  const practitioner = mkU('lucia.herrera@clinic.test', 'Dr. Lucía Herrera', 'practitioner', 'en');
-  mkU('front.desk@clinic.test', 'Sam Rivera', 'assistant', 'es');
+  const practitioner = mkU('practitioner@clinic.test', 'Dr. Pat Practitioner', 'practitioner', 'en');
+  mkU('frontdesk@clinic.test', 'Front Desk Demo', 'assistant', 'es');
   mkU('auditor@clinic.test', 'Quality Auditor', 'auditor', 'en');
   const mk = (firstName, lastName, dob, sex) => { const p = { id: crypto.randomUUID(), mrn: nextMrn(), firstName, lastName, dob, sex, phone: `(718) 555-01${10 + db.patients.length}`, email: `${firstName.toLowerCase().replace(/\s/g, '')}@example.test`, address: 'Queens, NY', notes: null, createdAt: now(), updatedAt: now() }; db.patients.push(p); return p; };
-  const maria = mk('María', 'González', '1979-04-12', 'female');
-  const james = mk('James', 'Carter', '1964-09-30', 'male');
-  const ana = mk('Ana Lucía', 'Restrepo', '1991-01-22', 'female');
-  const robert = mk('Robert', 'Kim', '1958-06-05', 'male');
+  const mary = mk('Mary', 'Example', '1979-04-12', 'female');
+  const john = mk('John', 'Demo', '1964-09-30', 'male');
+  const ana = mk('Ana', 'Prueba', '1991-01-22', 'female');
+  const robert = mk('Robert', 'Testcase', '1958-06-05', 'male');
   const consent = (p, absolute = [], relative = []) => db.consents.push({ id: crypto.randomUUID(), patientId: p.id, type: 'intake', answers: { techniqueExplained: true, questionsAnswered: true, understandsScope: true, continuesMedical: true, authorizesPlacement: true, followUpInformed: true }, contraindications: { absolute, relative }, hasAbsolute: absolute.length > 0, hasRelative: relative.length > 0, signatureName: `${p.firstName} ${p.lastName}`, signedAt: addDays(now(), -20) + 'T15:00:00.000Z', recordedBy: practitioner.id, createdAt: now() });
-  consent(maria, [], ['rel-04']); consent(james); consent(robert); consent(ana, ['abs-01'], []);
+  consent(mary, [], ['rel-04']); consent(john); consent(robert); consent(ana, ['abs-01'], []);
   const mkSession = (p, daysAgo, findings, { status = 'final', chief = '', symptoms = [], protocolIds = [], follow } = {}) => {
     const start = new Date(); start.setDate(start.getDate() - daysAgo); start.setHours(daysAgo ? 10 : Math.max(8, new Date().getHours() - 1), 15, 0, 0);
     const s = { id: crypto.randomUUID(), patientId: p.id, practitionerId: practitioner.id, methodology: 'biomagnetism', protocolIds, chiefComplaint: chief, symptoms, vitals: null, notes: null,
@@ -220,9 +220,9 @@ function seedDemo(admin) {
     if (status === 'final') finalizeSession(s, practitioner.name, practitioner, new Date(start.getTime() + 50 * 60000));
     return s;
   };
-  mkSession(maria, 14, [['pb-231', 'cleared'], ['pb-232', 'cleared'], ['pb-234', 'impacted', { phenomena: ['infiltrate'] }]], { chief: 'Heavy legs, evening ankle swelling', symptoms: ['piernas-pesadas', 'varices'], protocolIds: ['app-19-circulacion-piernas'] });
-  mkSession(maria, 7, [['pb-231', 'cleared'], ['pb-232', 'impacted'], ['pb-236', 'impacted']], { chief: 'Follow-up: leg circulation', symptoms: ['piernas-pesadas', 'calambres'], protocolIds: ['app-19-circulacion-piernas'] });
-  mkSession(james, 1, [['pb-047', 'found', { notes: 'Marked epigastric tenderness' }], ['pb-063', 'found']], { status: 'draft', chief: 'Gastritis, bloating after meals', symptoms: ['gastritis', 'distension-abdominal'], protocolIds: ['top10-gastrointestinal'] });
+  mkSession(mary, 14, [['pb-231', 'cleared'], ['pb-232', 'cleared'], ['pb-234', 'impacted', { phenomena: ['infiltrate'] }]], { chief: 'Heavy legs, evening ankle swelling', symptoms: ['piernas-pesadas', 'varices'], protocolIds: ['app-19-circulacion-de-piernas'] });
+  mkSession(mary, 7, [['pb-231', 'cleared'], ['pb-232', 'impacted'], ['pb-236', 'impacted']], { chief: 'Follow-up: leg circulation', symptoms: ['piernas-pesadas', 'calambres'], protocolIds: ['app-19-circulacion-de-piernas'] });
+  mkSession(john, 1, [['pb-047', 'found', { notes: 'Marked epigastric tenderness' }], ['pb-063', 'found']], { status: 'draft', chief: 'Gastritis, bloating after meals', symptoms: ['gastritis', 'distension-abdominal'], protocolIds: ['top10-gastrointestinal'] });
   mkSession(robert, 35, [['pb-235', 'cleared']], { chief: 'Low-back pain', symptoms: ['dolor-lumbar'] });
   mkSession(robert, 0, [['pb-235', 'impacted'], ['pb-232', 'cleared']], { chief: 'Low-back pain radiating to right leg', symptoms: ['dolor-lumbar'] });
   audit(admin, 'demo.seed');

@@ -112,14 +112,18 @@ pairs.forEach((p) => {
 });
 
 export const protocols = [
-  { id: 'app-19-circulacion-piernas', kind: 'application', name: { es: '19. Circulación de Piernas', en: '19. Leg Circulation' },
-    items: [231, 233, 232, 234, 235, 236, 237].map((n) => ({ pair: pid(n) })), source: { doc: 'goiz-n2', page: 88 },
-    recommendation: { es: 'En caso de síntomas agudos aplicar 30 a 45 min 2 a 3 veces al día. En caso de síntomas crónicos aplicar 30 a 45 min 2 a 3 veces por semana.', en: 'For acute symptoms apply 30–45 min, 2–3 times a day. For chronic symptoms apply 30–45 min, 2–3 times a week.' } },
+  { id: 'app-19-circulacion-de-piernas', kind: 'application', number: 19, name: { es: '19. Circulación de Piernas', en: '19. Leg Circulation' },
+    items: [[231, 'Desintoxicación', 'Detoxification'], [233, 'Balance hormonal (cortisol)', 'Hormonal balance (cortisol)'], [232, 'Desintoxicación', 'Detoxification'],
+      [234, 'Circulación MP', 'Lower-limb circulation'], [235, 'Circulación MP', 'Lower-limb circulation'], [236, 'Circulación MP', 'Lower-limb circulation'], [237, 'Circulación MP', 'Lower-limb circulation']]
+      .map(([n, es, en]) => ({ pair: pid(n), label: { es, en } })),
+    dosage: { acute: { minutes: [30, 45], frequency: { es: '2 a 3 veces al día', en: '2–3 times per day' } }, chronic: { minutes: [30, 45], frequency: { es: '2 a 3 veces por semana', en: '2–3 times per week' } } },
+    notes: [{ es: 'Sigue las indicaciones médicas. Visita a tu médico y biomagnetista.', en: 'Follow medical advice. See your physician and biomagnetist.' }],
+    source: { doc: 'youheal', page: 19 } },
   { id: 'basic-detox', kind: 'basic', name: { es: 'Básico — Desintoxicación', en: 'Basic — Detoxification' }, items: [{ pair: 'pb-231' }, { pair: 'pb-232' }], source: { doc: 'goiz-n2', page: 86 } },
   { id: 'top10-gastrointestinal', kind: 'top10', name: { es: 'Top 10 Gastrointestinal', en: 'Top 10 Gastrointestinal' },
     items: [{ pair: 'pb-047' }, { pair: 'pb-063' }, { pair: 'pb-088' }, { pair: 'pb-001' }, { protocol: 'basic-detox' }], source: { doc: 'goiz-n1', page: 107 } },
   { id: 'top5-inmunologico', kind: 'top5', name: { es: 'Top 5 Inmunológico', en: 'Top 5 Immunological' }, items: [{ pair: 'pb-001' }, { pair: 'pb-014' }, { pair: 'pb-022' }], source: { doc: 'goiz-n1', page: 110 } },
-  { id: 'disease-varices', kind: 'disease', name: { es: 'Várices', en: 'Varicose veins' }, items: [{ protocol: 'app-19-circulacion-piernas' }, { pair: 'pb-233' }], source: { doc: 'goiz-n2', page: 140 } },
+  { id: 'disease-varices', kind: 'disease', name: { es: 'Várices', en: 'Varicose veins' }, items: [{ protocol: 'app-19-circulacion-de-piernas' }, { pair: 'pb-233' }], source: { doc: 'goiz-n2', page: 140 } },
 ];
 
 const sym = (id, system, es, en, pairIds) => ({ id, system, name: { es, en }, pairs: pairIds });

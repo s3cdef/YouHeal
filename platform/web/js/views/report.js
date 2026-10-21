@@ -141,12 +141,21 @@ export async function renderReport({ main, params }) {
     el('h2.rpt-h2', t('report.followUp')),
     fu.date ? el('p', el('strong', fmtDate(fu.date, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }))) : el('p.muted', '—'),
     el('p.small', fu.note ? locText(fu.note) : t('report.followUpNote')));
+  // General guidance sections can be pages long in the source guides; the report carries a one-sentence summary.
+  const excerpt = (body) => {
+    const { text, fallback } = loc(body);
+    const first = (text.match(/^.{20,220}?[.!?](\s|$)/) || [text.slice(0, 200)])[0].trim();
+    const out = first.length < text.length ? `${first.replace(/[.!?]$/, '')}…` : first;
+    const n = el('span', out); if (fallback) { n.lang = 'es'; n.append(' ', el('abbr.badge-es', { title: t('common.untranslated'), lang: 'en' }, 'ES')); }
+    return n;
+  };
   const pairRecs = (rep.recommendations && (rep.recommendations.pairSpecific || rep.recommendations.pairs)) || [];
   const genRecs = (rep.recommendations && rep.recommendations.general) || [];
   const recommendations = el('section.rpt-section',
     el('h2.rpt-h2', t('report.recommendations')),
     pairRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.pairSpecific')), el('ul', pairRecs.flatMap((r) => (r.items || [r.text]).map((txt) => el('li', el('strong', `${r.number ? `PB ${r.number} ` : ''}${locText(r.name || r.pairName)}: `), locNode(txt)))))) : null,
-    genRecs.length ? el('div.rpt-recs', el('h3.rpt-h3', t('report.general')), el('ul', genRecs.map((r) => el('li', el('strong', `${locText(r.title)}: `), locNode(r.body))))) : null,
+    genRecs.length ? el('div.rpt-recs.rpt-gen', el('h3.rpt-h3', t('report.general')), el('ul', genRecs.map((r) => el('li', el('strong', `${locText(r.title)}: `), excerpt(r.body)))),
+      el('p.muted.small', t('report.generalNote'))) : null,
     !pairRecs.length && !genRecs.length ? el('p.muted', '—') : null);
 
   // ---------- attestation ----------
@@ -212,6 +221,5 @@ export async function renderReport({ main, params }) {
     paper.dataset.ready = 'true';
   })();
 
-  void loc;
   return () => { for (const v of [...PAGE_VARS, '--rpt-neg', '--rpt-pos']) rs.removeProperty(v); document.body.classList.remove('printing-report'); };
 }

@@ -2,10 +2,10 @@
 import { el, mount, clear } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage } from '../api.js';
-import { t, fmtDate, fmtDateTime, locNode, fmtRelativeDay } from '../i18n.js';
+import { t, fmtDate, fmtDateTime, locNode, locText, fmtRelativeDay } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
 import { can, loadCore, getList, normSession } from '../state.js';
-import { tabs, card, emptyState, table, statusBadge, chip, field, input, textarea, alertBox, setLoading, skeleton, categoryChip } from '../ui/components.js';
+import { tabs, card, emptyState, table, statusBadge, chip, field, input, textarea, alertBox, setLoading, skeleton, categoryChip, pairNum } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { confirmDialog } from '../ui/modal.js';
 import { avatar, fullName, demographics, errorPanel, methodologyLabel } from './common.js';
@@ -168,16 +168,23 @@ function intake({ patient, consents, panel, refresh }) {
     mount(absAlert, absSel.size ? alertBox({ tone: 'danger', title: t('intake.absBlockTitle'), children: [el('p', t('intake.absBlockBody'))] }) : null);
   };
   const contraBox = el('div.contra-grid', skeleton(4));
+  const contraFilter = el('input.input', { type: 'search', id: 'contra-filter', placeholder: t('intake.filterContra'), autocomplete: 'off' });
   getList('/catalog/contraindications').then((all) => {
     const group = (kind, sel, title, tone) => el(`fieldset.contra-group.is-${kind}`,
-      el('legend', icon(kind === 'absolute' ? 'alert' : 'info', { size: 18 }), title),
+      el('legend', icon(kind === 'absolute' ? 'alert' : 'info', { size: 18 }), title, el('span.contra-count', String(all.filter((c) => c.kind === kind).length))),
       el('p.field-hint', t(`intake.${kind}Hint`)),
-      all.filter((c) => c.kind === kind).map((c) => {
+      el('div.contra-items', all.filter((c) => c.kind === kind).map((c) => {
         const cb = el('input', { type: 'checkbox', value: c.id, checked: sel.has(c.id) });
         cb.addEventListener('change', () => { if (cb.checked) sel.add(c.id); else sel.delete(c.id); markDirty(); if (kind === 'absolute') updateAbsAlert(); });
-        return el(`label.check.check-card${tone ? '.' + tone : ''}`, cb, el('span.check-text', locNode(c.text), c.source ? el('span.cite', `${c.source.doc} p.${c.source.page}`) : null));
-      }));
-    mount(contraBox, group('absolute', absSel, t('intake.absolute'), 'is-danger'), group('relative', relSel, t('intake.relative'), null));
+        const txt = locText(c.text);
+        return el(`label.check.contra-item${tone ? '.' + tone : ''}`, { title: c.source ? `${c.source.doc} p.${c.source.page}` : null, data: { q: txt.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() } }, cb, locNode(c.text, 'span', 'check-text'));
+      })));
+    mount(contraBox, el('div.contra-tools', el('label.sr-only', { for: 'contra-filter' }, t('intake.filterContra')), el('div.search-field', el('span.search-icon', icon('search', { size: 18 })), contraFilter)),
+      group('absolute', absSel, t('intake.absolute'), 'is-danger'), group('relative', relSel, t('intake.relative'), null));
+    contraFilter.addEventListener('input', () => {
+      const q = contraFilter.value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      for (const it of contraBox.querySelectorAll('.contra-item')) it.hidden = !!q && !it.dataset.q.includes(q) && !it.querySelector('input').checked;
+    });
     updateAbsAlert();
   }).catch((err) => mount(contraBox, errorPanel(err)));
 
@@ -273,7 +280,7 @@ function sessionsTab({ patient, sessions, panel, sessionDetails }) {
     const tbody = el('tbody', ordered.map((r) => {
       const p = r.pairId ? core.pairs.get(r.pairId) : null;
       return el(`tr${r.n > 1 ? '.is-recurring' : ''}`,
-        el('th', { scope: 'row' }, el('span.trend-pair', p ? el('span.pair-num', `#${p.number}`) : null, p ? locNode(p.name) : r.key)),
+        el('th', { scope: 'row' }, el('span.trend-pair', p ? el('span.pair-num', pairNum(p)) : null, p ? locNode(p.name) : r.key)),
         chrono.map((s, col) => el('td.trend-cell', r.cells.has(col) ? el(`span.trend-mark.state-${r.cells.get(col)}`, { title: t(`state.${r.cells.get(col)}`), role: 'img', aria: { label: t(`state.${r.cells.get(col)}`) } }) : el('span.trend-empty', { aria: { label: t('chart.notFound') }, role: 'img' }))),
         el('td.ta-right', el(`span.count-pill${r.n > 1 ? '.is-hot' : ''}`, `${r.n}×`)));
     }));

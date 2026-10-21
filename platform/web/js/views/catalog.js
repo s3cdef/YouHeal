@@ -4,7 +4,7 @@ import { icon } from '../ui/icons.js';
 import { api, items, errorMessage } from '../api.js';
 import { t, locText, locNode, getLocale, vocab } from '../i18n.js';
 import { loadCore, getPair, getProtocol, getList, protocolPairIds, polarity } from '../state.js';
-import { tabs, table, emptyState, categoryChip, ratingsRow, pairPoles, chip, select, skeleton, card, alertBox, toggleSwitch, segmented, CATEGORY_TONES } from '../ui/components.js';
+import { tabs, table, emptyState, categoryChip, ratingsRow, pairPoles, chip, select, skeleton, card, alertBox, toggleSwitch, segmented, CATEGORY_TONES, pairNum } from '../ui/components.js';
 import { openModal } from '../ui/modal.js';
 import { pageHeader, errorPanel } from './common.js';
 import { pairDetailBody, sourceCite } from './pair-detail.js';
@@ -24,7 +24,7 @@ export async function openPairSheet(pairId) {
   const core = await loadCore();
   const body = el('div', skeleton(6));
   const summary = core.pairs.get(pairId);
-  openModal({ title: summary ? `#${summary.number} · ${locText(summary.name)}` : t('catalog.pair'), size: 'sheet', body, actions: [{ label: t('common.close'), value: null, variant: 'secondary' }] });
+  openModal({ title: summary ? `${pairNum(summary)} · ${locText(summary.name)}` : t('catalog.pair'), size: 'sheet', body, actions: [{ label: t('common.close'), value: null, variant: 'secondary' }] });
   try { mount(body, pairDetailBody(await getPair(pairId), core, { onOpenPair: (pid) => openPairSheet(pid) })); } catch (err) { mount(body, alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] })); }
 }
 
@@ -84,7 +84,7 @@ function pairsTab({ panel, core, query }) {
     const more = list.length > shown ? el('button.btn.btn-secondary.btn-block.show-more', { type: 'button', onClick: () => { shown += 200; load(true); } }, t('catalog.showMore', { n: Math.min(200, list.length - shown), total: list.length })) : null;
     mount(results, table({
       caption: t('catalog.tab.pairs'), rows: page, dense: true,
-      onRowClick: (p) => openPairSheet(p.id), rowLabel: (p) => `#${p.number} ${locText(p.name)}`,
+      onRowClick: (p) => openPairSheet(p.id), rowLabel: (p) => `${pairNum(p)} ${locText(p.name)}`,
       empty: emptyState({ icon: 'search', title: t('catalog.noPairs'), compact: true }),
       columns: [
         { key: 'number', label: '#', cls: 'mono num-col', render: (p) => (p.number ? String(p.number) : '—') },
@@ -182,7 +182,7 @@ function protocolsTab({ panel, core, query }) {
         el('ol.proto-pairs', ids.map((pid, i) => {
           const pr = core.pairs.get(pid); if (!pr) return el('li', pid);
           return el('li.proto-pair', el('span.ck-num', String(i + 1)),
-            el('button.proto-pair-btn', { type: 'button', onClick: () => openPairSheet(pid) }, el('span.pair-num', `#${pr.number}`), locNode(pr.name)),
+            el('button.proto-pair-btn', { type: 'button', onClick: () => openPairSheet(pid) }, el('span.pair-num', pairNum(pr)), locNode(pr.name)),
             pairPoles(pr, core.points, { compact: true }), categoryChip(pr.category));
         })),
         sourceCite(p.source),
@@ -253,9 +253,20 @@ export async function renderProtocolCard({ main, params }) {
     { id: `${p.id}-p`, pointId: p.impact.point, side: s.i, polarity: 'positive' }]; });
   const isBack = (p) => core.points.get(p.tracking.point)?.view === 'posterior';
   const details = await Promise.all(pairs.map((p) => getPair(p.id).catch(() => p)));
+  // v1.1 application protocols carry a per-item label (e.g. "Detoxification"); otherwise use the relations.
+  const itemLabel = new Map((proto.items || []).filter((i) => i.pair && i.label).map((i) => [i.pair, i.label]));
   const label = (p, d) => el('li.pc-label',
     el('p.pc-pair', el('span.pc-neg', locText(core.points.get(p.tracking.point)?.name) || p.tracking.point), ' – ', el('span.pc-pos', locText(core.points.get(p.impact.point)?.name) || p.impact.point)),
-    d.relations && d.relations.length ? el('p.pc-rel', d.relations.map((r) => locText((r.entity && r.entity.name) || r.name)).join(' · ')) : null);
+    itemLabel.has(p.id) ? el('p.pc-rel', locText(itemLabel.get(p.id)))
+      : d.relations && d.relations.length ? el('p.pc-rel', d.relations.slice(0, 2).map((r) => locText((r.entity && r.entity.name) || r.name)).join(' · ')) : null);
+  const dose = (k) => {
+    const d = proto.dosage && proto.dosage[k]; if (!d) return null;
+    const mins = Array.isArray(d.minutes) ? d.minutes.join('–') : d.minutes;
+    return el('p', t(`catalog.dosage.${k}`, { min: mins, freq: d.frequency ? locText(d.frequency) : '' }));
+  };
+  const recBlock = proto.dosage ? el('div.pc-rec', el('p.pc-rec-title', `${t('catalog.recommendation')}:`), dose('acute'), dose('chronic'))
+    : proto.recommendation ? el('div.pc-rec', el('p.pc-rec-title', `${t('catalog.recommendation')}:`), el('p', locNode(proto.recommendation))) : el('div');
+  const notes = (proto.notes || []).map((n) => locText(n)).filter(Boolean);
   const front = el('figure.pc-fig', el('div.pc-img', skeleton(6)), el('figcaption.sr-only', t('viewer.views.anterior')));
   const back = el('figure.pc-fig', el('div.pc-img', skeleton(6)), el('figcaption.sr-only', t('viewer.views.posterior')));
   const sheet = el('article.protocol-card',
@@ -265,9 +276,9 @@ export async function renderProtocolCard({ main, params }) {
       front, back,
       el('ul.pc-labels.pc-right', pairs.map((p, i) => (isBack(p) ? label(p, details[i]) : null)))),
     el('footer.pc-foot',
-      proto.recommendation ? el('div.pc-rec', el('p.pc-rec-title', t('catalog.recommendation')), el('p', locNode(proto.recommendation))) : el('div'),
+      recBlock,
       el('div.pc-legend', el('span.legend-item', el('span.mag.mag-neg', '−'), t('polarity.trackingNeg')), el('span.legend-item', el('span.mag.mag-pos', '+'), t('polarity.impactPos'))),
-      el('div.pc-important', el('p.pc-imp-title', t('catalog.important')), el('p', t('catalog.importantBody')))),
+      el('div.pc-important', el('p.pc-imp-title', t('catalog.important')), notes.length ? notes.map((n) => el('p', n)) : el('p', t('catalog.importantBody')))),
     el('p.pc-source', sourceCite(proto.source)));
   mount(main, el('div.page.page-card',
     el('div.no-print', pageHeader({ title: locText(proto.name), subtitle: t('catalog.cardSub'), back: { href: `#/catalog/protocols?open=${encodeURIComponent(proto.id)}`, label: t('catalog.tab.protocols') },
