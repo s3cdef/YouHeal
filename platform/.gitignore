@@ -12,3 +12,6 @@ data/tls/
 node_modules/
 .env
 tests/artifacts/
+
+# Translation working files (queue/done chunks); the result lives in data/i18n/packs/
+data/i18n/_work/

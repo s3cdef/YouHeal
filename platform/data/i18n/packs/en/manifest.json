@@ -1,0 +1,18 @@
+{
+  "locale": "en",
+  "name": "English",
+  "nativeName": "English",
+  "dir": "ltr",
+  "role": "mirror",
+  "baseline": "es",
+  "catalog": {
+    "fields": 6290,
+    "translated": 2907,
+    "curated": 2907,
+    "machine": 0,
+    "reviewed": 0,
+    "missing": 3383,
+    "stale": 0,
+    "sha256": "32385add64bbfc9002457115fac81a576a46a672759f3cc0434461d1d52cb8a5"
+  }
+}
