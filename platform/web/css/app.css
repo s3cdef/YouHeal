@@ -1005,7 +1005,8 @@ details.proto-kind > summary { cursor: pointer; padding: 8px 4px; list-style-pos
 .report-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 10; padding: 10px 0; background: linear-gradient(to bottom, var(--bg) 75%, transparent); }
 .report-toolbar-mid { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .report-toolbar-mid > * { white-space: nowrap; }
-.report-toolbar-end { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+.report-toolbar-end { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
+.rpt-sources cite { font-style: italic; }
 .report-lang { display: flex; align-items: center; gap: 8px; }
 .report-lang .label { white-space: nowrap; }
 @media (max-width: 1100px) { .report-lang .label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
@@ -1197,3 +1198,4 @@ details.proto-kind > summary { cursor: pointer; padding: 8px 4px; list-style-pos
 .lp-src-text { padding: 10px 12px; background: var(--surface-2); border-radius: var(--r-sm, 6px); white-space: pre-wrap; overflow-wrap: anywhere; }
 .lp-row-actions { display: flex; justify-content: flex-end; gap: 8px; }
 @media (max-width: 900px) { .lp-row-body { grid-template-columns: minmax(0, 1fr); } }
+.lp-code { font-size: .85em; }

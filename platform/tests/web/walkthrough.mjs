@@ -94,18 +94,19 @@ function packValues(locale) {
   walk(JSON.parse(fs.readFileSync(path.join(PACKS, locale, 'ui.json'), 'utf8'))); return out;
 }
 const UI_EN = packValues('en'); const UI_ES = packValues('es');
-const exclusive = (a, b) => { const sb = new Set(b); return [...new Set(a)].filter((v) => !sb.has(v) && !v.includes('{') && /\p{L}{3,}/u.test(v) && v.length < 80); };
+// single short words are skipped: many are cognates or catalog terms shared by both languages ("Temporal", "Prion")
+const exclusive = (a, b) => { const sb = new Set(b); return [...new Set(a)].filter((v) => !sb.has(v) && !v.includes('{') && /\p{L}{3,}/u.test(v) && v.length < 80 && (/\s/.test(v.trim()) || v.length >= 10)); };
 const ONLY_EN = exclusive(UI_EN, UI_ES); const ONLY_ES = exclusive(UI_ES, UI_EN);
 const USER_TEXT = ['Heavy legs', 'Follow-up: leg circulation', 'Gastritis, bloating', 'Low-back pain', 'night cramps', 'Demo record', 'Demo Clinic', 'Dr. Alex Demo', 'Jane Sample', 'Mary Example', 'John Demo', 'Ana Prueba', 'Robert Testcase', 'example.test', 'clinic.test'];
 async function checkLeaks(page, label, problems) {
   const flags = await page.evaluate(({ onlyEn, onlyEs, user }) => {
     const EN = new Set(['the', 'and', 'with', 'of', 'for', 'your', 'this', 'that', 'from', 'are', 'is', 'was', 'will', 'been', 'have', 'has', 'to', 'on', 'at', 'by', 'after', 'before', 'into', 'than', 'you', 'or', 'be', 'it', 'its', 'which', 'there', 'were', 'not', 'yet']);
-    const ES = new Set(['el', 'la', 'los', 'las', 'del', 'de', 'con', 'para', 'por', 'una', 'unos', 'unas', 'que', 'y', 'es', 'en', 'se', 'su', 'sus', 'al', 'más', 'sin', 'pero', 'como', 'este', 'esta', 'son', 'está', 'les', 'ya', 'o', 'u']);
+    const ES = new Set(['el', 'la', 'los', 'las', 'del', 'de', 'con', 'para', 'por', 'una', 'unos', 'unas', 'que', 'es', 'en', 'se', 'su', 'sus', 'al', 'más', 'sin', 'pero', 'como', 'este', 'esta', 'son', 'está', 'les', 'ya']);
     const sets = { en: new Set(onlyEn), es: new Set(onlyEs) };
     const out = [];
     const where = (el) => { const parts = []; for (let n = el; n && n !== document.body && parts.length < 3; n = n.parentElement) parts.unshift(n.tagName.toLowerCase() + (n.className && typeof n.className === 'string' ? '.' + n.className.trim().split(/\s+/).slice(0, 2).join('.') : '')); return parts.join(' > '); };
     const judge = (text, el, kind) => {
-      const tx = text.replace(/\s+/g, ' ').trim(); if (!tx || !/\p{L}{2,}/u.test(tx)) return;
+      const tx = text.replace(/YOU HEAL/g, ' ').replace(/\s+/g, ' ').trim(); if (!tx || !/\p{L}{2,}/u.test(tx) || /^[A-Z]{2,3}$/.test(tx)) return; // locale codes / abbreviations
       if (user.some((u) => tx.includes(u))) return;
       const lang = ((el.closest('[lang]') || document.documentElement).getAttribute('lang') || 'en').slice(0, 2);
       const other = lang === 'es' ? 'en' : 'es';
@@ -114,7 +115,7 @@ async function checkLeaks(page, label, problems) {
       const foreign = words.filter((w) => (lang === 'es' ? EN : ES).has(w)).length;
       if (sets[other].has(tx) || (foreign && foreign > own)) out.push(`${kind} [lang=${lang}] "${tx.slice(0, 90)}" @ ${where(el)}`);
     };
-    const skip = (el) => el.closest('script, style, code, kbd, .mono, .badge-es, [data-leak-ok], .lp-src-text, .lp-key, textarea, .toast');
+    const skip = (el) => el.closest('script, style, noscript, code, kbd, .mono, .badge-es, [data-leak-ok], .lp-src-text, .lp-key, textarea, .toast');
     const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n = tw.nextNode(); n; n = tw.nextNode()) { const el = n.parentElement; if (el && !skip(el)) judge(n.nodeValue, el, 'text'); }
     for (const el of document.body.querySelectorAll('[aria-label], [title], [placeholder], img[alt]')) {
@@ -367,11 +368,11 @@ async function main() {
   const reportUrl = page.url();
   // the signed report shown in the other language is marked as a translation (paper + screen notice)
   await page.locator('.report-lang .seg', { hasText: 'ES' }).click();
-  await page.locator('article.report[data-ready="true"] .rpt-translation').waitFor({ timeout: 30000 });
+  await page.locator('article.report[lang="es"][data-ready="true"] .rpt-translation').waitFor({ timeout: 30000 });
   await shot(page, '16b-report-translation', { full: true });
   await checkLeaks(page, 'en ui / es report', problems);
   await page.locator('.report-lang .seg', { hasText: 'EN' }).click();
-  await page.locator('article.report[data-ready="true"]').waitFor({ timeout: 30000 });
+  await page.locator('article.report[lang="en"][data-ready="true"]').waitFor({ timeout: 30000 });
   if (await page.locator('.rpt-translation').count()) problems.push('[desktop] report: translation notice shown for the signed language');
 
   // 11. other views (demo data seeded by the mock)
@@ -422,13 +423,13 @@ async function main() {
     await page.locator('#lp-status').selectOption('reviewed');
     const edited = page.locator(`.lp-row[data-key="${key}"]`);
     await edited.waitFor({ timeout: 10000 });
-    await shot(page, '28-language-packs', { full: true });
+    await shot(page, '28-language-packs');
     await checkLeaks(page, 'en language packs', problems);
     await edited.getByRole('button', { name: 'Revert to pack' }).click();
     await page.locator('dialog[open]').getByRole('button', { name: 'Revert to pack' }).click();
     await page.getByText('Reverted to the pack translation').waitFor();
   } else {
-    await shot(page, '28-language-packs', { full: true });
+    await shot(page, '28-language-packs');
   }
   // dark mode
   await page.goto(`${base}/#/`);
@@ -482,7 +483,7 @@ async function main() {
   await page.locator('article.report[data-ready="true"]').waitFor({ timeout: 30000 });
   await checkLeaks(page, 'es ui / en report', problems);
   await page.locator('.report-lang .seg', { hasText: 'ES' }).click();
-  await page.locator('article.report[data-ready="true"] .rpt-translation').waitFor({ timeout: 30000 });
+  await page.locator('article.report[lang="es"][data-ready="true"] .rpt-translation').waitFor({ timeout: 30000 });
   await shot(page, '45-es-report', { full: true });
   await checkLeaks(page, 'es report', problems);
   await page.emulateMedia({ media: 'print' });

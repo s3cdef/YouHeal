@@ -10,7 +10,7 @@ export function sourceCite(source, sourceInfo) {
   const title = sourceInfo ? sourceInfo.title : source.doc;
   return el('p.cite-line', icon('book', { size: 14 }),
     el('span', t('catalog.source'), ': '),
-    el('cite', title),
+    el('cite', { lang: (sourceInfo && (sourceInfo.lang || sourceInfo.language)) || 'es' }, title),
     source.page ? el('span', ` · ${t('catalog.page', { page: source.page })}`) : null,
     sourceInfo && sourceInfo.license_status ? el('span.cite-license', ` · ${t(`license.${sourceInfo.license_status}`)}`) : null);
 }

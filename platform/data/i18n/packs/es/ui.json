@@ -2,7 +2,8 @@
   "app": {
     "title": "YOU HEAL Clínica",
     "clinical": "Clínica",
-    "homeLabel": "YOU HEAL Clínica — inicio"
+    "homeLabel": "YOU HEAL Clínica — inicio",
+    "skipLink": "Saltar al contenido principal"
   },
   "nav": {
     "dashboard": "Hoy",

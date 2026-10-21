@@ -43,6 +43,7 @@ export async function renderReport({ main, params }) {
     if (!(await ensureLocale(v))) { toast(t('errors.languagePackUnavailable'), { tone: 'warn' }); return; }
     let next;
     try { next = await fetchReport(v); } catch (err) { toast(errorMessage(err), { tone: 'error' }); return; }
+    if (!imageSlots || !imageSlots.paper.isConnected) return; // navigated away meanwhile
     reportLocales.set(params.id, v);
     rep = next; signedLocale = signedLocaleOf(rep) || signedLocale; rl = v;
     paintIn(rl);
@@ -240,7 +241,10 @@ export async function renderReport({ main, params }) {
       el('span', org.reportFooter || `${org.name || 'YOU HEAL'}${org.phone ? ' · ' + org.phone : ''}`),
       el('span.mono', hash16 ? `SHA-256 ${hash16}` : t('report.notFinalShort'), ' ', integrityEl),
       el('span', `${t('report.printed')} ${fmtDateTime(printed.toISOString())}`),
-      sources.length ? el('span.rpt-sources', `${t('report.catalogSources')}: ${sources.map((s) => s.title + (s.notice ? ` (${s.notice})` : '')).join('; ')}${rep.catalog.version ? ` · ${t('report.catalogVersion')} ${rep.catalog.version}` : ''}`) : null);
+      sources.length ? el('span.rpt-sources', `${t('report.catalogSources')}: `,
+        // source titles are names of works (in their own language); the licence notice is the publisher's text
+        sources.map((s, i) => [i ? '; ' : null, el('cite', { lang: s.lang || s.language || 'es' }, s.title), s.notice ? el('span', { lang: s.noticeLang || 'en' }, ` (${s.notice})`) : null]),
+        rep.catalog.version ? ` · ${t('report.catalogVersion')} ${rep.catalog.version}` : null) : null);
 
     const watermark = !isFinal ? el('div.rpt-watermark', { aria: { hidden: 'true' } }, t('report.watermark')) : null;
     const superseded = rep.supersededBy ? el('div.rpt-superseded', icon('alert', { size: 16 }), el('span', t('report.supersededBanner')), ' ', el('a.no-print', { href: `#/sessions/${rep.supersededBy}/report` }, t('report.openLatest'))) : null;

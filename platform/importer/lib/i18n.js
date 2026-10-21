@@ -8,7 +8,7 @@ import { CONTRA_EN } from './i18n-contra.js';
 export const CATEGORIES = [
   ['virus', 'Virus', 'Virus'], ['bacteria', 'Bacteria', 'Bacteria'], ['fungus', 'Hongo', 'Fungus'], ['parasite', 'Parásito', 'Parasite'],
   ['dysfunctional', 'Disfuncional', 'Dysfunctional'], ['psychoemotional', 'Psicoemocional', 'Psycho-emotional'], ['reservoir', 'Reservorio', 'Reservoir'],
-  ['complex', 'Complejo', 'Complex'], ['special', 'Especial', 'Special'], ['prion', 'Prion', 'Prion'], ['temporary', 'Temporal', 'Temporary'],
+  ['complex', 'Complejo', 'Complex'], ['special', 'Especial', 'Special'], ['prion', 'Prión', 'Prion'], ['temporary', 'Temporal', 'Temporary'],
   ['glandular-dysfunction', 'Disfunción glandular', 'Glandular dysfunction'],
 ].map(([id, es, en]) => ({ id, name: { es, en } }));
 

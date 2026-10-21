@@ -279,7 +279,12 @@ setHooks({
   },
 });
 
-onLocaleChange(() => { shellEls = null; reload(); });
+/** Static shell text from index.html (skip link, document title) follows the UI language. */
+function localizeStatic() {
+  const skip = document.querySelector('.skip-link'); if (skip) skip.textContent = t('app.skipLink');
+  document.title = t('app.title');
+}
+onLocaleChange(() => { localizeStatic(); shellEls = null; reload(); });
 
 // skip link (hash routing: intercept and focus <main>)
 document.addEventListener('click', (e) => {
@@ -295,6 +300,7 @@ window.addEventListener('unhandledrejection', (e) => { console.error('Unhandled'
 async function boot() {
   applyTheme(getTheme());
   await initI18n().catch((err) => console.warn('[i18n]', err));
+  localizeStatic();
   try {
     setupStatus = await api.get('/setup/status', null, { auth: false });
   } catch {

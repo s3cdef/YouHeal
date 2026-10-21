@@ -62,7 +62,7 @@ function packCard(p, cov) {
   } else { const seg = el('span.lp-seg.is-baseline'); seg.style.width = `${percent}%`; bar.append(seg); }
   return el('article.lp-card', { data: { locale: p.locale } },
     el('div.lp-card-head',
-      el('div', el('h3.lp-name', { lang: p.locale }, p.nativeName || p.name || p.locale), el('p.muted.small', `${languageName(p.locale)} · ${p.locale}${p.dir === 'rtl' ? ' · RTL' : ''}`)),
+      el('div', el('h3.lp-name', { lang: p.locale }, p.nativeName || p.name || p.locale), el('p.muted.small', languageName(p.locale), ' · ', el('code.lp-code', p.locale), p.dir === 'rtl' ? ' · RTL' : null)),
       chip(isBase ? t('langpacks.baseline') : t('langpacks.mirror'), isBase ? 'gold' : 'slate')),
     el('p.lp-percent', el('strong', pct(percent)), ' ', el('span.muted', isBase ? t('langpacks.baselineNote') : t('langpacks.translated'))),
     bar,
