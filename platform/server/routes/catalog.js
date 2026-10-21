@@ -143,6 +143,9 @@ export function createCatalogService(db, { allowedLicenses = null } = {}) {
       tracking: pointRef(c, p.tracking.point, p.tracking), impact: pointRef(c, p.impact.point, p.impact),
       category: p.category ?? null, ratings: p.ratings || {},
       relations: (p.relations || []).map((r) => ({ entity: r.entity, ordinal: r.ordinal ?? null, name: c.entities.get(r.entity)?.name ?? null, kind: c.entities.get(r.entity)?.kind ?? null })),
+      // multi-point pairs (e.g. pb-282 four-point pancreas) carry their magnets in the list so the scan
+      // workspace never needs a per-pair detail request at load
+      ...(Array.isArray(p.magnets) && p.magnets.length ? { magnets: p.magnets } : {}),
     };
   }
 
@@ -361,7 +364,7 @@ export function register(router, { db, catalog: svc }) {
       const set = new Set((c.expanded.get(protocol) || []).map((x) => x.pairId));
       list = list.filter((p) => set.has(p.id));
     }
-    return page(list.map((p) => svc.pairSummary(p, c)), ctx);
+    return { ...page(list.map((p) => svc.pairSummary(p, c)), ctx), include: ['magnets'] };
   });
   router.get('/catalog/pairs/:id', (ctx) => one(svc.pairFull(idParam(ctx)), 'Pair'));
 

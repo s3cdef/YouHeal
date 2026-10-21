@@ -295,7 +295,8 @@ export function createStaticHandler({ webDir, maxAge = 300, log, cacheBytes = 64
     res.setHeader('Content-Type', type);
     res.setHeader('Last-Modified', st.mtime.toUTCString());
     res.setHeader('Cache-Control', ext === '.html' || ext === '.htm' ? 'no-cache' : `public, max-age=${maxAge}, must-revalidate`);
-    const compressible = isCompressibleType(type) && st.size >= MIN_COMPRESS_BYTES;
+    // .bin = our quantized body-model buffers (Int16/Uint32, highly compressible); other octet-streams are not
+    const compressible = (isCompressibleType(type) || ext === '.bin') && st.size >= MIN_COMPRESS_BYTES;
     if (compressible) res.setHeader('Vary', 'Accept-Encoding');
     const enc = compressible ? negotiate(req.headers['accept-encoding']) : null;
     let z = enc ? zcache.get(zkey(file, st, enc)) : undefined;
@@ -335,7 +336,8 @@ export function createStaticHandler({ webDir, maxAge = 300, log, cacheBytes = 64
         const p = path.join(dir, ent.name);
         if (ent.isDirectory()) { await walk(p); continue; }
         const st = await fs.promises.stat(p);
-        if (!isCompressibleType(MIME[path.extname(p).toLowerCase()]) || st.size < MIN_COMPRESS_BYTES || st.size > 16 * 1024 * 1024) continue;
+        const ext2 = path.extname(p).toLowerCase();
+        if (!(isCompressibleType(MIME[ext2]) || ext2 === '.bin') || st.size < MIN_COMPRESS_BYTES || st.size > 16 * 1024 * 1024) continue;
         await ensureCompressed(p, st, 'br');
         await ensureCompressed(p, st, 'gzip');
         n++;
