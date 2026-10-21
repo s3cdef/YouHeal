@@ -14,6 +14,14 @@ hash-chained, append-only audit log · strict CSP, no inline script · TLS by de
 on non-loopback interfaces) · encrypted, verified backups · hardened service definitions (systemd sandbox,
 read-only non-root container, Windows virtual service account). Details: [`docs/SECURITY.md`](docs/SECURITY.md).
 
+## Previews
+
+| 3D scan map — posterior protocol | First-run setup |
+|---|---|
+| ![Posterior protocol](docs/previews/wip/03-3d-posterior-circulacion-piernas.jpg) | ![Setup](docs/previews/wip/01-ui-setup-wizard.jpg) |
+
+More in [`docs/previews/`](docs/previews/README.md).
+
 ---
 
 ## Quick start
