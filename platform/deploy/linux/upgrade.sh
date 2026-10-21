@@ -133,6 +133,20 @@ FQDN_STATE="$(env_get "${CONF_DIR}/install.state" FQDN "")"
 if [ -n "${FQDN_STATE}" ]; then CARRY+=(--hostname "${FQDN_STATE}"); fi
 if [ "${DRY_RUN}" = 1 ]; then CARRY+=(--dry-run); fi
 
+# NEW-4: this release rejects unknown Host headers unless listed in YH_ALLOWED_HOSTS.
+host_check() {
+  local h a o
+  h="$(env_get "${ENV_FILE}" YH_HOST 0.0.0.0)"; a="$(env_get "${ENV_FILE}" YH_ALLOWED_HOSTS "")"; o="$(env_get "${ENV_FILE}" YH_PUBLIC_ORIGIN "")"
+  case "${h}" in 127.*|localhost|::1) return 0 ;; esac
+  if [ -z "${a}" ] && [ -z "${o}" ]; then
+    warn "YH_ALLOWED_HOSTS and YH_PUBLIC_ORIGIN are both empty on non-loopback bind ${h}: browsers using any name/IP other than"
+    warn "localhost, the machine hostname or the bound IP will get 'Host not allowed'. Add YH_ALLOWED_HOSTS (docs/OPERATIONS.md §8)."
+    return 1
+  fi
+  return 0
+}
+host_check || log "the new installer derives YH_ALLOWED_HOSTS from the certificate SANs during step 4; verify it afterwards"
+
 # ------------------------------------------------------------------------------------------------
 # 2. Backup
 # ------------------------------------------------------------------------------------------------
@@ -217,6 +231,8 @@ fi
 ok "release staged (installer log: ${LOG_FILE%.log}-install.log)"
 load_install_state "${CONF_DIR}"     # NODE_BIN may have changed
 NEW_RELEASE="$(cd -- "${PREFIX}/current" && pwd -P)"
+
+host_check || true
 
 # ------------------------------------------------------------------------------------------------
 # 5. Migrate + catalog

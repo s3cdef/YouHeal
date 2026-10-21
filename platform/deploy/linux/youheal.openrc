@@ -30,6 +30,8 @@ pidfile="/run/${RC_SVCNAME}.pid"
 output_log="@LOG_DIR@/youheal.log"
 error_log="@LOG_DIR@/youheal.log"
 umask=077
+# fd limit: the server derives YH_MAX_CONNECTIONS (75% of it) unless set explicitly
+rc_ulimit="-n 8192"
 retry="SIGTERM/30/SIGKILL/5"
 
 depend() {

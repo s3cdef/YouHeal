@@ -80,6 +80,19 @@ try {
         if ($answer -ne 'YES') { throw 'aborted by operator' }
     }
 
+    # NEW-4: this release rejects unknown Host headers unless listed in YH_ALLOWED_HOSTS.
+    function Test-HostConfig {
+        $e = Read-YHEnvFile -Path $envFile
+        $h = if ($e.Contains('YH_HOST')) { $e['YH_HOST'] } else { '0.0.0.0' }
+        if ($h -match '^(127\.|localhost$|::1$)') { return }
+        $a = if ($e.Contains('YH_ALLOWED_HOSTS')) { $e['YH_ALLOWED_HOSTS'] } else { '' }
+        $o = if ($e.Contains('YH_PUBLIC_ORIGIN')) { $e['YH_PUBLIC_ORIGIN'] } else { '' }
+        if (-not $a -and -not $o) {
+            Write-YHLog "YH_ALLOWED_HOSTS and YH_PUBLIC_ORIGIN are both empty on non-loopback bind $h; browsers using other names/IPs will get 'Host not allowed'. Add YH_ALLOWED_HOSTS (docs/OPERATIONS.md section 8)." -Level WARN
+        }
+    }
+    Test-HostConfig
+
     # ---- 2. backup -------------------------------------------------------------------------------
     $psExe = (Get-Process -Id $PID).Path
     if (-not $SkipBackup) {
@@ -115,6 +128,8 @@ try {
     if ($DryRun) { $inst += '-DryRun' }
     Invoke-YHNative -FilePath $psExe -ArgumentList $inst -NoDryRun
     $state2 = if ($DryRun) { $state } else { Get-YHState -DataDir $DataDir }
+
+    if (-not $DryRun) { Test-HostConfig }
 
     # ---- 5. migrate + catalog --------------------------------------------------------------------
     Write-YHLog 'step 5/6: migrations + catalog'

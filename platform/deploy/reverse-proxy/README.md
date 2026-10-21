@@ -28,6 +28,15 @@ Docker: set `YH_TRUST_PROXY=1`, `YH_TRUSTED_PROXIES=<bridge gateway>`, `YH_PUBLI
 > Never let clients reach a backend that trusts forwarding headers: they could forge
 > `X-Forwarded-For`, defeating per-IP rate limiting (AC-7) and the IP recorded in the audit trail (AU-3).
 
+## Upgrade note (2026-10-21 security release)
+
+Existing proxied installs must, before upgrading: add the public hostname to `YH_ALLOWED_HOSTS` (or set
+`YH_PUBLIC_ORIGIN`, whose host is allowed automatically) — otherwise every proxied request fails with
+"Host not allowed"; and, if the proxy is not on loopback (other host, Docker bridge), set
+`YH_TRUSTED_PROXIES` — with `YH_TRUST_PROXY=1` and an empty list the server refuses to start.
+The upgrade scripts warn about the first case; the installers write both values when given
+`--public-origin` / `--trusted-proxies`.
+
 ## Backend TLS
 
 The examples keep TLS between proxy and app (defense in depth). The proxy verifies the app's self-signed

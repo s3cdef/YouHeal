@@ -52,6 +52,10 @@ Initialize-YHScript -ScriptPath $PSCommandPath -BoundParameters $PSBoundParamete
 
 $snapshot = $null
 $armed = $false
+# Private, admin-only temp dir for the input copy (deleted in finally).
+$tmpIn = Join-Path $env:SystemRoot ('Temp\youheal-restore-' + [Guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $tmpIn -Force | Out-Null
+Set-YHRestrictedAcl -Path $tmpIn
 $oldKeyCopy = $null
 $keyFile = $null
 try {
@@ -60,9 +64,22 @@ try {
     $svc = $state.ServiceName
     if (-not (Test-Path -LiteralPath $InputFile)) { throw "cannot read $InputFile" }
     $InputFile = (Resolve-Path -LiteralPath $InputFile).Path
+    # F-03 residual: never let this elevated script read through a junction/symlink the service account
+    # controls. Reject reparse points on the file and on every ancestor; if the file lies inside the
+    # service-writable data dir, scan the whole tree first. Then work only on a private temp copy.
+    $probe = Get-Item -LiteralPath $InputFile -Force
+    while ($null -ne $probe) {
+        if ($probe.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "refusing to read $InputFile through reparse point $($probe.FullName)" }
+        $probe = if ($probe -is [IO.FileInfo]) { $probe.Directory } else { $probe.Parent }
+    }
+    $dataFull = [IO.Path]::GetFullPath($DataDir).TrimEnd('\') + '\'
+    if ($InputFile.StartsWith($dataFull, [StringComparison]::OrdinalIgnoreCase) -and -not $DryRun) { Assert-YHNoReparsePoint -Path $DataDir }
+    $inputCopy = Join-Path $tmpIn ('restore-input-' + [Guid]::NewGuid().ToString('N') + '.yhbak')
+    Copy-Item -LiteralPath $InputFile -Destination $inputCopy -Force
     if (Test-Path -LiteralPath "$InputFile.sha256") {
+        if ((Get-Item -LiteralPath "$InputFile.sha256" -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "refusing to read reparse point $InputFile.sha256" }
         $expected = ((Get-Content -LiteralPath "$InputFile.sha256" -TotalCount 1) -split '\s+')[0]
-        Assert-YHSha256 -Path $InputFile -Expected $expected
+        Assert-YHSha256 -Path $inputCopy -Expected $expected
     } else {
         Write-YHLog "no $InputFile.sha256 sidecar; integrity relies on the application's authenticated decryption" -Level WARN
     }
@@ -97,7 +114,7 @@ try {
     }
 
     $staged = Join-Path $DataDir ('backups\.restore-' + (Split-Path -Leaf $InputFile))
-    Invoke-YHStep "stage $InputFile -> $staged" { Copy-Item -LiteralPath $InputFile -Destination $staged -Force }
+    Invoke-YHStep "stage $InputFile -> $staged" { Copy-Item -LiteralPath $inputCopy -Destination $staged -Force }
     Write-YHLog 'running application restore'
     Invoke-YHNodeScript -NodeExe $state.NodeExe -AppDir $state.AppDir -EnvFile $envFile -Name 'restore' -Arguments (@($staged, '--yes') + $RestoreArguments)
     Invoke-YHStep "remove staged copy" { Remove-Item -LiteralPath $staged -Force }
@@ -133,4 +150,6 @@ try {
         } catch { Write-YHLog "ROLLBACK FAILED: $($_.Exception.Message)" -Level ERROR }
     }
     exit 1
+} finally {
+    Remove-Item -LiteralPath $tmpIn -Recurse -Force -ErrorAction SilentlyContinue
 }

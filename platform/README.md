@@ -35,7 +35,7 @@ npm start              # http://127.0.0.1:8080  (loopback only, no TLS needed; d
 npm test               # node:test suites
 ```
 Open `http://localhost:8080/#/setup` to create the clinic and first admin (paste the one-time token from
-`data/setup-token`, also printed in the server log). On first start the server
+`data/setup-token`; it is written to that file only, never logged in production). On first start the server
 generates `data/keys/master.key` — fine for development, never reuse it for real patient data.
 No `npm install` is needed: there are no dependencies.
 

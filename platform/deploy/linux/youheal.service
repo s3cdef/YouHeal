@@ -29,6 +29,7 @@ TimeoutStopSec=30s
 KillMode=mixed
 KillSignal=SIGTERM
 SyslogIdentifier=youheal
+# File-descriptor limit; the server derives YH_MAX_CONNECTIONS (75% of it) unless set explicitly.
 LimitNOFILE=8192
 LimitCORE=0
 

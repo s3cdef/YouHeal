@@ -73,11 +73,63 @@ DATA_DIR="${STATE_DATA_DIR}"
 SVC_USER="${STATE_SERVICE_USER}"
 YH_HEALTH_PROBE="${APP_DIR}/deploy/common/healthcheck.mjs"; export YH_HEALTH_PROBE
 
-[ -r "${IN_FILE}" ] || die "cannot read ${IN_FILE}"
-IN_FILE="$(cd -- "$(dirname -- "${IN_FILE}")" && pwd -P)/$(basename -- "${IN_FILE}")"
-if [ -f "${IN_FILE}.sha256" ]; then
-  expected="$(awk '{print $1}' "${IN_FILE}.sha256")"
-  actual="$(sha256_of "${IN_FILE}")"
+# --- Input file handling (F-03 residual) -------------------------------------------------------------
+# Root must never open a path the service account can swap. Two cases:
+#  (a) --in lies inside the service-owned data dir: it is opened ONLY by the service account
+#      (hash, sidecar and staging copy all run as the service user);
+#  (b) anywhere else: the file and every ancestor directory must be root-controlled (owned by root or the
+#      invoking sudo user, not group/world-writable unless sticky), no symlinks; root then takes a private
+#      copy into its 0700 temp dir and works only on that copy (no TOCTOU).
+stat_uid_mode() { if stat -c '%u %a' -- "$1" >/dev/null 2>&1; then stat -c '%u %a' -- "$1"; else stat -f '%u %Lp' -- "$1"; fi; }
+assert_root_controlled() {
+  local f=$1 d uid mode ok_uid="0"
+  if [ -n "${SUDO_UID:-}" ]; then ok_uid="0 ${SUDO_UID}"; fi
+  assert_no_symlink "${f}"
+  read -r uid mode <<<"$(stat_uid_mode "${f}")"
+  case " ${ok_uid} " in *" ${uid} "*) ;; *) die "--in ${f} is owned by uid ${uid}; copy it to a root-owned directory first (e.g. sudo install -m 0600 <file> /root/)";; esac
+  d="$(dirname -- "${f}")"
+  while :; do
+    assert_no_symlink "${d}"
+    read -r uid mode <<<"$(stat_uid_mode "${d}")"
+    case " ${ok_uid} " in *" ${uid} "*) ;; *) die "ancestor directory ${d} of --in is owned by uid ${uid}; copy the backup to a root-owned directory first";; esac
+    if [ $(( 8#${mode} & 8#022 )) -ne 0 ] && [ ! -k "${d}" ]; then die "ancestor directory ${d} of --in is group/world-writable; copy the backup to a root-owned directory first"; fi
+    [ "${d}" = / ] && break
+    d="$(dirname -- "${d}")"
+  done
+}
+assert_no_symlink "${IN_FILE}" "${IN_FILE}.sha256"
+case "${IN_FILE}" in /*) IN_ABS="${IN_FILE}" ;; *) IN_ABS="${PWD}/${IN_FILE}" ;; esac
+IN_DIR_REAL="$(cd -- "$(dirname -- "${IN_FILE}")" && pwd -P)" || die "cannot resolve the directory of ${IN_FILE}"
+IN_FILE="${IN_DIR_REAL}/$(basename -- "${IN_FILE}")"
+DATA_REAL="$(cd -- "${DATA_DIR}" 2>/dev/null && pwd -P || printf '%s' "${DATA_DIR}")"
+make_tmp
+IN_COPY="${YH_TMP_DIR}/restore-input.yhbak"
+# Classify on BOTH the path as given and the resolved path, so a symlinked directory inside the data dir
+# cannot redirect a "data-dir" path to a root-only location (assert_tree_no_symlinks then aborts).
+IN_CLASS="${IN_FILE}"
+case "${IN_ABS}/" in "${DATA_DIR}/"*|"${DATA_REAL}/"*) IN_CLASS="${DATA_REAL}/x" ;; esac
+case "${IN_CLASS}/" in
+  "${DATA_REAL}/"*)
+    IN_UNDER_DATA=1
+    assert_tree_no_symlinks "${DATA_DIR}"
+    svc_exec "${SVC_USER}" test -f "${IN_FILE}" || die "cannot read ${IN_FILE} as ${SVC_USER}"
+    sha_of_svc() { svc_exec "${SVC_USER}" cat -- "$1" | { if command -v sha256sum >/dev/null 2>&1; then sha256sum; else shasum -a 256; fi; } | awk '{print $1}'; }
+    if svc_exec "${SVC_USER}" test -f "${IN_FILE}.sha256"; then
+      expected="$(svc_exec "${SVC_USER}" cat -- "${IN_FILE}.sha256" | awk '{print $1; exit}')"
+      actual="$(sha_of_svc "${IN_FILE}")"
+    fi ;;
+  *)
+    IN_UNDER_DATA=0
+    [ -r "${IN_FILE}" ] || die "cannot read ${IN_FILE}"
+    assert_root_controlled "${IN_FILE}"
+    (umask 077; cp -- "${IN_FILE}" "${IN_COPY}")
+    if [ -f "${IN_FILE}.sha256" ]; then
+      assert_root_controlled "${IN_FILE}.sha256"
+      expected="$(awk '{print $1; exit}' "${IN_FILE}.sha256")"
+      actual="$(sha256_of "${IN_COPY}")"
+    fi ;;
+esac
+if [ -n "${expected:-}" ]; then
   [ "${expected}" = "${actual}" ] || die "SHA-256 mismatch for ${IN_FILE} (expected ${expected}, got ${actual}) — refusing to restore"
   ok "backup integrity verified (sha256 ${actual})"
 else
@@ -143,7 +195,8 @@ fi
 # Stage the backup where the (unprivileged) service user can read it: root reads the operator's file,
 # the service account writes the staged copy.
 STAGED="${DATA_DIR}/backups/.restore-$(basename -- "${IN_FILE}")"
-svc_write "${SVC_USER}" "${STAGED}" 0600 <"${IN_FILE}"
+if [ "${IN_UNDER_DATA}" = 1 ]; then svc_exec "${SVC_USER}" cp -- "${IN_FILE}" "${STAGED}"
+else svc_write "${SVC_USER}" "${STAGED}" 0600 <"${IN_COPY}"; fi
 log "running application restore"
 # Backend contract: `npm run restore -- <file.yhbak> --yes` (verifies the GCM tag + SQLite integrity before
 # replacing the DB, refuses while the server pid file is live, and keeps its own .pre-restore copy).

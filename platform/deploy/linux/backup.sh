@@ -22,6 +22,7 @@ CONF_DIR="/etc/youheal"
 OUT_DIR=""
 KEEP=14
 COPY_TO=""
+ANCHOR_SHIP=""
 CRON_ACTION=""
 CRON_SCHEDULE="17 2 * * *"
 EXTRA_ARGS=()
@@ -36,6 +37,9 @@ Create an encrypted ${YH_PRODUCT} backup and apply retention.
   --out-dir DIR         where backups are written (default: <data-dir>/backups)
   --keep N              keep the N newest backups in --out-dir and --copy-to (default: 14; 0 = keep all)
   --copy-to DIR         also copy the backup + .sha256 to DIR (offsite/removable media) and verify it
+  --anchor-ship DIR     also copy <data>/audit-anchor.log (audit-chain head anchors) to DIR as
+                        audit-anchor-<host>-<UTC>.log + .sha256 — keep DIR off-host (NAS/USB/offsite) so a
+                        privileged insider cannot silently rewrite the audit chain (F-16)
   --install-cron [SCHED] install a root cron job (default schedule: "${CRON_SCHEDULE}") running this
                         script with the same --keep/--copy-to/--out-dir options, then exit
   --remove-cron         remove the cron job, then exit
@@ -56,6 +60,7 @@ while [ "$#" -gt 0 ]; do
     --out-dir) need_arg "$@"; OUT_DIR=$2; shift 2 ;;
     --keep) need_arg "$@"; KEEP=$2; shift 2 ;;
     --copy-to) need_arg "$@"; COPY_TO=$2; shift 2 ;;
+    --anchor-ship) need_arg "$@"; ANCHOR_SHIP=$2; shift 2 ;;
     --install-cron)
       CRON_ACTION=install
       if [ "$#" -ge 2 ] && [ "${2#-}" = "$2" ]; then CRON_SCHEDULE=$2; shift 2; else shift; fi ;;
@@ -86,6 +91,7 @@ CRON_TAG="# youheal-backup (managed by backup.sh)"
 cron_line() {
   local args="--conf-dir ${CONF_DIR} --keep ${KEEP} --out-dir ${OUT_DIR} --log-file ${LOG_FILE}"
   if [ -n "${COPY_TO}" ]; then args="${args} --copy-to ${COPY_TO}"; fi
+  if [ -n "${ANCHOR_SHIP}" ]; then args="${args} --anchor-ship ${ANCHOR_SHIP}"; fi
   printf '%s' "${args}"
 }
 if [ "${CRON_ACTION}" = install ]; then
@@ -187,6 +193,25 @@ rotate() {
     fi
   done < <(find "${dir}" -maxdepth 1 -type f -name 'youheal-*.yhbak' | LC_ALL=C sort -r)
 }
+# ---- audit-anchor shipping (F-16) -------------------------------------------------------------------
+if [ -n "${ANCHOR_SHIP}" ]; then
+  ANCHOR="${STATE_DATA_DIR}/audit-anchor.log"
+  assert_no_symlink "${ANCHOR}"
+  if [ -d "${ANCHOR_SHIP}" ]; then assert_no_symlink "${ANCHOR_SHIP}"; else run mkdir -p "${ANCHOR_SHIP}"; fi
+  run chmod 0700 "${ANCHOR_SHIP}"
+  adest="${ANCHOR_SHIP}/audit-anchor-${HOST_TAG}-${TS}.log"
+  assert_no_symlink "${adest}" "${adest}.sha256"
+  if [ "${DRY_RUN}" = 1 ]; then run "copy ${ANCHOR} (read as ${SVC}) -> ${adest}"
+  elif svc_exec "${SVC}" test -f "${ANCHOR}"; then
+    # read by the service account (symlink-safe), written by root into the root-controlled destination
+    (umask 077; svc_exec "${SVC}" cat -- "${ANCHOR}" >"${adest}")
+    printf '%s  %s\n' "$(sha256_of "${adest}")" "$(basename -- "${adest}")" >"${adest}.sha256"
+    ok "audit anchor shipped to ${adest}"
+  else
+    warn "no ${ANCHOR} yet (created by the server after the first audited event); nothing shipped"
+  fi
+fi
+
 rotate "${OUT_DIR}" svc
 if [ -n "${COPY_TO}" ]; then rotate "${COPY_TO}" root; fi
 ok "backup complete (retention: ${KEEP})"

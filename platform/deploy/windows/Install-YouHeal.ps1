@@ -557,7 +557,7 @@ $($xmlEnv -join "`n")
         " $Product $appVersion $(if ($DryRun) { '- DRY RUN, nothing was changed' } else { "installed   (health: $health)" })"
         '--------------------------------------------------------------------------------------------'
         ' First-run setup (creates the clinic + first admin; LOOPBACK ONLY, needs the one-time setup token):'
-        "   setup token:             Get-Content `"$DataDir\setup-token`"   (elevated; also in $($paths.Logs))"
+        "   setup token:             Get-Content `"$DataDir\setup-token`"   (elevated PowerShell; file only, not logged)"
         "   on this host:            https://localhost:$Port/#/setup"
         "   from a workstation:      ssh -L ${Port}:127.0.0.1:$Port <admin>@$HostName   (OpenSSH Server on Windows)"
         "                            then browse https://localhost:$Port/#/setup"

@@ -932,7 +932,7 @@ cat >&2 <<EOF
  ${YH_PRODUCT} ${APP_VERSION} $( [ "${DRY_RUN}" = 1 ] && echo "— DRY RUN, nothing was changed" || echo "installed   (health: ${HEALTH})" )
 --------------------------------------------------------------------------------------------
  First-run setup (creates the clinic + first admin; LOOPBACK ONLY, needs the one-time setup token):
-   setup token:             sudo -u ${SERVICE_USER} cat ${DATA_DIR}/setup-token   (also printed in the service log)
+   setup token:             sudo -u ${SERVICE_USER} cat ${DATA_DIR}/setup-token   (file only, 0600; not logged)
    on this host:            https://localhost:${PORT}/#/setup
    from your workstation:   ssh -L ${PORT}:127.0.0.1:${PORT} <admin>@${FQDN}
                             then browse https://localhost:${PORT}/#/setup

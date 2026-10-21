@@ -160,15 +160,16 @@ against `CHECKSUMS.sha256` and abort on any mismatch.
 The setup endpoint creates the clinic organisation and the first admin. It is accepted **only while no
 users exist, only from a loopback address** (unless `YH_ALLOW_REMOTE_SETUP=1`), **never when the request
 carries forwarding headers** (`X-Forwarded-For`, `Forwarded`, `X-Real-IP` — i.e. never through a reverse
-proxy), and **only with the one-time setup token** the server writes to `<data>/setup-token` and prints in
-its log at first start. Read the token as the service account / an administrator:
+proxy), and **only with the one-time setup token** the server writes to `<data>/setup-token` (mode 0600,
+service-owned). In production the token is **never written to logs** — read the file as the service
+account / an administrator:
 
 | Platform | Command |
 |---|---|
-| Linux | `sudo -u youheal cat /var/lib/youheal/setup-token` (or `journalctl -u youheal \| grep -i setup`) |
+| Linux | `sudo -u youheal cat /var/lib/youheal/setup-token` |
 | macOS | `sudo -u youheal cat /usr/local/var/youheal/setup-token` |
-| Windows | `Get-Content "$env:ProgramData\YouHeal\setup-token"` (elevated PowerShell), or the service log in `%ProgramData%\YouHeal\logs\` |
-| Docker | `docker compose exec youheal cat /data/setup-token` (or `docker compose logs youheal`) |
+| Windows | `Get-Content "$env:ProgramData\YouHeal\setup-token"` (elevated PowerShell) |
+| Docker | `docker compose exec youheal cat /data/setup-token` |
 
 The token is single-use and becomes invalid once setup completes. The CLI path (`create-admin`) does not
 need it — it already requires root/Administrator on the host.
@@ -234,7 +235,9 @@ the installer) or the compose `environment:` block. Invalid values stop the serv
 | `YH_TRUSTED_PROXIES` | loopback | Peers allowed to send `X-Forwarded-*` (comma list of IPs/CIDRs; installers: `--trusted-proxies` / `-TrustedProxies`) |
 | `YH_PUBLIC_ORIGIN` | — | External origin for the Origin check behind a proxy |
 | `YH_ALLOWED_HOSTS` | localhost, loopback IPs, machine hostname, bound IP, `YH_PUBLIC_ORIGIN` host | Host-header allow-list (DNS-rebinding defence). Installers write it from the certificate names/IPs (+ `--allowed-hosts` / `-AllowedHosts`); **Docker: set it** to the name/IP users browse to |
-| `YH_MAX_CONNECTIONS` | server default | Cap on concurrent connections (resource-exhaustion defence) |
+| `YH_MAX_CONNECTIONS` | 75 % of the process fd limit (min 64; 1024 where the limit cannot be read) | Global cap on concurrent connections. The service definitions set the fd limit to 8192 (systemd `LimitNOFILE`, OpenRC `rc_ulimit`, launchd `NumberOfFiles`, compose `ulimits.nofile`) → ≈ 6144 |
+| `YH_MAX_CONN_PER_IP` | 64 | Per-client connection cap (IPv6 per /64) |
+| `YH_FIRST_BYTE_MS` | 10000 | A connection must deliver a complete request head within this time, else it is closed (slow-loris defence) |
 | `YH_ALLOW_REMOTE_SETUP` | `0` | Allow first-run setup from non-loopback clients (temporary use only) |
 | `YH_SESSION_IDLE_MIN` / `YH_SESSION_ABS_HOURS` | 15 / 12 | Session timeouts |
 | `YH_LOCKOUT_ATTEMPTS` / `YH_LOCKOUT_MIN` | 5 / 15 | Account lockout |
@@ -320,6 +323,9 @@ sudo ./deploy/linux/backup.sh --install-cron "17 2 * * *" --keep 30 --copy-to /m
 ```powershell
 .\deploy\windows\Backup-YouHeal.ps1 -InstallSchedule -At 02:17 -Keep 30 -CopyTo \\nas\youheal
 ```
+Add `--anchor-ship /mnt/offsite/youheal-anchors` (`-AnchorShip` on Windows) to copy `<data>/audit-anchor.log` — the
+server's running record of audit-chain head anchors — off the host on every run (§7.5).
+
 Each run: writes `youheal-<host>-<UTC>.yhbak` (0600, service-owned) + `.sha256`, re-verifies the GCM tag
 with `backup --verify`, copies to `--copy-to` and verifies the copy's hash, and keeps the newest N in each
 location. Docker: `docker compose exec youheal node --run backup` (writes to `/data/backups`), then copy
@@ -372,6 +378,22 @@ account (§10).
 
 Targets for a typical clinic: **RPO ≤ 24 h** (daily backup), **RTO ≤ 4 h** (new host + restore).
 
+
+### 7.5 Shipping the audit anchor off-host (tamper evidence)
+
+The audit log is hash-chained and its head is HMAC-anchored, but a privileged insider holding the host
+*and* the key could rebuild the chain. Shipping `<data>/audit-anchor.log` to a location that person does
+not control makes that detectable: a later `GET /api/v1/audit/verify` must agree with the anchors held
+off-host. Use any of:
+
+* `backup.sh --anchor-ship <dir>` / `Backup-YouHeal.ps1 -AnchorShip <dir>` (copied with each scheduled
+  backup, plus `.sha256`), with `<dir>` on the NAS/offsite target — not on the same disk;
+* journald/rsyslog forwarding of the file to a central log host (e.g. rsyslog `imfile` on
+  `/var/lib/youheal/audit-anchor.log` → TLS `omfwd`); or
+* a separate cron job copying it to write-once storage.
+
+Keep shipped anchors for the audit-retention period (≥ 6 years when used as HIPAA documentation).
+
 ---
 
 ## 8. Upgrades and rollback
@@ -382,6 +404,15 @@ sudo ./deploy/linux/upgrade.sh --from /tmp/youheal-1.1.0-linux-x64.tar.gz     # 
 ```powershell
 .\deploy\windows\Upgrade-YouHeal.ps1 -From D:\youheal-1.1.0-win-x64.zip
 ```
+> **Upgrading to the 2026-10-21 security release (Host allow-list, F-05/NEW-4).** The server now rejects
+> requests whose `Host` header is not in `YH_ALLOWED_HOSTS` (default: localhost, loopback IPs, the machine
+> hostname, the bound IP, the `YH_PUBLIC_ORIGIN` host). The Linux/Windows installers write
+> `YH_ALLOWED_HOSTS` from the certificate names/IPs during the upgrade, and the upgrade scripts **warn** if
+> both `YH_ALLOWED_HOSTS` and `YH_PUBLIC_ORIGIN` are empty on a non-loopback bind. **Docker: set
+> `YH_ALLOWED_HOSTS`** (in `.env`) to every name/IP users type in the browser *before* pulling the new
+> image — the container hostname is random. Behind a proxy also set `YH_TRUSTED_PROXIES` (now mandatory
+> with `YH_TRUST_PROXY=1`; the server refuses to start with an empty list).
+
 Sequence: preflight (bundle checksums, version, Node engine requirement) → encrypted backup → stop →
 cold DB snapshot (`<data>/backups/pre-upgrade-<oldver>-<ts>.*`, db only, deleted after success) → the **new** release's installer stages it
 beside the old one and switches `current` → migrations + catalog load → start → health check. Any failure

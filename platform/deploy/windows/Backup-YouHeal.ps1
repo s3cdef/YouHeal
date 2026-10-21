@@ -16,6 +16,10 @@
     Keep the N newest backups in OutDir and CopyTo. 0 keeps all. Default 14.
 .PARAMETER CopyTo
     Also copy backup + .sha256 to this directory and verify the copy.
+.PARAMETER AnchorShip
+    Also copy <DataDir>\audit-anchor.log (audit-chain head anchors) to this directory as
+    audit-anchor-<host>-<UTC>.log + .sha256. Keep it off-host (NAS/USB/offsite) so a privileged insider cannot
+    silently rewrite the audit chain (F-16).
 .PARAMETER InstallSchedule
     Register the Scheduled Task "YOU HEAL Clinical Backup" (daily at -At, runs as SYSTEM) with the same
     -Keep/-CopyTo/-OutDir, then exit.
@@ -42,6 +46,7 @@ param(
     [string]$OutDir,
     [ValidateRange(0, 10000)][int]$Keep = 14,
     [string]$CopyTo,
+    [string]$AnchorShip,
     [switch]$InstallSchedule,
     [ValidatePattern('^\d{2}:\d{2}$')][string]$At = '02:17',
     [switch]$RemoveSchedule,
@@ -72,6 +77,7 @@ try {
         $hostExe = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
         $arg = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "{0}" -Keep {1} -OutDir "{2}" -DataDir "{3}"' -f $self, $Keep, $OutDir, $DataDir
         if ($CopyTo) { $arg += (' -CopyTo "{0}"' -f $CopyTo) }
+        if ($AnchorShip) { $arg += (' -AnchorShip "{0}"' -f $AnchorShip) }
         Invoke-YHStep "register scheduled task '$TaskName' daily at $At as SYSTEM: $hostExe $arg" {
             $action = New-ScheduledTaskAction -Execute $hostExe -Argument $arg
             $trigger = New-ScheduledTaskTrigger -Daily -At $At
@@ -126,6 +132,19 @@ try {
             $f = $_.FullName
             Invoke-YHStep "rotate out $f" { Remove-Item -LiteralPath $f, "$f.sha256" -Force -ErrorAction SilentlyContinue }
         }
+    }
+    if ($AnchorShip) {
+        $anchor = Join-Path $DataDir 'audit-anchor.log'
+        if (Test-Path -LiteralPath $anchor) {
+            if ((Get-Item -LiteralPath $anchor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "refusing to read reparse point $anchor" }
+            $adest = Join-Path $AnchorShip ('audit-anchor-{0}-{1}.log' -f $env:COMPUTERNAME.ToLowerInvariant(), $stamp)
+            Invoke-YHStep "ship audit anchor -> $adest" {
+                if (-not (Test-Path -LiteralPath $AnchorShip)) { New-Item -ItemType Directory -Path $AnchorShip -Force | Out-Null }
+                Copy-Item -LiteralPath $anchor -Destination $adest -Force
+                Set-Content -LiteralPath "$adest.sha256" -Encoding ASCII -Value ('{0}  {1}' -f (Get-YHSha256 -Path $adest).ToLowerInvariant(), (Split-Path -Leaf $adest))
+            }
+            Write-YHLog "audit anchor shipped to $adest" -Level OK
+        } else { Write-YHLog "no $anchor yet (created after the first audited event); nothing shipped" -Level WARN }
     }
     Invoke-Rotation $OutDir
     if ($CopyTo) { Invoke-Rotation $CopyTo }
