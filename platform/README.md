@@ -18,7 +18,7 @@ read-only non-root container, Windows virtual service account). Details: [`docs/
 
 | 3D scan map — posterior protocol | First-run setup |
 |---|---|
-| ![Posterior protocol](docs/previews/wip/03-3d-posterior-circulacion-piernas.jpg) | ![Setup](docs/previews/wip/01-ui-setup-wizard.jpg) |
+| ![Posterior protocol](docs/previews/3d/04-protocol-circulacion-piernas-posterior.jpg) | ![Setup](docs/previews/wip/01-ui-setup-wizard.jpg) |
 
 More in [`docs/previews/`](docs/previews/README.md).
 
