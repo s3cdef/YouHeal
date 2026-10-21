@@ -12,6 +12,9 @@ function load3D() {
   return modPromise;
 }
 
+/** Start fetching the 3D module graph (three.js) early, e.g. while the scan's data is still loading. */
+export function preload3D() { load3D(); }
+
 /** Returns { viewer, kind: '3d'|'2d', error? } */
 export async function createViewer(container, opts, { prefer2D = false } = {}) {
   if (!prefer2D) {

@@ -8,7 +8,6 @@ import { tabs, table, emptyState, categoryChip, ratingsRow, pairPoles, chip, sel
 import { openModal } from '../ui/modal.js';
 import { pageHeader, errorPanel } from './common.js';
 import { pairDetailBody, sourceCite } from './pair-detail.js';
-import { renderSnapshots } from '../bodymap/host.js';
 import { PROTOCOL_KINDS } from './start-scan.js';
 
 const TABS = ['pairs', 'entities', 'protocols', 'symptoms', 'contraindications', 'glossary'];
@@ -285,6 +284,7 @@ export async function renderProtocolCard({ main, params }) {
       actions: [el('button.btn.btn-primary', { type: 'button', onClick: () => window.print() }, icon('print', { size: 18 }), t('report.print'))] })),
     sheet));
   document.body.classList.add('print-landscape');
+  const { renderSnapshots } = await import('../bodymap/host.js'); // only the protocol card needs the body renderer
   const snaps = await renderSnapshots({ points: core.pointList, regions: core.regions, polarity: polarity(), locale: getLocale(), magnets, width: 1000, height: 1200 });
   for (const [fig, v] of [[front, 'anterior'], [back, 'posterior']]) {
     const box = fig.querySelector('.pc-img');

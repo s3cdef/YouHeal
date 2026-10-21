@@ -123,3 +123,12 @@ export function isTypingTarget(t) {
   const tag = t.tagName;
   return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || t.isContentEditable;
 }
+
+/** Performance mark (yh:<name>) for tests/perf/browser.mjs; never throws. */
+export function mark(name) { try { performance.mark(`yh:${name}`); } catch { /* unsupported */ } }
+
+/** Run fn when the main thread is idle (after first paint / 3D start-up), with a timeout fallback. */
+export function whenIdle(fn, timeout = 1500) {
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(() => fn(), { timeout });
+  else setTimeout(fn, 200);
+}

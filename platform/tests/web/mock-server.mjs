@@ -246,6 +246,13 @@ function seedDemo(admin) {
 // ---------------------------------------------------------------- http plumbing
 function send(res, status, body, headers = {}) {
   const data = body === undefined ? '' : JSON.stringify(body);
+  // catalog reference data: strong ETag + 304 on If-None-Match (mirrors the server's conditional GETs)
+  const req = res.req;
+  if (req && req.method === 'GET' && status === 200 && /^\/api\/v1\/catalog\//.test(req.url || '')) {
+    const etag = `"${sha256(data).slice(0, 32)}"`;
+    if (req.headers['if-none-match'] === etag) { res.writeHead(304, { ETag: etag, 'Cache-Control': 'private, no-cache' }); return res.end(); }
+    headers = { ...headers, ETag: etag, 'Cache-Control': 'private, no-cache' };
+  }
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...headers });
   res.end(data);
 }

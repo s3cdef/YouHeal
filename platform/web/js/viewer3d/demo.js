@@ -92,6 +92,11 @@ async function mount() {
     onRegionClick: (e) => { log.textContent = `regionClick\n${JSON.stringify(e, null, 1)}`; },
     onHover: () => {},
   });
+  // timing marks for tests/viewer3d/api-smoke.mjs (ms since navigation start)
+  if (!document.documentElement.dataset.viewerReadyMs) {
+    document.documentElement.dataset.viewerReadyMs = String(Math.round(performance.now()));
+    requestAnimationFrame(() => requestAnimationFrame(() => { document.documentElement.dataset.firstFrameMs = String(Math.round(performance.now())); }));
+  }
   viewer.setShowAllPoints(state.points);
   if (state.protocol) {
     viewer.setMagnets(protocolMagnets(state.locale));

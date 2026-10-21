@@ -119,7 +119,7 @@ for (const f of files) {
 }
 
 // ------------------------------------------------------------------ 3. hard-coded text heuristic
-const ALLOW_TEXT = new Set(['YOU HEAL', 'SHA-256', 'F/P/R', 'MRN', 'PB', 'CX', 'ES', 'RTL', 'https://', 'Enter', 'Escape', 'Esc', 'Tab', 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Content-Type', 'Accept', 'AbortError']);
+const ALLOW_TEXT = new Set(['YOU HEAL', 'If-None-Match', 'SHA-256', 'F/P/R', 'MRN', 'PB', 'CX', 'ES', 'RTL', 'https://', 'Enter', 'Escape', 'Esc', 'Tab', 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Content-Type', 'Accept', 'AbortError']);
 const ALLOW_RE = [
   /^[a-z][\w-]*(\.[\w-]+)+$/, // i18n keys / dotted ids
   /^[a-z0-9]*([.#][\w-]+)+(\[[^\]]*\])?(\s*,\s*[\w.#[\]="-]+)*$/i, // selectors

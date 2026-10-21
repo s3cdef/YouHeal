@@ -12,6 +12,18 @@
   <link rel="stylesheet" href="/css/app.css">
   <link rel="stylesheet" href="/js/viewer3d/viewer.css">
   <script type="module" src="/js/app.js"></script>
+  <!-- critical module graph of app.js, fetched in parallel instead of import by import -->
+  <link rel="modulepreload" href="/js/ui/dom.js">
+  <link rel="modulepreload" href="/js/ui/icons.js">
+  <link rel="modulepreload" href="/js/api.js">
+  <link rel="modulepreload" href="/js/i18n.js">
+  <link rel="modulepreload" href="/js/ui/modal.js">
+  <link rel="modulepreload" href="/js/router.js">
+  <link rel="modulepreload" href="/js/state.js">
+  <link rel="modulepreload" href="/js/catalog-cache.js">
+  <link rel="modulepreload" href="/js/ui/toast.js">
+  <link rel="modulepreload" href="/js/ui/components.js">
+  <link rel="modulepreload" href="/js/views/common.js">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>

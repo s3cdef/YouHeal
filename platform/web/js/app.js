@@ -1,5 +1,5 @@
 // YOU HEAL Clinical — SPA bootstrap.
-import { el, mount, clear } from './ui/dom.js';
+import { el, mount, clear, mark } from './ui/dom.js';
 import { icon, brandMark } from './ui/icons.js';
 import { api, on as onApi, setCsrf, startIdleWatch, stopIdleWatch, setIdleTimeout, AuthError } from './api.js';
 import { initI18n, setLocale, getLocale, t, onLocaleChange } from './i18n.js';
@@ -215,12 +215,33 @@ function fieldArt() {
 }
 
 // ---------------- routes ----------------
+// Static dependencies of the heavier views, requested in parallel as soon as the route is known instead of
+// being discovered module by module (CSP-safe: <link rel="modulepreload"> to same-origin scripts).
+const VIEW_DEPS = {
+  scan: ['/js/views/scan.js', '/js/bodymap/host.js', '/js/bodymap/map2d.js', '/js/views/pair-detail.js', '/js/views/start-scan.js', '/js/ui/combobox.js',
+    '/js/viewer3d/viewer.js', '/vendor/three/three.module.js'],
+  report: ['/js/views/report.js', '/js/bodymap/host.js', '/js/bodymap/map2d.js'],
+  catalog: ['/js/views/catalog.js', '/js/views/pair-detail.js', '/js/views/start-scan.js', '/js/ui/combobox.js'],
+  card: ['/js/views/catalog.js', '/js/views/pair-detail.js', '/js/views/start-scan.js', '/js/ui/combobox.js', '/js/bodymap/host.js', '/js/bodymap/map2d.js', '/js/viewer3d/viewer.js', '/vendor/three/three.module.js'],
+  chart: ['/js/views/chart.js', '/js/views/start-scan.js', '/js/ui/combobox.js'],
+  dashboard: ['/js/views/dashboard.js', '/js/ui/combobox.js'],
+};
+const preloaded = new Set();
+function preloadModules(list = []) {
+  for (const href of list) {
+    if (preloaded.has(href)) continue;
+    preloaded.add(href);
+    document.head.append(el('link', { rel: 'modulepreload', href }));
+  }
+}
+
 function view(loader, fnName, opts = {}) {
   return {
     ...opts,
     async view(ctx) {
       const main = layoutFor(opts, opts.layout || 'app');
       document.title = t('app.title');
+      if (opts.deps) preloadModules(VIEW_DEPS[opts.deps]);
       let mod;
       try { mod = await loader(); } catch (err) {
         console.error(err);
@@ -228,6 +249,7 @@ function view(loader, fnName, opts = {}) {
         return null;
       }
       const cleanup = await mod[fnName]({ ...ctx, main });
+      mark(`view:${fnName}`);
       requestAnimationFrame(() => focusTitle(main));
       return cleanup;
     },
@@ -238,15 +260,15 @@ route('/setup', view(() => import('./views/auth.js'), 'renderSetup', { public: t
 route('/login', view(() => import('./views/auth.js'), 'renderLogin', { public: true, layout: 'auth' }));
 route('/mfa', view(() => import('./views/auth.js'), 'renderMfaEnroll', { layout: 'auth', allow: 'mfa' }));
 route('/password', view(() => import('./views/auth.js'), 'renderPasswordChange', { layout: 'auth', allow: 'password' }));
-route('/', view(() => import('./views/dashboard.js'), 'renderDashboard', { nav: 'dashboard' }));
+route('/', view(() => import('./views/dashboard.js'), 'renderDashboard', { nav: 'dashboard', deps: 'dashboard' }));
 route('/patients', view(() => import('./views/patients.js'), 'renderPatientList', { nav: 'patients' }));
 route('/patients/new', view(() => import('./views/patients.js'), 'renderPatientForm', { nav: 'patients' }));
 route('/patients/:id/edit', view(() => import('./views/patients.js'), 'renderPatientForm', { nav: 'patients' }));
-route('/patients/:id/:tab?', view(() => import('./views/chart.js'), 'renderChart', { nav: 'patients' }));
-route('/sessions/:id', view(() => import('./views/scan.js'), 'renderScan', { nav: 'patients', compact: true }));
-route('/sessions/:id/report', view(() => import('./views/report.js'), 'renderReport', { nav: 'patients' }));
-route('/catalog/protocols/:id/card', view(() => import('./views/catalog.js'), 'renderProtocolCard', { nav: 'catalog' }));
-route('/catalog/:tab?', view(() => import('./views/catalog.js'), 'renderCatalog', { nav: 'catalog' }));
+route('/patients/:id/:tab?', view(() => import('./views/chart.js'), 'renderChart', { nav: 'patients', deps: 'chart' }));
+route('/sessions/:id', view(() => import('./views/scan.js'), 'renderScan', { nav: 'patients', compact: true, deps: 'scan' }));
+route('/sessions/:id/report', view(() => import('./views/report.js'), 'renderReport', { nav: 'patients', deps: 'report' }));
+route('/catalog/protocols/:id/card', view(() => import('./views/catalog.js'), 'renderProtocolCard', { nav: 'catalog', deps: 'card' }));
+route('/catalog/:tab?', view(() => import('./views/catalog.js'), 'renderCatalog', { nav: 'catalog', deps: 'catalog' }));
 route('/settings/audit', view(() => import('./views/settings.js'), 'renderSettings', { nav: 'audit', tab: 'audit' }));
 route('/settings/:tab?', view(() => import('./views/settings.js'), 'renderSettings', { nav: 'settings' }));
 setNotFound(view(() => import('./views/dashboard.js'), 'renderNotFound', {}));
@@ -298,9 +320,11 @@ document.addEventListener('click', (e) => {
 window.addEventListener('unhandledrejection', (e) => { console.error('Unhandled', e.reason); });
 
 async function boot() {
+  mark('boot');
   applyTheme(getTheme());
   await initI18n().catch((err) => console.warn('[i18n]', err));
   localizeStatic();
+  mark('i18n');
   try {
     setupStatus = await api.get('/setup/status', null, { auth: false });
   } catch {
@@ -312,6 +336,7 @@ async function boot() {
     const ok = await refreshMe().catch(() => false);
     if (ok) await afterLogin();
   }
+  mark('session');
   if (!location.hash) {
     const lr = state.user ? lastRoute() : null;
     history.replaceState(null, '', `#${lr || '/'}`);

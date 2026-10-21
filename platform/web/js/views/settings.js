@@ -11,7 +11,6 @@ import { pageHeader, applyTheme, getTheme, errorPanel } from './common.js';
 import { navigate } from '../router.js';
 import { showSidebarLogo, handleLockout, refreshMe } from '../app.js';
 import { recoveryCodesBlock } from '../ui/recovery.js';
-import { renderLanguagePacks } from './language-packs.js';
 
 const ROLES = ['admin', 'practitioner', 'assistant', 'auditor'];
 
@@ -30,11 +29,17 @@ export async function renderSettings({ main, params, route, query }) {
     onChange: (id, panel, user) => {
       if (user) history.replaceState(null, '', `#/settings/${id}`);
       clear(panel);
-      ({ profile, clinic, users, audit, languages: renderLanguagePacks })[id](panel, query || {});
+      ({ profile, clinic, users, audit, languages })[id](panel, query || {});
     },
   });
   mount(main, el('div.page', pageHeader({ title: t('settings.title'), subtitle: t('settings.subtitle') }), tb.root, tb.panel));
   return null;
+}
+
+// ---------------- Language packs (admin; loaded on demand) ----------------
+async function languages(panel) {
+  mount(panel, skeleton(6));
+  try { (await import('./language-packs.js')).renderLanguagePacks(panel); } catch (err) { mount(panel, errorPanel(err)); }
 }
 
 // ---------------- Profile ----------------

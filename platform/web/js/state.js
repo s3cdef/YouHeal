@@ -1,6 +1,9 @@
-// App-wide state: signed-in user, clinic profile, catalog cache. In-memory only (no PHI in storage).
+// App-wide state: signed-in user, clinic profile, catalog cache. PHI lives in memory only; catalog reference
+// data may be persisted by catalog-cache.js (IndexedDB, ETag-revalidated).
 import { api, items } from './api.js';
 import { locText, setVocabularies } from './i18n.js';
+import { catalogGet, setCatalogVersion } from './catalog-cache.js';
+import { mark } from './ui/dom.js';
 
 export const state = {
   user: null,
@@ -69,37 +72,42 @@ const cache = {
 export function loadCore() {
   if (cache.core) return cache.core;
   cache.core = (async () => {
+    // Reference data only, once per page (memory) and revalidated against the persistent catalog cache (ETag).
     const [points, regions, pairs, protocols, symptoms, manifest] = await Promise.all([
-      api.get('/catalog/points', { limit: 5000 }), api.get('/catalog/regions', { limit: 5000 }), api.get('/catalog/pairs', { limit: 5000 }),
-      api.get('/catalog/protocols', { limit: 5000 }), api.get('/catalog/symptoms', { limit: 5000 }), api.get('/catalog/manifest').catch(() => null),
+      catalogGet('/catalog/points', { limit: 5000 }), catalogGet('/catalog/regions', { limit: 5000 }), catalogGet('/catalog/pairs', { limit: 5000 }),
+      catalogGet('/catalog/protocols', { limit: 5000 }), catalogGet('/catalog/symptoms', { limit: 5000 }), catalogGet('/catalog/manifest').catch(() => null),
     ]);
     if (manifest && manifest.vocabularies) setVocabularies(manifest.vocabularies);
+    if (manifest) setCatalogVersion(manifest.version || manifest.catalogVersion || null);
     const pts = new Map(items(points).map((p) => [p.id, p]));
     const prs = new Map(items(pairs).map((p) => [p.id, p]));
     for (const p of items(protocols)) if (p.count === undefined && p.pairCount !== undefined) p.count = p.pairCount;
     const syms = new Map(items(symptoms).map((x) => [x.id, x]));
     const positioned = items(points).filter((p) => p.pos && Number.isFinite(p.pos.y)).length;
-    return { points: pts, pointList: items(points), regions: items(regions), pairs: prs, protocols: items(protocols), symptoms: syms, manifest, positioned };
+    // when the list carries `magnets` for multi-magnet pairs (include:['magnets']), no per-pair detail fetch is needed
+    const pairsInclude = new Set((pairs && !Array.isArray(pairs) && pairs.include) || []);
+    mark('catalog');
+    return { points: pts, pointList: items(points), regions: items(regions), pairs: prs, pairsInclude, protocols: items(protocols), symptoms: syms, manifest, positioned };
   })().catch((e) => { cache.core = null; throw e; });
   return cache.core;
 }
 
 export async function getPair(id) {
-  if (!cache.pairDetail.has(id)) cache.pairDetail.set(id, api.get(`/catalog/pairs/${encodeURIComponent(id)}`).catch((e) => { cache.pairDetail.delete(id); throw e; }));
+  if (!cache.pairDetail.has(id)) cache.pairDetail.set(id, catalogGet(`/catalog/pairs/${encodeURIComponent(id)}`).catch((e) => { cache.pairDetail.delete(id); throw e; }));
   return cache.pairDetail.get(id);
 }
 export async function getPointPairs(id) {
   // server: { point, items:[{ role, pair }] } → flatten to pair summaries carrying `role`
   const flat = (res) => items(res).map((x) => (x && x.pair ? { ...x.pair, role: x.role } : x));
-  if (!cache.pointPairs.has(id)) cache.pointPairs.set(id, api.get(`/catalog/points/${encodeURIComponent(id)}/pairs`).then(flat).catch((e) => { cache.pointPairs.delete(id); throw e; }));
+  if (!cache.pointPairs.has(id)) cache.pointPairs.set(id, catalogGet(`/catalog/points/${encodeURIComponent(id)}/pairs`).then(flat).catch((e) => { cache.pointPairs.delete(id); throw e; }));
   return cache.pointPairs.get(id);
 }
 export async function getProtocol(id) {
-  if (!cache.protocolDetail.has(id)) cache.protocolDetail.set(id, api.get(`/catalog/protocols/${encodeURIComponent(id)}`).catch((e) => { cache.protocolDetail.delete(id); throw e; }));
+  if (!cache.protocolDetail.has(id)) cache.protocolDetail.set(id, catalogGet(`/catalog/protocols/${encodeURIComponent(id)}`).catch((e) => { cache.protocolDetail.delete(id); throw e; }));
   return cache.protocolDetail.get(id);
 }
 export async function getList(path) {
-  if (!cache.lists.has(path)) cache.lists.set(path, api.get(path).then(items).catch((e) => { cache.lists.delete(path); throw e; }));
+  if (!cache.lists.has(path)) cache.lists.set(path, catalogGet(path).then(items).catch((e) => { cache.lists.delete(path); throw e; }));
   return cache.lists.get(path);
 }
 

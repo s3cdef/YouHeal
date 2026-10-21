@@ -7,32 +7,60 @@
 import { viewDirection } from './body-sdf.js';
 
 /**
+ * Build the uniform-grid acceleration structure (pure typed arrays, so a
+ * Worker can build it and transfer it to the main thread).
  * @param {Float32Array} P positions
  * @param {Uint16Array|Uint32Array} I triangle indices
- * @param {Float32Array} [N] vertex normals (for smooth hit normals)
- * @param {{triCount?:number, cell?:number}} [o] triCount limits queries to the first N triangles (skin group)
+ * @param {{triCount?:number, cell?:number}} [o] triCount = index count of the queried group (skin)
+ * @returns {{cell:number, triCount:number, bounds:Float64Array, dims:Int32Array, counts:Uint32Array, items:Uint32Array}}
  */
-export function buildMeshQuery(P, I, N, o = {}) {
+export function buildMeshGrid(P, I, o = {}) {
   const triCount = o.triCount ? o.triCount / 3 : I.length / 3;
   const cell = o.cell || 0.025;
   const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
-  for (let t = 0; t < triCount * 3; t++) { const v = I[t] * 3; for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], P[v + k]); mx[k] = Math.max(mx[k], P[v + k]); } }
+  for (let t = 0; t < triCount * 3; t++) { const v = I[t] * 3; for (let k = 0; k < 3; k++) { if (P[v + k] < mn[k]) mn[k] = P[v + k]; if (P[v + k] > mx[k]) mx[k] = P[v + k]; } }
   for (let k = 0; k < 3; k++) { mn[k] -= 1e-3; mx[k] += 1e-3; }
   const dims = [0, 1, 2].map((k) => Math.max(1, Math.ceil((mx[k] - mn[k]) / cell)));
-  const [DX, DY, DZ] = dims;
-  const cellOf = (x, k) => Math.min(dims[k] - 1, Math.max(0, Math.floor((x - mn[k]) / cell)));
-  const counts = new Uint32Array(DX * DY * DZ + 1);
-  const triBox = (t, f) => {
+  const [DX, DY] = dims;
+  const inv = 1 / cell;
+  const cellOf = (x, k) => { const c = Math.floor((x - mn[k]) * inv); return c < 0 ? 0 : c >= dims[k] ? dims[k] - 1 : c; };
+  const counts = new Uint32Array(DX * DY * dims[2] + 1);
+  const lo = [0, 0, 0], hi = [0, 0, 0];
+  const triBox = (t) => {
     const a = I[t * 3] * 3, b = I[t * 3 + 1] * 3, c = I[t * 3 + 2] * 3;
-    const lo = [0, 1, 2].map((k) => cellOf(Math.min(P[a + k], P[b + k], P[c + k]), k));
-    const hi = [0, 1, 2].map((k) => cellOf(Math.max(P[a + k], P[b + k], P[c + k]), k));
-    for (let z = lo[2]; z <= hi[2]; z++) for (let y = lo[1]; y <= hi[1]; y++) for (let x = lo[0]; x <= hi[0]; x++) f((z * DY + y) * DX + x);
+    for (let k = 0; k < 3; k++) {
+      lo[k] = cellOf(Math.min(P[a + k], P[b + k], P[c + k]), k);
+      hi[k] = cellOf(Math.max(P[a + k], P[b + k], P[c + k]), k);
+    }
   };
-  for (let t = 0; t < triCount; t++) triBox(t, (c) => { counts[c + 1]++; });
+  for (let t = 0; t < triCount; t++) {
+    triBox(t);
+    for (let z = lo[2]; z <= hi[2]; z++) for (let y = lo[1]; y <= hi[1]; y++) for (let x = lo[0]; x <= hi[0]; x++) counts[(z * DY + y) * DX + x + 1]++;
+  }
   for (let i = 1; i < counts.length; i++) counts[i] += counts[i - 1];
   const items = new Uint32Array(counts[counts.length - 1]);
   const fill = counts.slice(0, -1);
-  for (let t = 0; t < triCount; t++) triBox(t, (c) => { items[fill[c]++] = t; });
+  for (let t = 0; t < triCount; t++) {
+    triBox(t);
+    for (let z = lo[2]; z <= hi[2]; z++) for (let y = lo[1]; y <= hi[1]; y++) for (let x = lo[0]; x <= hi[0]; x++) items[fill[(z * DY + y) * DX + x]++] = t;
+  }
+  return { cell, triCount, bounds: Float64Array.from([...mn, ...mx]), dims: Int32Array.from(dims), counts, items };
+}
+
+/**
+ * @param {Float32Array} P positions
+ * @param {Uint16Array|Uint32Array} I triangle indices
+ * @param {Float32Array} [N] vertex normals (for smooth hit normals)
+ * @param {{triCount?:number, cell?:number, grid?:object}} [o] triCount limits queries to the first N indices (skin
+ *   group); `grid` = a prebuilt buildMeshGrid() result (e.g. transferred from the Worker)
+ */
+export function buildMeshQuery(P, I, N, o = {}) {
+  const G = o.grid || buildMeshGrid(P, I, o);
+  const { cell, triCount, counts, items } = G;
+  const mn = [G.bounds[0], G.bounds[1], G.bounds[2]], mx = [G.bounds[3], G.bounds[4], G.bounds[5]];
+  const dims = [G.dims[0], G.dims[1], G.dims[2]];
+  const [DX, DY, DZ] = dims;
+  const cellOf = (x, k) => Math.min(dims[k] - 1, Math.max(0, Math.floor((x - mn[k]) / cell)));
   const stamp = new Uint32Array(triCount);
   let stampId = 0;
 

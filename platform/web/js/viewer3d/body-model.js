@@ -105,7 +105,8 @@ function makeGround(feetX) {
   return group;
 }
 
-function skinMaterial(tone) {
+/** Skin material (also used by the viewer to pre-compile shaders while the mesh loads). */
+export function skinMaterial(tone) {
   return new THREE.MeshPhysicalMaterial({
     color: new THREE.Color(SKIN_TONES[tone] || tone || SKIN_TONES.medium),
     roughness: 0.6,
@@ -115,6 +116,11 @@ function skinMaterial(tone) {
     sheenColor: new THREE.Color('#ffd9c4'),
     specularIntensity: 0.35,
   });
+}
+
+/** Eye material (vertex-coloured sclera/iris/pupil). */
+export function eyeMaterial() {
+  return new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.16, metalness: 0 });
 }
 
 /** Per-vertex eye colours (sclera / iris / pupil) from the gaze direction (+z). */
@@ -155,7 +161,7 @@ function eyeColors(P, I, group, count) {
 
 /**
  * Build the body model (MakeHuman asset, falling back to the procedural mannequin).
- * @param {{sex?:'neutral'|'male'|'female', tone?:string, useWorker?:boolean, source?:'auto'|'procedural', modelsUrl?:string}} [opts]
+ * @param {{sex?:'neutral'|'male'|'female', tone?:string, useWorker?:boolean, source?:'auto'|'procedural', modelsUrl?:string, skinMaterial?:THREE.Material, eyeMaterial?:THREE.Material}} [opts]
  * @returns {Promise<BodyModel>}
  */
 export async function createBodyModel(opts = {}) {
@@ -166,14 +172,14 @@ export async function createBodyModel(opts = {}) {
   geom.setAttribute('position', new THREE.BufferAttribute(arrays.positions, 3));
   geom.setAttribute('normal', new THREE.BufferAttribute(arrays.normals, 3));
   geom.setIndex(new THREE.BufferAttribute(arrays.indices, 1));
-  const material = skinMaterial(opts.tone);
+  const material = opts.skinMaterial || skinMaterial(opts.tone);
   let materials = material;
   let eyeMat = null;
   if (arrays.kind === 'makehuman' && arrays.groups?.eyes?.count) {
     geom.addGroup(arrays.groups.skin.start, arrays.groups.skin.count, 0);
     geom.addGroup(arrays.groups.eyes.start, arrays.groups.eyes.count, 1);
     geom.setAttribute('color', new THREE.BufferAttribute(eyeColors(arrays.positions, arrays.indices, arrays.groups.eyes, arrays.positions.length / 3), 3));
-    eyeMat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.05 });
+    eyeMat = opts.eyeMaterial || eyeMaterial();
     materials = [material, eyeMat];
   }
   geom.computeBoundingBox();
@@ -186,7 +192,7 @@ export async function createBodyModel(opts = {}) {
 
   let snapFn, raycastFn, skeleton, bounds;
   if (arrays.kind === 'makehuman') {
-    const q = buildMeshQuery(arrays.positions, arrays.indices, arrays.normals, { triCount: arrays.groups.skin.count });
+    const q = buildMeshQuery(arrays.positions, arrays.indices, arrays.normals, { triCount: arrays.groups.skin.count, grid: arrays.grid });
     skeleton = arrays.skeleton;
     bounds = arrays.bounds;
     snapFn = (p, view) => q.snap(p, view);

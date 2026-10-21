@@ -84,6 +84,25 @@ try {
     await p2.close();
     assert.ok(ms <= 1500, `${ms.toFixed(0)} ms`);
   });
+  await check('page load → 3D ready (navigation start → viewer ready / first frame, all points)', async () => {
+    const runs = [];
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    for (let i = 0; i < 3; i++) { // run 0 = cold HTTP cache; runs 1-2 = warm reload (worker/cache storage as the app would have it)
+      const p3 = await ctx.newPage();
+      await p3.goto(`http://127.0.0.1:${port}/viewer-demo.html?protocol=1`);
+      await p3.waitForFunction(() => document.documentElement.dataset.firstFrameMs, null, { timeout: 120000 });
+      runs.push(await p3.evaluate(() => {
+        const d = document.documentElement.dataset;
+        const res = performance.getEntriesByType('resource');
+        const three = res.find((r) => /three\.module/.test(r.name));
+        return { ready: +d.viewerReadyMs, frame: +d.firstFrameMs, threeKB: three ? Math.round(three.encodedBodySize / 1024) : null, bytesKB: Math.round(res.reduce((t, r) => t + (r.encodedBodySize || 0), 0) / 1024) };
+      }));
+      await p3.close();
+    }
+    await ctx.close();
+    for (const [i, r] of runs.entries()) console.log(`     ${i === 0 ? 'cold' : 'warm'} page: 3D ready ${r.ready} ms · first frame ${r.frame} ms · three.module ${r.threeKB} KB · page bytes ${r.bytesKB} KB`);
+    assert.ok(runs[0].frame <= 4000);
+  });
   await check('procedural fallback when the asset is missing', async () => {
     const kind = await page.evaluate(async () => {
       const host = document.createElement('div');

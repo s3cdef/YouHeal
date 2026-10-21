@@ -1,15 +1,15 @@
 // Scan workspace: protocol runner (left) · body viewer (center) · session panel (right).
-import { el, mount, clear, debounce, isTypingTarget, nextId } from '../ui/dom.js';
+import { el, mount, clear, debounce, isTypingTarget, nextId, mark, whenIdle } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, NetworkError, ApiError } from '../api.js';
 import { t, locText, locNode, getLocale, fmtDuration, ageFrom, fmtDate, vocab, isLocale } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
-import { state, reportLocales, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, getList, normSession, normQualifiers } from '../state.js';
+import { state, reportLocales, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, normSession, normQualifiers } from '../state.js';
 import { combobox } from '../ui/combobox.js';
 import { tabs, segmented, select, languageOptions, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, ratingsRow, statusBadge, pairNum } from '../ui/components.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { toast, announce } from '../ui/toast.js';
-import { createViewer, renderSnapshots } from '../bodymap/host.js';
+import { createViewer, renderSnapshots, preload3D } from '../bodymap/host.js';
 import { pairDetailBody } from './pair-detail.js';
 import { fullName, errorPanel, methodologyLabel, addDaysISO } from './common.js';
 import { handleLockout } from '../app.js';
@@ -75,11 +75,14 @@ class SaveQueue {
 // ---------------------------------------------------------------- view
 export async function renderScan({ main, params }) {
   mount(main, el('div.scan-loading', skeleton(8)));
+  mark('scan:start');
+  preload3D(); // three.js + viewer modules download in parallel with the session/catalog requests
   let session; let core; let patient;
   try {
     [session, core] = await Promise.all([api.get(`/sessions/${encodeURIComponent(params.id)}`).then(normSession), loadCore()]);
     patient = session.patient && session.patient.dob !== undefined ? session.patient : await api.get(`/patients/${encodeURIComponent(session.patientId)}`).catch(() => session.patient || {});
   } catch (err) { mount(main, el('div.page', errorPanel(err, () => renderScan({ main, params })))); return null; }
+  mark('scan:data');
 
   const readOnly = session.status !== 'draft' || !can.findings() || !!session.supersededBy;
   const disposers = [];
@@ -279,7 +282,7 @@ export async function renderScan({ main, params }) {
     }
   }
   for (const f of st.findings) if (f.pairId && !st.checklist.some((c) => c.pairId === f.pairId)) st.checklist.push({ pairId: f.pairId, source: 'manual' });
-  getList('/catalog/symptoms').then((l) => { symptomsCatalog = l; renderSymptomChips(); }).catch(() => {});
+  symptomsCatalog = [...core.symptoms.values()]; // already loaded with the catalog core (no second request)
 
   // ================================================================ layout
   const age = ageFrom(patient.dob);
@@ -327,6 +330,7 @@ export async function renderScan({ main, params }) {
           session.status !== 'draft' && !session.supersededBy && can.findings() ? el('button.btn.btn-sm.btn-secondary', { type: 'button', onClick: () => amend() }, icon('edit', { size: 16 }), t('scan.amend')) : null)] })) : null,
     el('div.scan-body', left, center, right, scrim));
   mount(main, root);
+  mark('scan:mounted');
 
   function setPane(which, open) {
     const isLeft = which === 'left';
@@ -549,8 +553,12 @@ export async function renderScan({ main, params }) {
   const pairMagnets = new Map();
   function ensurePairMagnets(pairId) {
     if (!pairId || pairMagnets.has(pairId)) return;
+    const summary = pairOf(pairId);
+    if (summary && Array.isArray(summary.magnets)) { pairMagnets.set(pairId, summary.magnets.length ? summary.magnets : null); return; }
     pairMagnets.set(pairId, null);
-    getPair(pairId).then((d) => { if (d && Array.isArray(d.magnets) && d.magnets.length) { pairMagnets.set(pairId, d.magnets); syncViewer(); } }).catch(() => {});
+    if (core.pairsInclude.has('magnets')) return; // the list says which pairs have extra magnets: none here
+    // older servers: look it up in the pair detail, off the critical path (after the first 3D frames)
+    whenIdle(() => getPair(pairId).then((d) => { if (d && Array.isArray(d.magnets) && d.magnets.length) { pairMagnets.set(pairId, d.magnets); syncViewer(); } }).catch(() => {}));
   }
   function magnetsAndPairs() {
     const mags = []; const prs = [];
@@ -607,6 +615,7 @@ export async function renderScan({ main, params }) {
   }).then(({ viewer: v, kind }) => {
     if (!root.isConnected) { v.dispose(); return; }
     viewer = v; viewerKind = kind;
+    mark(`scan:viewer-${kind}`);
     const ld = viewerHost.querySelector('.viewer-loading'); if (ld) ld.remove();
     viewer.setView(st.view); applyPointFilter();
     const notes = [];

@@ -50,7 +50,7 @@ function errorFor(status, body) {
  * request('GET', '/patients', { query, body, auth:true, timeoutMs })
  * auth:false → a 401 does not trigger the global "go to login" handler (used by login/me probes).
  */
-export async function request(method, path, { query, body, auth = true, timeoutMs = 20000 } = {}) {
+export async function request(method, path, { query, body, auth = true, timeoutMs = 20000, headers: extra = null, meta = false } = {}) {
   let url = BASE + path;
   if (query) {
     const qs = new URLSearchParams();
@@ -61,6 +61,7 @@ export async function request(method, path, { query, body, auth = true, timeoutM
   const mutating = method !== 'GET' && method !== 'HEAD';
   if (mutating && csrfToken) headers['X-CSRF-Token'] = csrfToken;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (extra) Object.assign(headers, extra);
   const ctl = new AbortController();
   const tmr = setTimeout(() => ctl.abort(), timeoutMs);
   let res;
@@ -70,6 +71,8 @@ export async function request(method, path, { query, body, auth = true, timeoutM
     throw new NetworkError(err && err.name === 'AbortError' ? t('errors.timeout') : t('errors.network'));
   } finally { clearTimeout(tmr); }
   emit('activity', Date.now());
+  // conditional GET (If-None-Match) answered "unchanged": only callers asking for `meta` send validators
+  if (res.status === 304 && meta) return { status: 304, etag: res.headers.get('etag'), data: null };
   let data = null;
   const ct = res.headers.get('content-type') || '';
   if (res.status !== 204 && ct.includes('application/json')) { try { data = await res.json(); } catch { data = null; } }
@@ -82,7 +85,7 @@ export async function request(method, path, { query, body, auth = true, timeoutM
     throw err;
   }
   if (data && typeof data.csrfToken === 'string') setCsrf(data.csrfToken);
-  return data;
+  return meta ? { status: res.status, etag: res.headers.get('etag'), data } : data;
 }
 
 export const api = {

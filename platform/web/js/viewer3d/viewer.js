@@ -15,7 +15,6 @@
 import * as THREE from '../../vendor/three/three.module.js';
 import { OrbitControls } from '../../vendor/three/OrbitControls.js';
 import { RoundedBoxGeometry } from '../../vendor/three/RoundedBoxGeometry.js';
-import { RoomEnvironment } from '../../vendor/three/RoomEnvironment.js';
 import { createBodyModel } from './body-model.js';
 import { buildInstances, localName, sideLabel, uiText, PAIR_COLORS, DEFAULT_POLARITY, resolveInstance } from './viewer-common.js';
 
@@ -65,10 +64,31 @@ import { buildInstances, localName, sideLabel, uiText, PAIR_COLORS, DEFAULT_POLA
 
 /** True when a WebGL context can be created. */
 export function webglAvailable() {
+  return probeWebGL().available;
+}
+
+let probeCache = null;
+/**
+ * Probe WebGL once: availability and whether the rasteriser is software
+ * (SwiftShader / llvmpipe / Microsoft Basic Render — common on clinic VMs and
+ * remote desktops), where MSAA and high pixel ratios cost hundreds of ms per frame.
+ * @returns {{available:boolean, software:boolean, renderer:string}}
+ */
+export function probeWebGL() {
+  if (probeCache) return probeCache;
+  let res = { available: false, software: false, renderer: '' };
   try {
     const c = document.createElement('canvas');
-    return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
-  } catch { return false; }
+    const gl = window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'));
+    if (gl) {
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      const name = String((ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) || gl.getParameter(gl.RENDERER) || '');
+      res = { available: true, software: /swiftshader|llvmpipe|softpipe|basic render|software/i.test(name), renderer: name };
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+    }
+  } catch { /* no WebGL */ }
+  probeCache = res;
+  return res;
 }
 
 const VIEW_DIRS = {
@@ -95,7 +115,8 @@ export async function createBodyViewer(container, opts = {}) {
   }
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
+    // software rasterisers: no MSAA (≈3x cheaper frames); smooth edges still come from the 1:1 pixel ratio cap below
+    renderer = new THREE.WebGLRenderer({ antialias: !probeWebGL().software, alpha: true, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
   } catch {
     const { createSvgViewer } = await import('./viewer-svg.js');
     return createSvgViewer(container, opts);
@@ -136,7 +157,7 @@ export async function createBodyViewer(container, opts = {}) {
   container.append(canvas, overlay, loading, list, live);
 
   // ---------------------------------------------------------------- renderer / scene
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(probeWebGL().software ? 1 : Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1.0;
@@ -144,13 +165,15 @@ export async function createBodyViewer(container, opts = {}) {
   const scene = new THREE.Scene();
   // start loading the body (worker) before any GPU work so both overlap
   const modelP = opts.model ? Promise.resolve(opts.model) : createBodyModel({ sex: opts.sex || 'neutral', tone: opts.skinTone || 'medium', source: opts.bodySource, modelsUrl: opts.modelsUrl });
-  // image-based ambient light is generated after the first frame (it is costly on software GL)
-  let pmrem = null, envTex = null;
 
   const camera = new THREE.PerspectiveCamera(28, 1, 0.05, 30);
   scene.add(camera);
   // studio rig attached to the camera: consistent modelling from any angle
-  scene.add(new THREE.HemisphereLight(0xfdfbf7, 0x9c8f86, 0.8));
+  // (no PMREM environment map: on software GL it cost ~0.8 s of GPU time and forced a full shader
+  //  recompile; a slightly stronger sky light + a soft frontal fill give an equivalent look)
+  scene.add(new THREE.HemisphereLight(0xfdfbf7, 0x9c8f86, 1.05));
+  const front = new THREE.DirectionalLight(0xfff8f2, 0.35);
+  front.position.set(0, 0.3, 3);
   const key = new THREE.DirectionalLight(0xfff2e6, 2.6);
   key.position.set(-2.6, 2.8, 2.6);
   const fill = new THREE.DirectionalLight(0xe8eeff, 0.55);
@@ -159,7 +182,7 @@ export async function createBodyViewer(container, opts = {}) {
   rimL.position.set(-3, 1.6, -2.5);
   const rimR = new THREE.DirectionalLight(0xfff1e6, 1.2);
   rimR.position.set(3, 1.2, -2.5);
-  for (const l of [key, fill, rimL, rimR]) { camera.add(l); camera.add(l.target); l.target.position.set(0, 0, -3); }
+  for (const l of [key, fill, rimL, rimR, front]) { camera.add(l); camera.add(l.target); l.target.position.set(0, 0, -3); }
 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = !reduceMotion();
@@ -729,15 +752,6 @@ export async function createBodyViewer(container, opts = {}) {
     camera.position.copy(pos); controls.target.copy(target); controls.update();
   }
   requestRender();
-  // soft image-based ambient (room environment) once the first frame is on screen
-  const envTimer = setTimeout(() => {
-    if (disposed) return;
-    pmrem = new THREE.PMREMGenerator(renderer);
-    envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environment = envTex;
-    scene.environmentIntensity = 0.35;
-    requestRender();
-  }, 60);
 
   // ---------------------------------------------------------------- public API
   /** @type {BodyViewer} */
@@ -810,7 +824,6 @@ export async function createBodyViewer(container, opts = {}) {
       if (disposed) return;
       disposed = true;
       cancelAnimationFrame(raf);
-      clearTimeout(envTimer);
       ro?.disconnect();
       reduceMotionMQ?.removeEventListener?.('change', onMotionChange);
       canvas.removeEventListener('pointermove', onPointerMove);
@@ -827,7 +840,6 @@ export async function createBodyViewer(container, opts = {}) {
       rimGeo.dispose(); coreGeo.dispose(); rimMat.dispose(); coreMat.dispose(); ringTex.dispose();
       internalGroup.children.forEach((s) => s.material.dispose());
       if (!opts.model) model.dispose();
-      envTex?.dispose(); pmrem?.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       canvas.remove(); overlay.remove(); list.remove(); live.remove(); loading.remove();

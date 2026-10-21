@@ -1,23 +1,22 @@
 three.js 0.170.0 (npm: three@0.170.0)
 tarball: three-0.170.0.tgz
 tarball sha1 (npm shasum): 6087f97aab79e9e9312f9c89fcef6808642dfbb7
-tarball integrity: sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ== (verified against registry dist.integrity)
+tarball integrity: sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ== (re-verified 2026-10-21 against registry dist.integrity)
 license: MIT (see LICENSE)
 
+three.module.js is the OFFICIAL MINIFIED build (upstream build/three.module.min.js, byte-identical),
+shipped under the name three.module.js so every importer (addons, viewer, CONTRACT ADR-004) is unchanged.
+It is self-contained (no imports). The unminified upstream build/three.module.js was replaced 2026-10-21
+(1,314,681 B -> 691,648 B).
+
 Files (sha256 of the vendored copy; addons rewritten: "from 'three'" -> "from './three.module.js'"):
-ce1fa418de16a19495a9f72495580e3015d7745c296d3ce0485897f902ddedfb  three.module.js
+08fd7545d13d2c7fb65ab691530a802dafefd638596501854f267d0fb13c39e7  three.module.js   (== upstream build/three.module.min.js)
 6f3052dd8860a60fe6999260d50558ff54609523724c6e374326228e5590cf55  OrbitControls.js
 51b16ddfe4139c15eddf219a44d1e1fc05335e5b155493beee2502bdc4071447  RoundedBoxGeometry.js
-29d31eeb8abb5e4105bee7837e825c5ebb0ebbb2a2fe9f1e4b8b6604296ee3c7  RoomEnvironment.js
 
-Upstream sources:
-  build/three.module.js
-  examples/jsm/controls/OrbitControls.js
-  examples/jsm/geometries/RoundedBoxGeometry.js
-  examples/jsm/environments/RoomEnvironment.js
-
-Upstream sha256 (before import rewrite):
-ce1fa418de16a19495a9f72495580e3015d7745c296d3ce0485897f902ddedfb  build/three.module.js
+Upstream sources and sha256 (before import rewrite):
+08fd7545d13d2c7fb65ab691530a802dafefd638596501854f267d0fb13c39e7  build/three.module.min.js
 80efaadea4f8a636a65fb0bd08bfef62f3d93a0bb94e2e7500f23176c5c07f4e  examples/jsm/controls/OrbitControls.js
 d20aeaf7077c459a8d952d215738d7b44fba028440bb862d84b622a34f0c80bb  examples/jsm/geometries/RoundedBoxGeometry.js
-85869bdd22f7cf0b22e68dcefe6cb710480af0f5c901a76f7a7764fd07fc8014  examples/jsm/environments/RoomEnvironment.js
+(RoomEnvironment.js was removed 2026-10-21: no longer used — the viewer lights the body without a PMREM environment map.)
+(previously vendored unminified build/three.module.js: ce1fa418de16a19495a9f72495580e3015d7745c296d3ce0485897f902ddedfb)
