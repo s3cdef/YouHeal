@@ -9,11 +9,12 @@ import { toast } from '../ui/toast.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { pageHeader, applyTheme, getTheme, errorPanel } from './common.js';
 import { navigate } from '../router.js';
-import { showSidebarLogo } from '../app.js';
+import { showSidebarLogo, handleLockout, refreshMe } from '../app.js';
+import { recoveryCodesBlock } from '../ui/recovery.js';
 
 const ROLES = ['admin', 'practitioner', 'assistant', 'auditor'];
 
-export async function renderSettings({ main, params, route }) {
+export async function renderSettings({ main, params, route, query }) {
   const wanted = params.tab || (route && route.tab);
   const available = [
     { id: 'profile', label: t('settings.tabProfile'), icon: 'user' },
@@ -27,7 +28,7 @@ export async function renderSettings({ main, params, route }) {
     onChange: (id, panel, user) => {
       if (user) history.replaceState(null, '', `#/settings/${id}`);
       clear(panel);
-      ({ profile, clinic, users, audit })[id](panel);
+      ({ profile, clinic, users, audit })[id](panel, query || {});
     },
   });
   mount(main, el('div.page', pageHeader({ title: t('settings.title'), subtitle: t('settings.subtitle') }), tb.root, tb.panel));
@@ -35,7 +36,7 @@ export async function renderSettings({ main, params, route }) {
 }
 
 // ---------------- Profile ----------------
-function profile(panel) {
+function profile(panel, query = {}) {
   const u = state.user || {};
   const langSeg = segmented({ name: 'lang', label: t('settings.language'), value: getLocale(), options: [{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }],
     onChange: async (v) => { try { await api.patch('/auth/prefs', { locale: v }); if (state.user) state.user.locale = v; } catch (err) { toast(errorMessage(err), { tone: 'error' }); } await setLocale(v); } });
@@ -57,13 +58,21 @@ function profile(panel) {
     if (next.value !== conf.value) { fConf.setError(t('validation.passwordMismatch')); conf.focus(); return; }
     setLoading(pwBtn, true);
     try { await api.post('/auth/password', { current: cur.value, next: next.value }); pwForm.reset(); toast(t('settings.passwordChanged'), { tone: 'success' }); }
-    catch (err) { if (err instanceof ValidationError && err.fields) { if (err.fields.current) fCur.setError(err.fields.current); if (err.fields.next) fNext.setError(err.fields.next); } else toast(errorMessage(err), { tone: 'error' }); }
+    catch (err) { if (handleLockout(err)) return; if (err instanceof ValidationError && err.fields) { if (err.fields.current) fCur.setError(err.fields.current); if (err.fields.next) fNext.setError(err.fields.next); } else toast(errorMessage(err), { tone: 'error' }); }
     finally { setLoading(pwBtn, false); }
   });
 
+  const regenBtn = el('button.btn.btn-secondary', { type: 'button', id: 'regen-recovery', onClick: () => regenerateRecovery() }, icon('refresh', { size: 18 }), t('recovery.regenerate'));
+  const recoverySection = el('div.recovery-section#recovery-codes',
+    el('h3.sub-title', t('recovery.title')),
+    state.recoveryRegen ? alertBox({ tone: 'warn', children: [el('p', t('recovery.banner'))] })
+      : el('p.muted.small', t('recovery.remaining', { count: u.recoveryCodesRemaining ?? 0 })),
+    el('p.field-hint', t('recovery.hint')),
+    regenBtn);
   const mfaBody = u.mfaEnabled
-    ? el('div', el('p.ok-line', icon('shield', { size: 18 }), t('settings.mfaOn')),
-      u.role === 'admin' ? el('p.muted.small', t('settings.mfaAdminRequired')) : el('button.btn.btn-ghost.danger', { type: 'button', onClick: disableMfa }, t('settings.mfaDisable')))
+    ? el('div.stack', el('p.ok-line', icon('shield', { size: 18 }), t('settings.mfaOn')),
+      u.role === 'admin' ? el('p.muted.small', t('settings.mfaAdminRequired')) : el('button.btn.btn-ghost.danger', { type: 'button', onClick: disableMfa }, t('settings.mfaDisable')),
+      recoverySection)
     : el('div', alertBox({ tone: 'warn', children: [el('p', t('settings.mfaOff'))] }), el('a.btn.btn-primary', { href: '#/mfa' }, icon('shield', { size: 18 }), t('settings.mfaSetup')));
 
   mount(panel, el('div.settings-grid',
@@ -74,6 +83,36 @@ function profile(panel) {
     card({ title: t('settings.password'), icon: 'lock', children: [pwForm] }),
     card({ title: t('settings.mfa'), icon: 'shield', children: [mfaBody] })));
 
+  if (query.focus === 'recovery' && u.mfaEnabled) requestAnimationFrame(() => { recoverySection.scrollIntoView({ block: 'center' }); regenBtn.focus({ preventScroll: true }); });
+
+  async function regenerateRecovery() {
+    const pw = input({ type: 'password', autocomplete: 'current-password', id: 'regen-pw' });
+    const code = input({ inputmode: 'numeric', maxlength: 6, autocomplete: 'one-time-code', class: 'input-code', id: 'regen-code' });
+    const f1 = field({ label: t('auth.password'), input: pw, required: true });
+    const f2 = field({ label: t('auth.totpCode'), input: code, hint: t('auth.totpHint'), required: true });
+    code.addEventListener('input', () => { code.value = code.value.replace(/\D/g, '').slice(0, 6); });
+    const m = openModal({ title: t('recovery.regenerate'), icon: 'shield', body: el('div.stack', el('p', t('recovery.regenBody')), f1, f2),
+      actions: [{ label: t('common.cancel'), value: null, variant: 'ghost' }, { label: t('recovery.regenConfirm'), value: 'ok', variant: 'primary', onClick: async () => {
+        f1.setError(null); f2.setError(null);
+        if (!pw.value) { f1.setError(t('validation.required')); pw.focus(); return false; }
+        if (!/^\d{6}$/.test(code.value)) { f2.setError(t('validation.totp')); code.focus(); return false; }
+        try { m.codes = (await api.post('/auth/mfa/recovery-codes', { password: pw.value, code: code.value })).recoveryCodes || []; return true; } catch (err) {
+          if (handleLockout(err)) { m.close(null); return false; }
+          if (err.code === 'REAUTH_FAILED' || err.status === 403) { f2.setError(t('recovery.reauthFailed')); code.value = ''; code.focus(); return false; }
+          f2.setError(errorMessage(err)); return false;
+        }
+      } }] });
+    if ((await m.result) !== 'ok' || !m.codes) return;
+    await refreshMe().catch(() => {});
+    // must-acknowledge: not dismissible until the user confirms the new codes were saved
+    const shown = openModal({ title: t('mfa.recoveryTitle'), icon: 'shield', size: 'md', dismissible: false,
+      body: el('div.stack', el('p', t('recovery.newCodesBody')),
+        recoveryCodesBlock(m.codes, { email: u.email, doneLabel: t('common.done'), onDone: () => shown.close('done') })) });
+    await shown.result;
+    toast(t('recovery.regenerated'), { tone: 'success' });
+    profile(clear(panel));
+  }
+
   async function disableMfa() {
     const pw = input({ type: 'password', autocomplete: 'current-password' });
     const code = input({ inputmode: 'numeric', maxlength: 6, autocomplete: 'one-time-code', class: 'input-code' });
@@ -81,7 +120,7 @@ function profile(panel) {
     const f2 = field({ label: t('auth.totpCode'), input: code, required: true });
     const m = openModal({ title: t('settings.mfaDisable'), icon: 'alert', tone: 'danger', body: el('div.stack', el('p', t('settings.mfaDisableBody')), f1, f2),
       actions: [{ label: t('common.cancel'), value: null, variant: 'ghost' }, { label: t('settings.mfaDisable'), value: 'ok', variant: 'danger', onClick: async () => {
-        try { await api.post('/auth/mfa/disable', { password: pw.value, code: code.value }); return true; } catch (err) { f2.setError(errorMessage(err)); return false; }
+        try { await api.post('/auth/mfa/disable', { password: pw.value, code: code.value }); return true; } catch (err) { if (handleLockout(err)) { m.close(null); return false; } f2.setError(errorMessage(err)); return false; }
       } }] });
     if ((await m.result) === 'ok') { state.user.mfaEnabled = false; toast(t('settings.mfaDisabled'), { tone: 'success' }); profile(clear(panel)); }
   }

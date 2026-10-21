@@ -33,6 +33,31 @@ export function applyMe(me) {
   state.restriction = me.passwordChangeRequired || (me.user && me.user.mustChangePassword) ? 'password'
     : me.mfaEnrollmentRequired ? 'mfa' : null;
   if (me.session && me.session.idleTimeoutSec) setIdleTimeout(me.session.idleTimeoutSec);
+  state.recoveryRegen = !!me.recoveryCodesRegenerationRequired;
+  renderShellBanner();
+}
+
+// ---------------- persistent "regenerate recovery codes" banner (dismissible per page load) ----------------
+let bannerDismissed = false;
+export function renderShellBanner() {
+  const slot = document.getElementById('shell-banner');
+  if (!slot) return;
+  clear(slot);
+  if (!state.user || !state.recoveryRegen || bannerDismissed) { slot.hidden = true; return; }
+  slot.hidden = false;
+  slot.append(el('div.shell-banner-inner', { role: 'region', aria: { label: t('recovery.bannerLabel') } },
+    icon('shield', { size: 20 }),
+    el('p.shell-banner-text', t('recovery.banner')),
+    el('a.btn.btn-sm.btn-primary', { href: '#/settings/profile?focus=recovery' }, t('recovery.bannerAction')),
+    el('button.icon-btn.icon-btn-sm', { type: 'button', aria: { label: t('recovery.bannerDismiss') }, title: t('recovery.bannerDismiss'),
+      onClick: () => { bannerDismissed = true; renderShellBanner(); } }, icon('x', { size: 16 }))));
+}
+
+/** Step-up failures count toward lockout: on 423 the account is locked — sign out and explain on the login page. */
+export function handleLockout(err) {
+  if (!err || err.status !== 423) return false;
+  signOut({ locked: true, message: err.message });
+  return true;
 }
 
 export async function afterLogin() {
@@ -44,11 +69,11 @@ export async function afterLogin() {
   shellEls = null;
 }
 
-export async function signOut({ expired = false } = {}) {
+export async function signOut({ expired = false, locked = false } = {}) {
   try { await api.post('/auth/logout', {}, { auth: false }); } catch { /* ignore */ }
   state.user = null; state.org = null; state.orgLogo = undefined; setCsrf(null); stopIdleWatch(); clearCatalogCache();
   shellEls = null;
-  pendingNotice = expired ? t('auth.sessionExpired') : t('auth.signedOut');
+  pendingNotice = locked ? t('errors.codes.ACCOUNT_LOCKED') : expired ? t('auth.sessionExpired') : t('auth.signedOut');
   navigate('/login');
 }
 export function takeNotice() { const n = pendingNotice; pendingNotice = null; return n; }
@@ -123,9 +148,10 @@ function buildShell() {
     ),
   );
   const main = el('main#main.main', { tabindex: '-1' });
-  const shell = el('div.shell', side, el('div.main-col', main));
+  const shell = el('div.shell', side, el('div.main-col', el('div#shell-banner.shell-banner', { hidden: true, aria: { live: 'polite' } }), main));
   mount(app, shell);
   showSidebarLogo();
+  renderShellBanner();
   shellEls = { shell, main, nav };
 }
 

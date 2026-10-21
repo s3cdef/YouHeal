@@ -12,6 +12,7 @@ import { toast, announce } from '../ui/toast.js';
 import { createViewer, renderSnapshots } from '../bodymap/host.js';
 import { pairDetailBody } from './pair-detail.js';
 import { fullName, errorPanel, methodologyLabel, addDaysISO } from './common.js';
+import { handleLockout } from '../app.js';
 import { PROTOCOL_KINDS } from './start-scan.js';
 import { latestConsent } from './start-scan.js';
 
@@ -852,7 +853,8 @@ export async function renderScan({ main, params }) {
           try {
             // Body-map images become part of the immutable report snapshot, so upload them while still a draft.
             await uploadBodyMaps().catch((e) => console.warn('body map upload failed', e));
-            const post = (body) => api.post(`/sessions/${session.id}/finalize`, body, { auth: false }); // a wrong password must not sign the user out
+            // wrong password = 403 REAUTH_FAILED (shown inline); 401 = session gone (global → login); 423 = locked (→ login)
+            const post = (body) => api.post(`/sessions/${session.id}/finalize`, body);
             let res;
             try { res = await post({ signatureName: typed, password: pw.value }); } catch (e1) {
               // transitional: servers predating re-authentication reject the unknown `password` field
@@ -862,7 +864,8 @@ export async function renderScan({ main, params }) {
             m.hashShort = res && (res.hashShort || (res.sha256 || '').slice(0, 16));
             return true;
           } catch (err) {
-            if (err.status === 401 || err.code === 'REAUTH_FAILED') { fPw.setError(t('scan.reauthWrong')); pw.value = ''; pw.focus(); return false; }
+            if (handleLockout(err)) { m.close(null); return false; }
+            if (err.code === 'REAUTH_FAILED') { fPw.setError(t('scan.reauthWrong')); pw.value = ''; pw.focus(); return false; }
             if (err.status === 422 || err.code === 'SIGNATURE_MISMATCH') { fSig.setError(t('scan.signatureServerMismatch')); return false; }
             errSlot.append(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] })); return false;
           }

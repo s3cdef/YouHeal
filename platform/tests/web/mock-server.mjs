@@ -20,6 +20,7 @@ const PORT = Number(process.env.PORT || argVal('--port', 4173));
 const DEMO = !args.includes('--no-demo');
 const LATENCY = Number(argVal('--latency', 60));
 const NO_MFA = args.includes('--no-mfa');
+const LEGACY_RECOVERY = args.includes('--legacy-recovery'); // flag users as holding old-format recovery codes
 const SETUP_TOKEN = args.includes('--no-setup-token') ? null : crypto.randomBytes(12).toString('base64url');
 
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'";
@@ -118,7 +119,7 @@ const ageAt = (dob, at = new Date().toISOString()) => { if (!dob) return null; c
 const patientSummary = (p) => ({ id: p.id, mrn: p.mrn, firstName: p.firstName, lastName: p.lastName, dob: p.dob, age: ageAt(p.dob), sex: p.sex, archived: false, createdAt: p.createdAt });
 const restrictionOf = (u) => (u.mustChangePassword ? 'password' : u.role === 'admin' && !u.mfaEnabled && !NO_MFA ? 'mfa' : null);
 const orgPublic = () => (db.org ? (({ logo, ...rest }) => ({ ...rest, hasLogo: !!logo }))(db.org) : null);
-const mePayload = (u, csrf) => ({ user: publicUser(u), org: orgPublic(), csrfToken: csrf, mfaEnrollmentRequired: restrictionOf(u) === 'mfa', passwordChangeRequired: restrictionOf(u) === 'password', session: { idleTimeoutSec: 900 } });
+const mePayload = (u, csrf) => ({ user: publicUser(u), org: orgPublic(), csrfToken: csrf, mfaEnrollmentRequired: restrictionOf(u) === 'mfa', passwordChangeRequired: restrictionOf(u) === 'password', recoveryCodesRegenerationRequired: !!(u.mfaEnabled && u.legacyRecovery), session: { idleTimeoutSec: 900 } });
 const nextMrn = () => `YH-${String(db.patients.length + 1).padStart(6, '0')}`;
 const addDays = (iso, n) => { const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const userName = (uid) => { const u = db.users.find((x) => x.id === uid); return u ? { id: u.id, name: u.name } : null; };
@@ -350,9 +351,19 @@ R('POST', '/auth/mfa/enable', 'any', (c) => {
   c.user.mfaSecret = c.user.pendingSecret; delete c.user.pendingSecret; c.user.mfaEnabled = true;
   const codes = Array.from({ length: 10 }, () => { const h = crypto.randomBytes(5).toString('hex'); return `${h.slice(0, 5)}-${h.slice(5)}`; });
   c.user.recovery = codes.map((x) => sha256(x));
+  if (LEGACY_RECOVERY) c.user.legacyRecovery = true;
   audit(c.user, 'auth.mfa.enable');
   send(c.res, 200, { ok: true, recoveryCodes: codes });
 }, ['mfa']);
+R('POST', '/auth/mfa/recovery-codes', 'any', (c) => {
+  if (!strict(c.res, c.body, ['password', 'code'])) return;
+  if (!c.user.mfaEnabled) return err(c.res, 409, 'MFA_NOT_ENABLED', 'MFA is not enabled');
+  if (!checkPw(c.body.password || '', c.user.pw) || !totpOk(c.user.mfaSecret, c.body.code)) return err(c.res, 403, 'REAUTH_FAILED', 'Password or authentication code is incorrect');
+  const codes = Array.from({ length: 10 }, () => { const h = crypto.randomBytes(5).toString('hex'); return `${h.slice(0, 5)}-${h.slice(5)}`; });
+  c.user.recovery = codes.map((x) => sha256(x)); c.user.legacyRecovery = false;
+  audit(c.user, 'auth.mfa.recovery_codes.regenerate');
+  send(c.res, 200, { ok: true, recoveryCodes: codes });
+});
 R('POST', '/auth/mfa/disable', 'any', (c) => {
   if (!checkPw(c.body.password || '', c.user.pw) || !totpOk(c.user.mfaSecret, c.body.code)) return err(c.res, 403, 'REAUTH_FAILED', 'Password or authentication code is incorrect');
   c.user.mfaEnabled = false; delete c.user.mfaSecret; audit(c.user, 'auth.mfa.disable'); send(c.res, 200, { ok: true });
@@ -469,7 +480,10 @@ const patientSearch = (c, src) => {
   const enrich = (p) => { const ss = db.scanSessions.filter((s) => s.patientId === p.id && !s.supersededBy); return { ...patientSummary(p), sessionCount: ss.length, lastSessionDate: ss.map((s) => s.sessionDate).sort().pop() || null }; };
   send(c.res, 200, list(arr.map(enrich), { limit: src.limit, offset: src.offset }, 25));
 };
-R('GET', '/patients', 'patientRead', (c) => patientSearch(c, c.query));
+R('GET', '/patients', 'patientRead', (c) => {
+  if (c.query.q || c.query.dob) return err(c.res, 410, 'GONE', 'Searching via URL parameters was removed; use POST /api/v1/patients/search');
+  patientSearch(c, c.query);
+});
 R('POST', '/patients/search', 'patientRead', (c) => { if (!strict(c.res, c.body, ['q', 'dob', 'limit', 'offset'])) return; patientSearch(c, c.body); });
 function checkPatient(res, b, create) {
   if (!strict(res, b, [...PATIENT_FIELDS, ...(create ? [] : ['archived'])])) return false;

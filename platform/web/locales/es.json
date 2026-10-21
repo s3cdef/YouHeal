@@ -1027,5 +1027,23 @@
   },
   "rateLimitedFor": "Demasiadas solicitudes — espere {s} segundos e intente de nuevo.",
   "hostRejected": "Esta dirección no está permitida para el servidor de la clínica. Abra YOU HEAL Clínica con la dirección configurada por su administrador."
+ },
+ "recovery": {
+  "title": "Códigos de recuperación",
+  "banner": "Sus códigos de recuperación usan un formato antiguo. Regénérelos ahora.",
+  "bannerAction": "Regenerar ahora",
+  "bannerDismiss": "Ocultar hasta la próxima visita",
+  "bannerLabel": "Aviso de seguridad",
+  "regenerate": "Regenerar códigos de recuperación",
+  "regenBody": "Se crearán 10 códigos nuevos de un solo uso y se invalidarán de inmediato todos los anteriores. Confirme con su contraseña y un código vigente de su aplicación autenticadora.",
+  "regenConfirm": "Generar códigos nuevos",
+  "reauthFailed": "La contraseña o el código de autenticación no son correctos.",
+  "newCodesBody": "Sus códigos anteriores ya no funcionan. Guarde estos códigos nuevos ahora — solo se muestran una vez.",
+  "regenerated": "Los nuevos códigos de recuperación están activos; los anteriores ya no funcionan.",
+  "remaining": {
+   "one": "Le queda 1 código de recuperación sin usar.",
+   "other": "Le quedan {count} códigos de recuperación sin usar."
+  },
+  "hint": "Use un código de recuperación para iniciar sesión si pierde acceso a su aplicación autenticadora. Regénérelos si cree que fueron expuestos."
  }
 }

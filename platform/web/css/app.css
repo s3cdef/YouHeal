@@ -277,6 +277,15 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, main:focus, [role=tabpanel]:fo
 .sidebar .avatar { background: rgba(212,175,106,.18); color: #E7CF9E; }
 .main-col { min-width: 0; }
 .main { min-height: 100vh; }
+.shell-banner { position: sticky; top: 0; z-index: 40; padding: 10px 16px 0; background: transparent; }
+.shell-banner-inner { display: flex; align-items: center; gap: 12px; max-width: 1280px; margin: 0 auto; padding: 8px 8px 8px 16px; border-radius: var(--r-md);
+  background: var(--warn-soft); color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); box-shadow: var(--shadow-1); }
+.shell-banner-text { flex: 1; font-weight: 650; font-size: var(--fs-sm); color: var(--ink); }
+.shell.is-compact .shell-banner { position: absolute; left: 76px; right: 0; top: 70px; padding: 6px 12px 0; }
+.recovery-section { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+.recovery-section .btn { justify-self: start; }
+.sub-title { font-size: .95rem; font-weight: 700; }
+.recovery-print-sheet { display: none; }
 
 /* compact rail: scan workspace and narrower screens */
 .shell.is-compact { grid-template-columns: 76px minmax(0, 1fr); }
@@ -1135,7 +1144,12 @@ details.proto-kind > summary { cursor: pointer; padding: 8px 4px; list-style-pos
   /* protocol card prints landscape on its own named page */
   body.print-landscape .protocol-card { page: card; border: 0; box-shadow: none; border-radius: 0; }
   body.print-landscape .page-card > :not(.protocol-card) { display: none !important; }
-  /* MFA recovery codes print sheet */
+  /* MFA recovery codes print sheet (temporary node appended to <body>) */
+  body.print-recovery > :not(.recovery-print-sheet) { display: none !important; }
+  body.print-recovery .recovery-print-sheet { display: block; font: 12pt/1.5 var(--font-ui); color: #000; }
+  .recovery-print-title { font-weight: 800; font-size: 14pt; margin-bottom: 4px; }
+  .recovery-print-sheet .recovery-codes { margin: 14px 0; }
+  .recovery-print-sheet .recovery-codes li { border: 1px solid #999; }
   body.print-recovery .auth-layout { display: block; }
   body.print-recovery .auth-art, body.print-recovery .recovery-sheet > :not(.recovery-codes):not(.recovery-print-head):not(h1) { display: none !important; }
   body.print-recovery .recovery-print-head { display: flex; justify-content: space-between; margin-bottom: 12px; }

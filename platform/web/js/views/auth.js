@@ -8,7 +8,8 @@ import { state } from '../state.js';
 import { field, input, alertBox, setLoading } from '../ui/components.js';
 import { toast } from '../ui/toast.js';
 import { qrSvg } from '../ui/qr.js';
-import { afterLogin, goAfterLogin, takeNotice, signOut, refreshMe } from '../app.js';
+import { afterLogin, goAfterLogin, takeNotice, signOut, refreshMe, handleLockout } from '../app.js';
+import { recoveryCodesBlock } from '../ui/recovery.js';
 
 function authCard({ title, sub, children, steps = null }) {
   return el('section.auth-card',
@@ -258,7 +259,8 @@ export async function renderMfaEnroll({ main }) {
       if (state.user) state.user.mfaEnabled = true;
       showRecovery(res.recoveryCodes || []);
     } catch (err) {
-      errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', err.status === 400 || err.status === 401 ? t('auth.invalidCode') : errorMessage(err))] }));
+      if (handleLockout(err)) return;
+      errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', err.status === 400 || err.code === 'MFA_INVALID' ? t('auth.invalidCode') : errorMessage(err))] }));
       code.value = ''; code.focus();
     } finally { if (submit.isConnected) setLoading(submit, false); }
   });
@@ -285,33 +287,11 @@ export async function renderMfaEnroll({ main }) {
   code.focus();
 
   function showRecovery(codes) {
-    const ack = el('input', { type: 'checkbox', id: 'ack-codes' });
-    const cont = el('button.btn.btn-primary.btn-lg.btn-block', { type: 'button', disabled: true }, t('common.continue'));
-    ack.addEventListener('change', () => { cont.disabled = !ack.checked; });
-    cont.addEventListener('click', async () => { await refreshMe().catch(() => {}); goAfterLogin(); });
-    const list = el('ol.recovery-codes', codes.map((c) => el('li', el('code', c))));
-    const copy = el('button.btn.btn-secondary', { type: 'button' }, icon('copy', { size: 18 }), t('mfa.copyCodes'));
-    copy.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(codes.join('\n')); toast(t('common.copied'), { tone: 'success' }); } catch { toast(t('common.copyFailed'), { tone: 'warn' }); }
-    });
-    const print = el('button.btn.btn-secondary', { type: 'button' }, icon('print', { size: 18 }), t('common.print'));
-    print.addEventListener('click', () => {
-      document.body.classList.add('print-recovery');
-      const done = () => { document.body.classList.remove('print-recovery'); window.removeEventListener('afterprint', done); };
-      window.addEventListener('afterprint', done);
-      window.print();
-    });
     mount(main, el('section.auth-card.auth-card-wide.recovery-sheet',
       stepper([t('mfa.stepScan'), t('mfa.stepVerify'), t('mfa.stepSave')], 2),
       el('h1.auth-title', { tabindex: '-1' }, t('mfa.recoveryTitle')),
       el('p.auth-sub', t('mfa.recoverySub')),
-      alertBox({ tone: 'warn', children: [el('p', t('mfa.recoveryWarn'))] }),
-      el('div.recovery-print-head', el('strong', 'YOU HEAL Clinical'), el('span', state.user ? state.user.email : '')),
-      list,
-      el('div.btn-row', copy, print),
-      el('label.check', ack, el('span', t('mfa.savedAck'))),
-      el('div.form-actions', cont),
-    ));
+      recoveryCodesBlock(codes, { email: state.user ? state.user.email : '', onDone: async () => { await refreshMe().catch(() => {}); goAfterLogin(); } })));
     main.querySelector('h1').focus();
   }
   return null;
@@ -342,6 +322,7 @@ export async function renderPasswordChange({ main }) {
       await refreshMe().catch(() => {});
       goAfterLogin();
     } catch (err) {
+      if (handleLockout(err)) return;
       if (!applyFieldErrors(err, { current: fCur, next: fNext })) errBox.replaceChildren(alertBox({ tone: 'danger', children: [el('p', errorMessage(err))] }));
     } finally { if (submit.isConnected) setLoading(submit, false); }
   });

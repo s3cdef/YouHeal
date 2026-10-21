@@ -1027,5 +1027,23 @@
   },
   "rateLimitedFor": "Too many requests — please wait {s} seconds and try again.",
   "hostRejected": "This address is not allowed for the clinic server. Open YOU HEAL Clinical using the address configured by your administrator."
+ },
+ "recovery": {
+  "title": "Recovery codes",
+  "banner": "Your recovery codes use an older format. Regenerate them now.",
+  "bannerAction": "Regenerate now",
+  "bannerDismiss": "Hide until next visit",
+  "bannerLabel": "Security notice",
+  "regenerate": "Regenerate recovery codes",
+  "regenBody": "This creates 10 new single-use codes and immediately invalidates all of your old ones. Confirm with your password and a current authenticator code.",
+  "regenConfirm": "Generate new codes",
+  "reauthFailed": "The password or authentication code is not correct.",
+  "newCodesBody": "Your old codes no longer work. Save these new codes now — they are shown only once.",
+  "regenerated": "New recovery codes are active; the old ones no longer work.",
+  "remaining": {
+   "one": "1 unused recovery code left.",
+   "other": "{count} unused recovery codes left."
+  },
+  "hint": "Use a recovery code to sign in if you lose access to your authenticator app. Regenerate them if you think they were exposed."
  }
 }

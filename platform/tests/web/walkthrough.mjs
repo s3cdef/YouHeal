@@ -25,6 +25,13 @@ async function loadPlaywright() {
 
 // ---- TOTP (RFC 6238) to answer the MFA enrollment like a phone would ----
 function b32dec(s) { const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; let bits = ''; for (const c of s.replace(/[\s=]/g, '').toUpperCase()) bits += A.indexOf(c).toString(2).padStart(5, '0'); const out = []; for (let i = 0; i + 8 <= bits.length; i += 8) out.push(parseInt(bits.slice(i, i + 8), 2)); return Buffer.from(out); }
+// The server rejects re-use of a TOTP step, so each step-up waits for a fresh 30 s window.
+let lastStep = 0;
+async function freshTotp(secret) {
+  while (Math.floor(Date.now() / 30000) <= lastStep) await new Promise((r) => setTimeout(r, 500));
+  lastStep = Math.floor(Date.now() / 30000);
+  return totp(secret);
+}
 function totp(secret, offset = 0) {
   const msg = Buffer.alloc(8); msg.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + offset));
   const h = crypto.createHmac('sha1', b32dec(secret)).update(msg).digest(); const o = h[h.length - 1] & 0xf;
@@ -85,13 +92,14 @@ async function main() {
   let child = null;
   if (!base) {
     const port = 4300 + Math.floor(Math.random() * 500);
-    child = spawn(process.execPath, [path.join(__dirname, 'mock-server.mjs'), '--port', String(port), '--latency', '20'], { stdio: ['ignore', 'pipe', 'inherit'] });
+    child = spawn(process.execPath, [path.join(__dirname, 'mock-server.mjs'), '--port', String(port), '--latency', '20', '--legacy-recovery'], { stdio: ['ignore', 'pipe', 'inherit'] });
     let out = '';
     await new Promise((r) => child.stdout.on('data', (d) => { out += String(d); if (out.includes('mock on')) r(); }));
     const m = /setup token: (\S+)/.exec(out); if (m) process.env.SETUP_TOKEN = m[1];
     base = `http://127.0.0.1:${port}`;
   }
   const problems = problems_;
+  let mfaSecret = null;
   const browser = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
   const shot = async (page, name, opts = {}) => { await page.waitForTimeout(opts.wait ?? 250); await page.screenshot({ path: path.join(ART, `${name}.png`), fullPage: !!opts.full }); console.log('  📸', name); };
 
@@ -141,8 +149,8 @@ async function main() {
   if (mfa) {
     await page.locator('svg.qr').waitFor();
     await shot(page, '04-mfa-enroll');
-    const secret = (await page.locator('code.secret').textContent()).replace(/\s/g, '');
-    await page.getByLabel('Authentication code').fill(totp(secret));
+    mfaSecret = (await page.locator('code.secret').textContent()).replace(/\s/g, '');
+    await page.getByLabel('Authentication code').fill(await freshTotp(mfaSecret));
     await page.getByRole('button', { name: 'Verify and turn on' }).click();
     await page.getByRole('heading', { name: 'Save your recovery codes' }).waitFor();
     await shot(page, '05-mfa-recovery');
@@ -154,6 +162,33 @@ async function main() {
   if (process.env.SEED === '1') { const n = await page.evaluate(seedDemo, ADMIN.password); console.log(`  🌱 seeded ${n} demo sessions via API`); await page.reload(); }
   await page.locator('.dash-grid .card').first().waitFor();
   await shot(page, '06-dashboard');
+
+  // 4a. recovery codes: banner for legacy-format codes (mock flags the user) → Settings → regenerate (password + fresh TOTP)
+  if (mfaSecret) {
+    const banner = page.locator('#shell-banner:not([hidden]) .shell-banner-inner');
+    const hasBanner = await banner.waitFor({ timeout: 3000 }).then(() => true).catch(() => false);
+    if (hasBanner) {
+      await shot(page, '34a-recovery-banner');
+      await banner.getByRole('link', { name: 'Regenerate now' }).click();
+    } else {
+      await page.goto(`${base}/#/settings/profile?focus=recovery`);
+    }
+    await page.locator('#regen-recovery').click();
+    const rd = page.locator('dialog[open]');
+    await rd.getByLabel('Password', { exact: false }).first().fill(ADMIN.password);
+    await rd.getByLabel('Authentication code').fill(await freshTotp(mfaSecret));
+    await rd.getByRole('button', { name: 'Generate new codes' }).click();
+    const codesDlg = page.locator('dialog[open]', { has: page.locator('.recovery-codes') });
+    await codesDlg.waitFor();
+    if (await codesDlg.getByRole('button', { name: 'Done' }).isEnabled()) problems.push('[desktop] recovery codes: Done must stay disabled until acknowledged');
+    await shot(page, '34-recovery-regenerate');
+    await codesDlg.getByLabel('I have saved my recovery codes in a safe place.').check();
+    await codesDlg.getByRole('button', { name: 'Done' }).click();
+    await page.getByText('New recovery codes are active').waitFor();
+    if (await page.locator('#shell-banner:not([hidden]) .shell-banner-inner').count()) problems.push('[desktop] recovery banner still shown after regeneration');
+    await page.goto(`${base}/#/`);
+    await page.locator('.dash-grid .card').first().waitFor();
+  }
 
   // 4b. clinic logo (generated in-page: an obviously fictitious "Demo Clinic" mark) → sidebar + report header
   await page.goto(`${base}/#/settings/clinic`);
