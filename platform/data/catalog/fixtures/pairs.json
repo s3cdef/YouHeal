@@ -1,37 +1,301 @@
 [
-  { "id": "pb-001", "number": 1, "level": 1, "name": { "es": "Timo – Recto", "en": "Thymus – Rectum" },
-    "tracking": { "point": "timo", "side": "C", "qualifiers": [] }, "impact": { "point": "recto", "side": "C", "qualifiers": [] },
-    "category": "virus", "relations": [{ "entity": "vih", "ordinal": 1 }, { "entity": "e-coli", "ordinal": 1 }],
-    "ratings": { "F": 3, "P": 2, "R": 1 },
-    "symptoms": [{ "system": "immunological", "text": { "es": "Disminución de la respuesta inmunitaria", "en": "Decreased immune response" } },
-                 { "system": "general", "text": { "es": "Fatiga crónica", "en": "Chronic fatigue" } }],
-    "recommendations": [{ "es": "Rastreo dirigido con el imán e impactación profiláctica en: Inmunodeficiencia (SIDA)", "en": "Targeted scan and prophylactic impact in: immunodeficiency (AIDS)" }],
-    "notes": [], "source": { "doc": "goiz-n1", "page": 25 } },
-  { "id": "pb-010", "number": 10, "level": 1, "name": { "es": "Cardias – Suprarrenal", "en": "Cardia – Adrenal gland" },
-    "tracking": { "point": "cardias", "side": "C", "qualifiers": [] }, "impact": { "point": "suprarrenal", "side": "L", "qualifiers": [] },
-    "category": "bacteria", "relations": [{ "entity": "gastritis", "ordinal": 1 }], "ratings": { "F": 2, "P": 2, "R": 2 },
-    "symptoms": [{ "system": "gastrointestinal", "text": { "es": "Acidez y ardor estomacal", "en": "Heartburn" } }],
-    "recommendations": [], "source": { "doc": "goiz-n1", "page": 30 } },
-  { "id": "pb-030", "number": 30, "level": 1, "name": { "es": "Píloro – Hígado", "en": "Pylorus – Liver" },
-    "tracking": { "point": "piloro", "side": "C", "qualifiers": [] }, "impact": { "point": "higado", "side": "R", "qualifiers": ["INF"] },
-    "category": "bacteria", "relations": [{ "entity": "helicobacter-pylori", "ordinal": 1 }], "ratings": { "F": 3, "P": 3, "R": 2 },
-    "symptoms": [{ "system": "gastrointestinal", "text": { "es": "Dolor abdominal y náusea", "en": "Abdominal pain and nausea" } },
-                 { "system": "gastrointestinal", "text": { "es": "Acidez", "en": "Acid reflux" } }],
-    "recommendations": [{ "es": "Dieta blanda", "en": "Bland diet" }], "source": { "doc": "goiz-n1", "page": 40 } },
-  { "id": "pb-045", "number": 45, "level": 1, "name": { "es": "Supraespinoso – Supraespinoso", "en": "Supraspinatus – Supraspinatus" },
-    "tracking": { "point": "supraespinoso", "side": "R", "qualifiers": [] }, "impact": { "point": "supraespinoso", "side": "L", "qualifiers": [] },
-    "category": "virus", "relations": [], "ratings": { "F": 3, "P": 1, "R": 1 },
-    "symptoms": [{ "system": "neurological", "text": { "es": "Cefalea tensional", "en": "Tension headache" } },
-                 { "system": "general", "text": { "es": "Fiebre", "en": "Fever" } }],
-    "recommendations": [], "source": { "doc": "goiz-n1", "page": 55 } },
-  { "id": "pb-212", "number": 212, "level": 2, "name": { "es": "Pulmón – Pulmón", "en": "Lung – Lung" },
-    "tracking": { "point": "pulmon", "side": "R", "qualifiers": [] }, "impact": { "point": "pulmon", "side": "L", "qualifiers": [] },
-    "category": "fungus", "relations": [], "ratings": { "F": 1, "P": 2, "R": 3 },
-    "symptoms": [{ "system": "respiratory", "text": { "es": "Tos seca persistente", "en": "Persistent dry cough" } }],
-    "recommendations": [], "source": { "doc": "goiz-n2", "page": 12 } },
-  { "id": "cx-rinon--vejiga", "number": null, "level": 0, "name": { "es": "Riñón – Vejiga", "en": "Kidney – Bladder" },
-    "tracking": { "point": "rinon", "side": "RL", "qualifiers": [] }, "impact": { "point": "vejiga", "side": "C", "qualifiers": [] },
-    "category": "bacteria", "relations": [{ "entity": "e-coli", "ordinal": 2 }], "ratings": {},
-    "symptoms": [{ "system": "urological", "text": { "es": "Ardor al orinar", "en": "Burning urination" } }],
-    "recommendations": [], "source": { "doc": "leal-2018", "page": 211 } }
+  {
+    "id": "pb-001",
+    "number": 1,
+    "level": 1,
+    "name": {
+      "es": "Timo – Recto",
+      "en": "Thymus – Rectum"
+    },
+    "tracking": {
+      "point": "timo",
+      "side": "C",
+      "qualifiers": []
+    },
+    "impact": {
+      "point": "recto",
+      "side": "C",
+      "qualifiers": []
+    },
+    "category": "virus",
+    "relations": [
+      {
+        "entity": "vih",
+        "ordinal": 1
+      },
+      {
+        "entity": "e-coli",
+        "ordinal": 1
+      }
+    ],
+    "ratings": {
+      "F": 3,
+      "P": 2,
+      "R": 1
+    },
+    "symptoms": [
+      {
+        "system": "immunological",
+        "text": {
+          "es": "Disminución de la respuesta inmunitaria",
+          "en": "Decreased immune response"
+        }
+      },
+      {
+        "system": "general",
+        "text": {
+          "es": "Fatiga crónica",
+          "en": "Chronic fatigue"
+        }
+      }
+    ],
+    "recommendations": [
+      {
+        "es": "Rastreo dirigido con el imán e impactación profiláctica en: Inmunodeficiencia (SIDA)",
+        "en": "Targeted scan and prophylactic impact in: immunodeficiency (AIDS)"
+      }
+    ],
+    "notes": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 25
+    }
+  },
+  {
+    "id": "pb-010",
+    "number": 10,
+    "level": 1,
+    "name": {
+      "es": "Cardias – Suprarrenal",
+      "en": "Cardia – Adrenal gland"
+    },
+    "tracking": {
+      "point": "cardias",
+      "side": "C",
+      "qualifiers": []
+    },
+    "impact": {
+      "point": "suprarrenal",
+      "side": "L",
+      "qualifiers": []
+    },
+    "category": "bacteria",
+    "relations": [
+      {
+        "entity": "gastritis",
+        "ordinal": 1
+      }
+    ],
+    "ratings": {
+      "F": 2,
+      "P": 2,
+      "R": 2
+    },
+    "symptoms": [
+      {
+        "system": "gastrointestinal",
+        "text": {
+          "es": "Acidez y ardor estomacal",
+          "en": "Heartburn"
+        }
+      }
+    ],
+    "recommendations": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 30
+    }
+  },
+  {
+    "id": "pb-030",
+    "number": 30,
+    "level": 1,
+    "name": {
+      "es": "Píloro – Hígado",
+      "en": "Pylorus – Liver"
+    },
+    "tracking": {
+      "point": "piloro",
+      "side": "C",
+      "qualifiers": []
+    },
+    "impact": {
+      "point": "higado",
+      "side": "R",
+      "qualifiers": [
+        "INF"
+      ]
+    },
+    "category": "bacteria",
+    "relations": [
+      {
+        "entity": "helicobacter-pylori",
+        "ordinal": 1
+      }
+    ],
+    "ratings": {
+      "F": 3,
+      "P": 3,
+      "R": 2
+    },
+    "symptoms": [
+      {
+        "system": "gastrointestinal",
+        "text": {
+          "es": "Dolor abdominal y náusea",
+          "en": "Abdominal pain and nausea"
+        }
+      },
+      {
+        "system": "gastrointestinal",
+        "text": {
+          "es": "Acidez",
+          "en": "Acid reflux"
+        }
+      }
+    ],
+    "recommendations": [
+      {
+        "es": "Dieta blanda",
+        "en": "Bland diet"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 40
+    }
+  },
+  {
+    "id": "pb-045",
+    "number": 45,
+    "level": 1,
+    "name": {
+      "es": "Supraespinoso – Supraespinoso",
+      "en": "Supraspinatus – Supraspinatus"
+    },
+    "tracking": {
+      "point": "supraespinoso",
+      "side": "R",
+      "qualifiers": []
+    },
+    "impact": {
+      "point": "supraespinoso",
+      "side": "L",
+      "qualifiers": []
+    },
+    "category": "virus",
+    "relations": [],
+    "ratings": {
+      "F": 3,
+      "P": 1,
+      "R": 1
+    },
+    "symptoms": [
+      {
+        "system": "neurological",
+        "text": {
+          "es": "Cefalea tensional",
+          "en": "Tension headache"
+        }
+      },
+      {
+        "system": "general",
+        "text": {
+          "es": "Fiebre",
+          "en": "Fever"
+        }
+      }
+    ],
+    "recommendations": [
+      {
+        "es": "Enf. Tropicales (Nilo Virus)",
+        "en": "Tropical diseases (Nile virus)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 55
+    }
+  },
+  {
+    "id": "pb-212",
+    "number": 212,
+    "level": 2,
+    "name": {
+      "es": "Pulmón – Pulmón",
+      "en": "Lung – Lung"
+    },
+    "tracking": {
+      "point": "pulmon",
+      "side": "R",
+      "qualifiers": []
+    },
+    "impact": {
+      "point": "pulmon",
+      "side": "L",
+      "qualifiers": []
+    },
+    "category": "fungus",
+    "relations": [],
+    "ratings": {
+      "F": 1,
+      "P": 2,
+      "R": 3
+    },
+    "symptoms": [
+      {
+        "system": "respiratory",
+        "text": {
+          "es": "Tos seca persistente",
+          "en": "Persistent dry cough"
+        }
+      }
+    ],
+    "recommendations": [],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 12
+    }
+  },
+  {
+    "id": "cx-rinon--vejiga",
+    "number": null,
+    "level": 0,
+    "name": {
+      "es": "Riñón – Vejiga",
+      "en": "Kidney – Bladder"
+    },
+    "tracking": {
+      "point": "rinon",
+      "side": "RL",
+      "qualifiers": []
+    },
+    "impact": {
+      "point": "vejiga",
+      "side": "C",
+      "qualifiers": []
+    },
+    "category": "bacteria",
+    "relations": [
+      {
+        "entity": "e-coli",
+        "ordinal": 2
+      }
+    ],
+    "ratings": {},
+    "symptoms": [
+      {
+        "system": "urological",
+        "text": {
+          "es": "Ardor al orinar",
+          "en": "Burning urination"
+        }
+      }
+    ],
+    "recommendations": [],
+    "source": {
+      "doc": "leal-2018",
+      "page": 211
+    }
+  }
 ]

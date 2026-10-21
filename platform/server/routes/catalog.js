@@ -224,10 +224,14 @@ export function createCatalogService(db, { allowedLicenses = null } = {}) {
         }
       }
     }
-    return [...scores.values()]
+    const ranked = [...scores.values()]
       .map((s) => ({ ...s, score: round(s.score), pair: pairSummary(c.pairs.get(s.pairId), c) }))
       .sort((a, b) => b.score - a.score || (a.pair.number ?? 1e9) - (b.pair.number ?? 1e9))
       .slice(0, limit);
+    const top = ranked[0]?.score || 0;
+    // score01: relative to the top score (top = 1); comparable within one response only
+    for (const r of ranked) r.score01 = top > 0 ? round(r.score / top) : 0;
+    return ranked;
   }
 
   return { get, pairSummary, pairFull, protocolExpanded, search, suggest, invalidate: () => { cache = null; } };

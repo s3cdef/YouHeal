@@ -1,4 +1,15 @@
 [
-  { "id": "hydration", "title": { "es": "Hidratación", "en": "Hydration" }, "body": { "es": "Beber abundante agua durante 3 días.", "en": "Drink plenty of water for 3 days." } },
-  { "id": "follow-up", "title": { "es": "Seguimiento", "en": "Follow-up" }, "body": { "es": "Realizar un rastreo de control a la semana.", "en": "Schedule a follow-up scan after one week." } }
+  { "id": "general-short", "title": { "es": "Recomendaciones Generales (Versión Corta)", "en": "General recommendations (short version)" },
+    "body": { "es": "1. Cambiar cepillo de dientes\n2. Fortalecer los Pilares de la Salud\n3. Mantenerse en contacto con el Usuario (segundo rastreo en 8 días)", "en": "1. Change your toothbrush\n2. Strengthen the pillars of health\n3. Stay in touch (second scan in 8 days)" },
+    "source": { "doc": "goiz-n1", "page": 97 } },
+  { "id": "parasitic", "title": { "es": "Recomendaciones para Enfermedades Parasitarias", "en": "Recommendations for parasitic diseases" },
+    "body": { "es": "Las recomendaciones para enfermedades parasitarias señalan las especificaciones a seguir. Cambiar sábanas y toallas." }, "source": { "doc": "goiz-n1", "page": 98 } },
+  { "id": "tropical", "title": { "es": "Recomendaciones para Enfermedades Tropicales", "en": "Recommendations for tropical diseases" },
+    "body": { "es": "Las enfermedades tropicales se relacionan a transmisión por vectores (mosquitos). Usar repelente.", "en": "Tropical diseases are vector-borne (mosquitoes). Use repellent." }, "source": { "doc": "goiz-n1", "page": 99 } },
+  { "id": "sti", "title": { "es": "Recomendaciones para Infecciones de Transmisión Sexual (ITS)", "en": "Recommendations for sexually transmitted infections (STI)" },
+    "body": { "es": "Las recomendaciones para ITS señalan las especificaciones a seguir. Rastrear a la pareja." }, "source": { "doc": "goiz-n1", "page": 100 } },
+  { "id": "good-eating", "title": { "es": "Recomendaciones del buen comer", "en": "Healthy eating recommendations" },
+    "body": { "es": "Las recomendaciones del buen comer son una lista de sugerencias. Comer despacio." }, "source": { "doc": "goiz-n1", "page": 101 } },
+  { "id": "stress-management", "title": { "es": "Recomendaciones para manejo del estrés", "en": "Stress management recommendations" },
+    "body": { "es": "Las recomendaciones para el manejo del estrés son sugerencias generales. Respirar profundo." }, "source": { "doc": "goiz-n1", "page": 102 } }
 ]

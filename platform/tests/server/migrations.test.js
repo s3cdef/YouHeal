@@ -17,6 +17,8 @@ test('migrations apply on a fresh temp dir, are idempotent and create expected t
     'protocol_items', 'symptoms', 'contraindications', 'recommendations', 'glossary', 'catalog_meta', 'schema_migrations']) {
     assert.ok(tables.has(t), `missing table ${t}`);
   }
+  assert.ok(db.all('PRAGMA table_info(scan_sessions)').some((c) => c.name === 'scan_state_enc'), '002 adds scan_state_enc');
+  assert.ok(db.all('PRAGMA table_info(orgs)').some((c) => c.name === 'logo'), '002 adds orgs.logo');
   assert.equal(db.get('PRAGMA journal_mode').journal_mode, 'wal');
   assert.equal(db.get('PRAGMA foreign_keys').foreign_keys, 1);
   assert.equal(db.get('PRAGMA secure_delete').secure_delete, 1);

@@ -3,7 +3,7 @@
 import { v, check, paging, uuidStr } from '../lib/validate.js';
 import { hashPassword, uuid, randomToken } from '../lib/crypto.js';
 import { passwordPolicyError } from '../lib/auth.js';
-import { HttpError, notFound, conflict } from '../lib/http.js';
+import { HttpError, notFound, conflict, forbidden } from '../lib/http.js';
 import { ROLES, PERM } from '../lib/rbac.js';
 import { nowIso, userView, LOCALES } from './_shared.js';
 
@@ -33,10 +33,18 @@ export function register(router, { db, sessions }) {
 
   router.get('/users', (ctx) => {
     const { limit, offset } = paging(ctx.query, { defLimit: 100, maxLimit: 500 });
+    const minimal = ctx.query.get('minimal') === '1' || ctx.query.get('minimal') === 'true';
+    if (!minimal && ctx.user.role !== 'admin') throw forbidden();
+    if (minimal) {
+      // [{id, name}] only — used by auditors to label/filter audit actors
+      const total = db.get('SELECT COUNT(*) AS n FROM users WHERE org_id = ?', ctx.user.org_id).n;
+      const items = db.all('SELECT id, name FROM users WHERE org_id = ? ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?', ctx.user.org_id, limit, offset).map((u) => ({ id: u.id, name: u.name }));
+      return { items, total };
+    }
     const total = db.get('SELECT COUNT(*) AS n FROM users WHERE org_id = ?', ctx.user.org_id).n;
     const items = db.all('SELECT * FROM users WHERE org_id = ? ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?', ctx.user.org_id, limit, offset).map(userView);
     return { items, total };
-  }, opts);
+  }, { roles: [...PERM.admin, 'auditor'] });
 
   router.post('/users', async (ctx) => {
     const body = check(createSchema, ctx.body);

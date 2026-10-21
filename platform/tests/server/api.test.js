@@ -16,6 +16,7 @@ const PATIENT = { firstName: 'Guadalupe', lastName: 'López Ñúñez', dob: '198
 const admin = () => state.admin;
 const state = {};
 const rawDb = () => new DatabaseSync(srv.cfg.dbPath);
+const LOGO = 'data:image/png;base64,' + Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(64, 7)]).toString('base64');
 const PNG = 'data:image/png;base64,' + Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(32)]).toString('base64');
 
 before(async () => { srv = await startTestServer(); });
@@ -34,7 +35,7 @@ test('health + security headers on API responses', async () => {
   const c = new Client(srv.url);
   const r = await c.get('/api/v1/health');
   assert.equal(r.status, 200);
-  assert.deepEqual(r.json, { status: 'ok', version: '1.0.0', catalogVersion: 'fixture-1' });
+  assert.deepEqual(r.json, { status: 'ok', version: '1.0.0', catalogVersion: 'fixture-2' });
   securityHeaders(r.headers);
   assert.equal(r.headers.get('cache-control'), 'no-store');
   const nf = await c.get('/api/v1/nope');
@@ -172,6 +173,24 @@ test('admin creates staff accounts', async () => {
   assert.equal(org.status, 200);
   assert.equal(org.json.phone, '+1 555 0199');
   assert.equal((await state.practitioner.patch('/api/v1/org', { phone: '1' })).status, 403);
+  // logo: raster only, signature-checked, <= 200 KB
+  const svg = 'data:image/svg+xml;base64,' + Buffer.from('<svg onload="alert(1)"/>').toString('base64');
+  assert.equal((await a.patch('/api/v1/org', { logo: svg })).status, 400, 'no SVG');
+  assert.equal((await a.patch('/api/v1/org', { logo: 'data:image/jpeg;base64,' + LOGO.split(',')[1] })).status, 400, 'magic mismatch');
+  const huge = 'data:image/png;base64,' + Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.alloc(201 * 1024)]).toString('base64');
+  assert.equal((await a.patch('/api/v1/org', { logo: huge })).status, 400, 'too big');
+  assert.equal((await a.patch('/api/v1/org', { logo: LOGO })).json.logo, LOGO);
+  assert.equal((await state.practitioner.get('/api/v1/org')).json.logo, LOGO);
+  const meOrg = (await state.practitioner.get('/api/v1/auth/me')).json.org;
+  assert.equal(meOrg.hasLogo, true);
+  assert.equal('logo' in meOrg, false, '/auth/me stays small');
+  // auditor: minimal user list only
+  const minimal = await state.auditor.get('/api/v1/users?minimal=1');
+  assert.equal(minimal.status, 200);
+  assert.deepEqual(Object.keys(minimal.json.items[0]).sort(), ['id', 'name']);
+  assert.equal(minimal.json.total, 5);
+  assert.equal((await state.auditor.get('/api/v1/users')).status, 403);
+  assert.equal((await state.assistant.get('/api/v1/users?minimal=1')).status, 403);
 });
 
 test('patients: CSRF/Origin enforcement, encryption at rest, blind-index search, RBAC', async () => {
@@ -322,7 +341,25 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
   assert.equal(draft.json.bodyMap.images.front, PNG);
   assert.ok(draft.json.bodyMap.magnets.some((m) => m.pointId === 'piloro' && m.polarity === 'negative'));
   assert.ok(draft.json.recommendations.pairSpecific.some((r) => r.pairId === 'pb-030'));
-  assert.equal(draft.json.recommendations.general.length, 2);
+  assert.deepEqual(draft.json.generalRecommendations.map((r) => r.id), ['general-short', 'sti', 'good-eating'], 'only sections relevant to found pairs');
+  assert.deepEqual(draft.json.recommendations.general.map((r) => r.id), ['general-short', 'sti', 'good-eating']);
+  const short = draft.json.generalRecommendations[0];
+  assert.equal(short.summary.es, '1. Cambiar cepillo de dientes');
+  assert.ok(short.body.es && short.title.en);
+  assert.deepEqual(draft.json.generalRecommendations.find((r) => r.id === 'sti').matchedBy[0].pairIds, ['pb-001']);
+  assert.equal(draft.json.org.logo, LOGO, 'org logo in report');
+
+  // scanState: encrypted, round-trips, bounded
+  const scanState = { checklist: { 'pb-010': 'negative', 'pb-030': 'found' }, cursor: 2, activeProtocols: ['top10-gastrointestinal'], directed: 'left knee pain' };
+  assert.deepEqual((await doc.patch(`/api/v1/sessions/${sid}`, { scanState })).json.scanState, scanState);
+  assert.deepEqual((await doc.get(`/api/v1/sessions/${sid}`)).json.scanState, scanState);
+  const rawS = rawDb();
+  const enc = rawS.prepare('SELECT scan_state_enc FROM scan_sessions WHERE id = ?').get(sid).scan_state_enc;
+  rawS.close();
+  assert.match(enc, /^v1:/);
+  assert.ok(!enc.includes('knee'));
+  assert.equal((await doc.patch(`/api/v1/sessions/${sid}`, { scanState: { blob: 'x'.repeat(70 * 1024) } })).status, 400);
+  assert.equal((await doc.patch(`/api/v1/sessions/${sid}`, { scanState: [1] })).status, 400);
   assert.equal(draft.json.attestation, null);
 
   // finalize
@@ -340,6 +377,8 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
   assert.equal(rep.json.attestation.signatureName, 'Dr. Practitioner');
   const { hash, integrity, supersededBy, ...snapshot } = rep.json;
   assert.equal(crypto.createHash('sha256').update(canonicalJson(snapshot)).digest('hex'), fin.json.sha256, 'hash = sha256(canonical JSON)');
+  assert.equal(rep.json.bodyMap.images.front, PNG, 'images uploaded before finalize are inside the hashed snapshot');
+  assert.equal(rep.json.bodyMap.images.back, PNG);
   const again = await doc.get(`/api/v1/sessions/${sid}/report`);
   assert.equal(again.json.generatedAt, rep.json.generatedAt, 'immutable snapshot');
 
@@ -349,6 +388,7 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
     await doc.patch(`/api/v1/sessions/${sid}/findings/${f1.json.id}`, { status: 'cleared' }),
     await doc.del(`/api/v1/sessions/${sid}/findings/${f1.json.id}`),
     await doc.patch(`/api/v1/sessions/${sid}`, { notes: 'late edit' }),
+    await doc.patch(`/api/v1/sessions/${sid}`, { scanState: { cursor: 9 } }),
     await doc.put(`/api/v1/sessions/${sid}/report/images`, { front: PNG }),
     await doc.post(`/api/v1/sessions/${sid}/finalize`, { signatureName: 'again' }),
   ]) {
@@ -391,13 +431,61 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
   assert.equal(list.json.total, 2);
 });
 
+test('cross-patient session list, patient summaries', async () => {
+  const doc = state.practitioner;
+  const countList = () => { const d = rawDb(); const n = d.prepare("SELECT COUNT(*) AS n FROM audit_log WHERE action = 'session.list'").get().n; d.close(); return n; };
+  const before = countList();
+  const all = await doc.get('/api/v1/sessions');
+  assert.equal(all.status, 200);
+  assert.equal(countList(), before + 1, 'exactly one audit row per list call');
+  assert.equal(all.json.total, 2);
+  const it = all.json.items.find((x) => x.id === state.sessionId);
+  assert.equal(it.patientName, 'Guadalupe López Ñúñez');
+  assert.equal(it.patient.mrn, state.mrn);
+  assert.equal(it.chiefComplaint, 'Heartburn after meals');
+  assert.equal(it.findingsCount, 2);
+  assert.equal(it.status, 'final');
+  assert.ok(it.startedAt && it.finalizedAt && it.followUpDate);
+  assert.equal((await doc.get('/api/v1/sessions?status=amended')).json.total, 1);
+  assert.equal((await doc.get('/api/v1/sessions?status=final,amended&latest=1')).json.total, 1, 'latest excludes superseded');
+  assert.equal((await doc.get(`/api/v1/sessions?followUpTo=${it.followUpDate}`)).json.total, 2);
+  assert.equal((await doc.get('/api/v1/sessions?followUpTo=2000-01-01')).json.total, 0);
+  const today = new Date().toISOString().slice(0, 10);
+  assert.equal((await doc.get(`/api/v1/sessions?from=${today}&to=${today}`)).json.total, 2);
+  assert.equal((await doc.get('/api/v1/sessions?to=2000-01-01')).json.total, 0);
+  assert.equal((await doc.get(`/api/v1/sessions?patientId=${state.patientId}&limit=1`)).json.items.length, 1);
+  assert.equal((await doc.get('/api/v1/sessions?status=bogus')).status, 400);
+  assert.equal((await doc.get('/api/v1/sessions?from=yesterday')).status, 400);
+  const d = rawDb();
+  const row = d.prepare("SELECT detail FROM audit_log WHERE action = 'session.list' ORDER BY id DESC LIMIT 1").get();
+  d.close();
+  assert.match(row.detail, /"filters"/);
+  assert.ok(!row.detail.includes('Guadalupe') && !row.detail.includes('Heartburn'));
+
+  const desk = await state.assistant.get('/api/v1/sessions');
+  assert.equal(desk.status, 200);
+  assert.equal(desk.json.items[0].patientName, 'Guadalupe López Ñúñez');
+  assert.equal('chiefComplaint' in desk.json.items[0], false, 'assistant: summary only');
+  assert.equal((await state.auditor.get('/api/v1/sessions')).status, 403);
+
+  const ps = await doc.get(`/api/v1/patients/${state.patientId}/sessions`);
+  assert.equal(ps.json.items[0].chiefComplaint, 'Heartburn after meals');
+  assert.equal(ps.json.items[0].findingsCount, 2);
+  const plist = await doc.get('/api/v1/patients?q=L');
+  assert.equal(plist.json.items[0].sessionCount, 1, 'superseded revisions not counted');
+  assert.equal(plist.json.items[0].lastSessionDate, it.startedAt);
+  const sug = await doc.post('/api/v1/catalog/suggest', { symptoms: ['acidez'] });
+  assert.equal(sug.json.items[0].score01, 1);
+  assert.ok(sug.json.items[1].score01 > 0 && sug.json.items[1].score01 < 1);
+});
+
 test('catalog endpoints', async () => {
   const c = state.assistant;
   const pts = await c.get('/api/v1/catalog/points');
   assert.equal(pts.json.total, 12);
   assert.deepEqual(pts.json.items.find((p) => p.id === 'timo').pos, { x: 0, y: 1.33, z: 0.1 });
   assert.equal((await c.get('/api/v1/catalog/regions')).json.total, 7);
-  assert.equal((await c.get('/api/v1/catalog/manifest')).json.version, 'fixture-1');
+  assert.equal((await c.get('/api/v1/catalog/manifest')).json.version, 'fixture-2');
   assert.deepEqual((await c.get('/api/v1/catalog/pairs?category=bacteria')).json.items.map((p) => p.id), ['pb-010', 'pb-030', 'cx-rinon--vejiga']);
   assert.deepEqual((await c.get('/api/v1/catalog/pairs?level=2')).json.items.map((p) => p.id), ['pb-212']);
   assert.deepEqual((await c.get('/api/v1/catalog/pairs?point=higado')).json.items.map((p) => p.id), ['pb-030']);
@@ -424,7 +512,7 @@ test('catalog endpoints', async () => {
   assert.ok(s.json.items.some((x) => x.kind === 'point' && x.id === 'higado'));
   assert.equal((await c.get('/api/v1/catalog/contraindications')).json.total, 2);
   assert.equal((await c.get('/api/v1/catalog/glossary')).json.total, 3);
-  assert.equal((await c.get('/api/v1/catalog/recommendations')).json.total, 2);
+  assert.equal((await c.get('/api/v1/catalog/recommendations')).json.total, 6);
   assert.equal((await new Client(srv.url).get('/api/v1/catalog/points')).status, 401, 'catalog requires auth');
 });
 

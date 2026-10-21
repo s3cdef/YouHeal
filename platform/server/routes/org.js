@@ -2,7 +2,10 @@
 
 import { v, check } from '../lib/validate.js';
 import { PERM } from '../lib/rbac.js';
-import { nowIso, orgView, getOrg, parseJson, LOCALES } from './_shared.js';
+import { HttpError } from '../lib/http.js';
+import { nowIso, orgView, getOrg, parseJson, LOCALES, parseImageDataUrl } from './_shared.js';
+
+export const LOGO_MAX_BYTES = 200 * 1024;
 
 const HEX = /^#[0-9A-Fa-f]{6}$/;
 const patchSchema = v.object({
@@ -16,10 +19,11 @@ const patchSchema = v.object({
   reportFooter: v.string({ max: 1000, multiline: true }).nullable().optional(),
   polarity: v.object({ negative: v.string({ pattern: HEX }), positive: v.string({ pattern: HEX }) }).optional(),
   defaultLocale: v.enum(LOCALES).optional(),
+  logo: v.string({ min: 1, max: Math.ceil(LOGO_MAX_BYTES * 4 / 3) + 64 }).nullable().optional(),
 });
 
 export function register(router, { db }) {
-  router.get('/org', (ctx) => orgView(getOrg(db, ctx.user.org_id)));
+  router.get('/org', (ctx) => orgView(getOrg(db, ctx.user.org_id), { logo: true }));
 
   router.patch('/org', (ctx) => {
     const body = check(patchSchema, ctx.body ?? {});
@@ -30,10 +34,19 @@ export function register(router, { db }) {
       if (body[k] !== undefined) { profile[k] = body[k]; fields.push(k); }
     }
     if (body.name) fields.push('name');
+    let logo = org.logo ?? null;
+    if (body.logo !== undefined) {
+      if (body.logo !== null) {
+        const img = parseImageDataUrl(body.logo, LOGO_MAX_BYTES);
+        if (typeof img === 'string') throw new HttpError(400, 'VALIDATION', 'Invalid logo', { logo: img });
+      }
+      logo = body.logo;
+      fields.push('logo');
+    }
     db.tx(() => {
-      db.run('UPDATE orgs SET name = ?, profile = ?, updated_at = ? WHERE id = ?', body.name ?? org.name, JSON.stringify(profile), nowIso(), org.id);
+      db.run('UPDATE orgs SET name = ?, profile = ?, logo = ?, updated_at = ? WHERE id = ?', body.name ?? org.name, JSON.stringify(profile), logo, nowIso(), org.id);
       ctx.audit('org.update', { targetType: 'org', targetId: org.id, detail: { fields } });
     });
-    return orgView(getOrg(db, org.id));
+    return orgView(getOrg(db, org.id), { logo: true });
   }, { roles: PERM.admin });
 }

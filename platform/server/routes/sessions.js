@@ -1,7 +1,7 @@
 // Scan sessions (rastreo), findings, finalize/amend, report assembly + immutable snapshots (ADR-006).
 
-import { v, check, uuidStr, catalogId } from '../lib/validate.js';
-import { uuid, sha256hex, canonicalJson, safeEqual } from '../lib/crypto.js';
+import { v, check, uuidStr, catalogId, paging } from '../lib/validate.js';
+import { uuid, sha256hex, canonicalJson, safeEqual, normalizeText } from '../lib/crypto.js';
 import { notFound, conflict, HttpError, badRequest } from '../lib/http.js';
 import { PERM } from '../lib/rbac.js';
 import { encCol, decCol, decryptPatient } from '../lib/phi.js';
@@ -62,7 +62,9 @@ const sessionCreateSchema = v.object({
   sessionDate: v.datetime().optional(),
   followUpDate: v.date().optional().nullable(),
 });
+export const SCAN_STATE_MAX_BYTES = 64 * 1024;
 const sessionPatchSchema = v.object({
+  scanState: v.json({ maxBytes: SCAN_STATE_MAX_BYTES, maxDepth: 8 }).optional().nullable(),
   methodology: v.enum(METHODOLOGIES).optional(),
   protocolIds: v.array(catalogId(), { max: 50, unique: true }).optional(),
   chiefComplaint: v.string({ max: 4000, multiline: true }).optional().nullable(),
@@ -86,28 +88,33 @@ function findingView(kr, f) {
   };
 }
 
-function sessionSummary(db, s) {
+function sessionSummary(db, s, { kr = null, clinical = false } = {}) {
   const pr = db.get('SELECT id, name FROM users WHERE id = ?', s.practitioner_id);
-  return {
+  const findingsCount = s.findings_count ?? db.get('SELECT COUNT(*) AS n FROM findings WHERE session_id = ?', s.id).n;
+  const out = {
     id: s.id, patientId: s.patient_id, status: s.status, revision: s.revision, parentId: s.parent_id, supersededBy: s.superseded_by,
-    methodology: s.methodology, sessionDate: s.session_date, followUpDate: s.follow_up_date,
+    methodology: s.methodology, sessionDate: s.session_date, startedAt: s.session_date, followUpDate: s.follow_up_date,
     practitioner: pr ? { id: pr.id, name: pr.name } : null,
-    findingCount: db.get('SELECT COUNT(*) AS n FROM findings WHERE session_id = ?', s.id).n,
+    findingCount: findingsCount, findingsCount,
     finalizedAt: s.finalized_at, reportSha256: s.report_sha256, createdAt: s.created_at,
   };
+  // chief complaint is clinical content: practitioners/admins only (assistants get the bare summary)
+  if (kr && clinical) out.chiefComplaint = decCol(kr, 'scan_sessions', 'chief_complaint_enc', s.id, s.chief_complaint_enc);
+  return out;
 }
 
 function sessionView(db, kr, s) {
   const d = (col, json) => decCol(kr, 'scan_sessions', col, s.id, s[col], { json });
   const fin = s.finalized_by ? db.get('SELECT id, name FROM users WHERE id = ?', s.finalized_by) : null;
   return {
-    ...sessionSummary(db, s),
+    ...sessionSummary(db, s, { kr, clinical: true }),
     protocolIds: parseJson(s.protocol_ids, []),
     symptoms: parseJson(s.symptoms, []),
     chiefComplaint: d('chief_complaint_enc'),
     vitals: d('vitals_enc', true),
     notes: d('notes_enc'),
     amendReason: d('amend_reason_enc'),
+    scanState: d('scan_state_enc', true),
     signatureName: d('signature_name_enc'),
     finalizedBy: fin ? { id: fin.id, name: fin.name } : null,
     updatedAt: s.updated_at,
@@ -116,11 +123,76 @@ function sessionView(db, kr, s) {
   };
 }
 
+// ---------------------------------------------------------------- general recommendation selection
+
+const GENERAL_SHORT_ID = 'general-short';
+const STI_PATHOGENS = /\b(vih|hiv|vph|hpv|herpes|sifilis|syphilis|treponema|gonorrea|gonorrhea|neisseria|clamidia|chlamydia|tricomon|trichomon)/;
+/** Section id -> predicate over the found pairs' features. Order = report order. */
+const GENERAL_RULES = [
+  ['parasitic', (f) => f.category === 'parasite' || f.relClasses.includes('parasite') || /parasit|desparasit/.test(f.text)],
+  ['tropical', (f) => f.systems.includes('tropical') || /tropical|endemic/.test(f.text)],
+  ['sti', (f) => /transmision sexual|sexually transmitted|\bits\b|\bsti\b|pareja en caso de reinfeccion/.test(f.text) || STI_PATHOGENS.test(f.relNames)],
+  ['stress-management', (f) => f.category === 'psychoemotional' || /estres|stress|psicoterapia|psicoemocional|psychoemotional/.test(f.text)],
+  ['good-eating', (f) => /alimentacion|alergenos|lacteos|dieta\b|\bdiet\b/.test(f.text)],
+  ['therapeutic-exercise', (f) => /ejercicio|exercise|rehabilitacional/.test(f.text)],
+  ['good-sleep', (f) => /dormir|\bsueno\b|insomnio|\bsleep/.test(f.text)],
+  ['good-toileting', (f) => /estrenimiento|ir al bano|constipation/.test(f.text)],
+];
+const locJoin = (o) => (o && typeof o === 'object' ? [o.es, o.en].filter(Boolean).join(' ') : String(o || ''));
+
+/** First sentence (or first line when the body is a numbered list) of each localized body. */
+export function firstSentence(body) {
+  if (!body || typeof body !== 'object') return null;
+  const out = {};
+  for (const [k, txt] of Object.entries(body)) {
+    if (typeof txt !== 'string') continue;
+    const line = txt.split('\n').map((x) => x.trim()).find(Boolean) || '';
+    const m = /^.*?[.!?](?=\s|$)/.exec(line);
+    out[k] = m && m[0].length >= 15 ? m[0] : line;
+  }
+  return out;
+}
+
+/**
+ * Pick only the general recommendation sections relevant to the found pairs (always the short general
+ * version). Each item: { id, title, summary, body, matchedBy:[{ rule, pairIds }] }.
+ */
+export function selectGeneralRecommendations(c, pairIds) {
+  const byId = new Map(c.recommendations.map((r) => [r.id, r]));
+  const hits = new Map();
+  for (const pid of new Set(pairIds)) {
+    const p = c.pairs.get(pid);
+    if (!p) continue;
+    const rels = (p.relations || []).map((r) => c.entities.get(r.entity)).filter(Boolean);
+    const f = {
+      category: p.category,
+      systems: (p.symptoms || []).map((x) => x.system),
+      relClasses: rels.map((e) => e.classification),
+      relNames: normalizeText(rels.map((e) => locJoin(e.name)).join(' ')),
+      text: normalizeText([...(p.recommendations || []), ...(p.notes || [])].map(locJoin).join(' | ')),
+    };
+    for (const [id, test] of GENERAL_RULES) {
+      if (!byId.has(id) || !test(f)) continue;
+      if (!hits.has(id)) hits.set(id, []);
+      hits.get(id).push(pid);
+    }
+  }
+  const shortId = byId.has(GENERAL_SHORT_ID) ? GENERAL_SHORT_ID : [...byId.keys()].find((k) => /general.*short|short/.test(k));
+  const ids = [...(shortId ? [shortId] : []), ...GENERAL_RULES.map(([id]) => id).filter((id) => hits.has(id))];
+  return ids.map((id) => {
+    const r = byId.get(id);
+    return {
+      id, title: r.title ?? null, summary: firstSentence(r.body), body: r.body ?? null,
+      matchedBy: id === shortId ? [{ rule: 'always', pairIds: [] }] : [{ rule: id, pairIds: hits.get(id) }],
+    };
+  });
+}
+
 // ---------------------------------------------------------------- report assembly (CONTRACT §8)
 
 export function assembleReport({ db, keyring, catalog }, s, overrides = {}) {
   const c = catalog.get();
-  const org = orgView(getOrg(db, s.org_id));
+  const org = orgView(getOrg(db, s.org_id), { logo: true });
   const patient = decryptPatient(keyring, db.get('SELECT * FROM patients WHERE id = ?', s.patient_id));
   const prac = db.get('SELECT id, name, email, role FROM users WHERE id = ?', s.practitioner_id);
   const d = (col, json) => decCol(keyring, 'scan_sessions', col, s.id, s[col], { json });
@@ -182,6 +254,7 @@ export function assembleReport({ db, keyring, catalog }, s, overrides = {}) {
     if (recs.length) pairSpecific.push({ pairId: f.pairId, number: f.pair?.number ?? null, name: f.pair?.name ?? null, items: recs });
   }
 
+  const generalRecommendations = selectGeneralRecommendations(c, findings.map((f) => f.pairId).filter(Boolean));
   const protocolIds = parseJson(s.protocol_ids, []);
   const symptomIds = parseJson(s.symptoms, []);
   const usedDocs = new Set(findings.map((f) => f.source?.doc).filter(Boolean));
@@ -196,7 +269,7 @@ export function assembleReport({ db, keyring, catalog }, s, overrides = {}) {
     status: status === 'draft' ? 'DRAFT' : status === 'amended' ? 'AMENDED' : 'FINAL',
     revision: s.revision,
     amendment: parent ? { parentId: parent.id, parentRevision: parent.revision, parentSha256: parent.report_sha256, reason: d('amend_reason_enc') } : null,
-    org: { name: org.name, legalName: org.legalName, address: org.address, phone: org.phone, email: org.email, website: org.website, license: org.license, reportFooter: org.reportFooter },
+    org: { name: org.name, legalName: org.legalName, address: org.address, phone: org.phone, email: org.email, website: org.website, license: org.license, reportFooter: org.reportFooter, logo: org.logo },
     polarity: org.polarity,
     patient: {
       id: patient.id, mrn: patient.mrn, firstName: patient.firstName, lastName: patient.lastName,
@@ -218,7 +291,8 @@ export function assembleReport({ db, keyring, catalog }, s, overrides = {}) {
       byStatus: Object.fromEntries(FINDING_STATUS.map((st) => [st, findings.filter((f) => f.status === st).length])),
     },
     bodyMap: { magnets, images: { front: image('front'), back: image('back') } },
-    recommendations: { pairSpecific, general: c.recommendations },
+    recommendations: { pairSpecific, general: generalRecommendations },
+    generalRecommendations,
     followUp: { date: s.follow_up_date, note: FOLLOW_UP_NOTE },
     attestation: status === 'draft' ? null : {
       signatureName, finalizedAt, finalizedBy: finalizer ? { id: finalizer.id, name: finalizer.name } : null,
@@ -258,9 +332,72 @@ export function register(router, deps) {
     if (Object.keys(errs).length) throw new HttpError(400, 'VALIDATION', 'Unknown catalog reference', errs);
   };
 
+  // Cross-patient session list (dashboard). One audit row per call; filters recorded, never PHI.
+  router.get('/sessions', (ctx) => {
+    const q = ctx.query;
+    const { limit, offset } = paging(q, { defLimit: 50, maxLimit: 200 });
+    const errs = {};
+    const dateOrTs = (name) => {
+      const val = q.get(name);
+      if (val === null || val === '') return null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) { const e = {}; v.date().parse(val, name, e); if (e[name]) errs[name] = e[name]; return val; }
+      const e = {}; const out = v.datetime().parse(val, name, e); if (e[name]) errs[name] = e[name]; return out;
+    };
+    const from = dateOrTs('from');
+    const to = dateOrTs('to');
+    const followUpTo = q.get('followUpTo') || null;
+    if (followUpTo) { const e = {}; v.date().parse(followUpTo, 'followUpTo', e); Object.assign(errs, e); }
+    const statuses = q.get('status') ? q.get('status').split(',').map((x) => x.trim()).filter(Boolean) : [];
+    for (const st of statuses) if (!['draft', 'final', 'amended'].includes(st)) errs.status = 'must be draft, final and/or amended (comma-separated)';
+    const patientId = q.get('patientId') || null;
+    if (patientId) { const e = {}; uuidStr().parse(patientId, 'patientId', e); Object.assign(errs, e); }
+    const latest = q.get('latest') === '1' || q.get('latest') === 'true';
+    if (Object.keys(errs).length) throw new HttpError(400, 'VALIDATION', 'Invalid filters', errs);
+
+    const where = ['s.org_id = ?'], params = [ctx.user.org_id];
+    if (from) { where.push('s.session_date >= ?'); params.push(from.length === 10 ? `${from}T00:00:00.000Z` : from); }
+    if (to) {
+      if (to.length === 10) { where.push('s.session_date < ?'); params.push(`${addDays(to, 1)}T00:00:00.000Z`); } // date: inclusive
+      else { where.push('s.session_date <= ?'); params.push(to); }
+    }
+    if (statuses.length) { where.push(`s.status IN (${statuses.map(() => '?').join(',')})`); params.push(...statuses); }
+    if (followUpTo) { where.push('s.follow_up_date IS NOT NULL AND s.follow_up_date <= ?'); params.push(followUpTo); }
+    if (patientId) { where.push('s.patient_id = ?'); params.push(patientId); }
+    if (latest) where.push('s.superseded_by IS NULL');
+    const w = where.join(' AND ');
+    const order = followUpTo ? 's.follow_up_date ASC, s.session_date DESC' : 's.session_date DESC, s.revision DESC';
+    const total = db.get(`SELECT COUNT(*) AS n FROM scan_sessions s WHERE ${w}`, ...params).n;
+    const rows = db.all(`SELECT s.*, (SELECT COUNT(*) FROM findings f WHERE f.session_id = s.id) AS findings_count
+      FROM scan_sessions s WHERE ${w} ORDER BY ${order} LIMIT ? OFFSET ?`, ...params, limit, offset);
+    const clinical = PERM.clinicalRead.includes(ctx.user.role);
+    const showPatient = PERM.patientRead.includes(ctx.user.role);
+    const patients = new Map();
+    const items = rows.map((r) => {
+      const item = sessionSummary(db, r, { kr: keyring, clinical });
+      if (showPatient) {
+        if (!patients.has(r.patient_id)) {
+          const pr = db.get('SELECT * FROM patients WHERE id = ?', r.patient_id);
+          const pt = pr ? decryptPatient(keyring, pr) : null;
+          patients.set(r.patient_id, pt ? { id: pt.id, mrn: pt.mrn, name: `${pt.firstName} ${pt.lastName}`, firstName: pt.firstName, lastName: pt.lastName } : null);
+        }
+        const pt = patients.get(r.patient_id);
+        item.patient = pt;
+        item.patientName = pt?.name ?? null;
+      }
+      return item;
+    });
+    ctx.audit('session.list', {
+      targetType: 'session',
+      detail: { scope: 'org', filters: { from, to, status: statuses.length ? statuses : undefined, followUpTo, patientId, latest: latest || undefined, limit, offset }, returned: items.length, total },
+    });
+    return { items, total };
+  }, { roles: PERM.sessionList });
+
   router.get('/patients/:id/sessions', (ctx) => {
     const p = getPatientRow(db, ctx.user.org_id, ctx.params.id);
-    const items = db.all('SELECT * FROM scan_sessions WHERE patient_id = ? AND org_id = ? ORDER BY session_date DESC, revision DESC', p.id, p.org_id).map((s) => sessionSummary(db, s));
+    const clinical = PERM.clinicalRead.includes(ctx.user.role);
+    const items = db.all(`SELECT s.*, (SELECT COUNT(*) FROM findings f WHERE f.session_id = s.id) AS findings_count FROM scan_sessions s
+      WHERE s.patient_id = ? AND s.org_id = ? ORDER BY s.session_date DESC, s.revision DESC`, p.id, p.org_id).map((s) => sessionSummary(db, s, { kr: keyring, clinical }));
     ctx.audit('session.list', { targetType: 'patient', targetId: p.id, detail: { count: items.length } });
     return { items, total: items.length };
   }, { roles: PERM.sessionList });
@@ -310,6 +447,7 @@ export function register(router, deps) {
     if (body.notes !== undefined) cols.notes_enc = encCol(keyring, 'scan_sessions', 'notes_enc', s.id, body.notes || null);
     if (body.sessionDate) cols.session_date = body.sessionDate;
     if (body.followUpDate !== undefined) cols.follow_up_date = body.followUpDate;
+    if (body.scanState !== undefined) cols.scan_state_enc = encCol(keyring, 'scan_sessions', 'scan_state_enc', s.id, body.scanState);
     const keys = Object.keys(cols);
     if (keys.length) {
       db.tx(() => {

@@ -90,7 +90,14 @@ export function register(router, { db, keyring, catalog }) {
     const w = where.join(' AND ');
     const total = db.get(`SELECT COUNT(*) AS n FROM patients WHERE ${w}`, ...params).n;
     const rows = db.all(`SELECT * FROM patients WHERE ${w} ORDER BY created_at DESC, id LIMIT ? OFFSET ?`, ...params, limit, offset);
-    const items = rows.map((r) => summary(decryptPatient(keyring, r)));
+    const stats = new Map();
+    if (rows.length) {
+      for (const st of db.all(`SELECT patient_id, COUNT(*) AS n, MAX(session_date) AS last FROM scan_sessions
+        WHERE org_id = ? AND superseded_by IS NULL AND patient_id IN (${rows.map(() => '?').join(',')}) GROUP BY patient_id`, ctx.user.org_id, ...rows.map((r) => r.id))) {
+        stats.set(st.patient_id, st);
+      }
+    }
+    const items = rows.map((r) => ({ ...summary(decryptPatient(keyring, r)), sessionCount: stats.get(r.id)?.n ?? 0, lastSessionDate: stats.get(r.id)?.last ?? null }));
     if (mode !== 'list') items.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
     ctx.audit('patient.search', { targetType: 'patient', detail: { mode, returned: items.length, total, ids: items.map((i) => i.id) } });
     return { items, total };

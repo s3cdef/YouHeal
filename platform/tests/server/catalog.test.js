@@ -6,6 +6,7 @@ import { openDb, migrate } from '../../server/lib/db.js';
 import { loadCatalog, CatalogError, catalogMeta } from '../../server/catalog/load.js';
 import { createCatalogService } from '../../server/routes/catalog.js';
 import { slug } from '../../server/catalog/slug.js';
+import { selectGeneralRecommendations, firstSentence } from '../../server/routes/sessions.js';
 import { tmpDir, copyFixtures, FIXTURES } from './helpers.js';
 
 const freshDb = () => { const db = openDb(path.join(tmpDir(), 'c.sqlite')); migrate(db); return db; };
@@ -24,7 +25,7 @@ test('loads fixtures in one transaction, merges anatomy, and is idempotent', () 
   const db = freshDb();
   const r = loadCatalog(db, { dir: FIXTURES });
   assert.equal(r.skipped, false);
-  assert.equal(r.version, 'fixture-1');
+  assert.equal(r.version, 'fixture-2');
   assert.deepEqual({ p: r.counts.points, pr: r.counts.pairs, e: r.counts.entities, pc: r.counts.protocols, s: r.counts.symptoms, c: r.counts.contraindications },
     { p: 12, pr: 6, e: 4, pc: 3, s: 6, c: 2 });
   const timo = db.get("SELECT * FROM points WHERE id = 'timo'");
@@ -32,7 +33,7 @@ test('loads fixtures in one transaction, merges anatomy, and is idempotent', () 
   assert.equal(timo.pos_y, 1.33);
   assert.equal(db.get("SELECT region FROM points WHERE id = 'trocanter-menor'").region, null, 'point without anatomy tolerated');
   assert.equal(db.get('SELECT COUNT(*) AS n FROM pair_relations').n, 5);
-  assert.equal(catalogMeta(db).version, 'fixture-1');
+  assert.equal(catalogMeta(db).version, 'fixture-2');
   const again = loadCatalog(db, { dir: FIXTURES });
   assert.equal(again.skipped, true, 'unchanged fingerprint skips');
   assert.equal(loadCatalog(db, { dir: FIXTURES, force: true }).skipped, false);
@@ -120,5 +121,18 @@ test('manifest sha256 mismatch and duplicate ids are errors', () => {
   fs.writeFileSync(p, JSON.stringify(pts));
   const db = freshDb();
   assert.throws(() => loadCatalog(db, { dir }), (e) => e.errors.some((x) => /sha256 mismatch for points\.json/.test(x)) && e.errors.some((x) => /duplicate id "timo"/.test(x)));
+  db.close();
+});
+
+test('general recommendations are filtered to the found pairs', () => {
+  const db = freshDb();
+  loadCatalog(db, { dir: FIXTURES });
+  const c = createCatalogService(db).get();
+  assert.deepEqual(selectGeneralRecommendations(c, []).map((r) => r.id), ['general-short']);
+  assert.deepEqual(selectGeneralRecommendations(c, ['pb-045']).map((r) => r.id), ['general-short', 'tropical'], '"Enf. Tropicales" -> tropical');
+  assert.deepEqual(selectGeneralRecommendations(c, ['pb-001', 'pb-030']).map((r) => r.id), ['general-short', 'sti', 'good-eating']);
+  const trop = selectGeneralRecommendations(c, ['pb-045'])[1];
+  assert.equal(trop.summary.en, 'Tropical diseases are vector-borne (mosquitoes).');
+  assert.deepEqual(firstSentence({ es: 'Corta.\nSegunda' }), { es: 'Corta.' });
   db.close();
 });

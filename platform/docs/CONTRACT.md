@@ -201,7 +201,8 @@ token (returned by `/auth/me` and `/auth/login`). Auth cookie: `yh_sid` — `Htt
 | POST `/auth/mfa/disable` | any | `{password, code}` |
 | PATCH `/auth/prefs` | any | `{locale?, theme?}` |
 | GET/POST `/users`, PATCH `/users/:id` | admin | `{email,name,role,password?, active?}` |
-| GET/PATCH `/org` | GET any / PATCH admin | clinic profile: `name, legalName, address, phone, email, website, license, reportFooter, polarity:{negative,positive}, defaultLocale` |
+| GET `/users?minimal=1` | admin, auditor | `{items:[{id,name}], total}` only (audit actor filter) |
+| GET/PATCH `/org` | GET any / PATCH admin | clinic profile: `name, legalName, address, phone, email, website, license, reportFooter, polarity:{negative,positive}, defaultLocale, logo` — `logo` is a `data:image/(png\|jpeg\|webp);base64,...` URL ≤ 200 KB, signature-checked, **no SVG**; `null` removes it. GET `/org` always includes `logo` (null if none); `/auth/me` org carries only `hasLogo` |
 | GET `/catalog/manifest` | any | manifest |
 | GET `/catalog/points` | any | all points merged with anatomy (`id,name,laterality,region,view,pos`) |
 | GET `/catalog/regions` | any | regions |
@@ -211,21 +212,22 @@ token (returned by `/auth/me` and `/auth/login`). Auth cookie: `yh_sid` — `Htt
 | GET `/catalog/entities` / `:id` | any | `?q=&kind=&classification=` |
 | GET `/catalog/protocols` / `:id` | any | protocol with items **expanded** to ordered pair list |
 | GET `/catalog/symptoms` | any | `?q=&system=` |
-| POST `/catalog/suggest` | any | `{symptoms:[ids], text?:string}` → ranked `[{pairId, score, matched:[...]}]` |
+| POST `/catalog/suggest` | any | `{symptoms:[ids], text?:string}` → ranked `[{pairId, score, score01, matched:[...]}]` (`score01` = score / top score, 0–1) |
 | GET `/catalog/search` | any | `?q=` unified search across points/pairs/entities/protocols/symptoms |
 | GET `/catalog/contraindications` `/catalog/recommendations` `/catalog/glossary` | any | |
-| GET `/patients` | practitioner+ | `?q=` (blind-index exact last-name / MRN, or first-letter list) |
+| GET `/patients` | practitioner+ | `?q=` (blind-index exact last-name / MRN, or first-letter list); items include `sessionCount`, `lastSessionDate` (superseded revisions excluded) |
 | POST `/patients` | practitioner, assistant | `{firstName,lastName,dob,sex,phone,email,address,mrn?,notes?}` |
 | GET/PATCH `/patients/:id` | practitioner+ | decrypted record |
 | POST `/patients/:id/consents` | practitioner, assistant | `{type:"intake", answers:{}, contraindications:{relative:[ids],absolute:[ids]}, signatureName, signedAt}` |
-| GET `/patients/:id/sessions` | practitioner+ | |
+| GET `/patients/:id/sessions` | practitioner+ | summaries incl. `findingsCount`, `startedAt`; `chiefComplaint` (decrypted) for practitioner/admin only |
+| GET `/sessions` | practitioner, admin, assistant (auditor: 403) | `?from&to&status&followUpTo&patientId&latest&limit&offset` cross-patient list (dashboard). `from`/`to` = date (inclusive) or ISO timestamp on session start; `status` comma list; `followUpTo` = follow-up date ≤ (sorted by follow-up asc); `latest=1` hides superseded revisions. Item: `id, patientId, patient:{id,mrn,name}, patientName, status, methodology, startedAt, finalizedAt, followUpDate, findingsCount` + `chiefComplaint` (practitioner/admin only). One `session.list` audit row per call (filters, no PHI) |
 | POST `/patients/:id/sessions` | practitioner | `{methodology, protocolIds:[], chiefComplaint, symptoms:[ids], vitals?:{}}` |
-| GET/PATCH `/sessions/:id` | practitioner+ | session + findings |
+| GET/PATCH `/sessions/:id` | practitioner+ | session + findings; PATCH (draft only) also accepts `scanState` (object ≤ 64 KB: checklist marks, cursor, active protocol ids, directed-scan text), stored encrypted, returned by GET |
 | POST `/sessions/:id/findings` | practitioner | `{pairId? , trackingPoint?, impactPoint?, trackingSide, impactSide, qualifiers?, phenomena:[], dwellMinutes?, status:"found"\|"impacted"\|"cleared", notes?}` |
 | PATCH/DELETE `/sessions/:id/findings/:fid` | practitioner | |
 | POST `/sessions/:id/finalize` | practitioner | locks session; stores report snapshot + sha256; `{signatureName}` |
 | POST `/sessions/:id/amend` | practitioner | `{reason}` → new revision, original kept |
-| GET `/sessions/:id/report` | practitioner+ | assembled report JSON (org, patient, practitioner, session, findings with resolved catalog data, recommendations, follow-up date, disclaimer, hash) |
+| GET `/sessions/:id/report` | practitioner+ | assembled report JSON (org, patient, practitioner, session, findings with resolved catalog data, recommendations, follow-up date, disclaimer, hash). `org.logo` included. `generalRecommendations` (also `recommendations.general`) = only the general sections relevant to the found pairs (always `general-short`; `parasitic`, `tropical`, `sti`, `stress-management`, `good-eating`, … by pair category/recommendation text/relations), each `{id, title, summary, body, matchedBy}`. Report images PUT before finalize are part of the hashed snapshot |
 | PUT `/sessions/:id/report/images` | practitioner | `{front:"data:image/png;base64,...", back:"..."}` (≤ 2 MB each) |
 | GET `/audit` | admin, auditor | `?limit=&offset=&actor=&action=` |
 | GET `/audit/verify` | admin, auditor | `{ok, checked, brokenAt?}` (hash-chain verification) |
