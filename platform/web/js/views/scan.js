@@ -273,13 +273,13 @@ export async function renderScan({ main, params }) {
     st.cursor = Math.min(ss.cursor || 0, Math.max(0, st.checklist.length - 1));
     st.activeProtocols = ss.activeProtocolIds || ss.activeProtocols || [...(session.protocolIds || [])];
   } else {
-    for (const pid of session.protocolIds || []) {
-      try {
-        const ids = protocolPairIds(await getProtocol(pid));
-        st.activeProtocols.push(pid);
-        for (const id of ids) if (!st.checklist.some((c) => c.pairId === id)) st.checklist.push({ pairId: id, source: 'protocol', protocolId: pid });
-      } catch { /* skip */ }
-    }
+    const pids = session.protocolIds || [];
+    const protos = await Promise.all(pids.map((pid) => getProtocol(pid).catch(() => null))); // in parallel, order kept
+    pids.forEach((pid, i) => {
+      if (!protos[i]) return;
+      st.activeProtocols.push(pid);
+      for (const id of protocolPairIds(protos[i])) if (!st.checklist.some((c) => c.pairId === id)) st.checklist.push({ pairId: id, source: 'protocol', protocolId: pid });
+    });
   }
   for (const f of st.findings) if (f.pairId && !st.checklist.some((c) => c.pairId === f.pairId)) st.checklist.push({ pairId: f.pairId, source: 'manual' });
   symptomsCatalog = [...core.symptoms.values()]; // already loaded with the catalog core (no second request)

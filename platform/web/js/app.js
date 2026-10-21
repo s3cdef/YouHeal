@@ -2,9 +2,9 @@
 import { el, mount, clear, mark } from './ui/dom.js';
 import { icon, brandMark } from './ui/icons.js';
 import { api, on as onApi, setCsrf, startIdleWatch, stopIdleWatch, setIdleTimeout, AuthError } from './api.js';
-import { initI18n, setLocale, getLocale, t, onLocaleChange } from './i18n.js';
+import { initI18n, setLocale, getLocale, t, onLocaleChange, ensureLocale } from './i18n.js';
 import { route, setNotFound, setHooks, startRouter, navigate, reload, currentPath } from './router.js';
-import { state, can, clearCatalogCache, polarity } from './state.js';
+import { state, can, clearCatalogCache, polarity, loadCore } from './state.js';
 import { toast } from './ui/toast.js';
 import { languagePicker } from './ui/components.js';
 import { applyTheme, getTheme, focusTitle, rememberRoute, lastRoute, initials } from './views/common.js';
@@ -60,8 +60,8 @@ export function handleLockout(err) {
   return true;
 }
 
-export async function afterLogin() {
-  await refreshMe();
+export async function afterLogin({ refresh = true } = {}) {
+  if (refresh) await refreshMe();
   if (state.user && state.user.locale && state.user.locale !== getLocale()) await setLocale(state.user.locale);
   if (state.user && state.user.theme) applyTheme(state.user.theme);
   applyPolarityVars();
@@ -322,20 +322,28 @@ window.addEventListener('unhandledrejection', (e) => { console.error('Unhandled'
 async function boot() {
   mark('boot');
   applyTheme(getTheme());
-  await initI18n().catch((err) => console.warn('[i18n]', err));
+  // language pack, setup status and the session probe are independent: one round trip instead of four
+  const [, status, signedIn] = await Promise.all([
+    initI18n().catch((err) => console.warn('[i18n]', err)),
+    api.get('/setup/status', null, { auth: false }).catch(() => null),
+    // the signed-in user's language pack starts downloading as soon as their preference is known
+    refreshMe().then((ok) => {
+      if (ok && state.user && state.user.locale) ensureLocale(state.user.locale);
+      // views that need the catalog core start it now, in parallel with the rest of the bootstrap
+      if (ok && !state.restriction && /^#\/(sessions|catalog)\//.test(location.hash) && (can.patients() || can.reports())) loadCore().catch(() => {});
+      return ok;
+    }).catch(() => false),
+  ]);
   localizeStatic();
   mark('i18n');
-  try {
-    setupStatus = await api.get('/setup/status', null, { auth: false });
-  } catch {
+  setupStatus = status;
+  if (!setupStatus) {
     mount(app, el('div.boot-error', el('h1', t('errors.serverUnreachable')), el('p', t('errors.serverUnreachableBody')),
       el('button.btn.btn-primary', { type: 'button', onClick: () => location.reload() }, t('common.retry'))));
     return;
   }
-  if (!setupStatus.needsSetup) {
-    const ok = await refreshMe().catch(() => false);
-    if (ok) await afterLogin();
-  }
+  if (setupStatus.needsSetup) state.user = null;
+  else if (signedIn) await afterLogin({ refresh: false });
   mark('session');
   if (!location.hash) {
     const lr = state.user ? lastRoute() : null;

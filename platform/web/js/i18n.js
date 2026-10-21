@@ -51,8 +51,13 @@ export function languageName(locale) {
 }
 export function isLocale(locale) { return !!locale && getPacks().some((p) => p.locale === locale); }
 
-async function load(locale) {
-  if (catalogs[locale]) return catalogs[locale];
+const inflight = new Map();
+function load(locale) {
+  if (catalogs[locale]) return Promise.resolve(catalogs[locale]);
+  if (!inflight.has(locale)) inflight.set(locale, fetchUi(locale).finally(() => inflight.delete(locale)));
+  return inflight.get(locale);
+}
+async function fetchUi(locale) {
   try {
     const data = await fetchJson(`/api/v1/i18n/packs/${encodeURIComponent(locale)}/ui`);
     catalogs[locale] = data && typeof data === 'object' && data.strings && typeof data.strings === 'object' ? data.strings : data;
@@ -68,8 +73,8 @@ async function load(locale) {
 export async function ensureLocale(locale) { try { await load(locale); return true; } catch { return false; } }
 
 export async function initI18n(locale = null) {
-  await loadPacks();
-  await load('en');
+  // the pack list and the English strings (always needed as the fallback) download in parallel
+  await Promise.all([loadPacks(), load('en')]);
   await setLocale(locale || detectLocale(), { silent: true });
 }
 
