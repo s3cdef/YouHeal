@@ -125,6 +125,11 @@ export async function startServer(cfg, { log = createLogger({ level: cfg.logLeve
   log.info('YOU HEAL Clinical listening', { url, tls: cfg.tls, version: cfg.version, dataDir: cfg.dataDir });
   if (!cfg.tls) log.warn('serving plain HTTP — use TLS (YH_TLS_CERT/YH_TLS_KEY) or a TLS-terminating proxy for any non-local access');
   if (writePid) fs.writeFileSync(pidFile(cfg), String(process.pid), { mode: 0o600 });
+  // pre-compress static assets in the background (Brotli q11 + gzip, off the event loop)
+  if (cfg.staticPrecompress) {
+    const t = performance.now();
+    app.serveStatic.warm().then((n) => log.info('static assets pre-compressed', { count: n, ms: Math.round(performance.now() - t) }));
+  }
 
   const timers = [
     setInterval(() => { try { const n = app.purge(); if (n) log.debug('expired sessions purged', { count: n }); } catch (e) { log.warn('purge failed', { err: e }); } }, 60_000),

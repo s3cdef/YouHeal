@@ -52,6 +52,12 @@ export function readAnchorLog(file) {
   }).filter((x) => Number.isInteger(x.id) && x.hash && x.mac);
 }
 
+/** MAC over the "verified through" checkpoint (incremental /audit/verify). */
+export function checkpointMac(keyringOrSet, id, hash) {
+  const ks = keyringOrSet.current || keyringOrSet;
+  return hmacHex(ks.audit, `audit-verified|${id}|${hash}`);
+}
+
 export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery = 100 } = {}) {
   function exportHead(id, hash) {
     if (!anchorFile) return;
@@ -108,20 +114,42 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
    * located in another tenant's row is reported without its id (F-11).
    * Returns { ok, checked, brokenAt?, reason? }.
    */
-  function verify({ orgId } = {}) {
+  function verify({ orgId, full = true } = {}) {
     let prev = GENESIS, expectedId = 1, total = 0, orgRows = 0, lastId = 0, lastHash = GENESIS;
+    let mode = 'full', baseRows = 0, baseOrgRows = 0;
     const hashes = new Map();
     const fail = (id, rowOrg, reason) => {
       const visible = orgId === undefined || rowOrg === orgId;
-      return { ok: false, checked: orgId === undefined ? total : orgRows, brokenAt: visible ? id : null, reason };
+      return { ok: false, mode, checked: orgId === undefined ? baseRows + total : baseOrgRows + orgRows, brokenAt: visible ? id : null, reason };
     };
-    for (const r of db.iterate('SELECT * FROM audit_log ORDER BY id ASC')) {
+    if (!full) {
+      // Incremental: trust rows up to a MAC'd checkpoint written by a previous successful verification, but
+      // re-verify the checkpoint row itself (its content hash and its link) on every run.
+      const cp = db.get('SELECT verified_id, verified_hash, verified_mac FROM audit_anchor WHERE id = 1');
+      if (cp?.verified_id) {
+        mode = 'incremental';
+        if (!safeEqual(cp.verified_mac || '', checkpointMac(keyring, cp.verified_id, cp.verified_hash))) return fail(null, null, 'verification checkpoint signature invalid (run a full verification)');
+        const row = db.get('SELECT * FROM audit_log WHERE id = ?', cp.verified_id);
+        if (!row || row.hash !== cp.verified_hash || computeHash(row.prev_hash, row) !== row.hash) return fail(cp.verified_id, row?.org_id, 'checkpoint row was altered');
+        prev = row.hash; lastId = row.id; lastHash = row.hash; expectedId = row.id + 1;
+        baseRows = row.id;
+        if (orgId !== undefined) baseOrgRows = db.get('SELECT COUNT(*) AS n FROM audit_log WHERE org_id = ? AND id <= ?', orgId, row.id).n;
+        if (anchorFile) hashes.set(row.id, row.hash);
+      }
+    }
+    for (const r of db.iterate('SELECT * FROM audit_log WHERE id >= ? ORDER BY id ASC', expectedId)) {
       if (r.id !== expectedId) return fail(expectedId, r.org_id, 'missing or reordered row');
       if (r.prev_hash !== prev) return fail(r.id, r.org_id, 'prev_hash does not link to previous row');
       if (computeHash(prev, r) !== r.hash) return fail(r.id, r.org_id, 'row content does not match its hash');
       if (anchorFile) hashes.set(r.id, r.hash);
       prev = r.hash; lastId = r.id; lastHash = r.hash; expectedId++; total++;
       if (orgId !== undefined && r.org_id === orgId) orgRows++;
+    }
+    const walked = total;
+    total += baseRows; orgRows += baseOrgRows;
+    if (mode === 'incremental' && anchorFile) {
+      // anchor-log lines behind the checkpoint: compare against the stored row hashes
+      for (const a of readAnchorLog(anchorFile)) if (!hashes.has(a.id)) { const h = db.get('SELECT hash FROM audit_log WHERE id = ?', a.id)?.hash; if (h) hashes.set(a.id, h); }
     }
     const checked = orgId === undefined ? total : orgRows;
     const anchor = db.get('SELECT last_id, last_hash, mac, exported_id, exported_hash FROM audit_anchor WHERE id = 1');
@@ -148,7 +176,11 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
       if (a.id > lastId) return { ok: false, checked, brokenAt: null, reason: `audit log truncated: anchor log records row ${a.id} but the chain ends at ${lastId}` };
       if (hashes.get(a.id) !== a.hash) return { ok: false, checked, brokenAt: null, reason: `row ${a.id} differs from the exported anchor` };
     }
-    return { ok: true, checked };
+    if (lastId > 0) {
+      db.run('UPDATE audit_anchor SET verified_id = ?, verified_hash = ?, verified_mac = ?, verified_at = ? WHERE id = 1',
+        lastId, lastHash, checkpointMac(keyring, lastId, lastHash), new Date().toISOString());
+    }
+    return { ok: true, checked, mode, walked };
   }
 
   function list({ orgId, limit = 50, offset = 0, actor, action, targetType, targetId }) {

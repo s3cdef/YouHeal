@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import net from 'node:net';
+import { negotiate, compressSync, compressAsync, isCompressibleType, ByteLru, MIN_COMPRESS_BYTES } from './compress.js';
 
 export class HttpError extends Error {
   constructor(status, code, message, fields) {
@@ -37,13 +38,37 @@ export function applySecurityHeaders(res, { tls = false, hsts = tls } = {}) {
 
 // ---------------------------------------------------------------- responses
 
-export function sendJson(res, status, body) {
-  const data = Buffer.from(JSON.stringify(body));
+/**
+ * Send JSON. `opts` (only used for public reference data — see lib/compress.js for the BREACH rule):
+ *   raw: pre-serialized Buffer · etag: strong ETag ("…") · cacheControl · encoding: 'br'|'gzip'|null
+ *   cache: ByteLru for encoded bodies keyed by etag · vary: add Vary: Accept-Encoding
+ */
+export function sendJson(res, status, body, opts = {}) {
+  let data = opts.raw || Buffer.from(JSON.stringify(body));
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Cache-Control', opts.cacheControl || 'no-store');
+  if (opts.vary) res.setHeader('Vary', 'Accept-Encoding');
+  let etag = opts.etag;
+  if (opts.encoding && data.length >= MIN_COMPRESS_BYTES) {
+    const key = etag ? `${etag}|${opts.encoding}` : null;
+    let z = key ? opts.cache?.get(key) : undefined;
+    if (!z) { z = compressSync(data, opts.encoding); if (key) opts.cache?.set(key, z); }
+    data = z;
+    res.setHeader('Content-Encoding', opts.encoding);
+    if (etag) etag = `${etag.slice(0, -1)}-${opts.encoding === 'br' ? 'br' : 'gz'}"`;
+  }
+  if (etag) res.setHeader('ETag', etag);
   res.setHeader('Content-Length', data.length);
-  res.setHeader('Cache-Control', 'no-store');
   res.end(res.req?.method === 'HEAD' ? undefined : data);
+}
+
+/** Does If-None-Match match this entity tag (ignoring W/ and our -br/-gz encoding suffixes)? */
+export function etagMatches(header, etag) {
+  if (!header || !etag) return false;
+  const base = (t) => t.trim().replace(/^W\//, '').replace(/^"|"$/g, '').replace(/-(br|gz)$/, '');
+  const want = base(etag);
+  return String(header).split(',').some((t) => t.trim() === '*' || base(t) === want);
 }
 
 export function sendError(res, err) {
@@ -233,8 +258,23 @@ export const MIME = {
   '.wasm': 'application/wasm',
 };
 
-export function createStaticHandler({ webDir, maxAge = 300, log }) {
+export function createStaticHandler({ webDir, maxAge = 300, log, cacheBytes = 64 * 1024 * 1024 }) {
   let root = null;
+  // compressed variants: key = path|size|mtime|enc → Buffer (Brotli q11 / gzip 9, built once, off-thread)
+  const zcache = new ByteLru(cacheBytes);
+  const pendingZ = new Map();
+  const zkey = (file, st, enc) => `${file}|${st.size}|${st.mtimeMs}|${enc}`;
+  function ensureCompressed(file, st, enc) {
+    const k = zkey(file, st, enc);
+    if (zcache.get(k) || pendingZ.has(k)) return pendingZ.get(k) || Promise.resolve();
+    const job = fs.promises.readFile(file)
+      .then((buf) => compressAsync(buf, enc, { quality: 11 }))
+      .then((z) => { zcache.set(k, z); })
+      .catch((e) => log?.warn('static compression failed', { file: path.basename(file), err: e.message }))
+      .finally(() => pendingZ.delete(k));
+    pendingZ.set(k, job);
+    return job;
+  }
   const getRoot = () => {
     if (root) return root;
     try { root = fs.realpathSync(webDir); } catch { return null; }
@@ -250,14 +290,30 @@ export function createStaticHandler({ webDir, maxAge = 300, log }) {
 
   async function serveFile(req, res, file, st) {
     const ext = path.extname(file).toLowerCase();
-    const etag = `W/"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"`;
-    res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
-    res.setHeader('ETag', etag);
+    const type = MIME[ext] || 'application/octet-stream';
+    let etag = `W/"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"`;
+    res.setHeader('Content-Type', type);
     res.setHeader('Last-Modified', st.mtime.toUTCString());
     res.setHeader('Cache-Control', ext === '.html' || ext === '.htm' ? 'no-cache' : `public, max-age=${maxAge}, must-revalidate`);
-    const inm = req.headers['if-none-match'];
-    if (inm && inm.split(',').map((s) => s.trim()).includes(etag)) { res.statusCode = 304; res.end(); return; }
+    const compressible = isCompressibleType(type) && st.size >= MIN_COMPRESS_BYTES;
+    if (compressible) res.setHeader('Vary', 'Accept-Encoding');
+    const enc = compressible ? negotiate(req.headers['accept-encoding']) : null;
+    let z = enc ? zcache.get(zkey(file, st, enc)) : undefined;
+    if (enc && !z) {
+      const job = ensureCompressed(file, st, enc);
+      // small files: wait for the (fast) compression; large ones are served as-is this once
+      if (st.size <= 256 * 1024) { await job; z = zcache.get(zkey(file, st, enc)); }
+    }
+    if (z) etag = `${etag.slice(0, -1)}-${enc === 'br' ? 'br' : 'gz'}"`;
+    res.setHeader('ETag', etag);
+    if (etagMatches(req.headers['if-none-match'], etag)) { res.statusCode = 304; res.end(); return; }
     res.statusCode = 200;
+    if (z) {
+      res.setHeader('Content-Encoding', enc);
+      res.setHeader('Content-Length', z.length);
+      res.end(req.method === 'HEAD' ? undefined : z);
+      return;
+    }
     res.setHeader('Content-Length', st.size);
     if (req.method === 'HEAD') { res.end(); return; }
     await new Promise((resolve) => {
@@ -268,7 +324,28 @@ export function createStaticHandler({ webDir, maxAge = 300, log }) {
     });
   }
 
-  return async function handleStatic(req, res, pathname) {
+  /** Pre-compress compressible assets in the background (startup warm-up). */
+  async function warm() {
+    const base = getRoot();
+    if (!base) return 0;
+    let n = 0;
+    const walk = async (dir) => {
+      for (const ent of await fs.promises.readdir(dir, { withFileTypes: true })) {
+        if (ent.name.startsWith('.')) continue;
+        const p = path.join(dir, ent.name);
+        if (ent.isDirectory()) { await walk(p); continue; }
+        const st = await fs.promises.stat(p);
+        if (!isCompressibleType(MIME[path.extname(p).toLowerCase()]) || st.size < MIN_COMPRESS_BYTES || st.size > 16 * 1024 * 1024) continue;
+        await ensureCompressed(p, st, 'br');
+        await ensureCompressed(p, st, 'gzip');
+        n++;
+      }
+    };
+    try { await walk(base); } catch (e) { log?.warn('static warm-up failed', { err: e.message }); }
+    return n;
+  }
+
+  const handler = async function handleStatic(req, res, pathname) {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       res.setHeader('Allow', 'GET, HEAD');
       return notFoundText(res, 405, 'Method not allowed');
@@ -310,4 +387,7 @@ export function createStaticHandler({ webDir, maxAge = 300, log }) {
     }
     return notFoundText(res, 404);
   };
+  handler.warm = warm;
+  handler.cache = zcache;
+  return handler;
 }

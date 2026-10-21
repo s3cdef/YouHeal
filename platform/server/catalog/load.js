@@ -250,6 +250,37 @@ export function buildModel(data, hashes, { strict = true } = {}) {
   };
 }
 
+/** Cheap change detector: sha256 over (name, size, mtime, inode) of every catalog and pack file. */
+export function statsKey(dir, i18nDir) {
+  try {
+    const parts = [];
+    for (const f of Object.values(FILES)) {
+      const p = path.join(dir, f);
+      if (fs.existsSync(p)) { const st = fs.statSync(p); parts.push(`c/${f}:${st.size}:${st.mtimeMs}:${st.ino}`); }
+    }
+    if (i18nDir && fs.existsSync(i18nDir)) {
+      for (const loc of fs.readdirSync(i18nDir).sort()) {
+        const d = path.join(i18nDir, loc);
+        if (!fs.statSync(d).isDirectory()) continue;
+        for (const f of fs.readdirSync(d).sort()) { const st = fs.statSync(path.join(d, f)); parts.push(`i/${loc}/${f}:${st.size}:${st.mtimeMs}:${st.ino}`); }
+      }
+    }
+    return crypto.createHash('sha256').update(parts.join('\n')).digest('hex');
+  } catch { return null; }
+}
+
+/** Multi-row INSERT batching (fewer JS↔SQLite round trips on large loads). */
+function bulk(db, head, ncols, per = 200) {
+  const rows = [];
+  const one = `(${Array(ncols).fill('?').join(',')})`;
+  const flush = () => {
+    if (!rows.length) return;
+    db.run(`${head} VALUES ${Array(rows.length).fill(one).join(',')}`, ...rows.flat());
+    rows.length = 0;
+  };
+  return { add: (...vals) => { rows.push(vals); if (rows.length >= per) flush(); }, flush };
+}
+
 function writeModel(db, m) {
   const G = 'org_id IS NULL';
   // children first (FKs are deferred, but keep deletes ordered for adapters without deferral)
@@ -257,10 +288,13 @@ function writeModel(db, m) {
   if (db.hasFts5) db.run('DELETE FROM catalog_fts');
   for (const t of ['symptoms', 'protocols', 'pairs', 'entities', 'points', 'regions', 'contraindications', 'recommendations', 'glossary', 'catalog_sources']) db.run(`DELETE FROM ${t} WHERE ${G}`);
 
+  const searchRows = bulk(db, 'INSERT OR REPLACE INTO catalog_search (kind, ref_id, body)', 3);
+  const ftsRows = bulk(db, 'INSERT INTO catalog_fts (kind, ref_id, body)', 3);
+  const symRows = bulk(db, 'INSERT INTO pair_symptoms (pair_id, system, text, text_norm, sort)', 5);
   const search = (kind, id, parts) => {
     const body = normalizeText(parts.filter(Boolean).join(' '));
-    db.run('INSERT OR REPLACE INTO catalog_search (kind, ref_id, body) VALUES (?,?,?)', kind, id, body);
-    if (db.hasFts5) db.run('INSERT INTO catalog_fts (kind, ref_id, body) VALUES (?,?,?)', kind, id, body);
+    searchRows.add(kind, id, body);
+    if (db.hasFts5) ftsRows.add(kind, id, body);
   };
 
   for (const [id, s] of m.sources) db.run('INSERT INTO catalog_sources (id, title, author, license_status, notice, data) VALUES (?,?,?,?,?,?)', id, s.title, s.author ?? null, s.license_status, s.notice ?? null, J(s));
@@ -287,7 +321,7 @@ function writeModel(db, m) {
     p.tracking.point, p.tracking.side || 'C', J(p.tracking.qualifiers || []), p.impact.point, p.impact.side || 'C', J(p.impact.qualifiers || []),
     p.category ?? null, p.ratings?.F ?? null, p.ratings?.P ?? null, p.ratings?.R ?? null, p.source?.doc ?? null, i++, J(p));
     p.relations.forEach((r, k) => db.run('INSERT OR IGNORE INTO pair_relations (pair_id, entity_id, ordinal, sort) VALUES (?,?,?,?)', id, r.entity, r.ordinal ?? null, k));
-    (p.symptoms || []).forEach((s, k) => db.run('INSERT INTO pair_symptoms (pair_id, system, text, text_norm, sort) VALUES (?,?,?,?,?)', id, s.system ?? null, J(s.text), normalizeText(locText(s.text)), k));
+    (p.symptoms || []).forEach((s, k) => symRows.add(id, s.system ?? null, J(s.text), normalizeText(locText(s.text)), k));
     const relNames = p.relations.map((r) => locText(m.entities.get(r.entity)?.name));
     search('pair', id, [p.number != null ? `pb ${p.number} ${p.number}` : '', locText(p.name), locText(m.points.get(p.tracking.point)?.name),
       locText(m.points.get(p.impact.point)?.name), p.category, ...relNames, ...(p.symptoms || []).map((s) => locText(s.text))]);
@@ -313,6 +347,7 @@ function writeModel(db, m) {
   i = 0;
   for (const [id, r] of m.recommendations) db.run('INSERT INTO recommendations (id, sort, data) VALUES (?,?,?)', id, i++, J(r));
   for (const g of m.glossary) db.run('INSERT INTO glossary (abbr, data) VALUES (?,?)', g.abbr, J(g));
+  searchRows.flush(); ftsRows.flush(); symRows.flush();
 
   const counts = {
     sources: m.sources.size, regions: m.regions.size, points: m.points.size, pairs: m.pairs.size, entities: m.entities.size,
@@ -348,7 +383,8 @@ function writeI18n(db, packs, baseline) {
   db.run('DELETE FROM i18n_strings');
   db.run('DELETE FROM i18n_packs');
   db.run('DELETE FROM i18n_ui');
-  for (const [key, b] of baseline) db.run('INSERT INTO i18n_strings (locale, key, text, src_hash, status, updated_at) VALUES (?,?,?,?,?,?)', BASELINE, key, b.text, b.hash, 'baseline', ts);
+  const strings = bulk(db, 'INSERT INTO i18n_strings (locale, key, text, src_hash, status, updated_at)', 6);
+  for (const [key, b] of baseline) strings.add(BASELINE, key, b.text, b.hash, 'baseline', ts);
   const hasBaselinePack = packs.some((p) => p.locale === BASELINE);
   const rows = hasBaselinePack || !packs.length ? packs : [{ locale: BASELINE, manifest: { locale: BASELINE, name: 'Spanish', nativeName: 'Español', dir: 'ltr', role: 'baseline', baseline: BASELINE }, sha256: 'synthetic', entries: new Map() }, ...packs];
   for (const p of rows) {
@@ -356,24 +392,38 @@ function writeI18n(db, packs, baseline) {
     db.run(`INSERT INTO i18n_packs (locale, name, native_name, dir, role, baseline, manifest_json, sha256, loaded_at) VALUES (?,?,?,?,?,?,?,?,?)`,
       p.locale, m.name || p.locale, m.nativeName || m.name || p.locale, m.dir || 'ltr', m.role, m.baseline || BASELINE, JSON.stringify(m), p.sha256, ts);
     if (m.role === 'mirror') {
-      for (const [key, e] of p.entries) db.run('INSERT INTO i18n_strings (locale, key, text, src_hash, status, updated_at) VALUES (?,?,?,?,?,?)', p.locale, key, e.text, e.srcHash, e.status, ts);
+      for (const [key, e] of p.entries) strings.add(p.locale, key, e.text, e.srcHash, e.status, ts);
     }
     if (p.ui) db.run('INSERT INTO i18n_ui (locale, json, sha256) VALUES (?,?,?)', p.locale, JSON.stringify(p.ui), crypto.createHash('sha256').update(JSON.stringify(p.ui)).digest('hex'));
   }
+  strings.flush();
 }
 
 /** Load the catalog (+ language packs). Throws CatalogError on validation failures (nothing is written). */
 export function loadCatalog(db, { dir, i18nDir = null, log, force = false, strict = true } = {}) {
+  const t0 = performance.now();
+  const timings = {};
+  const lap = (name) => { timings[name] = Math.round(performance.now() - t0); };
+  const current = catalogMeta(db);
+  // Warm-restart fast path: identical (path, size, mtime, inode) for every catalog + pack file → skip
+  // without reading or hashing anything. Any difference falls through to the content-hash check.
+  const stats = statsKey(dir, i18nDir);
+  if (!force && current?.fingerprint && stats && db.get("SELECT value FROM catalog_meta WHERE key = 'file_stats'")?.value === stats) {
+    log?.info('catalog unchanged (file stats); load skipped', { catalogVersion: current.version, ms: Math.round(performance.now() - t0) });
+    return { skipped: true, version: current.version, fingerprint: current.fingerprint, counts: current.counts, warnings: [], fast: true };
+  }
   const { data, hashes } = readFiles(dir);
   const packsRead = readPacks(i18nDir);
+  lap('read');
   const fingerprint = fingerprintOf({ ...hashes, ...packsRead.hashes });
-  const current = catalogMeta(db);
   if (!force && current?.fingerprint === fingerprint) {
+    if (stats) db.run("INSERT OR REPLACE INTO catalog_meta (key, value) VALUES ('file_stats', ?)", stats);
     log?.info('catalog unchanged; load skipped', { catalogVersion: current.version });
     return { skipped: true, version: current.version, fingerprint, counts: current.counts, warnings: [] };
   }
   const { model, errors, warnings } = buildModel(data, hashes, { strict });
   model.fingerprint = fingerprint;
+  lap('validate');
   // language packs: validate against the catalog's own Spanish text, then compose mirrors into the records
   const files = modelFiles(model);
   const baseline = baselineFrom(files);
@@ -384,12 +434,19 @@ export function loadCatalog(db, { dir, i18nDir = null, log, force = false, stric
   const mirrors = v.packs.filter((p) => p.manifest.role === 'mirror');
   const byLoc = new Map(mirrors.map((p) => [p.locale, p.entries]));
   for (const { file, id, rec } of catalogRecords(files)) composeRecord(rec, `${file}/${id}`, [...byLoc.keys()], (loc, key) => byLoc.get(loc).get(key));
+  lap('packs');
   const counts = db.tx(() => {
     const c = writeModel(db, model);
+    lap('writeCatalog');
     writeI18n(db, v.packs, baseline);
     db.run("INSERT OR REPLACE INTO catalog_meta (key, value) VALUES ('i18n_rev', ?)", String(Date.now()));
+    if (stats) db.run("INSERT OR REPLACE INTO catalog_meta (key, value) VALUES ('file_stats', ?)", stats);
     return c;
   });
+  lap('commit');
+  db.checkpoint('TRUNCATE'); // fold the large write into the main file now, not on the first request
+  try { db.exec('PRAGMA optimize'); } catch { /* best effort */ }
+  lap('checkpoint');
   const coverage = {};
   for (const p of mirrors) {
     const byStatus = { curated: 0, machine: 0, reviewed: 0, missing: 0, stale: 0 };
@@ -399,8 +456,10 @@ export function loadCatalog(db, { dir, i18nDir = null, log, force = false, stric
     log?.info('language pack loaded', { event: `i18n.${p.locale}`, count: translated, warnings: JSON.stringify(coverage[p.locale]) });
   }
   for (const w of warnings.slice(0, 50)) log?.warn('catalog warning', { warnings: w });
-  log?.info('catalog loaded', { catalogVersion: model.version, count: counts.pairs });
-  return { skipped: false, version: model.version, fingerprint, counts, warnings, coverage };
+  lap('total');
+  log?.info('catalog loaded', { catalogVersion: model.version, count: counts.pairs, ms: timings.total });
+  log?.debug('catalog load timings', { warnings: JSON.stringify(timings) });
+  return { skipped: false, version: model.version, fingerprint, counts, warnings, coverage, timings };
 }
 
 // ---------------------------------------------------------------- CLI

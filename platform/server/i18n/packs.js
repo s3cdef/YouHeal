@@ -12,7 +12,18 @@ export const LIVE_STATUSES = new Set(['curated', 'machine', 'reviewed']);
 export const LOCALE_RE = /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/;
 const HASH_RE = /^[0-9a-f]{16}$/;
 
-export const srcHash = (s) => crypto.createHash('sha256').update(String(s), 'utf8').digest('hex').slice(0, 16);
+const hashMemo = new Map();
+/** SHA-256/16 of the Spanish source text (memoized: the same texts are hashed by load, compose and serve). */
+export const srcHash = (s) => {
+  const k = String(s);
+  let h = hashMemo.get(k);
+  if (h === undefined) {
+    h = crypto.createHash('sha256').update(k, 'utf8').digest('hex').slice(0, 16);
+    if (hashMemo.size > 200_000) hashMemo.clear();
+    hashMemo.set(k, h);
+  }
+  return h;
+};
 export const recordId = (file, r, i) => r.id ?? (file === 'glossary' ? `abbr:${r.abbr}` : `#${i}`);
 
 /** Yield { key, node } for every localized object ({es: string, ...}) under `rec`, keyed with `prefix`. */

@@ -41,6 +41,13 @@ export class Db {
     this.raw.exec('PRAGMA foreign_keys = ON');
     this.raw.exec('PRAGMA secure_delete = ON');
     this.raw.exec('PRAGMA trusted_schema = OFF');
+    if (process.env.YH_DB_TUNE !== '0') {
+      // measured on the catalog load + list queries (see tests/perf): larger page cache, in-memory temp B-trees,
+      // memory-mapped reads. SQLite-specific; harmless for small DBs.
+      this.raw.exec('PRAGMA cache_size = -32768');   // 32 MiB
+      this.raw.exec('PRAGMA temp_store = MEMORY');
+      this.raw.exec('PRAGMA mmap_size = 268435456'); // 256 MiB (address space only)
+    }
     if (file !== ':memory:' && process.platform !== 'win32') {
       for (const f of [file, `${file}-wal`, `${file}-shm`]) { try { fs.chmodSync(f, 0o600); } catch { /* may not exist yet */ } }
     }

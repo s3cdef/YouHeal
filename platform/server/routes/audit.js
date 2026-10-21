@@ -1,7 +1,7 @@
 // Audit log read + chain verification (admin, auditor).
 
 import { paging, check, uuidStr } from '../lib/validate.js';
-import { badRequest } from '../lib/http.js';
+import { badRequest, forbidden } from '../lib/http.js';
 import { PERM } from '../lib/rbac.js';
 
 export function register(router, { audit }) {
@@ -21,8 +21,11 @@ export function register(router, { audit }) {
   }, { roles: PERM.auditRead });
 
   router.get('/audit/verify', (ctx) => {
-    const r = audit.verify({ orgId: ctx.user.org_id });
-    ctx.audit('audit.verify', { targetType: 'audit', outcome: r.ok ? 'success' : 'failure', detail: { checked: r.checked, brokenAt: r.brokenAt } });
+    const full = ctx.query.get('full') === '1' || ctx.query.get('full') === 'true';
+    if (full && ctx.user.role !== 'admin') throw forbidden('A full re-verification of the chain is reserved to administrators', 'FORBIDDEN');
+    // default: incremental from the MAC'd checkpoint (rows appended since the last successful run)
+    const r = audit.verify({ orgId: ctx.user.org_id, full });
+    ctx.audit('audit.verify', { targetType: 'audit', outcome: r.ok ? 'success' : 'failure', detail: { checked: r.checked, brokenAt: r.brokenAt, mode: r.mode, walked: r.walked } });
     return r;
   }, { roles: PERM.auditRead });
 }

@@ -95,17 +95,8 @@ export function register(router, { db, cfg, RAW }) {
     const ui = uiSource(locale);
     if (!ui) throw notFound('No UI strings for this locale');
     const en = locale === 'en' ? null : uiSource('en');
-    const body = Buffer.from(JSON.stringify(en ? deepFallback(ui, en) : ui));
-    const etag = `"${crypto.createHash('sha256').update(body).digest('hex').slice(0, 32)}"`;
-    const res = ctx.res;
-    res.setHeader('ETag', etag);
-    res.setHeader('Cache-Control', 'no-cache');
-    if ((ctx.req.headers['if-none-match'] || '').split(',').map((x) => x.trim()).includes(etag)) { res.statusCode = 304; res.end(); return RAW; }
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Content-Length', body.length);
-    res.end(ctx.req.method === 'HEAD' ? undefined : body);
-    return RAW;
+    // ETag / 304 / compression are applied by the generic reference-data path in app.js
+    return en ? deepFallback(ui, en) : ui;
   }, { public: true });
 
   // ------------------------------------------------------------ admin

@@ -586,8 +586,11 @@ test('audit log: events recorded without PHI, chain verifies, tampering detected
   raw.exec('DROP TRIGGER audit_log_no_update');
   raw.prepare("UPDATE audit_log SET detail = '{\"forged\":true}' WHERE id = 3").run();
   raw.close();
-  const bad = await a.get('/api/v1/audit/verify');
-  assert.equal(bad.json.ok, false);
+  const incremental = await a.get('/api/v1/audit/verify');
+  assert.equal(incremental.json.mode, 'incremental', 'default walks only rows after the MAC\'d checkpoint');
+  assert.equal((await state.auditor.get('/api/v1/audit/verify?full=1')).status, 403, 'full re-verification is admin-only');
+  const bad = await a.get('/api/v1/audit/verify?full=1');
+  assert.equal(bad.json.ok, false, 'full verification detects edits behind the checkpoint');
   assert.equal(bad.json.brokenAt, 3);
 });
 

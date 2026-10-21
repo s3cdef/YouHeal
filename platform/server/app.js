@@ -1,11 +1,12 @@
 // Application assembly: request pipeline (security headers, request id, rate limit, session, RBAC,
 // CSRF/Origin, JSON body) + route modules + static SPA. Used by server/index.js and the tests.
 
-import { randomUUID } from 'node:crypto';
+import crypto, { randomUUID } from 'node:crypto';
+import { negotiate, ByteLru } from './lib/compress.js';
 import { Router } from './lib/router.js';
 import {
   HttpError, applySecurityHeaders, sendJson, sendError, readJsonBody, parseCookies, serializeCookie, DUPES,
-  clientIp, requestProto, createStaticHandler, forbidden, unauthorized, hostAllowed, ipBucketKey,
+  clientIp, requestProto, createStaticHandler, forbidden, unauthorized, hostAllowed, ipBucketKey, etagMatches,
 } from './lib/http.js';
 import { TokenBucket } from './lib/ratelimit.js';
 import { checkOrigin, checkCsrfToken } from './lib/csrf.js';
@@ -29,6 +30,7 @@ import * as i18nRoutes from './routes/i18n.js';
 
 export const RAW = Symbol('raw-response');
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const CACHEABLE_API = /^\/api\/v1\/(catalog|i18n)\//;
 const DEFAULT_BODY_LIMIT = 1024 * 1024;
 
 export function createApp({ cfg, db, keyring, log }) {
@@ -69,6 +71,18 @@ export function createApp({ cfg, db, keyring, log }) {
     if (hostLogAt.size > 1000) hostLogAt.clear();
     hostLogAt.set(host, now);
     log.warn('rejected request for a Host that is not allowed (set YH_ALLOWED_HOSTS / YH_PUBLIC_ORIGIN if legitimate)', { host, ip: req.ip, reqId: req.id });
+  }
+
+  // reference-data versioning for ETags: catalog fingerprint (catalog files + pack sha256s) + overrides
+  // revision + license filter + normalized query
+  const bodyCache = new ByteLru(32 * 1024 * 1024);
+  const metaStmt = "SELECT key, value FROM catalog_meta WHERE key IN ('fingerprint', 'i18n_rev')";
+  function referenceEtag(pathname, search) {
+    const meta = Object.fromEntries(db.all(metaStmt).map((r) => [r.key, r.value]));
+    const q = new URLSearchParams(search || '');
+    const norm = [...q.entries()].sort(([a, x], [b, y]) => (a === b ? (x < y ? -1 : 1) : a < b ? -1 : 1)).map(([k, v]) => `${k}=${v}`).join('&');
+    const h = crypto.createHash('sha256').update([cfg.version, meta.fingerprint || '', meta.i18n_rev || '', (cfg.catalogLicenses || []).join(','), pathname, norm].join('\n')).digest('hex');
+    return `"${h.slice(0, 32)}"`;
   }
 
   function restrictionOf(user) {
@@ -155,8 +169,36 @@ export function createApp({ cfg, db, keyring, log }) {
       req.resume();
     }
 
+    // Public reference data (catalog / language packs): strong ETag + 304 (after the auth gate above) and an
+    // in-memory body cache; these — and /health — are the ONLY API responses that may be compressed (BREACH:
+    // see lib/compress.js; never /auth/*, PHI, reports, audit).
+    const cacheable = (req.method === 'GET' || req.method === 'HEAD') && CACHEABLE_API.test(pathname) && !/\/export$/.test(pathname);
+    const compressible = cacheable || pathname === '/api/v1/health';
+    let etag = null;
+    if (cacheable) {
+      etag = referenceEtag(pathname, search);
+      res.setHeader('Cache-Control', 'private, no-cache');
+      res.setHeader('Vary', 'Accept-Encoding');
+      if (etagMatches(req.headers['if-none-match'], etag)) {
+        res.setHeader('ETag', etag);
+        res.statusCode = 304;
+        res.end();
+        return;
+      }
+      const hit = bodyCache.get(`${etag}|identity`);
+      if (hit) {
+        sendJson(res, 200, null, { raw: hit, etag, cacheControl: 'private, no-cache', vary: true, encoding: negotiate(req.headers['accept-encoding']), cache: bodyCache });
+        return;
+      }
+    }
     const result = await route.handler(ctx);
     if (result === RAW) return;
+    if (compressible && ctx.status === 200) {
+      const raw = Buffer.from(JSON.stringify(result ?? { ok: true }));
+      if (etag) bodyCache.set(`${etag}|identity`, raw);
+      sendJson(res, 200, null, { raw, etag, cacheControl: cacheable ? 'private, no-cache' : 'no-store', vary: true, encoding: negotiate(req.headers['accept-encoding']), cache: etag ? bodyCache : null });
+      return;
+    }
     sendJson(res, ctx.status, result ?? { ok: true });
   }
 
@@ -221,5 +263,5 @@ export function createApp({ cfg, db, keyring, log }) {
     return n;
   }
 
-  return { handler, router, audit, sessions, catalog, purge, deps };
+  return { handler, router, audit, sessions, catalog, purge, deps, serveStatic };
 }

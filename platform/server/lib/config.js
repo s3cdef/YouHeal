@@ -164,6 +164,7 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
     catalogLicenses: parseLicenses(env.YH_CATALOG_LICENSES),
     webDir: env.YH_WEB_DIR ? resolve(env.YH_WEB_DIR) : path.join(ROOT_DIR, 'web'),
     staticMaxAge: int(env, 'YH_STATIC_MAX_AGE', 300, 0, 31536000),
+    staticPrecompress: bool(env, 'YH_STATIC_PRECOMPRESS', true),
     trustProxy,
     trustedProxies,
     allowedHosts,

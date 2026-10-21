@@ -227,6 +227,19 @@ export function createCatalogService(db, { allowedLicenses = null } = {}) {
    *   symptom match: specificity(s) = 1 / ln(1 + #pairs linked to s), weighted by F rating
    *   free text:     each query token found in a pair's symptom texts / name / relations adds 0.5 * F weight
    */
+  /** Normalized searchable text per pair, precomputed once per catalog build (suggest hot path). */
+  function pairNorms(c) {
+    if (c.norms) return c.norms;
+    c.norms = new Map();
+    for (const p of c.pairs.values()) {
+      const texts = c.pairSymptoms.get(p.id) || [];
+      const nameNorm = ` ${normalizeText(Object.values(p.name || {}).join(' '))} `;
+      const relNorm = ` ${normalizeText(p.relations.map((r) => Object.values(c.entities.get(r.entity)?.name || {}).join(' ')).join(' '))} `;
+      c.norms.set(p.id, { texts, nameNorm, relNorm, all: `${texts.map((x) => x.norm).join(' ')} ${nameNorm} ${relNorm}` });
+    }
+    return c.norms;
+  }
+
   function suggest({ symptoms = [], text = '' }, limit = 25) {
     const c = get();
     const fWeight = (p) => { const F = p.ratings?.F; return Number.isFinite(F) && F > 0 ? (1 + F) / 4 : 0.4; };
@@ -245,14 +258,13 @@ export function createCatalogService(db, { allowedLicenses = null } = {}) {
         bump(pid, spec * fWeight(p), { type: 'symptom', id: sid, name: s.name, weight: round(spec) });
       }
     }
-    const tokens = [...new Set(tokenize(text))].slice(0, 20);
+    const tokens = [...new Set(tokenize(text))].slice(0, 20).map((t) => ({ t, re: new RegExp(`[^a-z0-9]${t}`) }));
     if (tokens.length) {
+      const norms = pairNorms(c);
       for (const p of c.pairs.values()) {
-        const texts = c.pairSymptoms.get(p.id) || [];
-        const nameNorm = ` ${normalizeText([p.name.es, p.name.en].filter(Boolean).join(' '))} `;
-        const relNorm = ` ${normalizeText(p.relations.map((r) => { const n = c.entities.get(r.entity)?.name; return [n?.es, n?.en].filter(Boolean).join(' '); }).join(' '))} `;
-        for (const t of tokens) {
-          const re = new RegExp(`[^a-z0-9]${t}`);
+        const { texts, nameNorm, relNorm, all } = norms.get(p.id);
+        for (const { t, re } of tokens) {
+          if (!all.includes(t)) continue; // cheap prefilter before the word-boundary regex
           const hit = texts.find((x) => re.test(x.norm));
           if (hit) { bump(p.id, 0.5 * fWeight(p), { type: 'text', token: t, field: 'symptom', system: hit.system ?? null, text: hit.text }); continue; }
           if (re.test(nameNorm)) { bump(p.id, 0.35 * fWeight(p), { type: 'text', token: t, field: 'name' }); continue; }
