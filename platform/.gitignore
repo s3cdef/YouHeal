@@ -1,0 +1,14 @@
+# Licensed source material — never commit
+data/sources/*
+!data/sources/README.md
+# Runtime state — never commit (PHI, keys)
+data/db/
+data/keys/
+data/backups/
+data/tls/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+node_modules/
+.env
+tests/artifacts/
