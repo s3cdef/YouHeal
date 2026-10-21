@@ -108,15 +108,40 @@ export const v = {
     return out;
   }),
   /** Free-form JSON object with bounded size/depth (questionnaire answers, vitals). */
-  json: (o = {}) => mk('json', o, (val, p, e, { maxBytes = 32 * 1024, maxDepth = 5 }) => {
+  json: (o = {}) => mk('json', o, (val, p, e, { maxBytes = 32 * 1024, maxDepth = 5, maxNodes = 5000 }) => {
     if (!val || typeof val !== 'object' || Array.isArray(val)) { e[p] = 'must be an object'; return; }
-    const depth = (x, d) => (d > maxDepth ? Infinity : x && typeof x === 'object' ? Math.max(d, ...Object.values(x).map((y) => depth(y, d + 1))) : d);
-    if (depth(val, 1) > maxDepth) { e[p] = 'is nested too deeply'; return; }
+    const err = jsonShapeError(val, { maxDepth, maxNodes });
+    if (err) { e[p] = err; return; }
     if (Buffer.byteLength(JSON.stringify(val)) > maxBytes) { e[p] = 'is too large'; return; }
-    for (const k of Object.keys(val)) if (k === '__proto__' || k === 'constructor' || k === 'prototype') { e[p] = 'has a forbidden key'; return; }
     return val;
   }),
 };
+
+const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+/**
+ * F-13: iterative (stack-safe) walk — bounded depth, bounded node count, no prototype-ish keys at any level.
+ * Returns an error string or null.
+ */
+export function jsonShapeError(root, { maxDepth = 5, maxNodes = 5000 } = {}) {
+  const stack = [[root, 1]];
+  let nodes = 0;
+  while (stack.length) {
+    const [node, depth] = stack.pop();
+    if (++nodes > maxNodes) return 'has too many elements';
+    if (node === null || typeof node !== 'object') continue;
+    if (depth > maxDepth) return 'is nested too deeply';
+    if (Array.isArray(node)) {
+      if (node.length > maxNodes) return 'has too many elements';
+      for (let i = 0; i < node.length; i++) stack.push([node[i], depth + 1]);
+    } else {
+      for (const k of Object.keys(node)) {
+        if (FORBIDDEN_KEYS.has(k)) return 'has a forbidden key';
+        stack.push([node[k], depth + 1]);
+      }
+    }
+  }
+  return null;
+}
 
 export const catalogId = () => v.string({ min: 1, max: 120, pattern: /^[a-z0-9][a-z0-9-]*$/ });
 export const uuidStr = () => v.string({ pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/ });

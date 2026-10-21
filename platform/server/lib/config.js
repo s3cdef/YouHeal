@@ -2,6 +2,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
+import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 
 export const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -100,6 +102,30 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
       'Provide YH_TLS_CERT/YH_TLS_KEY, run behind a TLS proxy with YH_TRUST_PROXY=1, or set YH_ALLOW_INSECURE_HTTP=1.');
   }
 
+  // F-09: X-Forwarded-* are honored only from these peers (IPs or CIDRs). Default: loopback.
+  const trustedProxies = String(env.YH_TRUSTED_PROXIES ?? '127.0.0.1,::1').split(',').map((x) => x.trim()).filter(Boolean);
+  for (const t of trustedProxies) {
+    const [ip, bits] = t.split('/');
+    if (net.isIP(ip) === 0 || (bits !== undefined && !(/^\d+$/.test(bits) && Number(bits) <= (net.isIP(ip) === 4 ? 32 : 128)))) {
+      throw new ConfigError(`YH_TRUSTED_PROXIES: invalid address or CIDR "${t}"`);
+    }
+  }
+  // F-05: Host header allow-list for /api (localhost names + public origin + YH_ALLOWED_HOSTS + own names when exposed)
+  const allowedHosts = new Set(['localhost', '127.0.0.1', '::1']);
+  for (const h of String(env.YH_ALLOWED_HOSTS || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean)) {
+    if (!/^[a-z0-9.:\-[\]]+$/.test(h)) throw new ConfigError(`YH_ALLOWED_HOSTS: invalid host "${h}"`);
+    allowedHosts.add(h.replace(/^\[|\]$/g, ''));
+  }
+  if (publicOrigin) allowedHosts.add(new URL(publicOrigin).hostname.toLowerCase().replace(/^\[|\]$/g, ''));
+  if (!isLoopbackHost(host)) {
+    const hn = os.hostname().toLowerCase();
+    allowedHosts.add(hn);
+    allowedHosts.add(hn.split('.')[0]);
+    if (host === '0.0.0.0' || host === '::') {
+      for (const list of Object.values(os.networkInterfaces())) for (const a of list || []) allowedHosts.add(a.address.toLowerCase());
+    } else allowedHosts.add(host.toLowerCase().replace(/^\[|\]$/g, ''));
+  }
+
   const cfg = {
     version: APP_VERSION,
     rootDir: ROOT_DIR,
@@ -108,13 +134,19 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
     dbPath: env.YH_DB_PATH ? resolve(env.YH_DB_PATH) : path.join(dataDir, 'db', 'youheal.sqlite'),
     keysDir, masterKeyFile, masterKeyB64,
     backupsDir: path.join(dataDir, 'backups'),
+    auditAnchorFile: path.join(dataDir, 'audit-anchor.log'),
+    setupTokenFile: path.join(dataDir, 'setup-token'),
     catalogDir: env.YH_CATALOG_DIR ? resolve(env.YH_CATALOG_DIR) : path.join(dataDir, 'catalog'),
     catalogStrict: bool(env, 'YH_CATALOG_STRICT', true),
     catalogLicenses: parseLicenses(env.YH_CATALOG_LICENSES),
     webDir: env.YH_WEB_DIR ? resolve(env.YH_WEB_DIR) : path.join(ROOT_DIR, 'web'),
     staticMaxAge: int(env, 'YH_STATIC_MAX_AGE', 300, 0, 31536000),
     trustProxy,
+    trustedProxies,
+    allowedHosts,
     publicOrigin,
+    maxConnections: int(env, 'YH_MAX_CONNECTIONS', 512, 1, 100000),
+    maxConnPerIp: int(env, 'YH_MAX_CONN_PER_IP', 64, 1, 100000),
     sessionIdleMin: int(env, 'YH_SESSION_IDLE_MIN', 15, 1, 240),
     sessionAbsHours: int(env, 'YH_SESSION_ABS_HOURS', 12, 1, 72),
     logLevel,

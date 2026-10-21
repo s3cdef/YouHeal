@@ -9,7 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { loadConfig } from '../../server/lib/config.js';
 import { TokenBucket } from '../../server/lib/ratelimit.js';
 import { clientIp } from '../../server/lib/http.js';
-import { startTestServer, Client, tmpDir } from './helpers.js';
+import { startTestServer, setupToken, Client, tmpDir } from './helpers.js';
 
 const ADMIN = { email: 'owner@clinic.test', name: 'Olivia Owner', password: 'Violet-Harbor-Lantern-42' };
 
@@ -42,9 +42,10 @@ test('token bucket + client ip with trusted proxies', () => {
   now += 1000;
   assert.equal(b.take('ip').ok, true);
   const req = { socket: { remoteAddress: '::ffff:127.0.0.1' }, headers: { 'x-forwarded-for': '203.0.113.9, 10.0.0.2' } };
-  assert.equal(clientIp(req, 0), '127.0.0.1');
-  assert.equal(clientIp(req, 1), '10.0.0.2');
-  assert.equal(clientIp(req, 2), '203.0.113.9');
+  const cfg = (trustProxy, trustedProxies = ['127.0.0.1', '::1']) => ({ trustProxy, trustedProxies });
+  assert.equal(clientIp(req, cfg(0)), '127.0.0.1');
+  assert.equal(clientIp(req, cfg(1)), '10.0.0.2');
+  assert.equal(clientIp(req, cfg(2)), '203.0.113.9');
 });
 
 test('master key file is generated 0600 and reused', async () => {
@@ -100,7 +101,7 @@ test('dev MFA bypass only on loopback, logged loudly', async () => {
   const srv = await startTestServer({ YH_DEV_INSECURE_NO_MFA: '1' });
   try {
     const c = new Client(srv.url);
-    await c.post('/api/v1/setup', { org: { name: 'Dev' }, admin: ADMIN });
+    await c.post('/api/v1/setup', { setupToken: setupToken(srv), org: { name: 'Dev' }, admin: ADMIN });
     const l = await c.post('/api/v1/auth/login', { email: ADMIN.email, password: ADMIN.password });
     assert.equal(l.json.mfaEnrollmentRequired, false);
     assert.equal((await c.get('/api/v1/patients')).status, 200);

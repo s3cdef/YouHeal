@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { startTestServer, Client, tmpDir, silent } from './helpers.js';
+import { startTestServer, setupToken, Client, tmpDir, silent } from './helpers.js';
 import { verifyBackup, restoreBackup, readBackupHeader } from '../../server/lib/backup.js';
 import { loadKeyring } from '../../server/lib/keys.js';
 import { openDb } from '../../server/lib/db.js';
@@ -19,7 +19,7 @@ const ADMIN = { email: 'owner@clinic.test', name: 'Olivia Owner', password: 'Vio
 async function seeded() {
   const srv = await startTestServer({ YH_DEV_INSECURE_NO_MFA: '1' });
   const c = new Client(srv.url);
-  await c.post('/api/v1/setup', { org: { name: 'Backup Clinic' }, admin: ADMIN });
+  await c.post('/api/v1/setup', { setupToken: setupToken(srv), org: { name: 'Backup Clinic' }, admin: ADMIN });
   await c.post('/api/v1/auth/login', { email: ADMIN.email, password: ADMIN.password });
   const p = await c.post('/api/v1/patients', { firstName: 'Rosa', lastName: 'Martínez', dob: '1975-02-03', sex: 'female' });
   assert.equal(p.status, 201);

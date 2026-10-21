@@ -5,7 +5,9 @@ import path from 'node:path';
 import http from 'node:http';
 import https from 'node:https';
 import { fileURLToPath } from 'node:url';
-import { loadConfig, ConfigError } from './lib/config.js';
+import { loadConfig, ConfigError, isLoopbackHost } from './lib/config.js';
+import { ipBucketKey } from './lib/http.js';
+import { ensureSetupToken } from './routes/setup.js';
 import { createLogger } from './lib/log.js';
 import { loadKeyring, ensureDir } from './lib/keys.js';
 import { openDb, migrate } from './lib/db.js';
@@ -46,17 +48,41 @@ export function bootstrap(cfg, log, { loadCatalogFiles = true } = {}) {
   return { db, keyring, keySource: source };
 }
 
+/** F-20: global and per-client (IPv4 / IPv6 /64) concurrent connection caps. */
+export function limitConnections(server, cfg, log) {
+  server.maxConnections = cfg.maxConnections;
+  const perIp = new Map();
+  server.on('connection', (socket) => {
+    const key = ipBucketKey(socket.remoteAddress);
+    const n = (perIp.get(key) || 0) + 1;
+    if (n > cfg.maxConnPerIp) {
+      log.warn('per-client connection cap reached; dropping connection', { ip: key, count: n - 1 });
+      socket.destroy();
+      return;
+    }
+    perIp.set(key, n);
+    socket.once('close', () => { const m = (perIp.get(key) || 1) - 1; if (m <= 0) perIp.delete(key); else perIp.set(key, m); });
+  });
+  return perIp;
+}
+
 export async function startServer(cfg, { log = createLogger({ level: cfg.logLevel }), handleSignals = false, writePid = false } = {}) {
   const { db, keyring } = bootstrap(cfg, log);
+  ensureSetupToken(cfg, db, log); // F-04: one-time token while unconfigured (no-op otherwise)
+  if (cfg.trustProxy && !isLoopbackHost(cfg.host)) {
+    log.loud(`YH_TRUST_PROXY is set while listening on ${cfg.host}: X-Forwarded-* is honored ONLY from ${cfg.trustedProxies.join(', ')} ` +
+      '(YH_TRUSTED_PROXIES). Make sure clients cannot reach this port directly.');
+  }
   const app = createApp({ cfg, db, keyring, log });
 
   const server = cfg.tls
     ? https.createServer({ cert: fs.readFileSync(cfg.tlsCert), key: fs.readFileSync(cfg.tlsKey), minVersion: 'TLSv1.2' }, app.handler)
     : http.createServer(app.handler);
-  server.headersTimeout = 30_000;
+  server.headersTimeout = 15_000;
   server.requestTimeout = 120_000;
   server.keepAliveTimeout = 5_000;
   server.maxHeadersCount = 100;
+  limitConnections(server, cfg, log);
   server.on('clientError', (err, socket) => { if (socket.writable) socket.end('HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n'); });
 
   await new Promise((resolve, reject) => {
@@ -87,6 +113,7 @@ export async function startServer(cfg, { log = createLogger({ level: cfg.logLeve
       server.closeIdleConnections?.();
       await new Promise((resolve) => server.close(() => resolve()));
       clearTimeout(force);
+      try { app.audit.writeHead(); } catch (e) { log.warn('audit anchor export failed', { err: e.message }); }
       db.checkpoint('TRUNCATE');
       db.close();
       if (writePid) fs.rmSync(pidFile(cfg), { force: true });

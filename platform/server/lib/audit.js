@@ -3,6 +3,7 @@
 // A keyed anchor (HMAC with the audit subkey) pins the chain head so tail truncation is detected.
 // NEVER put PHI values in `detail` — ids, counts and field NAMES only.
 
+import fs from 'node:fs';
 import { sha256hex, hmacHex, canonicalJson, safeEqual } from './crypto.js';
 
 export const GENESIS = '0'.repeat(64);
@@ -28,11 +29,35 @@ function cleanDetail(detail) {
   return JSON.stringify(out);
 }
 
-export function anchorMac(keyring, lastId, lastHash) {
-  return hmacHex(keyring.current.audit, `audit-anchor|${lastId}|${lastHash}`);
+export function anchorMac(keyringOrSet, lastId, lastHash) {
+  const ks = keyringOrSet.current || keyringOrSet;
+  return hmacHex(ks.audit, `audit-anchor|${lastId}|${lastHash}`);
+}
+const anyKeyMac = (keyring, id, hash, mac) => [...keyring.sets.values()].some((ks) => safeEqual(mac, anchorMac(ks, id, hash)));
+
+/** F-16: external, append-only export of the chain head ("<ts> <id> <hash> <mac>" per line). */
+export function readAnchorLog(file) {
+  if (!file || !fs.existsSync(file)) return [];
+  return fs.readFileSync(file, 'utf8').split('\n').filter(Boolean).map((l) => {
+    const [ts, id, hash, mac] = l.trim().split(' ');
+    return { ts, id: Number(id), hash, mac };
+  }).filter((x) => Number.isInteger(x.id) && x.hash && x.mac);
 }
 
-export function createAudit(db, keyring, log) {
+export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery = 100 } = {}) {
+  function exportHead(id, hash) {
+    if (!anchorFile) return;
+    try {
+      fs.appendFileSync(anchorFile, `${new Date().toISOString()} ${id} ${hash} ${anchorMac(keyring, id, hash)}\n`, { mode: 0o600 });
+    } catch (e) { log?.warn('audit anchor export failed', { err: e.message }); }
+  }
+  /** Write the current chain head to the anchor file (on shutdown). */
+  function writeHead() {
+    const last = db.get('SELECT id, hash FROM audit_log ORDER BY id DESC LIMIT 1');
+    const prev = readAnchorLog(anchorFile).at(-1);
+    if (last && (!prev || prev.id !== last.id)) exportHead(last.id, last.hash);
+  }
+
   function append(e) {
     return db.tx(() => {
       const last = db.get('SELECT id, hash FROM audit_log ORDER BY id DESC LIMIT 1');
@@ -58,30 +83,50 @@ export function createAudit(db, keyring, log) {
       db.run(`INSERT INTO audit_anchor (id, last_id, last_hash, mac, updated_at) VALUES (1,?,?,?,?)
         ON CONFLICT(id) DO UPDATE SET last_id = excluded.last_id, last_hash = excluded.last_hash, mac = excluded.mac, updated_at = excluded.updated_at`,
       row.id, hash, anchorMac(keyring, row.id, hash), row.ts);
+      if (anchorFile && row.id % anchorEvery === 0) exportHead(row.id, hash);
       return row.id;
     });
   }
 
-  /** Walk the whole chain. Returns { ok, checked, brokenAt?, reason? }. */
-  function verify() {
-    let prev = GENESIS, expectedId = 1, checked = 0, lastId = 0, lastHash = GENESIS;
+  /**
+   * Walk the whole (global) chain. With `orgId`, `checked` reports only that org's row count and a break
+   * located in another tenant's row is reported without its id (F-11).
+   * Returns { ok, checked, brokenAt?, reason? }.
+   */
+  function verify({ orgId } = {}) {
+    let prev = GENESIS, expectedId = 1, total = 0, orgRows = 0, lastId = 0, lastHash = GENESIS;
+    const hashes = new Map();
+    const fail = (id, rowOrg, reason) => {
+      const visible = orgId === undefined || rowOrg === orgId;
+      return { ok: false, checked: orgId === undefined ? total : orgRows, brokenAt: visible ? id : null, reason };
+    };
     for (const r of db.iterate('SELECT * FROM audit_log ORDER BY id ASC')) {
-      if (r.id !== expectedId) return { ok: false, checked, brokenAt: expectedId, reason: 'missing or reordered row' };
-      if (r.prev_hash !== prev) return { ok: false, checked, brokenAt: r.id, reason: 'prev_hash does not link to previous row' };
-      if (computeHash(prev, r) !== r.hash) return { ok: false, checked, brokenAt: r.id, reason: 'row content does not match its hash' };
-      prev = r.hash; lastId = r.id; lastHash = r.hash; expectedId++; checked++;
+      if (r.id !== expectedId) return fail(expectedId, r.org_id, 'missing or reordered row');
+      if (r.prev_hash !== prev) return fail(r.id, r.org_id, 'prev_hash does not link to previous row');
+      if (computeHash(prev, r) !== r.hash) return fail(r.id, r.org_id, 'row content does not match its hash');
+      if (anchorFile) hashes.set(r.id, r.hash);
+      prev = r.hash; lastId = r.id; lastHash = r.hash; expectedId++; total++;
+      if (orgId !== undefined && r.org_id === orgId) orgRows++;
     }
+    const checked = orgId === undefined ? total : orgRows;
     const anchor = db.get('SELECT last_id, last_hash, mac FROM audit_anchor WHERE id = 1');
-    if (anchor || checked) {
-      if (!anchor) return { ok: false, checked, brokenAt: 1, reason: 'chain anchor missing' };
-      if (!safeEqual(anchor.mac, anchorMac(keyring, anchor.last_id, anchor.last_hash))) return { ok: false, checked, brokenAt: anchor.last_id, reason: 'chain anchor signature invalid' };
-      if (anchor.last_id !== lastId || anchor.last_hash !== lastHash) return { ok: false, checked, brokenAt: Math.min(anchor.last_id, lastId + 1), reason: 'chain head does not match anchor (truncation?)' };
+    if (anchor || total) {
+      if (!anchor) return { ok: false, checked, brokenAt: null, reason: 'chain anchor missing' };
+      if (!safeEqual(anchor.mac, anchorMac(keyring, anchor.last_id, anchor.last_hash))) return { ok: false, checked, brokenAt: null, reason: 'chain anchor signature invalid' };
+      if (anchor.last_id !== lastId || anchor.last_hash !== lastHash) return { ok: false, checked, brokenAt: null, reason: 'chain head does not match anchor (truncation?)' };
+    }
+    // F-16: cross-check the external append-only anchor log, if present
+    for (const a of readAnchorLog(anchorFile)) {
+      if (!anyKeyMac(keyring, a.id, a.hash, a.mac)) return { ok: false, checked, brokenAt: null, reason: `anchor log line for row ${a.id} has an invalid MAC` };
+      if (a.id > lastId) return { ok: false, checked, brokenAt: null, reason: `audit log truncated: anchor log records row ${a.id} but the chain ends at ${lastId}` };
+      if (hashes.get(a.id) !== a.hash) return { ok: false, checked, brokenAt: null, reason: `row ${a.id} differs from the exported anchor` };
     }
     return { ok: true, checked };
   }
 
   function list({ orgId, limit = 50, offset = 0, actor, action, targetType, targetId }) {
-    const where = ['(org_id = ? OR org_id IS NULL)'];
+    // F-11: pre-login / org-less rows are platform-operator data, never shown in an org's view
+    const where = ['org_id = ?'];
     const params = [orgId];
     if (actor) { where.push('actor_id = ?'); params.push(actor); }
     if (action) {
@@ -102,5 +147,5 @@ export function createAudit(db, keyring, log) {
     return { items, total };
   }
 
-  return { append, verify, list, log };
+  return { append, verify, list, writeHead, log };
 }

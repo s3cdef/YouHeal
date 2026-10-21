@@ -118,54 +118,75 @@ fi
 
 # ------------------------------------------------------------------------------------------------
 [ -x "${STATE_NODE_BIN}" ] || [ "${DRY_RUN}" = 1 ] || die "node runtime ${STATE_NODE_BIN} not found"
-run mkdir -p "${OUT_DIR}"
-run chown "${STATE_SERVICE_USER}:$(id -gn "${STATE_SERVICE_USER}" 2>/dev/null || echo "${STATE_SERVICE_USER}")" "${OUT_DIR}"
-run chmod 0700 "${OUT_DIR}"
+SVC="${STATE_SERVICE_USER}"
+SVC_GROUP="$(id -gn "${SVC}" 2>/dev/null || echo "${SVC}")"
+
+# F-03: everything inside the output dir is created/read/written by the service account; root never
+# follows a path the service account controls. A planted symlink aborts the run.
+case "${OUT_DIR}/" in
+  "${STATE_DATA_DIR}/"*) svc_mkdir "${SVC}" "${OUT_DIR}" 0700 ;;           # inside the service-owned data dir
+  *) if [ -d "${OUT_DIR}" ]; then assert_no_symlink "${OUT_DIR}"; else root_dir "${OUT_DIR}" "${SVC}:${SVC_GROUP}" 0700; fi ;;
+esac
+assert_tree_no_symlinks "${OUT_DIR}"
 
 HOST_TAG="$(hostname -s 2>/dev/null || hostname)"
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 FILE="${OUT_DIR}/youheal-${HOST_TAG}-${TS}.yhbak"
+assert_no_symlink "${FILE}" "${FILE}.sha256"
 make_tmp
 MARKER="${YH_TMP_DIR}/start.marker"; touch "${MARKER}"
 
 log "creating encrypted backup -> ${FILE}"
-node_script "${STATE_NODE_BIN}" "${STATE_SERVICE_USER}" "${ENV_FILE}" "${APP_DIR}" backup --out "${FILE}" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}
+node_script "${STATE_NODE_BIN}" "${SVC}" "${ENV_FILE}" "${APP_DIR}" backup --out "${FILE}" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}
 
+SUM=""
 if [ "${DRY_RUN}" = 0 ]; then
-  if [ ! -s "${FILE}" ]; then
+  if [ ! -s "${FILE}" ] || [ -L "${FILE}" ]; then
     # Fallback: the app wrote to its default directory (<data-dir>/backups) and ignored --out.
     newest="$(find "${STATE_DATA_DIR}/backups" "${OUT_DIR}" -maxdepth 1 -type f -newer "${MARKER}" ! -name '*.sha256' 2>/dev/null | head -n 1 || true)"
     [ -n "${newest}" ] || die "backup command finished but produced no file"
-    mv -f -- "${newest}" "${FILE}"
+    svc_exec "${SVC}" mv -f -- "${newest}" "${FILE}"
   fi
-  SUM="$(sha256_of "${FILE}")"
-  printf '%s  %s\n' "${SUM}" "$(basename -- "${FILE}")" >"${FILE}.sha256"
-  chown "${STATE_SERVICE_USER}" "${FILE}" "${FILE}.sha256"; chmod 0600 "${FILE}" "${FILE}.sha256"
-  ok "backup written: ${FILE} ($(wc -c <"${FILE}" | tr -d ' ') bytes, sha256 ${SUM})"
+  assert_no_symlink "${FILE}" "${FILE}.sha256"
+  # Hash computed over the bytes the SERVICE ACCOUNT reads (never root following a path it controls).
+  SUM="$(svc_exec "${SVC}" cat -- "${FILE}" | { if command -v sha256sum >/dev/null 2>&1; then sha256sum; else shasum -a 256; fi; } | awk '{print $1}')"
+  printf '%s  %s\n' "${SUM}" "$(basename -- "${FILE}")" | svc_write "${SVC}" "${FILE}.sha256" 0600
+  ok "backup written: ${FILE} (sha256 ${SUM})"
 fi
 log "verifying backup (GCM authentication tag) with the application"
-node_script "${STATE_NODE_BIN}" "${STATE_SERVICE_USER}" "${ENV_FILE}" "${APP_DIR}" backup --verify "${FILE}"
+node_script "${STATE_NODE_BIN}" "${SVC}" "${ENV_FILE}" "${APP_DIR}" backup --verify "${FILE}"
 ok "backup verified"
 
 if [ -n "${COPY_TO}" ]; then
-  run mkdir -p "${COPY_TO}"; run chmod 0700 "${COPY_TO}"
-  run cp -p -- "${FILE}" "${FILE}.sha256" "${COPY_TO}/"
-  if [ "${DRY_RUN}" = 0 ]; then
-    [ "$(sha256_of "${COPY_TO}/$(basename -- "${FILE}")")" = "${SUM}" ] || die "copy verification failed in ${COPY_TO}"
+  # COPY_TO is an operator-chosen, root-controlled destination (USB/NAS mount); the source bytes are read
+  # by the service account so a planted link cannot make root copy a file it should not.
+  if [ -d "${COPY_TO}" ]; then assert_no_symlink "${COPY_TO}"; else run mkdir -p "${COPY_TO}"; fi
+  run chmod 0700 "${COPY_TO}"
+  dest="${COPY_TO}/$(basename -- "${FILE}")"
+  assert_no_symlink "${dest}" "${dest}.sha256"
+  if [ "${DRY_RUN}" = 1 ]; then run "copy ${FILE} (+ .sha256) -> ${COPY_TO}/"
+  else
+    (umask 077; svc_exec "${SVC}" cat -- "${FILE}" >"${dest}.tmp" && mv -f -- "${dest}.tmp" "${dest}")
+    (umask 077; svc_exec "${SVC}" cat -- "${FILE}.sha256" >"${dest}.sha256")
+    [ "$(sha256_of "${dest}")" = "${SUM}" ] || die "copy verification failed in ${COPY_TO}"
     ok "verified copy in ${COPY_TO}"
   fi
 fi
 
 rotate() {
-  local dir=$1 n=0 f
+  # rotate <dir> <as-user|root>
+  local dir=$1 who=$2 n=0 f
   [ "${KEEP}" -gt 0 ] || return 0
   [ -d "${dir}" ] || return 0
   while IFS= read -r f; do
     [ -n "${f}" ] || continue
     n=$((n + 1))
-    if [ "${n}" -gt "${KEEP}" ]; then run rm -f -- "${f}" "${f}.sha256"; log "rotated out $(basename -- "${f}")"; fi
+    if [ "${n}" -gt "${KEEP}" ]; then
+      if [ "${who}" = root ]; then run rm -f -- "${f}" "${f}.sha256"; else svc_exec "${SVC}" rm -f -- "${f}" "${f}.sha256"; fi
+      log "rotated out $(basename -- "${f}")"
+    fi
   done < <(find "${dir}" -maxdepth 1 -type f -name 'youheal-*.yhbak' | LC_ALL=C sort -r)
 }
-rotate "${OUT_DIR}"
-if [ -n "${COPY_TO}" ]; then rotate "${COPY_TO}"; fi
+rotate "${OUT_DIR}" svc
+if [ -n "${COPY_TO}" ]; then rotate "${COPY_TO}" root; fi
 ok "backup complete (retention: ${KEEP})"

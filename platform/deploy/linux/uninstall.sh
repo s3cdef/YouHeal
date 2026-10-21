@@ -132,26 +132,37 @@ else
 fi
 if [ "${PURGE}" = 0 ] && [ -d "${DATA_DIR}" ]; then
   # keep a copy of the (secret-free) config next to the data for a later reinstall
-  run mkdir -p "${DATA_DIR}/uninstalled-config"
-  run cp -p "${CONF_DIR}/youheal.env" "${CONF_DIR}/install.state" "${DATA_DIR}/uninstalled-config/" || true
+  # written by the service account: root never writes into the service-owned data dir (F-03)
+  if id "${SVC_USER}" >/dev/null 2>&1; then
+    svc_mkdir "${SVC_USER}" "${DATA_DIR}/uninstalled-config" 0700
+    for cf in youheal.env install.state; do
+      if [ -f "${CONF_DIR}/${cf}" ]; then svc_write "${SVC_USER}" "${DATA_DIR}/uninstalled-config/${cf}" 0600 <"${CONF_DIR}/${cf}"; fi
+    done
+  fi
 fi
 run rm -rf -- "${CONF_DIR}"
 ok "application and configuration removed"
 
 # --- data ------------------------------------------------------------------------------------------
 shred_file() {
-  local f=$1
-  if command -v shred >/dev/null 2>&1; then run shred -f -z -u -n 3 -- "${f}"
+  # Overwrite + delete one key file. Runs as the service account when it still exists, so a symlink
+  # planted in the data dir cannot make root overwrite an arbitrary file (F-03); symlinks are refused.
+  local f=$1 who=()
+  assert_no_symlink "${f}"
+  if id "${SVC_USER}" >/dev/null 2>&1; then who=(svc_exec "${SVC_USER}"); else who=(run); fi
+  if command -v shred >/dev/null 2>&1; then "${who[@]}" shred -f -z -u -n 3 -- "${f}"
   else
     local size; size="$(wc -c <"${f}" | tr -d ' ')"
-    run dd if=/dev/urandom of="${f}" bs=1 count="${size}" conv=notrunc 2>/dev/null
-    run rm -f -- "${f}"
+    "${who[@]}" dd if=/dev/urandom of="${f}" bs=1 count="${size}" conv=notrunc 2>/dev/null
+    "${who[@]}" rm -f -- "${f}"
   fi
 }
 if [ "${PURGE}" = 1 ]; then
   log "crypto-erase: destroying master and retired keys"
   if [ -d "${DATA_DIR}/keys" ]; then
+    assert_no_symlink "${DATA_DIR}/keys"
     while IFS= read -r f; do shred_file "${f}"; done < <(find "${DATA_DIR}/keys" -type f)
+    if [ -n "$(find "${DATA_DIR}/keys" -type l 2>/dev/null | head -n 1)" ]; then warn "symlinks found in ${DATA_DIR}/keys were NOT followed (investigate)"; fi
   fi
   if [ -n "${KEY_FILE_ENV}" ] && [ -f "${KEY_FILE_ENV}" ]; then shred_file "${KEY_FILE_ENV}"; fi
   run sync

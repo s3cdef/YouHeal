@@ -1,6 +1,6 @@
 // Cryptographic primitives (ADR-003, CONTRACT §7). node:crypto only.
 //
-//  * Master key (32 bytes) -> HKDF-SHA256 subkeys: enc, bidx (blind index), backup, audit, keyid.
+//  * Master key (32 bytes) -> HKDF-SHA256 subkeys: enc, bidx (blind index), backup, audit, recovery, keyid.
 //  * Field encryption: AES-256-GCM, 96-bit random IV, optional AAD binding the ciphertext to
 //    "<table>.<column>:<rowId>" so ciphertexts cannot be swapped between rows/columns.
 //    Format: v1:<keyId>:<iv b64>:<tag b64>:<ct b64>
@@ -25,6 +25,7 @@ export function deriveKeySet(master) {
     bidx: hkdf(master, 'youheal:blind-index:v1'),
     backup: hkdf(master, 'youheal:backup:v1'),
     audit: hkdf(master, 'youheal:audit-anchor:v1'),
+    recovery: hkdf(master, 'youheal:recovery-code:v1'),
   });
 }
 

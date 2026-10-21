@@ -71,7 +71,6 @@ ENV_FILE="${CONF_DIR}/youheal.env"
 APP_DIR="${STATE_PREFIX}/current"
 DATA_DIR="${STATE_DATA_DIR}"
 SVC_USER="${STATE_SERVICE_USER}"
-SVC_GROUP="$(id -gn "${SVC_USER}" 2>/dev/null || echo "${SVC_USER}")"
 YH_HEALTH_PROBE="${APP_DIR}/deploy/common/healthcheck.mjs"; export YH_HEALTH_PROBE
 
 [ -r "${IN_FILE}" ] || die "cannot read ${IN_FILE}"
@@ -90,53 +89,66 @@ confirm "This REPLACES the current ${YH_PRODUCT} database on $(hostname). Contin
 
 SNAP=""
 ROLLBACK_ARMED=0
+KEY_FILE=""
+OLD_KEY_COPY=""
+# F-03: all reads/writes inside the service-owned data dir run as the service account; symlinks abort.
+# F-18: the safety snapshot holds db/ only (never keys/), is 0600 and service-owned, and is deleted
+#       after a successful restore (kept only when the restore fails, for analysis).
 rollback() {
   [ "${ROLLBACK_ARMED}" = 1 ] || return 0
   ROLLBACK_ARMED=0
   err "restore failed — rolling back to the pre-restore snapshot ${SNAP}"
   service_ctl stop || true
-  if [ -n "${SNAP}" ] && [ -f "${SNAP}" ]; then
-    rm -rf -- "${DATA_DIR}/db" "${DATA_DIR}/keys"
-    tar -xzf "${SNAP}" -C "${DATA_DIR}"
-    chown -R "${SVC_USER}:${SVC_GROUP}" "${DATA_DIR}/db" "${DATA_DIR}/keys"
+  if [ -n "${SNAP}" ] && [ -f "${SNAP}" ] && [ ! -L "${SNAP}" ]; then
+    svc_exec "${SVC_USER}" rm -rf -- "${DATA_DIR}/db"
+    svc_exec "${SVC_USER}" tar -xzf "${SNAP}" -C "${DATA_DIR}"
+  fi
+  if [ -n "${OLD_KEY_COPY}" ] && [ -f "${OLD_KEY_COPY}" ]; then
+    svc_exec "${SVC_USER}" cp -- "${OLD_KEY_COPY}" "${KEY_FILE}"
+    warn "previous master key reinstated from ${OLD_KEY_COPY}"
   fi
   service_ctl start || true
   if [ "${INIT_SYSTEM}" = none ]; then warn "rolled back; no init system — start the service manually"
   elif health_check "${STATE_NODE_BIN}" "${ENV_FILE}" "${HEALTH_RETRIES}"; then warn "rolled back; service is healthy on the previous data"
   else err "rollback finished but the service is NOT healthy — see docs/OPERATIONS.md §7"; fi
+  if [ -n "${SNAP}" ]; then warn "pre-restore snapshot KEPT for analysis: ${SNAP} (PHI ciphertext; delete when done)"; fi
 }
 on_exit_hook() { if [ "$1" -ne 0 ]; then rollback; fi; }
 
+assert_tree_no_symlinks "${DATA_DIR}"
 service_ctl stop
 if [ "${SAFETY}" = 1 ]; then
   SNAP="${DATA_DIR}/backups/pre-restore-$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
-  log "safety snapshot (cold copy of db/ and keys/) -> ${SNAP}"
-  run tar -czf "${SNAP}" -C "${DATA_DIR}" db keys
-  run chmod 0600 "${SNAP}"
+  assert_no_symlink "${SNAP}"
+  log "safety snapshot (cold copy of db/, keys excluded) -> ${SNAP}"
+  # shellcheck disable=SC2016  # expanded by the inner shell (service account)
+  svc_exec "${SVC_USER}" sh -c 'umask 077; tar -czf "$1" -C "$2" db' _ "${SNAP}" "${DATA_DIR}"
   ROLLBACK_ARMED=1
 fi
 
 if [ -n "${MASTER_KEY_IN}" ]; then
   [ -r "${MASTER_KEY_IN}" ] || die "cannot read ${MASTER_KEY_IN}"
   KEY_FILE="$(env_get "${ENV_FILE}" YH_MASTER_KEY_FILE "${DATA_DIR}/keys/master.key")"
-  if [ -f "${KEY_FILE}" ] && ! cmp -s "${MASTER_KEY_IN}" "${KEY_FILE}"; then
-    run mkdir -p "${DATA_DIR}/keys/retired"
-    run cp -p "${KEY_FILE}" "${DATA_DIR}/keys/retired/pre-restore-$(date -u +%Y%m%dT%H%M%SZ).key"
-    warn "previous master key kept as a retired (decrypt-only) key in ${DATA_DIR}/keys/retired/"
+  assert_no_symlink "${KEY_FILE}"
+  if [ -f "${KEY_FILE}" ] && ! svc_exec "${SVC_USER}" cat -- "${KEY_FILE}" | tr -d ' \r\n\t' | cmp -s - <(tr -d ' \r\n\t' <"${MASTER_KEY_IN}"); then
+    OLD_KEY_COPY="${DATA_DIR}/keys/retired/pre-restore-$(date -u +%Y%m%dT%H%M%SZ).key"
+    svc_mkdir "${SVC_USER}" "${DATA_DIR}/keys/retired" 0700
+    svc_exec "${SVC_USER}" cp -- "${KEY_FILE}" "${OLD_KEY_COPY}"
+    warn "previous master key kept as a retired (decrypt-only) key: ${OLD_KEY_COPY}"
   fi
-  run install -m 0600 -o "${SVC_USER}" -g "${SVC_GROUP}" "${MASTER_KEY_IN}" "${KEY_FILE}"
+  tr -d ' \r\n\t' <"${MASTER_KEY_IN}" | svc_write "${SVC_USER}" "${KEY_FILE}" 0600
   ok "master key installed for restore"
 fi
 
-# Stage the backup where the (unprivileged) service user can read it.
+# Stage the backup where the (unprivileged) service user can read it: root reads the operator's file,
+# the service account writes the staged copy.
 STAGED="${DATA_DIR}/backups/.restore-$(basename -- "${IN_FILE}")"
-run cp -- "${IN_FILE}" "${STAGED}"
-run chown "${SVC_USER}:${SVC_GROUP}" "${STAGED}"
+svc_write "${SVC_USER}" "${STAGED}" 0600 <"${IN_FILE}"
 log "running application restore"
 # Backend contract: `npm run restore -- <file.yhbak> --yes` (verifies the GCM tag + SQLite integrity before
 # replacing the DB, refuses while the server pid file is live, and keeps its own .pre-restore copy).
 node_script "${STATE_NODE_BIN}" "${SVC_USER}" "${ENV_FILE}" "${APP_DIR}" restore "${STAGED}" --yes ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}
-run rm -f -- "${STAGED}"
+svc_exec "${SVC_USER}" rm -f -- "${STAGED}"
 
 log "applying migrations (backup may predate the installed release)"
 node_script "${STATE_NODE_BIN}" "${SVC_USER}" "${ENV_FILE}" "${APP_DIR}" migrate
@@ -146,5 +158,6 @@ if [ "${INIT_SYSTEM}" != none ]; then
   health_check "${STATE_NODE_BIN}" "${ENV_FILE}" "${HEALTH_RETRIES}" || die "service unhealthy after restore"
 fi
 ROLLBACK_ARMED=0
+if [ -n "${SNAP}" ]; then svc_exec "${SVC_USER}" rm -f -- "${SNAP}"; log "safety snapshot removed (restore succeeded)"; fi
 ok "restore complete. Verify: sign in, open a known patient, and run Audit -> Verify chain (GET /api/v1/audit/verify)."
-if [ -n "${SNAP}" ]; then log "pre-restore snapshot retained at ${SNAP} (contains PHI + keys; delete it once satisfied)"; fi
+log "the application kept the replaced database as <data>/db/*.pre-restore-* — delete it once satisfied (PHI ciphertext)"

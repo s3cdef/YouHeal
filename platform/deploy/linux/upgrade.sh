@@ -76,7 +76,6 @@ ENV_FILE="${CONF_DIR}/youheal.env"
 PREFIX="${STATE_PREFIX}"
 DATA_DIR="${STATE_DATA_DIR}"
 SVC_USER="${STATE_SERVICE_USER}"
-SVC_GROUP="$(id -gn "${SVC_USER}" 2>/dev/null || echo "${SVC_USER}")"
 
 [ -L "${PREFIX}/current" ] || die "${PREFIX}/current is not a symlink; was this host installed with install.sh?"
 OLD_RELEASE="$(cd -- "${PREFIX}/current" && pwd -P)"
@@ -127,6 +126,8 @@ CARRY=(--prefix "${PREFIX}" --data-dir "${DATA_DIR}" --conf-dir "${CONF_DIR}" --
        --skip-migrate --skip-catalog --no-start --yes)
 if [ -n "${STATE_LOG_DIR}" ]; then CARRY+=(--log-dir "${STATE_LOG_DIR}"); fi
 if [ "${TRUST}" != 0 ]; then CARRY+=(--trust-proxy); fi
+TPROX="$(env_get "${ENV_FILE}" YH_TRUSTED_PROXIES "")"
+if [ -n "${TPROX}" ]; then CARRY+=(--trusted-proxies "${TPROX}"); fi
 if [ -n "${ORIGIN}" ]; then CARRY+=(--public-origin "${ORIGIN}"); fi
 FQDN_STATE="$(env_get "${CONF_DIR}/install.state" FQDN "")"
 if [ -n "${FQDN_STATE}" ]; then CARRY+=(--hostname "${FQDN_STATE}"); fi
@@ -161,10 +162,13 @@ case "${INIT_SYSTEM}" in
 esac
 if [ -n "${UNIT}" ] && [ -f "${UNIT}" ]; then cp -p "${UNIT}" "${SAVE}/unit"; fi
 
+assert_tree_no_symlinks "${DATA_DIR}"
 service_ctl stop
+# F-03/F-18: snapshot written by the service account (0600), db/ only (no keys), removed on success.
 SNAP="${DATA_DIR}/backups/pre-upgrade-${OLD_VERSION}-$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
-run tar -czf "${SNAP}" -C "${DATA_DIR}" db
-run chmod 0600 "${SNAP}"
+assert_no_symlink "${SNAP}"
+# shellcheck disable=SC2016  # expanded by the inner shell (service account)
+svc_exec "${SVC_USER}" sh -c 'umask 077; tar -czf "$1" -C "$2" db' _ "${SNAP}" "${DATA_DIR}"
 
 ROLLBACK_ARMED=1
 rollback() {
@@ -175,10 +179,10 @@ rollback() {
   service_ctl stop || true
   ln -sfn "${OLD_RELEASE}" "${PREFIX}/.current.tmp"
   mv -T "${PREFIX}/.current.tmp" "${PREFIX}/current" 2>/dev/null || { rm -f "${PREFIX}/current" "${PREFIX}/.current.tmp"; ln -s "${OLD_RELEASE}" "${PREFIX}/current"; }
-  if [ -f "${SNAP}" ]; then
-    rm -rf -- "${DATA_DIR}/db"
-    tar -xzf "${SNAP}" -C "${DATA_DIR}"
-    chown -R "${SVC_USER}:${SVC_GROUP}" "${DATA_DIR}/db"
+  if [ -f "${SNAP}" ] && [ ! -L "${SNAP}" ]; then
+    svc_exec "${SVC_USER}" rm -rf -- "${DATA_DIR}/db"
+    svc_exec "${SVC_USER}" tar -xzf "${SNAP}" -C "${DATA_DIR}"
+    warn "pre-upgrade snapshot KEPT for analysis: ${SNAP} (PHI ciphertext; delete when done)"
   fi
   cp -p "${SAVE}/youheal.env" "${ENV_FILE}"
   cp -p "${SAVE}/install.state" "${CONF_DIR}/install.state"
@@ -236,5 +240,6 @@ if [ "${INIT_SYSTEM}" != none ]; then
 fi
 ROLLBACK_ARMED=0
 ok "upgraded ${OLD_VERSION} -> ${NEW_VERSION} (${NEW_RELEASE})"
-log "pre-upgrade DB snapshot kept at ${SNAP} (PHI; delete after the post-upgrade verification window)"
-log "manual rollback if needed later: see docs/OPERATIONS.md §8 (snapshot + previous release are on disk)"
+svc_exec "${SVC_USER}" rm -f -- "${SNAP}"
+log "pre-upgrade DB snapshot removed (upgrade succeeded); the encrypted pre-upgrade backup remains in <data>/backups"
+log "manual rollback if needed later: see docs/OPERATIONS.md §8 (previous release + encrypted pre-upgrade backup are on disk)"

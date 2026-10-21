@@ -2,6 +2,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import net from 'node:net';
 
 export class HttpError extends Error {
   constructor(status, code, message, fields) {
@@ -91,17 +92,25 @@ export async function readJsonBody(req, limit) {
 
 // ---------------------------------------------------------------- cookies & client info
 
+/**
+ * Parse a Cookie header. Duplicate names are recorded in `out[DUPES]` (a Set) so callers can refuse
+ * ambiguous session cookies (cookie tossing) instead of picking one arbitrarily.
+ */
+export const DUPES = Symbol('duplicate-cookie-names');
 export function parseCookies(header) {
   const out = {};
+  const dupes = new Set();
   for (const part of String(header || '').split(';')) {
     const i = part.indexOf('=');
     if (i < 0) continue;
     const k = part.slice(0, i).trim();
-    if (!k || k in out) continue;
+    if (!k) continue;
+    if (Object.prototype.hasOwnProperty.call(out, k)) { dupes.add(k); continue; }
     let val = part.slice(i + 1).trim();
     if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
     try { out[k] = decodeURIComponent(val); } catch { out[k] = val; }
   }
+  Object.defineProperty(out, DUPES, { value: dupes, enumerable: false });
   return out;
 }
 
@@ -114,16 +123,52 @@ export function serializeCookie(name, value, { secure, maxAge, httpOnly = true, 
   return s;
 }
 
-const normIp = (ip) => String(ip || '').replace(/^::ffff:/, '');
+const normIp = (ip) => String(ip || '').replace(/^::ffff:(?=\d+\.\d+\.\d+\.\d+$)/, '');
 
-export function clientIp(req, trustProxy = 0) {
+const blockLists = new WeakMap();
+function trustedList(cfg) {
+  let bl = blockLists.get(cfg);
+  if (!bl) {
+    bl = new net.BlockList();
+    for (const t of cfg.trustedProxies || []) {
+      const [ip, bits] = t.split('/');
+      const type = net.isIP(ip) === 6 ? 'ipv6' : 'ipv4';
+      if (bits !== undefined) bl.addSubnet(ip, Number(bits), type); else bl.addAddress(ip, type);
+    }
+    blockLists.set(cfg, bl);
+  }
+  return bl;
+}
+
+/** F-09: forwarding headers count only when trust is enabled AND the TCP peer is a configured proxy. */
+export function isTrustedPeer(req, cfg) {
+  if (!cfg?.trustProxy) return false;
+  const peer = normIp(req.socket?.remoteAddress);
+  const fam = net.isIP(peer);
+  if (!fam) return false;
+  return trustedList(cfg).check(peer, fam === 6 ? 'ipv6' : 'ipv4');
+}
+
+export function clientIp(req, cfg = {}) {
   const sock = normIp(req.socket?.remoteAddress);
-  if (!trustProxy) return sock;
+  if (!isTrustedPeer(req, cfg)) return sock;
   const xff = String(req.headers['x-forwarded-for'] || '').split(',').map((s) => s.trim()).filter(Boolean);
   if (!xff.length) return sock;
   // The rightmost `trustProxy` hops are our proxies; the client is the one just before them.
-  const idx = Math.max(0, xff.length - trustProxy);
-  return normIp(xff[idx] ?? xff[0]);
+  const idx = Math.max(0, xff.length - cfg.trustProxy);
+  const ip = normIp(xff[idx] ?? xff[0]);
+  return net.isIP(ip) ? ip : sock;
+}
+
+/** Rate-limit / connection-cap key: IPv4 address, or the /64 prefix of an IPv6 address. */
+export function ipBucketKey(ip) {
+  const s = normIp(ip);
+  if (net.isIP(s) !== 6) return s;
+  let [head, tail] = s.toLowerCase().split('::');
+  const h = head ? head.split(':') : [];
+  const t = tail !== undefined ? (tail ? tail.split(':') : []) : [];
+  const groups = tail !== undefined ? [...h, ...Array(8 - h.length - t.length).fill('0'), ...t] : h;
+  return `${groups.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, '')).join(':')}::/64`;
 }
 
 export function isLoopbackIp(ip) {
@@ -131,9 +176,9 @@ export function isLoopbackIp(ip) {
   return s === '::1' || /^127\./.test(s);
 }
 
-export function requestProto(req, { tls, trustProxy }) {
-  if (tls) return 'https';
-  if (trustProxy) {
+export function requestProto(req, cfg) {
+  if (cfg.tls) return 'https';
+  if (isTrustedPeer(req, cfg)) {
     const xfp = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
     if (xfp === 'https' || xfp === 'http') return xfp;
   }
@@ -143,8 +188,29 @@ export function requestProto(req, { tls, trustProxy }) {
 export function expectedOrigin(req, cfg) {
   if (cfg.publicOrigin) return cfg.publicOrigin;
   let host = req.headers.host;
-  if (cfg.trustProxy && req.headers['x-forwarded-host']) host = String(req.headers['x-forwarded-host']).split(',')[0].trim();
+  if (isTrustedPeer(req, cfg) && req.headers['x-forwarded-host']) host = String(req.headers['x-forwarded-host']).split(',')[0].trim();
   return `${requestProto(req, cfg)}://${host}`;
+}
+
+/** Hostname part of a Host header value ("[::1]:8080" -> "::1"), lower-cased; null if malformed. */
+export function hostnameOf(hostHeader) {
+  const h = String(hostHeader || '').trim().toLowerCase();
+  if (!h) return null;
+  const m = /^\[([0-9a-f:.]+)\](?::\d{1,5})?$/.exec(h) || /^([a-z0-9.-]+)(?::\d{1,5})?$/.exec(h);
+  return m ? m[1] : null;
+}
+
+/** F-05: DNS-rebinding defense — the Host (and trusted X-Forwarded-Host) must be an allowed name. */
+export function hostAllowed(req, cfg) {
+  const allowed = cfg.allowedHosts;
+  if (!allowed) return true;
+  const hn = hostnameOf(req.headers.host);
+  if (!hn || !allowed.has(hn)) return false;
+  if (isTrustedPeer(req, cfg) && req.headers['x-forwarded-host']) {
+    const fh = hostnameOf(String(req.headers['x-forwarded-host']).split(',')[0]);
+    if (!fh || !allowed.has(fh)) return false;
+  }
+  return true;
 }
 
 // ---------------------------------------------------------------- static files

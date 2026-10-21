@@ -8,6 +8,7 @@ import { hashPassword, uuid } from '../lib/crypto.js';
 import { passwordPolicyError } from '../lib/auth.js';
 import { createAudit } from '../lib/audit.js';
 import { DEFAULT_POLARITY } from '../routes/_shared.js';
+import { removeSetupToken } from '../routes/setup.js';
 
 requireTty();
 const args = parseArgs();
@@ -59,6 +60,7 @@ try {
         VALUES (?,?,?,?, 'admin', ?,?,?,?)`, userId, org.id, email, name, hash, now(), now(), now());
       audit.append({ orgId: org.id, actorId: userId, actorRole: 'admin', action: 'cli.admin.create', targetType: 'user', targetId: userId, ip: 'local-cli' });
     });
+    removeSetupToken(cfg); // the web first-run setup is no longer needed
     console.log(`Admin ${email} created for clinic "${org.name}". MFA enrollment is required at first login.`);
   }
 } finally {

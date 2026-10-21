@@ -4,13 +4,13 @@
 import { randomUUID } from 'node:crypto';
 import { Router } from './lib/router.js';
 import {
-  HttpError, applySecurityHeaders, sendJson, sendError, readJsonBody, parseCookies, serializeCookie,
-  clientIp, requestProto, createStaticHandler, forbidden, unauthorized,
+  HttpError, applySecurityHeaders, sendJson, sendError, readJsonBody, parseCookies, serializeCookie, DUPES,
+  clientIp, requestProto, createStaticHandler, forbidden, unauthorized, hostAllowed, ipBucketKey,
 } from './lib/http.js';
 import { TokenBucket } from './lib/ratelimit.js';
 import { checkOrigin, checkCsrfToken } from './lib/csrf.js';
 import { createAudit } from './lib/audit.js';
-import { createSessionStore, GhostLockout, SESSION_COOKIE } from './lib/auth.js';
+import { createSessionStore, GhostLockout, sessionCookieName } from './lib/auth.js';
 import { ValidationError } from './lib/validate.js';
 import { DecryptError } from './lib/crypto.js';
 import { createCatalogService } from './routes/catalog.js';
@@ -31,16 +31,18 @@ const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const DEFAULT_BODY_LIMIT = 1024 * 1024;
 
 export function createApp({ cfg, db, keyring, log }) {
-  const audit = createAudit(db, keyring, log);
+  const audit = createAudit(db, keyring, log, { anchorFile: cfg.auditAnchorFile });
   const sessions = createSessionStore(db, cfg);
-  const ghost = new GhostLockout(cfg.lockout);
+  const ghost = new GhostLockout(db, keyring, cfg.lockout);
   const limits = {
     api: new TokenBucket({ capacity: cfg.rate.apiBurst, refillPerMin: cfg.rate.apiPerMin }),
     auth: new TokenBucket({ capacity: cfg.rate.authBurst, refillPerMin: cfg.rate.authPerMin }),
+    // F-01: per-account bucket — at most `maxAttempts` password verifications in flight/within the window
+    account: new TokenBucket({ capacity: cfg.lockout.maxAttempts, refillPerMin: cfg.lockout.maxAttempts / cfg.lockout.windowMin }),
   };
   const catalog = createCatalogService(db, { allowedLicenses: cfg.catalogLicenses ? new Set(cfg.catalogLicenses) : null });
   const router = new Router('/api/v1');
-  const deps = { cfg, db, keyring, log, audit, sessions, ghost, catalog, RAW };
+  const deps = { cfg, db, keyring, log, audit, sessions, ghost, catalog, limits, RAW };
 
   for (const mod of [healthRoutes, setupRoutes, authRoutes, userRoutes, orgRoutes, catalogRoutes, patientRoutes, sessionRoutes, auditRoutes, adminRoutes]) {
     mod.register(router, deps);
@@ -57,7 +59,8 @@ export function createApp({ cfg, db, keyring, log }) {
 
   async function handleApi(req, res, pathname, search) {
     const ip = req.ip;
-    const rl = limits.api.take(ip);
+    if (!hostAllowed(req, cfg)) throw new HttpError(421, 'MISDIRECTED_REQUEST', 'Host not allowed');
+    const rl = limits.api.take(ipBucketKey(ip));
     if (!rl.ok) throw Object.assign(new HttpError(429, 'RATE_LIMITED', 'Too many requests'), { retryAfter: rl.retryAfter });
 
     const m = router.match(req.method, pathname);
@@ -68,17 +71,18 @@ export function createApp({ cfg, db, keyring, log }) {
     req.route = route.pattern;
 
     if (o.rate === 'auth') {
-      const r = limits.auth.take(ip);
+      const r = limits.auth.take(ipBucketKey(ip));
       if (!r.ok) throw Object.assign(new HttpError(429, 'RATE_LIMITED', 'Too many attempts; slow down'), { retryAfter: r.retryAfter });
     }
 
     const secure = requestProto(req, cfg) === 'https';
+    const cookieName = sessionCookieName(secure);
     const ctx = {
       req, res, cfg, db, keyring, params, ip, reqId: req.id, secure,
       query: new URLSearchParams(search || ''),
       user: null, session: null, status: 200, restriction: null,
       setCookie(value, maxAge) {
-        res.appendHeader('Set-Cookie', serializeCookie(SESSION_COOKIE, value, { secure, maxAge }));
+        res.appendHeader('Set-Cookie', serializeCookie(cookieName, value, { secure, maxAge }));
       },
       audit(action, a = {}) {
         return audit.append({
@@ -90,7 +94,11 @@ export function createApp({ cfg, db, keyring, log }) {
     };
 
     // session
-    const token = parseCookies(req.headers.cookie)[SESSION_COOKIE];
+    // F-17: only the cookie name matching this request's security is honored; an ambiguous (duplicated)
+    // session cookie is refused rather than picking one arbitrarily.
+    const jar = parseCookies(req.headers.cookie);
+    const token = jar[DUPES].has(cookieName) ? null : jar[cookieName];
+    if (jar[DUPES].has(cookieName)) { ctx.setCookie('', 0); ctx.staleSession = true; }
     if (token) {
       const found = sessions.lookup(token);
       if (found?.user) {
@@ -132,10 +140,10 @@ export function createApp({ cfg, db, keyring, log }) {
   async function handler(req, res) {
     const started = process.hrtime.bigint();
     req.id = randomUUID();
-    req.ip = clientIp(req, cfg.trustProxy);
+    req.ip = clientIp(req, cfg);
     res.req = req;
     res.setHeader('X-Request-Id', req.id);
-    applySecurityHeaders(res, { hsts: cfg.tls || (cfg.trustProxy > 0 && requestProto(req, cfg) === 'https') });
+    applySecurityHeaders(res, { hsts: cfg.tls || requestProto(req, cfg) === 'https' });
 
     const rawUrl = String(req.url || '/');
     const q = rawUrl.indexOf('?');
@@ -169,6 +177,7 @@ export function createApp({ cfg, db, keyring, log }) {
     } else if (!(err instanceof HttpError)) {
       const msg = String(err?.message || '');
       if (/session is finalized and immutable/.test(msg)) e = new HttpError(409, 'SESSION_LOCKED', 'Session is finalized and cannot be modified');
+      else if (/last active admin/.test(msg)) e = new HttpError(409, 'LAST_ADMIN', 'The clinic must keep at least one active administrator');
       else {
         log.error('unhandled error', { reqId: req.id, err: msg, stack: err?.stack?.split('\n').slice(0, 6).join(' | ') });
         e = new HttpError(500, 'INTERNAL', 'Internal server error');
@@ -180,7 +189,8 @@ export function createApp({ cfg, db, keyring, log }) {
 
   function purge() {
     const n = sessions.purgeExpired();
-    limits.api.prune(); limits.auth.prune();
+    limits.api.prune(); limits.auth.prune(); limits.account.prune();
+    ghost.purge();
     return n;
   }
 

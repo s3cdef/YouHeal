@@ -68,12 +68,9 @@ export function register(router, { db, keyring, catalog }) {
     throw new Error('could not allocate MRN');
   }
 
-  router.get('/patients', (ctx) => {
-    const { limit, offset } = paging(ctx.query, { defLimit: 25, maxLimit: 200 });
-    const q = (ctx.query.get('q') || '').trim();
+  function searchPatients(ctx, { q = '', dobQ = null, includeArchived = false, limit, offset }) {
+    q = String(q || '').trim();
     if (q.length > 100) throw new HttpError(400, 'VALIDATION', 'q is too long', { q: 'must be at most 100 characters' });
-    const dobQ = ctx.query.get('dob');
-    const includeArchived = ctx.query.get('archived') === '1' || ctx.query.get('archived') === 'true';
     const where = ['org_id = ?'], params = [ctx.user.org_id];
     if (!includeArchived) where.push('archived = 0');
     let mode = 'list';
@@ -101,6 +98,29 @@ export function register(router, { db, keyring, catalog }) {
     if (mode !== 'list') items.sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
     ctx.audit('patient.search', { targetType: 'patient', detail: { mode, returned: items.length, total, ids: items.map((i) => i.id) } });
     return { items, total };
+  }
+
+  // Deprecated (F-08): search terms in the URL end up in proxy/browser logs. Use POST /patients/search.
+  router.get('/patients', (ctx) => {
+    const { limit, offset } = paging(ctx.query, { defLimit: 25, maxLimit: 200 });
+    ctx.res.setHeader('Deprecation', 'true');
+    ctx.res.setHeader('Link', '</api/v1/patients/search>; rel="successor-version"');
+    return searchPatients(ctx, {
+      q: ctx.query.get('q'), dobQ: ctx.query.get('dob'),
+      includeArchived: ctx.query.get('archived') === '1' || ctx.query.get('archived') === 'true', limit, offset,
+    });
+  }, { roles: PERM.patientRead });
+
+  const searchSchema = v.object({
+    q: v.string({ max: 100 }).optional().nullable(),
+    dob: v.date().optional().nullable(),
+    archived: v.bool().optional(),
+    limit: v.int({ min: 1, max: 200 }).optional(),
+    offset: v.int({ min: 0, max: 10_000_000 }).optional(),
+  });
+  router.post('/patients/search', (ctx) => {
+    const b = check(searchSchema, ctx.body ?? {});
+    return searchPatients(ctx, { q: b.q || '', dobQ: b.dob || null, includeArchived: Boolean(b.archived), limit: b.limit ?? 25, offset: b.offset ?? 0 });
   }, { roles: PERM.patientRead });
 
   router.post('/patients', (ctx) => {

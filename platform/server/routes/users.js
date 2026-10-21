@@ -2,7 +2,7 @@
 
 import { v, check, paging, uuidStr } from '../lib/validate.js';
 import { hashPassword, uuid, randomToken } from '../lib/crypto.js';
-import { passwordPolicyError } from '../lib/auth.js';
+import { passwordPolicyError, accountBucketKey } from '../lib/auth.js';
 import { HttpError, notFound, conflict, forbidden } from '../lib/http.js';
 import { ROLES, PERM } from '../lib/rbac.js';
 import { nowIso, userView, LOCALES } from './_shared.js';
@@ -28,7 +28,7 @@ const patchSchema = v.object({
 
 const tempPassword = () => `${randomToken(9)}-${randomToken(6)}`;
 
-export function register(router, { db, sessions }) {
+export function register(router, { db, sessions, limits }) {
   const opts = { roles: PERM.admin };
 
   router.get('/users', (ctx) => {
@@ -42,7 +42,8 @@ export function register(router, { db, sessions }) {
       return { items, total };
     }
     const total = db.get('SELECT COUNT(*) AS n FROM users WHERE org_id = ?', ctx.user.org_id).n;
-    const items = db.all('SELECT * FROM users WHERE org_id = ? ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?', ctx.user.org_id, limit, offset).map(userView);
+    const items = db.all(`SELECT u.*, (SELECT COUNT(*) FROM user_recovery_codes r WHERE r.user_id = u.id AND r.used_at IS NULL) AS recovery_remaining
+      FROM users u WHERE u.org_id = ? ORDER BY u.name COLLATE NOCASE LIMIT ? OFFSET ?`, ctx.user.org_id, limit, offset).map((u) => userView(u));
     return { items, total };
   }, { roles: [...PERM.admin, 'auditor'] });
 
@@ -52,11 +53,21 @@ export function register(router, { db, sessions }) {
     if (password === undefined) { password = tempPassword(); generated = true; }
     const pwErr = passwordPolicyError(password, body);
     if (pwErr) throw new HttpError(400, 'VALIDATION', 'Password does not meet policy', { password: pwErr });
-    if (db.get('SELECT 1 AS x FROM users WHERE email = ?', body.email)) throw conflict('EMAIL_TAKEN', 'A user with this email already exists');
+    // F-11: emails are globally unique (login has no org selector). The response is neutral so an admin of
+    // one clinic cannot probe whether an address exists in another; specifics go to the audit log only.
+    const emailTaken = (email) => {
+      const other = db.get('SELECT org_id FROM users WHERE email = ?', email);
+      if (!other) return false;
+      ctx.audit('user.create', { targetType: 'user', outcome: 'failure', detail: { reason: other.org_id === ctx.user.org_id ? 'email_in_use_same_org' : 'email_in_use' } });
+      return true;
+    };
+    const neutral = () => conflict('USER_CREATE_FAILED', 'Could not create user');
+    if (emailTaken(body.email)) throw neutral();
     const hash = await hashPassword(password);
     const id = uuid(), ts = nowIso();
     const mustChange = generated || body.mustChangePassword === true;
     db.tx(() => {
+      if (db.get('SELECT 1 AS x FROM users WHERE email = ?', body.email)) throw neutral(); // re-check after the await
       db.run(`INSERT INTO users (id, org_id, email, name, role, password_hash, password_changed_at, must_change_password, locale, created_at, updated_at)
         VALUES (?,?,?,?,?,?,?,?,?,?,?)`, id, ctx.user.org_id, body.email, body.name, body.role, hash, ts, mustChange, body.locale || 'en', ts, ts);
       ctx.audit('user.create', { targetType: 'user', targetId: id, detail: { role: body.role } });
@@ -78,7 +89,10 @@ export function register(router, { db, sessions }) {
       const admins = db.get("SELECT COUNT(*) AS n FROM users WHERE org_id = ? AND role = 'admin' AND active = 1", ctx.user.org_id).n;
       if (admins <= 1) throw conflict('LAST_ADMIN', 'The clinic must keep at least one active administrator');
     }
-    if (body.email && body.email !== target.email && db.get('SELECT 1 AS x FROM users WHERE email = ?', body.email)) throw conflict('EMAIL_TAKEN', 'A user with this email already exists');
+    if (body.email && body.email !== target.email && db.get('SELECT 1 AS x FROM users WHERE email = ?', body.email)) {
+      ctx.audit('user.update', { targetType: 'user', targetId: target.id, outcome: 'failure', detail: { reason: 'email_in_use' } });
+      throw conflict('USER_UPDATE_FAILED', 'Could not update user');
+    }
     let hash = null;
     if (body.password !== undefined) {
       const err = passwordPolicyError(body.password, { email: body.email || target.email, name: body.name || target.name });
@@ -96,15 +110,24 @@ export function register(router, { db, sessions }) {
     if (hash) { set('password_hash', hash, 'password'); sets.push('must_change_password = 1', 'password_changed_at = ?'); params.push(nowIso()); }
     if (body.unlock) { sets.push('failed_attempts = 0', 'locked_until = NULL', 'last_failed_at = NULL'); changed.push('unlock'); }
     if (body.resetMfa) { sets.push('mfa_enabled = 0', 'mfa_secret_enc = NULL', 'mfa_pending_enc = NULL', 'mfa_last_step = NULL', 'recovery_codes = NULL'); changed.push('mfa'); }
+    const lastAdminCheck = () => {
+      const cur = db.get('SELECT role, active FROM users WHERE id = ?', target.id);
+      if (cur.role !== 'admin' || !cur.active || !demoting) return;
+      const admins = db.get("SELECT COUNT(*) AS n FROM users WHERE org_id = ? AND role = 'admin' AND active = 1 AND id <> ?", ctx.user.org_id, target.id).n;
+      if (admins < 1) throw conflict('LAST_ADMIN', 'The clinic must keep at least one active administrator');
+    };
     if (!sets.length) return { user: userView(target) };
 
     db.tx(() => {
+      lastAdminCheck(); // F-06: recount inside the transaction, AFTER the scrypt await (a trigger backs this up)
+      if (body.resetMfa) db.run('DELETE FROM user_recovery_codes WHERE user_id = ?', target.id);
       db.run(`UPDATE users SET ${sets.join(', ')}, updated_at = ? WHERE id = ?`, ...params, nowIso(), target.id);
       if (hash || body.active === false || (body.role && body.role !== target.role) || body.resetMfa) {
         sessions.destroyForUser(target.id, target.id === ctx.user.id ? ctx.session.id : null);
       }
       ctx.audit('user.update', { targetType: 'user', targetId: target.id, detail: { fields: changed, role: body.role } });
     });
+    if (body.unlock) limits?.account.refund(accountBucketKey(target.email), Infinity);
     return { user: userView(db.get('SELECT * FROM users WHERE id = ?', target.id)) };
   }, opts);
 }

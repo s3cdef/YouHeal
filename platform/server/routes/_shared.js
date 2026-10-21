@@ -51,15 +51,14 @@ export function parseImageDataUrl(val, maxBytes) {
   return { kind: m[1], bytes };
 }
 
-export function userView(u) {
+export function userView(u, { recoveryRemaining } = {}) {
   if (!u) return null;
-  const codes = parseJson(u.recovery_codes, []);
   return {
     id: u.id, email: u.email, name: u.name, role: u.role, locale: u.locale, theme: u.theme,
     mfaEnabled: Boolean(u.mfa_enabled), active: Boolean(u.active),
     locked: Boolean(u.locked_until && Date.parse(u.locked_until) > Date.now()),
     mustChangePassword: Boolean(u.must_change_password),
-    recoveryCodesRemaining: u.mfa_enabled ? codes.filter((c) => !c.used).length : 0,
+    recoveryCodesRemaining: u.mfa_enabled ? (recoveryRemaining ?? u.recovery_remaining ?? 0) : 0,
     lastLoginAt: u.last_login_at, createdAt: u.created_at,
   };
 }

@@ -27,6 +27,6 @@ if (!args.yes) {
   if (a !== 'y') die('Aborted.', 0);
 }
 try {
-  const r = await restoreBackup(abs, keyring, cfg.dbPath, { log });
-  console.log(`Restore complete.${r.previous ? ` Previous database saved as ${r.previous}` : ''}`);
+  const r = await restoreBackup(abs, keyring, cfg.dbPath, { log, anchorFile: cfg.auditAnchorFile });
+  console.log(`Restore complete (backup sha256 ${r.sourceSha256.slice(0, 16)}…, recorded in the audit log).${r.previous ? ` Previous database saved as ${r.previous}` : ''}`);
 } catch (e) { die(`Restore FAILED (database untouched): ${e.message}`); }

@@ -46,7 +46,9 @@ REGEN_CERT=0
 MASTER_KEY_IN=""
 FORCE_KEY=0
 TRUST_PROXY=0
+TRUSTED_PROXIES=""
 PUBLIC_ORIGIN=""
+EXTRA_ALLOWED_HOSTS=""
 NODE_SOURCE="auto"       # auto | system | distro | tarball
 NODE_VERSION=""          # empty = latest v22.x
 NODE_BIN_IN=""
@@ -86,7 +88,12 @@ Network / TLS
   --cert-algo ec|rsa      self-signed key type: ec = P-256 (default), rsa = RSA-3072
   --cert-days N           self-signed validity in days (default: 825)
   --regen-cert            replace an existing self-signed certificate
-  --trust-proxy           set YH_TRUST_PROXY=1 (only behind deploy/reverse-proxy/)
+  --trust-proxy           set YH_TRUST_PROXY=1 (only behind deploy/reverse-proxy/). Forces --host 127.0.0.1
+                          unless --trusted-proxies is given (F-09)
+  --trusted-proxies LIST  proxy addresses/CIDRs allowed to set X-Forwarded-* (YH_TRUSTED_PROXIES;
+                          backend default: loopback only), e.g. 10.0.0.5,10.0.0.6
+  --allowed-hosts LIST    extra Host header values to accept (YH_ALLOWED_HOSTS is otherwise derived from
+                          --hostname, the short name, localhost, detected IPs, --san and --public-origin)
   --public-origin URL     external origin users browse to, e.g. https://clinic.example.org (YH_PUBLIC_ORIGIN)
   --open-firewall         open the port in ufw / firewalld / macOS application firewall
   --firewall-source CIDR  restrict the firewall rule to a source network (recommended, e.g. 192.168.1.0/24)
@@ -142,6 +149,8 @@ while [ "$#" -gt 0 ]; do
     --cert-days) need_arg "$@"; CERT_DAYS=$2; shift 2 ;;
     --regen-cert) REGEN_CERT=1; shift ;;
     --trust-proxy) TRUST_PROXY=1; shift ;;
+    --trusted-proxies) need_arg "$@"; TRUSTED_PROXIES=$2; shift 2 ;;
+    --allowed-hosts) need_arg "$@"; EXTRA_ALLOWED_HOSTS=$2; shift 2 ;;
     --public-origin) need_arg "$@"; PUBLIC_ORIGIN=$2; shift 2 ;;
     --open-firewall) OPEN_FIREWALL=1; shift ;;
     --firewall-source) need_arg "$@"; FIREWALL_SOURCE=$2; shift 2 ;;
@@ -222,6 +231,11 @@ RUNTIME_DIR="${PREFIX}/runtime"
 FQDN="${TLS_HOSTNAME:-$(hostname -f 2>/dev/null || hostname)}"
 SHORT_HOST="$(hostname -s 2>/dev/null || hostname)"
 validate_value "--hostname" "${FQDN}"
+if [ "${TRUST_PROXY}" = 1 ] && [ -z "${TRUSTED_PROXIES}" ] && [ "${BIND_HOST}" != 127.0.0.1 ]; then
+  warn "--trust-proxy without --trusted-proxies: binding to 127.0.0.1 so only a local proxy can reach the app (F-09)"
+  BIND_HOST="127.0.0.1"
+fi
+for v in TRUSTED_PROXIES EXTRA_ALLOWED_HOSTS; do validate_value "${v}" "${!v}"; done
 if [ -n "${PUBLIC_ORIGIN}" ]; then
   validate_value "--public-origin" "${PUBLIC_ORIGIN}"
   case "${PUBLIC_ORIGIN}" in https://*|http://*) ;; *) die "--public-origin must be an absolute http(s) origin";; esac
@@ -239,7 +253,7 @@ cat >&2 <<EOF
     data dir      : ${DATA_DIR} (0700 ${SERVICE_USER})
     config        : ${ENV_FILE} (0640 root:${SERVICE_GROUP})
     service user  : ${SERVICE_USER} (shell ${NOLOGIN})
-    listen        : ${BIND_HOST}:${PORT} (TLS)   trust proxy: ${TRUST_PROXY}
+    listen        : ${BIND_HOST}:${PORT} (TLS)   trust proxy: ${TRUST_PROXY}${TRUSTED_PROXIES:+ from ${TRUSTED_PROXIES}}
     certificate   : ${TLS_CERT_IN:-self-signed ${CERT_ALGO} ${CERT_DAYS}d for ${FQDN}}
     master key    : ${MASTER_KEY_IN:-${KEY_FILE} (generated if absent)}
     node          : source=${NODE_SOURCE} min=${YH_NODE_MIN} ${NODE_VERSION:+version=${NODE_VERSION}}
@@ -569,50 +583,55 @@ prune_releases() {
 # Data dir, master key, TLS
 # ------------------------------------------------------------------------------------------------
 ensure_data_dir() {
+  # F-03: <data> is service-owned. Root only creates/owns <data> itself (its parent is root-owned) and
+  # never chmods/chowns/writes inside it; sub-directories are created by the service account.
+  if [ -d "${DATA_DIR}" ] && [ "${DRY_RUN}" = 0 ]; then assert_tree_no_symlinks "${DATA_DIR}"; fi
+  root_dir "${DATA_DIR}" "${SERVICE_USER}:${SERVICE_GROUP}" 0700
   local d
-  for d in "${DATA_DIR}" "${DATA_DIR}/db" "${DATA_DIR}/keys" "${DATA_DIR}/backups" "${TLS_DIR}"; do
-    run mkdir -p "${d}"
-    run chown "${SERVICE_USER}:${SERVICE_GROUP}" "${d}"
-    run chmod 0700 "${d}"
+  for d in "${DATA_DIR}/db" "${DATA_DIR}/keys" "${DATA_DIR}/keys/retired" "${DATA_DIR}/backups" "${TLS_DIR}"; do
+    svc_mkdir "${SERVICE_USER}" "${d}" 0700
   done
-  if [ "${INIT_SYSTEM}" != systemd ]; then
-    run mkdir -p "${LOG_DIR}"; run chown "${SERVICE_USER}:${SERVICE_GROUP}" "${LOG_DIR}"; run chmod 0750 "${LOG_DIR}"
-  fi
+  if [ "${INIT_SYSTEM}" != systemd ]; then root_dir "${LOG_DIR}" "${SERVICE_USER}:${SERVICE_GROUP}" 0750; fi
   ok "data dir ${DATA_DIR} (0700 ${SERVICE_USER})"
 }
-key_valid() { [ -r "$1" ] && "${NODE_BIN}" -e '
-  const s = require("node:fs").readFileSync(process.argv[1], "utf8").trim();
-  process.exit(/^[A-Za-z0-9+/]+={0,2}$/.test(s) && Buffer.from(s, "base64").length === 32 ? 0 : 1);' "$1"; }
-key_fpr() { "${NODE_BIN}" -e '
-  const s = require("node:fs").readFileSync(process.argv[1], "utf8").trim();
-  console.log(require("node:crypto").createHash("sha256").update(Buffer.from(s, "base64")).digest("hex").slice(0, 16));' "$1"; }
+# Key helpers read from stdin so that files inside <data> are only ever opened by the service account.
+key_valid_stdin() { "${NODE_BIN}" -e '
+  let s = ""; process.stdin.setEncoding("utf8");
+  process.stdin.on("data", (d) => { s += d; }).on("end", () => { s = s.trim();
+    process.exit(/^[A-Za-z0-9+/]+={0,2}$/.test(s) && Buffer.from(s, "base64").length === 32 ? 0 : 1); });'; }
+key_fpr_stdin() { "${NODE_BIN}" -e '
+  let s = ""; process.stdin.setEncoding("utf8");
+  process.stdin.on("data", (d) => { s += d; }).on("end", () => {
+    console.log(require("node:crypto").createHash("sha256").update(Buffer.from(s.trim(), "base64")).digest("hex").slice(0, 16)); });'; }
+svc_cat() { assert_no_symlink "$2"; svc_exec "$1" cat -- "$2"; }
 ensure_master_key() {
+  assert_no_symlink "${KEY_FILE}"
   if [ "${DRY_RUN}" = 1 ]; then
-    if [ -n "${MASTER_KEY_IN}" ]; then run install -m 0600 "${MASTER_KEY_IN}" "${KEY_FILE}"
+    if [ -n "${MASTER_KEY_IN}" ]; then svc_write "${SERVICE_USER}" "${KEY_FILE}" 0600 </dev/null
     elif [ -f "${KEY_FILE}" ]; then log "master key exists: ${KEY_FILE} (kept)"
-    else run "generate 32 random bytes (base64) -> ${KEY_FILE} (0600 ${SERVICE_USER})"; fi
+    else run "generate 32 random bytes (base64) -> ${KEY_FILE} (written by ${SERVICE_USER}, 0600)"; fi
     return 0
   fi
   if [ -n "${MASTER_KEY_IN}" ]; then
-    key_valid "${MASTER_KEY_IN}" || die "--master-key-file ${MASTER_KEY_IN} is not base64 of exactly 32 bytes"
-    if [ -f "${KEY_FILE}" ] && ! cmp -s "${MASTER_KEY_IN}" "${KEY_FILE}"; then
+    key_valid_stdin <"${MASTER_KEY_IN}" || die "--master-key-file ${MASTER_KEY_IN} is not base64 of exactly 32 bytes"
+    local new_fpr; new_fpr="$(key_fpr_stdin <"${MASTER_KEY_IN}")"
+    if [ -f "${KEY_FILE}" ] && [ "$(svc_cat "${SERVICE_USER}" "${KEY_FILE}" | key_fpr_stdin)" != "${new_fpr}" ]; then
       if [ "${FORCE_KEY}" != 1 ]; then die "a DIFFERENT master key already exists at ${KEY_FILE}; replacing it makes existing PHI unreadable. Use --force-key only if you are sure."; fi
-      cp -p "${KEY_FILE}" "${KEY_FILE}.replaced-$(date -u +%Y%m%dT%H%M%SZ)"
-      warn "existing key preserved as ${KEY_FILE}.replaced-*  (destroy it deliberately once verified)"
+      local retired; retired="${DATA_DIR}/keys/retired/replaced-$(date -u +%Y%m%dT%H%M%SZ).key"
+      svc_cat "${SERVICE_USER}" "${KEY_FILE}" | svc_write "${SERVICE_USER}" "${retired}" 0600
+      warn "existing key kept as decrypt-only retired key ${retired}"
     fi
-    (umask 077; tr -d ' \r\n\t' <"${MASTER_KEY_IN}" >"${KEY_FILE}.tmp")
-    mv -f "${KEY_FILE}.tmp" "${KEY_FILE}"
-    log "imported master key from ${MASTER_KEY_IN}"
+    tr -d ' \r\n\t' <"${MASTER_KEY_IN}" | svc_write "${SERVICE_USER}" "${KEY_FILE}" 0600
+    log "imported master key from ${MASTER_KEY_IN} (fingerprint ${new_fpr})"
   elif [ -f "${KEY_FILE}" ]; then
-    key_valid "${KEY_FILE}" || die "existing ${KEY_FILE} is not a valid key; refusing to continue (restore it from escrow)"
-    ok "master key present (fingerprint $(key_fpr "${KEY_FILE}"))"
+    svc_cat "${SERVICE_USER}" "${KEY_FILE}" | key_valid_stdin || die "existing ${KEY_FILE} is not a valid key; refusing to continue (restore it from escrow)"
+    ok "master key present (fingerprint $(svc_cat "${SERVICE_USER}" "${KEY_FILE}" | key_fpr_stdin))"
   else
-    (umask 077; "${NODE_BIN}" -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))' >"${KEY_FILE}.tmp")
-    mv -f "${KEY_FILE}.tmp" "${KEY_FILE}"
+    "${NODE_BIN}" -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))' \
+      | svc_write "${SERVICE_USER}" "${KEY_FILE}" 0600
     KEY_GENERATED=1
-    log "generated NEW master key ${KEY_FILE}"
+    log "generated NEW master key ${KEY_FILE} (fingerprint $(svc_cat "${SERVICE_USER}" "${KEY_FILE}" | key_fpr_stdin))"
   fi
-  chown "${SERVICE_USER}:${SERVICE_GROUP}" "${KEY_FILE}"; chmod 0600 "${KEY_FILE}"
 }
 KEY_GENERATED=0
 
@@ -639,6 +658,21 @@ gather_sans() {
   if [ -n "${EXTRA_SANS}" ]; then IFS=, read -r -a extra <<<"${EXTRA_SANS}"; for n in "${extra[@]}"; do out="${out},${n}"; done; fi
   printf '%s' "${out}"
 }
+# YH_ALLOWED_HOSTS (F-05, DNS-rebinding defence): every name/IP in the certificate SAN set + extras.
+allowed_hosts() {
+  local out="" item seen=" "
+  local -a items=()
+  IFS=, read -r -a items <<<"$(gather_sans)"
+  if [ -n "${PUBLIC_ORIGIN}" ]; then items+=("$(printf '%s' "${PUBLIC_ORIGIN}" | sed -E 's#^https?://##; s#:[0-9]+$##')"); fi
+  if [ -n "${EXTRA_ALLOWED_HOSTS}" ]; then local -a extra=(); IFS=, read -r -a extra <<<"${EXTRA_ALLOWED_HOSTS}"; items+=("${extra[@]}"); fi
+  for item in "${items[@]}"; do
+    item="${item#DNS:}"; item="${item#IP:}"
+    [ -n "${item}" ] || continue
+    case "${seen}" in *" ${item} "*) continue;; esac
+    seen="${seen}${item} "; out="${out:+${out},}${item}"
+  done
+  printf '%s' "${out}"
+}
 TLS_SELF_SIGNED=1
 ensure_openssl() {
   command -v openssl >/dev/null 2>&1 && return 0
@@ -646,13 +680,20 @@ ensure_openssl() {
   case "${PKG_MGR}" in pacman|apk|apt-get|dnf|yum|zypper) pkg_install openssl ;; *) die "openssl is required to generate the TLS certificate";; esac
 }
 generate_cert() {
-  local crt="${TLS_DIR}/cert.pem" key="${TLS_DIR}/key.pem" sans cfg
+  # Key + cert are generated in a root-only staging dir, then handed to the service account (F-03).
+  local crt="${TLS_DIR}/cert.pem" key="${TLS_DIR}/key.pem" sans cfg stage
   sans="$(gather_sans)"
   log "generating self-signed certificate (${CERT_ALGO}, ${CERT_DAYS} days) CN=${FQDN} SAN=${sans}"
-  if [ "${DRY_RUN}" = 1 ]; then run openssl req -new -x509 -sha256 -days "${CERT_DAYS}" "(SAN ${sans})" -out "${crt}"; return 0; fi
+  if [ "${DRY_RUN}" = 1 ]; then
+    run openssl req -new -x509 -sha256 -days "${CERT_DAYS}" "(SAN ${sans})" -out "<root-only staging>/cert.pem"
+    svc_write "${SERVICE_USER}" "${key}" 0600 </dev/null
+    svc_write "${SERVICE_USER}" "${crt}" 0644 </dev/null
+    return 0
+  fi
   ensure_openssl
   make_tmp
-  cfg="${YH_TMP_DIR}/openssl.cnf"
+  stage="${YH_TMP_DIR}/tls"; mkdir -m 0700 "${stage}"
+  cfg="${stage}/openssl.cnf"
   local ku="digitalSignature"     # ECDSA signs only; keyEncipherment applies to RSA key transport
   if [ "${CERT_ALGO}" = rsa ]; then ku="digitalSignature, keyEncipherment"; fi
   cat >"${cfg}" <<EOF
@@ -671,14 +712,17 @@ subjectAltName = ${sans}
 subjectKeyIdentifier = hash
 EOF
   (umask 077
-   if [ "${CERT_ALGO}" = rsa ]; then openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out "${key}.tmp" 2>/dev/null
-   else openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out "${key}.tmp" 2>/dev/null; fi)
-  openssl req -new -x509 -sha256 -days "${CERT_DAYS}" -key "${key}.tmp" -out "${crt}.tmp" -config "${cfg}"
-  mv -f "${key}.tmp" "${key}"; mv -f "${crt}.tmp" "${crt}"
-  ok "certificate ${crt}; $(openssl x509 -noout -fingerprint -sha256 -in "${crt}")"
+   if [ "${CERT_ALGO}" = rsa ]; then openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out "${stage}/key.pem" 2>/dev/null
+   else openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out "${stage}/key.pem" 2>/dev/null; fi)
+  openssl req -new -x509 -sha256 -days "${CERT_DAYS}" -key "${stage}/key.pem" -out "${stage}/cert.pem" -config "${cfg}"
+  svc_write "${SERVICE_USER}" "${key}" 0600 <"${stage}/key.pem"
+  svc_write "${SERVICE_USER}" "${crt}" 0644 <"${stage}/cert.pem"
+  ok "certificate ${crt}; $(openssl x509 -noout -fingerprint -sha256 -in "${stage}/cert.pem")"
+  rm -f -- "${stage}/key.pem"
 }
 ensure_tls() {
   local crt="${TLS_DIR}/cert.pem" key="${TLS_DIR}/key.pem"
+  assert_no_symlink "${crt}" "${key}"
   if [ -n "${TLS_CERT_IN}" ]; then
     if [ ! -r "${TLS_CERT_IN}" ] || [ ! -r "${TLS_KEY_IN}" ]; then die "cannot read --tls-cert/--tls-key"; fi
     ensure_openssl
@@ -689,21 +733,20 @@ ensure_tls() {
       b="$(openssl pkey -in "${TLS_KEY_IN}" -pubout -outform DER 2>/dev/null | sha256_of /dev/stdin)"
       [ "${a}" = "${b}" ] || die "--tls-key does not match --tls-cert"
     fi
-    run install -m 0644 "${TLS_CERT_IN}" "${crt}"
-    run install -m 0600 "${TLS_KEY_IN}" "${key}"
+    svc_write "${SERVICE_USER}" "${crt}" 0644 <"${TLS_CERT_IN}"
+    svc_write "${SERVICE_USER}" "${key}" 0600 <"${TLS_KEY_IN}"
     TLS_SELF_SIGNED=0
     ok "installed operator-supplied certificate"
   elif [ -s "${crt}" ] && [ -s "${key}" ] && [ "${REGEN_CERT}" = 0 ]; then
-    if command -v openssl >/dev/null 2>&1; then
-      if [ "$(openssl x509 -noout -subject -in "${crt}" 2>/dev/null | sed 's/^subject=//')" != "$(openssl x509 -noout -issuer -in "${crt}" 2>/dev/null | sed 's/^issuer=//')" ]; then TLS_SELF_SIGNED=0; fi
-      openssl x509 -checkend 2592000 -noout -in "${crt}" >/dev/null 2>&1 || warn "${crt} expires within 30 days — re-run with --regen-cert or supply --tls-cert/--tls-key"
+    if command -v openssl >/dev/null 2>&1 && [ "${DRY_RUN}" = 0 ]; then
+      local pem; pem="$(svc_cat "${SERVICE_USER}" "${crt}")"
+      if [ "$(printf '%s\n' "${pem}" | openssl x509 -noout -subject 2>/dev/null | sed 's/^subject=//')" != "$(printf '%s\n' "${pem}" | openssl x509 -noout -issuer 2>/dev/null | sed 's/^issuer=//')" ]; then TLS_SELF_SIGNED=0; fi
+      printf '%s\n' "${pem}" | openssl x509 -checkend 2592000 -noout >/dev/null 2>&1 || warn "${crt} expires within 30 days - re-run with --regen-cert or supply --tls-cert/--tls-key"
     fi
     ok "keeping existing certificate ${crt}"
   else
     generate_cert
   fi
-  run chown "${SERVICE_USER}:${SERVICE_GROUP}" "${crt}" "${key}"
-  run chmod 0644 "${crt}"; run chmod 0600 "${key}"
 }
 
 # ------------------------------------------------------------------------------------------------
@@ -731,7 +774,9 @@ YH_TLS_SELF_SIGNED=${TLS_SELF_SIGNED}
 YH_MASTER_KEY_FILE=${KEY_FILE}
 YH_CATALOG_DIR=${PREFIX}/current/data/catalog
 YH_TRUST_PROXY=${TRUST_PROXY}
+${TRUSTED_PROXIES:+YH_TRUSTED_PROXIES=${TRUSTED_PROXIES}}
 ${PUBLIC_ORIGIN:+YH_PUBLIC_ORIGIN=${PUBLIC_ORIGIN}}
+YH_ALLOWED_HOSTS=$(allowed_hosts)
 # --- local settings (preserved by install.sh) ---
 ${preserved}
 EOF
@@ -878,15 +923,16 @@ if [ "${DO_START}" = 1 ] && [ "${INIT_SYSTEM}" != none ]; then
 fi
 
 FPR=""
-if [ "${DRY_RUN}" = 0 ] && command -v openssl >/dev/null 2>&1 && [ -r "${TLS_DIR}/cert.pem" ]; then
-  FPR="$(openssl x509 -noout -fingerprint -sha256 -in "${TLS_DIR}/cert.pem" | sed 's/^.*=//')"
+if [ "${DRY_RUN}" = 0 ] && command -v openssl >/dev/null 2>&1 && [ -f "${TLS_DIR}/cert.pem" ]; then
+  FPR="$(svc_cat "${SERVICE_USER}" "${TLS_DIR}/cert.pem" | openssl x509 -noout -fingerprint -sha256 | sed 's/^.*=//')"
 fi
 cat >&2 <<EOF
 
 ============================================================================================
  ${YH_PRODUCT} ${APP_VERSION} $( [ "${DRY_RUN}" = 1 ] && echo "— DRY RUN, nothing was changed" || echo "installed   (health: ${HEALTH})" )
 --------------------------------------------------------------------------------------------
- First-run setup (creates the clinic + first admin; accepted from LOOPBACK ONLY):
+ First-run setup (creates the clinic + first admin; LOOPBACK ONLY, needs the one-time setup token):
+   setup token:             sudo -u ${SERVICE_USER} cat ${DATA_DIR}/setup-token   (also printed in the service log)
    on this host:            https://localhost:${PORT}/#/setup
    from your workstation:   ssh -L ${PORT}:127.0.0.1:${PORT} <admin>@${FQDN}
                             then browse https://localhost:${PORT}/#/setup

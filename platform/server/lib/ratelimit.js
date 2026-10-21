@@ -26,6 +26,12 @@ export class TokenBucket {
     return { ok: false, retryAfter: Math.max(1, Math.ceil((cost - b.tokens) / this.ratePerMs / 1000)) };
   }
 
+  /** Return tokens taken for an attempt that turned out legitimate (e.g. successful login). */
+  refund(key, n = 1) {
+    const b = this.buckets.get(key);
+    if (b) b.tokens = Math.min(this.capacity, b.tokens + n);
+  }
+
   prune(force = false) {
     const t = this.now();
     for (const [k, b] of this.buckets) {

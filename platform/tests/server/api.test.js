@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
-import { startTestServer, Client } from './helpers.js';
+import { startTestServer, setupToken, Client } from './helpers.js';
 import { totp, base32Decode } from '../../server/lib/totp.js';
 import { canonicalJson } from '../../server/lib/crypto.js';
 
@@ -48,18 +48,18 @@ test('health + security headers on API responses', async () => {
 
 test('first-run setup, login, MFA enrollment gate, CSRF, TOTP re-login, recovery codes', async () => {
   const c = new Client(srv.url);
-  assert.deepEqual((await c.get('/api/v1/setup/status')).json, { needsSetup: true });
-  const weak = await c.post('/api/v1/setup', { org: { name: 'Clinic' }, admin: { ...ADMIN, password: 'password1234' } });
+  assert.deepEqual((await c.get('/api/v1/setup/status')).json, { needsSetup: true, tokenRequired: true });
+  const weak = await c.post('/api/v1/setup', { setupToken: setupToken(srv), org: { name: 'Clinic' }, admin: { ...ADMIN, password: 'password1234' } });
   assert.equal(weak.status, 400);
   assert.equal(weak.json.error.code, 'VALIDATION');
   assert.ok(weak.json.error.fields['admin.password']);
-  const bad = await c.post('/api/v1/setup', { org: { name: 'Clinic' }, admin: ADMIN, extra: 1 });
+  const bad = await c.post('/api/v1/setup', { setupToken: setupToken(srv), org: { name: 'Clinic' }, admin: ADMIN, extra: 1 });
   assert.equal(bad.status, 400, 'unknown fields rejected');
-  const ok = await c.post('/api/v1/setup', { org: { name: 'Sunrise Biomagnetism Clinic' }, admin: ADMIN });
+  const ok = await c.post('/api/v1/setup', { setupToken: setupToken(srv), org: { name: 'Sunrise Biomagnetism Clinic' }, admin: ADMIN });
   assert.equal(ok.status, 200);
   assert.deepEqual(ok.json, { ok: true });
   assert.equal((await c.post('/api/v1/setup', { org: { name: 'X' }, admin: ADMIN })).json.error.code, 'ALREADY_SETUP');
-  assert.deepEqual((await c.get('/api/v1/setup/status')).json, { needsSetup: false });
+  assert.deepEqual((await c.get('/api/v1/setup/status')).json, { needsSetup: false, tokenRequired: true });
 
   const wrong = await c.post('/api/v1/auth/login', { email: ADMIN.email, password: 'nope-nope-nope' });
   assert.equal(wrong.status, 401);
@@ -363,8 +363,8 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
   assert.equal(draft.json.attestation, null);
 
   // finalize
-  assert.equal((await desk.post(`/api/v1/sessions/${sid}/finalize`, { signatureName: 'x' })).status, 403);
-  const fin = await doc.post(`/api/v1/sessions/${sid}/finalize`, { signatureName: 'Dr. Practitioner' });
+  assert.equal((await desk.post(`/api/v1/sessions/${sid}/finalize`, { signatureName: 'x', password: PW })).status, 403);
+  const fin = await doc.post(`/api/v1/sessions/${sid}/finalize`, { signatureName: 'Practitioner  USER', password: PW });
   assert.equal(fin.status, 200, JSON.stringify(fin.json));
   assert.match(fin.json.sha256, /^[0-9a-f]{64}$/);
   assert.equal(fin.json.status, 'final');
@@ -374,7 +374,7 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
   assert.equal(rep.json.integrity, 'verified');
   assert.equal(rep.json.hash.sha256, fin.json.sha256);
   assert.equal(rep.json.hash.short, fin.json.sha256.slice(0, 16));
-  assert.equal(rep.json.attestation.signatureName, 'Dr. Practitioner');
+  assert.equal(rep.json.attestation.signatureName, 'practitioner user', 'signature bound to the signer account');
   const { hash, integrity, supersededBy, ...snapshot } = rep.json;
   assert.equal(crypto.createHash('sha256').update(canonicalJson(snapshot)).digest('hex'), fin.json.sha256, 'hash = sha256(canonical JSON)');
   assert.equal(rep.json.bodyMap.images.front, PNG, 'images uploaded before finalize are inside the hashed snapshot');
@@ -390,7 +390,7 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
     await doc.patch(`/api/v1/sessions/${sid}`, { notes: 'late edit' }),
     await doc.patch(`/api/v1/sessions/${sid}`, { scanState: { cursor: 9 } }),
     await doc.put(`/api/v1/sessions/${sid}/report/images`, { front: PNG }),
-    await doc.post(`/api/v1/sessions/${sid}/finalize`, { signatureName: 'again' }),
+    await doc.post(`/api/v1/sessions/${sid}/finalize`, { password: PW }),
   ]) {
     assert.equal(r.status, 409);
     assert.equal(r.json.error.code, 'SESSION_LOCKED');
@@ -417,7 +417,7 @@ test('consent, session, findings, report, finalize, immutability, amend', async 
   assert.equal(am.json.amendReason, 'Corrected dwell time');
   assert.equal((await doc.post(`/api/v1/sessions/${sid}/amend`, { reason: 'twice' })).json.error.code, 'AMENDMENT_IN_PROGRESS');
   await doc.patch(`/api/v1/sessions/${am.json.id}/findings/${am.json.findings[0].id}`, { dwellMinutes: 25 });
-  const fin2 = await doc.post(`/api/v1/sessions/${am.json.id}/finalize`, { signatureName: 'Dr. Practitioner' });
+  const fin2 = await doc.post(`/api/v1/sessions/${am.json.id}/finalize`, { password: PW });
   assert.equal(fin2.json.status, 'amended');
   const rep2 = await doc.get(`/api/v1/sessions/${am.json.id}/report`);
   assert.equal(rep2.json.status, 'AMENDED');

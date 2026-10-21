@@ -248,7 +248,9 @@ env_get() {
   printf '%s' "${def}"
 }
 # env_args <file> : prints KEY=value lines suitable for `env` (comments/blank lines dropped).
-env_args() { grep -E '^[A-Z_][A-Z0-9_]*=' "$1" || true; }
+# Allow-list: only YH_* and NODE_ENV are ever exported to processes the scripts start (some as root),
+# so an edited env file cannot inject NODE_OPTIONS, LD_PRELOAD, PATH, etc.
+env_args() { grep -E '^(YH_[A-Z0-9_]+|NODE_ENV)=' "$1" || true; }
 
 # validate_value <name> <value> : env/plist safe (no whitespace, quotes, $, `, \, <, >, &).
 validate_value() {
@@ -286,6 +288,56 @@ run_as() {
     local q; q="$(printf '%q ' env "${envs[@]}" "$@")"
     (cd -- "${wd}" && su -s /bin/sh "${user}" -c "${q}")
   fi
+}
+
+# ----------------------------------------------------------------------------------------------
+# Safe handling of the SERVICE-OWNED data directory (finding F-03).
+# The service account can create entries in <data>; anything root does there could be redirected by a
+# planted symlink. Rules: root never writes, chmods or chowns *inside* <data>; it refuses symlinks and
+# delegates all writes to the service account (which can only damage what it already owns).
+# Root only touches <data> itself (parent is root-owned) with `chown -h`.
+# ----------------------------------------------------------------------------------------------
+# assert_no_symlink <path...> : die if any existing path is a symlink
+assert_no_symlink() {
+  local p
+  for p in "$@"; do
+    if [ -L "${p}" ]; then die "refusing to operate on symlink ${p} (possible symlink attack; investigate before continuing)"; fi
+  done
+}
+# assert_tree_no_symlinks <dir> : die if <dir> contains any symlink (checked before root operations on it)
+assert_tree_no_symlinks() {
+  [ -d "$1" ] || return 0
+  assert_no_symlink "$1"
+  local found
+  found="$(find "$1" -type l -print 2>/dev/null | head -n 5 || true)"
+  if [ -n "${found}" ]; then die "refusing to continue: symlinks found inside $1: ${found//$'\n'/ }"; fi
+}
+# svc_exec <user> <cmd...> : run a command as the service account (no env file), cwd /
+svc_exec() { local u=$1; shift; run_as "${u}" - / "$@"; }
+# svc_mkdir <user> <dir> [mode] : create (as the service account) a 0700 dir inside the data dir
+svc_mkdir() {
+  local u=$1 d=$2 m=${3:-0700}
+  assert_no_symlink "${d}"
+  svc_exec "${u}" mkdir -p -- "${d}"
+  svc_exec "${u}" chmod "${m}" -- "${d}"
+}
+# svc_write <user> <path> [mode] : stdin -> <path>, written by the service account (temp + rename)
+svc_write() {
+  local u=$1 path=$2 m=${3:-0600}
+  assert_no_symlink "${path}"
+  if [ "${DRY_RUN}" = 1 ]; then printf '%s DRY   (as %s) write %s mode %s\n' "$(_ts)" "${u}" "${path}" "${m}" >&2; cat >/dev/null; return 0; fi
+  # shellcheck disable=SC2016  # expanded by the inner shell, which runs as the service account
+  run_as "${u}" - / sh -c 'umask 077; t="$1.tmp.$$"; cat > "$t" && chmod "$2" "$t" && mv -f "$t" "$1"' _ "${path}" "${m}"
+}
+# root_dir <path> <owner:group> <mode> : create/fix a directory whose PARENT is root-owned
+# (e.g. <data> itself, /var/log/youheal). Never follows symlinks.
+root_dir() {
+  local d=$1 o=$2 m=$3
+  assert_no_symlink "${d}"
+  run mkdir -p -- "${d}"
+  assert_no_symlink "${d}"
+  run chown -h "${o}" "${d}"
+  run chmod "${m}" "${d}"
 }
 
 # node_script <node-bin> <user> <envfile> <appdir> <script-name> [args...] : runs a package.json script
@@ -362,7 +414,7 @@ health_check() {
   local -a envs=()
   while IFS= read -r l; do envs+=("${l}"); done < <(env_args "${envfile}")
   ca="$(env_get "${envfile}" YH_TLS_CERT)"
-  if [ -n "${ca}" ] && [ -r "${ca}" ] && [ "$(env_get "${envfile}" YH_TLS_SELF_SIGNED 0)" = 1 ]; then
+  if [ -n "${ca}" ] && [ -r "${ca}" ] && [ ! -L "${ca}" ] && [ "$(env_get "${envfile}" YH_TLS_SELF_SIGNED 0)" = 1 ]; then
     env "${envs[@]}" "${node}" "${probe}" --ca "${ca}" --retries "${retries}" --interval 2000
   else
     env "${envs[@]}" "${node}" "${probe}" --retries "${retries}" --interval 2000

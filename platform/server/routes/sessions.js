@@ -1,7 +1,7 @@
 // Scan sessions (rastreo), findings, finalize/amend, report assembly + immutable snapshots (ADR-006).
 
 import { v, check, uuidStr, catalogId, paging } from '../lib/validate.js';
-import { uuid, sha256hex, canonicalJson, safeEqual, normalizeText } from '../lib/crypto.js';
+import { uuid, sha256hex, canonicalJson, safeEqual, normalizeText, verifyPassword } from '../lib/crypto.js';
 import { notFound, conflict, HttpError, badRequest } from '../lib/http.js';
 import { PERM } from '../lib/rbac.js';
 import { encCol, decCol, decryptPatient } from '../lib/phi.js';
@@ -559,10 +559,25 @@ export function register(router, deps) {
 
   // ---------------------------------------------------------------- finalize / amend
 
-  router.post('/sessions/:id/finalize', (ctx) => {
-    const body = check(v.object({ signatureName: v.string({ min: 1, max: 200 }) }), ctx.body);
+  router.post('/sessions/:id/finalize', async (ctx) => {
+    const body = check(v.object({
+      signatureName: v.string({ min: 1, max: 200 }).optional(),
+      password: v.string({ min: 1, max: 1024, trim: false }),
+    }), ctx.body);
     const s = getSession(ctx);
     requireDraft(s);
+    // F-07: the attestation is bound to the authenticated signer. A supplied name must match the account
+    // name (accent/case/space-insensitive) and the signer re-enters their password.
+    if (body.signatureName !== undefined && normalizeText(body.signatureName) !== normalizeText(ctx.user.name)) {
+      ctx.audit('session.finalize', { targetType: 'session', targetId: s.id, outcome: 'failure', detail: { reason: 'signature_mismatch' } });
+      throw new HttpError(422, 'SIGNATURE_MISMATCH', 'The signature name must match your account name', { signatureName: `must be "${ctx.user.name}"` });
+    }
+    const signer = db.get('SELECT password_hash FROM users WHERE id = ?', ctx.user.id);
+    if (!(await verifyPassword(body.password, signer.password_hash))) {
+      ctx.audit('session.finalize', { targetType: 'session', targetId: s.id, outcome: 'failure', detail: { reason: 'reauth_failed' } });
+      throw new HttpError(403, 'REAUTH_FAILED', 'Password is incorrect', { password: 'is incorrect' });
+    }
+    body.signatureName = ctx.user.name;
     const finalizedAt = nowIso();
     const status = s.parent_id ? 'amended' : 'final';
     const result = db.tx(() => {
@@ -583,7 +598,7 @@ export function register(router, deps) {
       return { hash };
     });
     return { ok: true, status, sha256: result.hash, hashShort: result.hash.slice(0, 16), finalizedAt, session: sessionView(db, keyring, db.get('SELECT * FROM scan_sessions WHERE id = ?', s.id)) };
-  }, { roles: PERM.clinicalWrite });
+  }, { roles: PERM.clinicalWrite, rate: 'auth' });
 
   router.post('/sessions/:id/amend', (ctx) => {
     const body = check(v.object({ reason: v.string({ min: 3, max: 2000, multiline: true }) }), ctx.body);
@@ -624,6 +639,9 @@ export function register(router, deps) {
 
   router.get('/sessions/:id/report', (ctx) => {
     const s = getSession(ctx);
+    const isAuditor = ctx.user.role === 'auditor';
+    // F-12: auditors review signed records only — drafts are clinical work in progress
+    if (isAuditor && s.status === 'draft') throw new HttpError(403, 'FORBIDDEN', 'Auditors may only read finalized reports');
     let report, hash = null, integrity = null;
     if (s.status === 'draft') {
       report = assembleReport(deps, s);
@@ -635,7 +653,7 @@ export function register(router, deps) {
       hash = { sha256: s.report_sha256, short: s.report_sha256.slice(0, 16), algorithm: 'sha256', canonicalization: 'json-sorted-keys' };
       if (integrity !== 'verified') ctx.audit('report.integrity_failure', { targetType: 'session', targetId: s.id, outcome: 'failure' });
     }
-    ctx.audit('report.read', { targetType: 'session', targetId: s.id, detail: { patientId: s.patient_id, status: s.status } });
+    ctx.audit(isAuditor ? 'report.read.auditor' : 'report.read', { targetType: 'session', targetId: s.id, detail: { patientId: s.patient_id, status: s.status } });
     return { ...report, hash, integrity, supersededBy: s.superseded_by };
   }, { roles: PERM.reportRead });
 

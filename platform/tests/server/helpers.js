@@ -56,6 +56,9 @@ export async function startTestServer(overrides = {}) {
   return { ...srv, dataDir, env };
 }
 
+/** The one-time first-run token (F-04) the server wrote to <data>/setup-token. */
+export const setupToken = (srv) => fs.readFileSync(path.join(srv.dataDir, 'setup-token'), 'utf8').trim();
+
 export class Client {
   constructor(base) { this.base = base; this.cookie = null; this.csrf = null; }
 
@@ -68,8 +71,8 @@ export class Client {
     const res = await fetch(this.base + p, { method, headers: h, body: payload, redirect: 'manual' });
     const setCookies = res.headers.getSetCookie();
     for (const c of setCookies) {
-      const m = /^yh_sid=([^;]*)/.exec(c);
-      if (m) this.cookie = m[1] ? `yh_sid=${m[1]}` : null;
+      const m = /^((?:__Host-)?yh_sid)=([^;]*)/.exec(c);
+      if (m) this.cookie = m[2] ? `${m[1]}=${m[2]}` : null;
     }
     const buf = Buffer.from(await res.arrayBuffer());
     let json = null;
