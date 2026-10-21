@@ -534,7 +534,7 @@ export function buildBody(opts = {}) {
     return dh === Infinity ? d : d === Infinity ? dh : smin(d, dh, HEAD_K);
   };
 
-  return { sex, sdf, sdfExact: fullSdf, bounds, skeleton };
+  return { sex, sdf, sdfExact: fullSdf, bounds, skeleton, primitives: prims };
 }
 
 // ---------------------------------------------------------------------------
