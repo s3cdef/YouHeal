@@ -107,11 +107,14 @@ export function writeReport({ data, report, counts, manifest, overrides }) {
 }
 
 export const LIMITATIONS = [
-  'Prose (descriptions, contagion, recommendations, notes, contraindication explanations) is Spanish only; UI-facing labels (points, categories, systems, protocol names, symptom vocabulary, most entity names) carry English.',
+  'Prose (descriptions, contagion, recommendations, notes) is Spanish only; UI-facing labels (points, categories, systems, protocol names, symptom vocabulary, entity names, contraindications, glossary) carry English. Latin species names stay Latin; compendium named pairs (personal/place names) keep their proper name.',
   'Level 2 categories are inferred (the text layer of the Level 2 index has no section headers); see "Category assignment" and `overrides.json#categoryByPair`.',
-  'Ratings: pairs 170 (P, R) and the reservoir pairs (only F printed) have incomplete F/P/R in the source; they are left absent rather than guessed.',
-  'Compendium (Leal) pole names are free text; they are normalized to canonical points via `lib/point-aliases.js`. Side words ("izquierdo", "del mismo lado", "Contralateral") become `side` + `notes` on the pole pair.',
-  'When a compendium pole pair matches several numbered pairs with the same two points (e.g. Temporal–Temporal: 13, 115, 174), the importer prefers the pair whose relation is the same entity, then side agreement, then the lowest number.',
-  'Free-text protocol items ("Rastrear el punto Pineal", "PB´s relacionados a Virus") are kept as protocol `notes`, not as items. "PB´s relacionados a X" is expanded to the numbered pairs whose relation (or point) matches X.',
-  'pb-282 (pancreatic belt) is modelled as tracking=impact=`pancreas` plus a `magnets` array with the four placements and polarities taken from the Leal compendium.',
+  'Ratings: pair 170 prints no checks for P and R, and the reservoir pairs print only F; missing ratings are left absent, not guessed.',
+  'Compendium (Leal) pole names are free text normalized to canonical points via `lib/point-aliases.js`; side words ("izquierdo", "del mismo lado", "Contralateral", "lado del pie acortado") become `negSide`/`posSide` + `notes` on the pole pair. Only (D)/(I)/(D/I) markers in the Goiz guides make a point `bilateral`.',
+  'Several numbered pairs share the same two points (e.g. Vejiga – Vejiga = 74 and 194). Protocol items and pole pairs choose by: relation hint, side, contralateral/ipsilateral note, the protocol\'s context category (e.g. reservoir lists prefer reservoir pairs), then the lowest number; protocol items list the alternatives in `samePoints`.',
+  'Free-text protocol items ("Rastrear el punto Pineal", "PB´s relacionados a Virus patogénicos") are kept as protocol `notes`, not items. "PB´s relacionados a X" is expanded to the numbered pairs whose relation (or point) matches X. "Protocolo Básico" inside disease protocols is mapped to `basic-short` (the guide does not say which variant).',
+  'The Level 2 "PB´s Diabetogénicos / Hiperglicémicos" lists (p.216) are stored as `kind: "basic"` protocols (`basic-pb-diabetogenicos`, `basic-pb-hiperglicemicos`) because CONTRACT §4.7 has no list kind for them.',
+  'pb-282 (pancreatic belt) is modelled as tracking = impact = `pancreas` plus a `magnets` array with the four placements and polarities taken from the Leal compendium.',
+  'The Leal type code "Est" (15 entries, e.g. Climaterio, Embarazo) is not defined in its glossary; those entries are imported as `kind: "condition"`.',
+  'Additive fields beyond the CONTRACT examples: pairs `altNames`, `magnets`, `recommendationSets`, `relatedProtocols`, endpoint `altPoint`; protocol items `sides`, `note`, `samePoints`; protocols `number`, `notes`, `alsoIn`; entities `typeCode`, `aliases`, `alsoIn`, pole-pair `negSide`/`posSide`/`notes`/`raw`; symptoms `definition`, `systems`, `source`; contraindications `number`, `alsoIn`, `variants`; recommendations `items`, `form`, `alsoIn`; glossary `group`, `category`; manifest `vocabularies`, `sources`, `generator`.',
 ];

@@ -31,7 +31,14 @@ export function build({ pdf, overrides, sourcesMeta }) {
   const warn = m => report.warnings.push(m);
   const usedOverride = m => report.overridesApplied.push(m);
   const pointUse = new Map(); // id -> Set(sides)
-  const notePoint = (ref) => { if (!ref.point) return; if (!pointUse.has(ref.point)) pointUse.set(ref.point, new Set()); pointUse.get(ref.point).add(ref.side); if (ref.altPoint) { if (!pointUse.has(ref.altPoint)) pointUse.set(ref.altPoint, new Set()); pointUse.get(ref.altPoint).add(ref.side); } };
+  // Records that a point is used; `lateralEvidence` = the Goiz guides mark it with (D)/(I)/(D/I), which makes the point bilateral.
+  // (Compendium side words such as "Duodeno (lado derecho)" locate a magnet on a central organ and do not change laterality.)
+  const notePoint = (ref, lateralEvidence = false) => {
+    for (const id of [ref.point, ref.altPoint].filter(Boolean)) {
+      if (!pointUse.has(id)) pointUse.set(id, new Set());
+      if (lateralEvidence && /\((D|I|D\/I|I\/D)\)|\bD\/I\b/.test(ref.raw || '')) pointUse.get(id).add('lateral');
+    }
+  };
   const newPoints = new Map(); // unresolved names that became points
   const resolveRef = (raw, ctx) => {
     const ov = overrides.pointRefs?.[clean(raw)];
@@ -85,6 +92,7 @@ export function build({ pdf, overrides, sourcesMeta }) {
       const notes = [];
       for (const [role, r] of [['tracking', tr], ['impact', im]]) for (const n of r.notes) notes.push(L(`${role === 'tracking' ? 'Punto de rastreo' : 'Punto de impacto'} (${r.raw}): ${n}`));
       const pair = {
+        _mods: [tr.notes.join(' '), im.notes.join(' ')],
         id, number: b.n, level: lv.level,
         name: { es: title, en: null },
         tracking: endpoint(tr), impact: endpoint(im),
@@ -109,7 +117,7 @@ export function build({ pdf, overrides, sourcesMeta }) {
       for (const k of ['F', 'P', 'R']) if (x.ratings[k]) pair.ratings[k] = Math.min(3, x.ratings[k]);
       pair._relationText = relationText;
       pair._symLines = x.symptomLines; pair._recLines = x.recLines.length ? x.recLines : x.other.filter(o => o.mode === 'rel');
-      for (const r of [tr, im]) notePoint(r);
+      for (const r of [tr, im]) notePoint(r, true);
       for (const role of ['tracking', 'impact']) if (ov[role]) { Object.assign(pair[role], ov[role]); usedOverride(`pairs.${b.n}.${role} ${JSON.stringify(ov[role])}`); }
       if (ov.magnets) { pair.magnets = ov.magnets.map(m => ({ ...m })); usedOverride(`pairs.${b.n}.magnets`); for (const m of ov.magnets) notePoint({ point: m.point, side: m.side || 'C' }); }
       if (ov.notes) { pair.notes.push(...ov.notes.map(n => L(n))); }
@@ -322,16 +330,29 @@ export function build({ pdf, overrides, sourcesMeta }) {
   const indexPair = p => { const k = keyOf(p.tracking.point, p.impact.point); if (!pairIndex.has(k)) pairIndex.set(k, []); pairIndex.get(k).push(p); };
   for (const p of pairs.values()) { indexPair(p); if (p.tracking.altPoint || p.impact.altPoint) for (const a of [p.tracking.altPoint || p.tracking.point]) for (const b of [p.impact.altPoint || p.impact.point]) { const k = keyOf(a, b); if (!pairIndex.has(k)) pairIndex.set(k, []); pairIndex.get(k).push(p); } }
   const sideOk = (want, have) => !want || want === 'C' || want === 'RL' || !have || have === 'RL' || have === 'C' || want === have;
-  const matchPair = (tr, im, entityId) => {
+  // Several numbered pairs can share the same two points (e.g. Vejiga – Vejiga: 74 Streptococcus G, 194 Disfunción
+  // Vejiga). Preference: related entity > side agreement > category suggested by the context > lowest number.
+  const matchPair = (tr, im, entityId, preferCats = []) => {
     const cands = (pairIndex.get(keyOf(tr.point, im.point)) || []).filter(p => p.level > 0 || p.id.startsWith('pb-'));
-    if (!cands.length) return { pair: null, n: 0 };
+    if (!cands.length) return { pair: null, n: 0, pool: [] };
     let pool = cands.filter(p => p.id.startsWith('pb-'));
     if (!pool.length) pool = cands;
+    const all = [...pool];
     const bySide = pool.filter(p => sideOk(tr.side, p.tracking.side) && sideOk(im.side, p.impact.side));
     if (bySide.length) pool = bySide;
+    const modOf = n => /contralateral/.test(n) ? 'contra' : /ipsilateral/.test(n) ? 'ipsi' : '';
+    const want = [modOf(tr.notes.join(' ')), modOf(im.notes.join(' '))];
+    if (want.some(Boolean)) { const byMod = pool.filter(p => p._mods && want.every((w, i) => !w || modOf(p._mods[i]) === w)); if (byMod.length) pool = byMod; }
     if (entityId) { const byEnt = pool.filter(p => p.relations.some(r => r.entity === entityId)); if (byEnt.length) pool = byEnt; }
-    return { pair: pool[0], n: pool.length };
+    if (pool.length > 1 && preferCats.length) { const byCat = pool.filter(p => preferCats.includes(p.category)); if (byCat.length) pool = byCat; }
+    return { pair: pool[0], n: pool.length, pool: all };
   };
+  const CONTEXT_CATS = [
+    [/reservorio/, ['reservoir']], [/disfuncional|endocrinolog|nutricional|regularizacion|diabetogen|hiperglicem/, ['dysfunctional']],
+    [/psicoemocional|psiquiatr/, ['psychoemotional']], [/desparasitacion|tropical/, ['parasite', 'virus']],
+    [/patogenico|oncogenico|respiratorio|urologico|ginecologico|dermatologico|hematologico|inmunologico|cardiologico|gastro|hepatobiliar|conjuntivitis|infeccion|odontologico|postquirurgico|animales/, ['virus', 'bacteria', 'fungus', 'parasite']],
+  ];
+  const contextCats = id => (CONTEXT_CATS.find(([re]) => re.test(id)) || [, []])[1];
   let ambiguous = 0;
   const cxPairs = new Map();
   const cxPairFor = (tr, im, ctx) => {
@@ -431,6 +452,7 @@ export function build({ pdf, overrides, sourcesMeta }) {
   }
   const diseases = BM.parseDiseaseProtocols(BM.rangeRows(LEVELS[1].pages, 78, 96, 140), { doc: 'goiz-n2' });
   for (const d of diseases) {
+    if (overrides.diseaseNames?.[String(d.n)]) { usedOverride(`diseaseNames.${d.n}: "${d.name}" -> "${overrides.diseaseNames[String(d.n)]}"`); d.name = overrides.diseaseNames[String(d.n)]; }
     const idxName = diseaseIndex.get(d.n);
     if (idxName && slug(idxName) !== slug(d.name)) {
       if (slug(idxName).startsWith(slug(d.name)) && d.items[0] && slug(`${d.name} ${d.items[0].text}`) === slug(idxName)) { d.name = `${d.name} ${d.items.shift().text}`; }
@@ -496,14 +518,15 @@ export function build({ pdf, overrides, sourcesMeta }) {
       if (parts.length === 4 && parts.every(x => slug(x) === 'pancreas')) { out.items.push({ pair: 'pb-282' }); continue; }
       const tr = resolveRef(parts[0], `protocol ${pr.id}`), im = resolveRef(parts[parts.length - 1], `protocol ${pr.id}`);
       const hintEnt = hint ? entityIdFor(hint) : null;
-      let { pair, n } = matchPair(tr, im, hintEnt);
-      if (pair && n > 1 && !hintEnt) report.spot.push(`protocol ${pr.id}: "${a}" matched ${n} pairs, chose ${pair.id}`);
+      let { pair, n, pool } = matchPair(tr, im, hintEnt, contextCats(pr.id));
+      if (pair && pool.length > 1 && !hintEnt) report.spot.push(`protocol ${pr.id}: "${a}" matches ${pool.map(p => p.id).join(', ')}; chose ${pair.id} (${pair.category})`);
       if (!pair) {
         pair = cxPairFor(tr, im, { category: overrides.cxCategory?.[`${tr.point}--${im.point}`] || 'complex', source: src(raw.doc, raw.page) });
         report.unresolved.push({ where: pr.id, item: a, reason: `no numbered pair; mapped to ${pair.id}` });
       }
-      notePoint(tr); notePoint(im);
+      notePoint(tr, true); notePoint(im, true);
       const item = { pair: pair.id };
+      if (pool?.length > 1) item.samePoints = pool.map(p => p.id).filter(x => x !== pair.id);
       const sideNote = [tr.side !== 'C' && tr.side !== pair.tracking.side ? `−${tr.side}` : null, im.side !== 'C' && im.side !== pair.impact.side ? `+${im.side}` : null].filter(Boolean);
       if (sideNote.length) item.sides = { tracking: tr.side, impact: im.side };
       if (hint) item.note = { es: hint };
@@ -545,7 +568,7 @@ export function build({ pdf, overrides, sourcesMeta }) {
   for (const [id, sides] of [...pointUse.entries()].sort()) {
     const t = pointTable.get(id);
     const usedSides = [...sides];
-    const lat = usedSides.some(s => s === 'R' || s === 'L' || s === 'RL') ? 'bilateral' : t.laterality;
+    const lat = usedSides.includes('lateral') ? 'bilateral' : t.laterality;
     points.push({ id, name: L(t.es, t.en), aliases: [...t.aliases].sort((a, b) => a.localeCompare(b, 'es')), laterality: lat });
   }
   for (const [id, ctx] of newPoints) report.unresolved.push({ where: 'points', item: `${pointTable.get(id).es} (${id})`, reason: `not in point-aliases.js; used by ${uniq(ctx).slice(0, 5).join(', ')}` });
@@ -635,6 +658,8 @@ export function build({ pdf, overrides, sourcesMeta }) {
   const protocolList = [...protocols.values()].map(p => ({ id: p.id, kind: p.kind, ...(p.number ? { number: p.number } : {}), name: p.name, items: p.items, ...(p.notes ? { notes: p.notes } : {}), source: p.source, ...(p.alsoIn ? { alsoIn: p.alsoIn } : {}) }))
     .sort((a, b) => ['basic', 'top10', 'top5', 'disease', 'application'].indexOf(a.kind) - ['basic', 'top10', 'top5', 'disease', 'application'].indexOf(b.kind) || (a.number ?? 0) - (b.number ?? 0) || byId(a, b));
 
+  const dedupe = a => { const seen = new Set(); return a.filter(x => { const k = JSON.stringify(x); if (seen.has(k)) return false; seen.add(k); return true; }); };
+  report.unresolved = dedupe(report.unresolved); report.spot = dedupe(report.spot); report.overridesApplied = dedupe(report.overridesApplied); report.warnings = dedupe(report.warnings);
   return {
     data: {
       sources: sourcesMeta,

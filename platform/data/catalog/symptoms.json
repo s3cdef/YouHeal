@@ -1,0 +1,6559 @@
+[
+  {
+    "id": "abortos",
+    "system": "general",
+    "name": {
+      "es": "Abortos",
+      "en": "Miscarriages"
+    },
+    "pairs": [
+      "pb-071",
+      "pb-085",
+      "pb-134"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 48
+    }
+  },
+  {
+    "id": "absceso",
+    "system": "dermatological",
+    "name": {
+      "es": "Absceso",
+      "en": "Abscess"
+    },
+    "definition": {
+      "es": "cúmulo de pus y restos celulares"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "absceso-hepatico-amebiano",
+    "system": "general",
+    "name": {
+      "es": "Absceso Hepático Amebiano",
+      "en": "Amoebic liver abscess"
+    },
+    "pairs": [
+      "pb-132"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 68
+    }
+  },
+  {
+    "id": "acne",
+    "system": "general",
+    "name": {
+      "es": "Acné",
+      "en": "Acne"
+    },
+    "pairs": [
+      "pb-077"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 50
+    }
+  },
+  {
+    "id": "adenoma-hipofisiario",
+    "system": "general",
+    "name": {
+      "es": "Adenoma hipofisiario",
+      "en": "Pituitary adenoma"
+    },
+    "pairs": [
+      "pb-066"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 46
+    }
+  },
+  {
+    "id": "adenomegalias",
+    "system": "immunological",
+    "name": {
+      "es": "Adenomegalias",
+      "en": "Lymphadenopathy (swollen lymph nodes)"
+    },
+    "definition": {
+      "es": "inflamación de ganglios linfáticos"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "adinamia",
+    "system": "general",
+    "systems": [
+      "general",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Adinamia",
+      "en": "Adynamia (weakness)"
+    },
+    "definition": {
+      "es": "debilidad"
+    },
+    "pairs": [
+      "pb-281"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "aerofagia",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Aerofagia",
+      "en": "Aerophagia"
+    },
+    "definition": {
+      "es": "sensación de aire en el estómago"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "afasia",
+    "system": "neurological",
+    "name": {
+      "es": "Afasia",
+      "en": "Aphasia"
+    },
+    "definition": {
+      "es": "dificultad para comunicarse mediante el habla, la escritura o la mímica"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "aftas-bucales",
+    "system": "dental",
+    "name": {
+      "es": "Aftas bucales",
+      "en": "Mouth ulcers (aphthae)"
+    },
+    "definition": {
+      "es": "ulceraciones dolorosas en la mucosa oral"
+    },
+    "pairs": [
+      "pb-030"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "agresividad",
+    "system": "general",
+    "name": {
+      "es": "Agresividad",
+      "en": "Aggressiveness"
+    },
+    "pairs": [
+      "pb-174"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 82
+    }
+  },
+  {
+    "id": "ah1n1",
+    "system": "respiratory",
+    "name": {
+      "es": "AH1N1",
+      "en": "AH1N1 (influenza A H1N1)"
+    },
+    "pairs": [
+      "pb-045"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 39
+    }
+  },
+  {
+    "id": "alopecia",
+    "system": "dermatological",
+    "name": {
+      "es": "Alopecia",
+      "en": "Alopecia"
+    },
+    "definition": {
+      "es": "ausencia de cabello"
+    },
+    "pairs": [
+      "pb-263"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "alteracion-de-la-personalidad",
+    "system": "psychiatric",
+    "name": {
+      "es": "Alteración de la personalidad",
+      "en": "Personality changes"
+    },
+    "pairs": [
+      "pb-284"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "alteracion-en-la-marcha",
+    "system": "neurological",
+    "name": {
+      "es": "Alteración en la marcha",
+      "en": "Gait disturbance"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "alteracion-en-la-sensibilidad-termica",
+    "system": "general",
+    "name": {
+      "es": "Alteración en la sensibilidad térmica",
+      "en": "Altered temperature sensation"
+    },
+    "pairs": [
+      "pb-174"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 82
+    }
+  },
+  {
+    "id": "alteracion-hormonal",
+    "system": "general",
+    "name": {
+      "es": "Alteración hormonal",
+      "en": "Hormonal imbalance"
+    },
+    "pairs": [
+      "pb-191"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 88
+    }
+  },
+  {
+    "id": "alteracion-peristaltica",
+    "system": "general",
+    "name": {
+      "es": "Alteración peristáltica",
+      "en": "Altered peristalsis"
+    },
+    "pairs": [
+      "pb-190",
+      "pb-191"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 88
+    }
+  },
+  {
+    "id": "alteraciones-del-estado-de-animo",
+    "system": "toxicological",
+    "systems": [
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Alteraciones del estado de ánimo",
+      "en": "Mood changes"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-011",
+      "pb-012",
+      "pb-013",
+      "pb-026",
+      "pb-027",
+      "pb-049",
+      "pb-067",
+      "pb-090",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-128",
+      "pb-133",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144",
+      "pb-154",
+      "pb-156",
+      "pb-159",
+      "pb-166",
+      "pb-169",
+      "pb-181",
+      "pb-209",
+      "pb-219",
+      "pb-220",
+      "pb-221",
+      "pb-243",
+      "pb-274",
+      "pb-276",
+      "pb-280",
+      "pb-290",
+      "pb-291"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "alteraciones-del-sueno",
+    "system": "neurological",
+    "name": {
+      "es": "Alteraciones del sueño",
+      "en": "Sleep disturbances"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-011",
+      "pb-012",
+      "pb-013",
+      "pb-026",
+      "pb-027",
+      "pb-049",
+      "pb-067",
+      "pb-090",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-128",
+      "pb-133",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144",
+      "pb-154",
+      "pb-181",
+      "pb-219",
+      "pb-220",
+      "pb-221",
+      "pb-243",
+      "pb-280",
+      "pb-290",
+      "pb-291"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "alteraciones-menstruales",
+    "system": "general",
+    "name": {
+      "es": "Alteraciones menstruales",
+      "en": "Menstrual disorders"
+    },
+    "pairs": [
+      "pb-167",
+      "pb-171",
+      "pb-187"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 80
+    }
+  },
+  {
+    "id": "alteraciones-sociales",
+    "system": "psychiatric",
+    "name": {
+      "es": "Alteraciones sociales",
+      "en": "Social disturbances"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "alteraciones-visuales",
+    "system": "neurological",
+    "name": {
+      "es": "Alteraciones visuales",
+      "en": "Visual disturbances"
+    },
+    "pairs": [
+      "pb-027",
+      "pb-049",
+      "pb-067"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 33
+    }
+  },
+  {
+    "id": "altivez",
+    "system": "general",
+    "name": {
+      "es": "Altivez",
+      "en": "Haughtiness"
+    },
+    "pairs": [
+      "pb-301"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 195
+    }
+  },
+  {
+    "id": "alzheimer",
+    "system": "general",
+    "name": {
+      "es": "Alzheimer",
+      "en": "Alzheimer's disease"
+    },
+    "pairs": [
+      "pb-115",
+      "pb-116",
+      "pb-117"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 63
+    }
+  },
+  {
+    "id": "amaurosis-fugax",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Amaurosis fugax",
+      "en": "Amaurosis fugax"
+    },
+    "definition": {
+      "es": "pérdida de la visión repentina"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "amenorrea",
+    "system": "gynecological",
+    "systems": [
+      "endocrine",
+      "gynecological"
+    ],
+    "name": {
+      "es": "Amenorrea",
+      "en": "Amenorrhea"
+    },
+    "definition": {
+      "es": "ausencia de hemorragia menstrual"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "amnesia",
+    "system": "neurological",
+    "name": {
+      "es": "Amnesia",
+      "en": "Amnesia"
+    },
+    "definition": {
+      "es": "pérdida de la memoria"
+    },
+    "pairs": [
+      "pb-013",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-156",
+      "pb-166"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "amnesia-temporal",
+    "system": "neurological",
+    "name": {
+      "es": "Amnesia temporal",
+      "en": "Transient amnesia"
+    },
+    "pairs": [
+      "pb-011"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 28
+    }
+  },
+  {
+    "id": "ampolla",
+    "system": "dermatological",
+    "name": {
+      "es": "Ampolla",
+      "en": "Bulla (blister)"
+    },
+    "definition": {
+      "es": "lesión de contenido líquido > 0.5 cm"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "anemia",
+    "system": "hematological",
+    "name": {
+      "es": "Anemia",
+      "en": "Anemia"
+    },
+    "definition": {
+      "es": "concentración disminuida de hemoglobina en sangre"
+    },
+    "pairs": [
+      "pb-084",
+      "pb-092",
+      "pb-101",
+      "pb-189"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "anorexia",
+    "system": "general",
+    "name": {
+      "es": "Anorexia",
+      "en": "Anorexia"
+    },
+    "pairs": [
+      "pb-287"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 190
+    }
+  },
+  {
+    "id": "ansiedad",
+    "system": "psychiatric",
+    "name": {
+      "es": "Ansiedad",
+      "en": "Anxiety"
+    },
+    "pairs": [
+      "pb-284"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "apraxia",
+    "system": "neurological",
+    "name": {
+      "es": "Apraxia",
+      "en": "Apraxia"
+    },
+    "definition": {
+      "es": "incapacidad de ejecutar movimientos coordinados"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "arritmia",
+    "system": "general",
+    "name": {
+      "es": "Arritmia",
+      "en": "Arrhythmia"
+    },
+    "pairs": [
+      "pb-177"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 83
+    }
+  },
+  {
+    "id": "artralgias",
+    "system": "musculoskeletal",
+    "systems": [
+      "musculoskeletal",
+      "oncological"
+    ],
+    "name": {
+      "es": "Artralgias",
+      "en": "Arthralgia (joint pain)"
+    },
+    "definition": {
+      "es": "dolor articular"
+    },
+    "pairs": [
+      "pb-207"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "asintomatico",
+    "system": "general",
+    "name": {
+      "es": "Asintomático",
+      "en": "Asymptomatic"
+    },
+    "pairs": [
+      "pb-028",
+      "pb-031",
+      "pb-032",
+      "pb-033",
+      "pb-040",
+      "pb-041",
+      "pb-043",
+      "pb-060",
+      "pb-080",
+      "pb-085",
+      "pb-087",
+      "pb-091",
+      "pb-120",
+      "pb-225",
+      "pb-226",
+      "pb-236",
+      "pb-240",
+      "pb-242",
+      "pb-268",
+      "pb-272",
+      "pb-273"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 34
+    }
+  },
+  {
+    "id": "astenia",
+    "system": "general",
+    "systems": [
+      "general",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Astenia",
+      "en": "Asthenia (fatigue)"
+    },
+    "definition": {
+      "es": "cansancio"
+    },
+    "pairs": [
+      "pb-281"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "aumento-de-peso",
+    "system": "endocrine",
+    "name": {
+      "es": "Aumento de Peso",
+      "en": "Weight gain"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "aumento-de-secrecion-traqueobronquiales",
+    "system": "general",
+    "name": {
+      "es": "Aumento de secreción traqueobronquiales",
+      "en": "Increased tracheobronchial secretions"
+    },
+    "pairs": [
+      "pb-191"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 88
+    }
+  },
+  {
+    "id": "aumento-o-reduccion-del-metabolismo",
+    "system": "general",
+    "name": {
+      "es": "Aumento o reducción del metabolismo",
+      "en": "Increased or decreased metabolism"
+    },
+    "pairs": [
+      "pb-183"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 85
+    }
+  },
+  {
+    "id": "ausencia-o-exceso-de-caracter",
+    "system": "general",
+    "name": {
+      "es": "Ausencia o exceso de carácter",
+      "en": "Lack or excess of character (temperament)"
+    },
+    "pairs": [
+      "pb-160"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 78
+    }
+  },
+  {
+    "id": "ausencia-o-exceso-de-libido",
+    "system": "general",
+    "name": {
+      "es": "Ausencia o exceso de Líbido",
+      "en": "Lack or excess of libido"
+    },
+    "pairs": [
+      "pb-161"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 78
+    }
+  },
+  {
+    "id": "avaricia",
+    "system": "general",
+    "name": {
+      "es": "Avaricia",
+      "en": "Greed"
+    },
+    "pairs": [
+      "pb-305"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 196
+    }
+  },
+  {
+    "id": "azoospermia",
+    "system": "general",
+    "name": {
+      "es": "Azoospermia",
+      "en": "Azoospermia"
+    },
+    "pairs": [
+      "pb-188"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 87
+    }
+  },
+  {
+    "id": "baja-autoestima",
+    "system": "general",
+    "name": {
+      "es": "Baja autoestima",
+      "en": "Low self-esteem"
+    },
+    "pairs": [
+      "pb-155"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 76
+    }
+  },
+  {
+    "id": "bradicardia",
+    "system": "cardiological",
+    "name": {
+      "es": "Bradicardia",
+      "en": "Bradycardia"
+    },
+    "definition": {
+      "es": "latidos cardíacos < 20 lpm"
+    },
+    "pairs": [
+      "pb-190",
+      "pb-191",
+      "pb-283"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "broncoconstriccion",
+    "system": "general",
+    "name": {
+      "es": "Broncoconstricción",
+      "en": "Bronchoconstriction"
+    },
+    "pairs": [
+      "pb-190",
+      "pb-191"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 88
+    }
+  },
+  {
+    "id": "bruxismo",
+    "system": "dental",
+    "name": {
+      "es": "Bruxismo",
+      "en": "Bruxism"
+    },
+    "definition": {
+      "es": "hábito involuntario de apretar los dientes"
+    },
+    "pairs": [
+      "pb-078",
+      "pb-255"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "caida-del-cabello",
+    "system": "dermatological",
+    "name": {
+      "es": "Caída del cabello",
+      "en": "Hair loss"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "caries",
+    "system": "dental",
+    "name": {
+      "es": "Caries",
+      "en": "Dental caries"
+    },
+    "definition": {
+      "es": "destrucción del tejido dental propiciada por los ácidos liberados por las bacterias de la placa depositada en la superficie de los dientes"
+    },
+    "pairs": [
+      "pb-078"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "cefalea",
+    "system": "neurological",
+    "systems": [
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Cefalea",
+      "en": "Headache"
+    },
+    "definition": {
+      "es": "dolor de cabeza"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-010",
+      "pb-011",
+      "pb-012",
+      "pb-013",
+      "pb-014",
+      "pb-026",
+      "pb-027",
+      "pb-036",
+      "pb-048",
+      "pb-049",
+      "pb-053",
+      "pb-054",
+      "pb-067",
+      "pb-090",
+      "pb-097",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-128",
+      "pb-133",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144",
+      "pb-154",
+      "pb-159",
+      "pb-165",
+      "pb-166",
+      "pb-169",
+      "pb-181",
+      "pb-209",
+      "pb-219",
+      "pb-220",
+      "pb-221",
+      "pb-243",
+      "pb-256",
+      "pb-266",
+      "pb-274",
+      "pb-276",
+      "pb-280",
+      "pb-286",
+      "pb-290",
+      "pb-291"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "celos",
+    "system": "general",
+    "name": {
+      "es": "Celos",
+      "en": "Jealousy"
+    },
+    "pairs": [
+      "pb-321"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 201
+    }
+  },
+  {
+    "id": "cervicalgia",
+    "system": "general",
+    "name": {
+      "es": "Cervicalgia",
+      "en": "Neck pain (cervicalgia)"
+    },
+    "pairs": [
+      "pb-089",
+      "pb-090",
+      "pb-141",
+      "pb-168"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 54
+    }
+  },
+  {
+    "id": "cianosis",
+    "system": "respiratory",
+    "name": {
+      "es": "Cianosis",
+      "en": "Cyanosis"
+    },
+    "pairs": [
+      "pb-051"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 41
+    }
+  },
+  {
+    "id": "cicatriz",
+    "system": "dermatological",
+    "name": {
+      "es": "Cicatriz",
+      "en": "Scar"
+    },
+    "definition": {
+      "es": "lesión reparativa de agresión traumática o inflamatoria de la dermis y planos subyacentes"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "codo-de-tenista",
+    "system": "general",
+    "name": {
+      "es": "Codo de Tenista",
+      "en": "Tennis elbow"
+    },
+    "pairs": [
+      "pb-168"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 80
+    }
+  },
+  {
+    "id": "colecistitis-cronica-litiasica",
+    "system": "general",
+    "name": {
+      "es": "Colecistitis Crónica Litiásica",
+      "en": "Chronic calculous cholecystitis"
+    },
+    "pairs": [
+      "pb-195"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 89
+    }
+  },
+  {
+    "id": "colico-nefritico",
+    "system": "general",
+    "name": {
+      "es": "Cólico Nefrítico",
+      "en": "Renal colic"
+    },
+    "pairs": [
+      "pb-164"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 79
+    }
+  },
+  {
+    "id": "colitis-pseudomembranosa",
+    "system": "general",
+    "name": {
+      "es": "Colitis Pseudomembranosa",
+      "en": "Pseudomembranous colitis"
+    },
+    "pairs": [
+      "pb-252"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 178
+    }
+  },
+  {
+    "id": "colitis-ulcerativa-cronica-inespecifica",
+    "system": "general",
+    "name": {
+      "es": "Colitis ulcerativa crónica inespecífica (CUCI)",
+      "en": "Chronic non-specific ulcerative colitis"
+    },
+    "pairs": [
+      "pb-081",
+      "pb-082"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 51
+    }
+  },
+  {
+    "id": "confusion-mental",
+    "system": "neurological",
+    "name": {
+      "es": "Confusión mental",
+      "en": "Mental confusion"
+    },
+    "pairs": [
+      "pb-027",
+      "pb-049",
+      "pb-067",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-128",
+      "pb-133",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144",
+      "pb-156",
+      "pb-165",
+      "pb-243"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "congestion-nasal",
+    "system": "respiratory",
+    "name": {
+      "es": "Congestión nasal",
+      "en": "Nasal congestion"
+    },
+    "pairs": [
+      "pb-028",
+      "pb-029",
+      "pb-030",
+      "pb-031",
+      "pb-053",
+      "pb-054",
+      "pb-057",
+      "pb-058",
+      "pb-061",
+      "pb-062",
+      "pb-063",
+      "pb-065",
+      "pb-066",
+      "pb-068",
+      "pb-069",
+      "pb-070",
+      "pb-072",
+      "pb-075",
+      "pb-099",
+      "pb-100",
+      "pb-101",
+      "pb-102",
+      "pb-103",
+      "pb-121",
+      "pb-145",
+      "pb-146",
+      "pb-215",
+      "pb-216",
+      "pb-217",
+      "pb-222",
+      "pb-232",
+      "pb-233",
+      "pb-234",
+      "pb-235",
+      "pb-237",
+      "pb-239",
+      "pb-241",
+      "pb-242",
+      "pb-244"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "conjuntivitis",
+    "system": "tropical",
+    "name": {
+      "es": "Conjuntivitis",
+      "en": "Conjunctivitis"
+    },
+    "definition": {
+      "es": "inflamación de la conjuntiva del ojo"
+    },
+    "pairs": [
+      "pb-010",
+      "pb-026",
+      "pb-057",
+      "pb-121",
+      "pb-147"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "convulsion",
+    "system": "neurological",
+    "systems": [
+      "neurological",
+      "oncological"
+    ],
+    "name": {
+      "es": "Convulsión",
+      "en": "Seizure (convulsion)"
+    },
+    "definition": {
+      "es": "contracción involuntaria, abrupta y patológica de un músculo, como consecuencia de una alteración neurológica"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "costra",
+    "system": "dermatological",
+    "name": {
+      "es": "Costra",
+      "en": "Crust (scab)"
+    },
+    "definition": {
+      "es": "desecación de sangre, exudados, secreciones y restos celulares, sobre la superficie cutánea"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "coxalgia",
+    "system": "general",
+    "systems": [
+      "general",
+      "musculoskeletal"
+    ],
+    "name": {
+      "es": "Coxalgia",
+      "en": "Hip pain (coxalgia)"
+    },
+    "pairs": [
+      "pb-073",
+      "pb-104",
+      "pb-121",
+      "pb-154"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 49
+    }
+  },
+  {
+    "id": "crisis-convulsivas",
+    "system": "general",
+    "systems": [
+      "general",
+      "neurological"
+    ],
+    "name": {
+      "es": "Crisis Convulsivas",
+      "en": "Seizures"
+    },
+    "pairs": [
+      "pb-180",
+      "pb-266"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 84
+    }
+  },
+  {
+    "id": "crueldad",
+    "system": "general",
+    "name": {
+      "es": "Crueldad",
+      "en": "Cruelty"
+    },
+    "pairs": [
+      "pb-312"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 198
+    }
+  },
+  {
+    "id": "culpa",
+    "system": "general",
+    "name": {
+      "es": "Culpa",
+      "en": "Guilt"
+    },
+    "pairs": [
+      "pb-316"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 200
+    }
+  },
+  {
+    "id": "deficiencia-en-la-secrecion-de-insulina",
+    "system": "general",
+    "name": {
+      "es": "Deficiencia en la secreción de insulina",
+      "en": "Impaired insulin secretion"
+    },
+    "pairs": [
+      "pb-158"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 77
+    }
+  },
+  {
+    "id": "dependencia-de-la-madre",
+    "system": "general",
+    "name": {
+      "es": "Dependencia de la madre",
+      "en": "Dependence on the mother"
+    },
+    "pairs": [
+      "pb-298"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 194
+    }
+  },
+  {
+    "id": "dependencia-del-padre",
+    "system": "general",
+    "name": {
+      "es": "Dependencia del padre",
+      "en": "Dependence on the father"
+    },
+    "pairs": [
+      "pb-299"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 194
+    }
+  },
+  {
+    "id": "depresion",
+    "system": "psychiatric",
+    "name": {
+      "es": "Depresión",
+      "en": "Depression"
+    },
+    "pairs": [
+      "pb-284",
+      "pb-302"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "desconcentracion",
+    "system": "neurological",
+    "name": {
+      "es": "Desconcentración",
+      "en": "Poor concentration"
+    },
+    "pairs": [
+      "pb-011",
+      "pb-166",
+      "pb-281",
+      "pb-286"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 28
+    }
+  },
+  {
+    "id": "desmielinizacion",
+    "system": "neurological",
+    "name": {
+      "es": "Desmielinización",
+      "en": "Demyelination"
+    },
+    "definition": {
+      "es": "pérdida de la mielina en las neuronas"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-007",
+      "pb-026",
+      "pb-027",
+      "pb-049",
+      "pb-067",
+      "pb-219",
+      "pb-220",
+      "pb-221"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "diabetes-mellitus",
+    "system": "general",
+    "name": {
+      "es": "Diabetes Mellitus",
+      "en": "Diabetes mellitus"
+    },
+    "pairs": [
+      "pb-282"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 188
+    }
+  },
+  {
+    "id": "diaforesis",
+    "system": "general",
+    "systems": [
+      "general",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Diaforesis",
+      "en": "Diaphoresis (sweating)"
+    },
+    "definition": {
+      "es": "sudoración"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "diarrea",
+    "system": "gastrointestinal",
+    "systems": [
+      "gastrointestinal",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Diarrea",
+      "en": "Diarrhea"
+    },
+    "definition": {
+      "es": "deposiciones fecales aumentadas en frecuencia y disminuidas en consistencia"
+    },
+    "pairs": [
+      "pb-034",
+      "pb-037",
+      "pb-038",
+      "pb-039",
+      "pb-040",
+      "pb-046",
+      "pb-081",
+      "pb-082",
+      "pb-083",
+      "pb-084",
+      "pb-086",
+      "pb-087",
+      "pb-092",
+      "pb-094",
+      "pb-110",
+      "pb-111",
+      "pb-119",
+      "pb-123",
+      "pb-124",
+      "pb-129",
+      "pb-130",
+      "pb-131",
+      "pb-132",
+      "pb-152",
+      "pb-157",
+      "pb-159",
+      "pb-169",
+      "pb-192",
+      "pb-209",
+      "pb-247",
+      "pb-248",
+      "pb-249",
+      "pb-251",
+      "pb-253",
+      "pb-254",
+      "pb-259",
+      "pb-261",
+      "pb-270",
+      "pb-271",
+      "pb-274",
+      "pb-276"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "diarrea-en-ninos-5-anos",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Diarrea en niños < 5 años",
+      "en": "Diarrhea in children under 5"
+    },
+    "pairs": [
+      "pb-041"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 38
+    }
+  },
+  {
+    "id": "diplopia",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Diplopía",
+      "en": "Diplopia (double vision)"
+    },
+    "definition": {
+      "es": "visión doble"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "disartria",
+    "system": "neurological",
+    "name": {
+      "es": "Disartria",
+      "en": "Dysarthria"
+    },
+    "definition": {
+      "es": "dificultad para articular palabras"
+    },
+    "pairs": [
+      "pb-013"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "disfagia",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Disfagia",
+      "en": "Dysphagia"
+    },
+    "definition": {
+      "es": "dolor durante la deglución"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "disfuncion-erectil",
+    "system": "general",
+    "name": {
+      "es": "Disfunción eréctil",
+      "en": "Erectile dysfunction"
+    },
+    "pairs": [
+      "pb-052"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 42
+    }
+  },
+  {
+    "id": "disfuncion-glandular",
+    "system": "general",
+    "name": {
+      "es": "Disfunción Glandular",
+      "en": "Glandular dysfunction"
+    },
+    "pairs": [
+      "pb-182"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 85
+    }
+  },
+  {
+    "id": "disfuncion-hormonal",
+    "system": "general",
+    "name": {
+      "es": "Disfunción hormonal",
+      "en": "Hormonal dysfunction"
+    },
+    "pairs": [
+      "pb-178"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 84
+    }
+  },
+  {
+    "id": "dislipidemia",
+    "system": "general",
+    "name": {
+      "es": "Dislipidemia",
+      "en": "Dyslipidemia"
+    },
+    "pairs": [
+      "pb-034",
+      "pb-035",
+      "pb-036",
+      "pb-037",
+      "pb-038",
+      "pb-039",
+      "pb-084",
+      "pb-093",
+      "pb-094",
+      "pb-095",
+      "pb-132",
+      "pb-209",
+      "pb-254"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 36
+    }
+  },
+  {
+    "id": "dismenorrea",
+    "system": "gynecological",
+    "name": {
+      "es": "Dismenorrea",
+      "en": "Dysmenorrhea"
+    },
+    "definition": {
+      "es": "dolor durante el período menstrual"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "disminucion-de-la-agudeza-visual",
+    "system": "ophthalmological",
+    "systems": [
+      "neurological",
+      "ophthalmological"
+    ],
+    "name": {
+      "es": "Disminución de la agudeza visual",
+      "en": "Reduced visual acuity"
+    },
+    "pairs": [
+      "pb-056",
+      "pb-114",
+      "pb-165",
+      "pb-176",
+      "pb-228",
+      "pb-229",
+      "pb-285"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "disminucion-de-la-fuerza",
+    "system": "musculoskeletal",
+    "name": {
+      "es": "Disminución de la fuerza",
+      "en": "Reduced strength"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "disminucion-de-la-respuesta-inmunitaria",
+    "system": "immunological",
+    "name": {
+      "es": "Disminución de la respuesta inmunitaria",
+      "en": "Reduced immune response"
+    },
+    "pairs": [
+      "pb-001",
+      "pb-035",
+      "pb-102",
+      "pb-185"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "disminucion-del-calibre-del-chorro",
+    "system": "urological",
+    "name": {
+      "es": "Disminución del calibre del chorro",
+      "en": "Reduced urinary stream"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "disminucion-en-los-rangos-de-movimiento",
+    "system": "musculoskeletal",
+    "name": {
+      "es": "Disminución en los rangos de movimiento",
+      "en": "Reduced range of motion"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "disnea",
+    "system": "respiratory",
+    "systems": [
+      "cardiological",
+      "respiratory"
+    ],
+    "name": {
+      "es": "Disnea",
+      "en": "Dyspnea"
+    },
+    "definition": {
+      "es": "dificultad para respirar"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-029",
+      "pb-030",
+      "pb-031",
+      "pb-051",
+      "pb-059",
+      "pb-063",
+      "pb-065",
+      "pb-066",
+      "pb-068",
+      "pb-069",
+      "pb-072",
+      "pb-075",
+      "pb-079",
+      "pb-099",
+      "pb-100",
+      "pb-101",
+      "pb-102",
+      "pb-103",
+      "pb-121",
+      "pb-145",
+      "pb-146",
+      "pb-208",
+      "pb-216",
+      "pb-217",
+      "pb-219",
+      "pb-220",
+      "pb-232",
+      "pb-233",
+      "pb-234",
+      "pb-235",
+      "pb-237",
+      "pb-239",
+      "pb-278"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "dispareunia",
+    "system": "gynecological",
+    "name": {
+      "es": "Dispareunia",
+      "en": "Dyspareunia"
+    },
+    "definition": {
+      "es": "dolor al momento de penetración durante el acto sexual"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "dispepsia",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Dispepsia",
+      "en": "Dyspepsia"
+    },
+    "definition": {
+      "es": "trastorno en la secreción, motilidad y sensibilidad gástrica"
+    },
+    "pairs": [
+      "pb-088",
+      "pb-096",
+      "pb-193",
+      "pb-221",
+      "pb-238",
+      "pb-245",
+      "pb-246",
+      "pb-252",
+      "pb-270"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "distension-abdominal",
+    "system": "gastrointestinal",
+    "systems": [
+      "gastrointestinal",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Distensión Abdominal",
+      "en": "Abdominal distension"
+    },
+    "pairs": [
+      "pb-034",
+      "pb-037",
+      "pb-038",
+      "pb-039",
+      "pb-040",
+      "pb-046",
+      "pb-077",
+      "pb-081",
+      "pb-082",
+      "pb-083",
+      "pb-084",
+      "pb-086",
+      "pb-087",
+      "pb-088",
+      "pb-092",
+      "pb-094",
+      "pb-096",
+      "pb-110",
+      "pb-111",
+      "pb-119",
+      "pb-123",
+      "pb-124",
+      "pb-129",
+      "pb-130",
+      "pb-131",
+      "pb-132",
+      "pb-152",
+      "pb-157",
+      "pb-159",
+      "pb-169",
+      "pb-192",
+      "pb-193",
+      "pb-209",
+      "pb-218",
+      "pb-221",
+      "pb-238",
+      "pb-245",
+      "pb-246",
+      "pb-247",
+      "pb-248",
+      "pb-249",
+      "pb-251",
+      "pb-252",
+      "pb-253",
+      "pb-254",
+      "pb-259",
+      "pb-261",
+      "pb-270",
+      "pb-271",
+      "pb-274",
+      "pb-276"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "disuria",
+    "system": "urological",
+    "name": {
+      "es": "Disuria",
+      "en": "Dysuria"
+    },
+    "definition": {
+      "es": "dolor al orinar"
+    },
+    "pairs": [
+      "pb-074",
+      "pb-097"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "diverticulitis",
+    "system": "general",
+    "name": {
+      "es": "Diverticulitis",
+      "en": "Diverticulitis"
+    },
+    "pairs": [
+      "pb-081",
+      "pb-082"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 51
+    }
+  },
+  {
+    "id": "dolor-abdominal",
+    "system": "gastrointestinal",
+    "systems": [
+      "gastrointestinal",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Dolor Abdominal",
+      "en": "Abdominal pain"
+    },
+    "pairs": [
+      "pb-034",
+      "pb-037",
+      "pb-038",
+      "pb-039",
+      "pb-040",
+      "pb-046",
+      "pb-081",
+      "pb-082",
+      "pb-083",
+      "pb-084",
+      "pb-086",
+      "pb-087",
+      "pb-092",
+      "pb-094",
+      "pb-096",
+      "pb-110",
+      "pb-111",
+      "pb-119",
+      "pb-123",
+      "pb-124",
+      "pb-129",
+      "pb-130",
+      "pb-131",
+      "pb-132",
+      "pb-152",
+      "pb-157",
+      "pb-159",
+      "pb-169",
+      "pb-179",
+      "pb-192",
+      "pb-193",
+      "pb-209",
+      "pb-218",
+      "pb-221",
+      "pb-238",
+      "pb-245",
+      "pb-246",
+      "pb-247",
+      "pb-248",
+      "pb-249",
+      "pb-251",
+      "pb-252",
+      "pb-253",
+      "pb-254",
+      "pb-259",
+      "pb-261",
+      "pb-270",
+      "pb-271",
+      "pb-274",
+      "pb-276"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "dolor-anal",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Dolor anal",
+      "en": "Anal pain"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "dolor-de-miembros-pelvicos",
+    "system": "general",
+    "systems": [
+      "general",
+      "musculoskeletal"
+    ],
+    "name": {
+      "es": "Dolor de miembros pélvicos",
+      "en": "Lower-limb pain"
+    },
+    "pairs": [
+      "pb-071",
+      "pb-073",
+      "pb-154",
+      "pb-168"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 48
+    }
+  },
+  {
+    "id": "dolor-de-mt",
+    "system": "general",
+    "name": {
+      "es": "Dolor de MT",
+      "en": "Upper-limb pain"
+    },
+    "pairs": [
+      "pb-168"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 80
+    }
+  },
+  {
+    "id": "dolor-ocular",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Dolor Ocular",
+      "en": "Eye pain"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "dolor-perianal",
+    "system": "general",
+    "name": {
+      "es": "Dolor perianal",
+      "en": "Perianal pain"
+    },
+    "pairs": [
+      "pb-041"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 38
+    }
+  },
+  {
+    "id": "dolor-posterior-de-mp",
+    "system": "neurological",
+    "name": {
+      "es": "Dolor posterior de MP",
+      "en": "Posterior lower-limb pain"
+    },
+    "pairs": [
+      "pb-007"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 27
+    }
+  },
+  {
+    "id": "dolor-renoureteral",
+    "system": "urological",
+    "name": {
+      "es": "Dolor renoureteral",
+      "en": "Renoureteral pain"
+    },
+    "definition": {
+      "es": "dolor renal y en ureteros"
+    },
+    "pairs": [
+      "pb-097"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "dolor-retrocular",
+    "system": "general",
+    "name": {
+      "es": "Dolor Retrocular",
+      "en": "Retro-ocular pain"
+    },
+    "pairs": [
+      "pb-053",
+      "pb-054"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 42
+    }
+  },
+  {
+    "id": "dolor-toracico",
+    "system": "respiratory",
+    "systems": [
+      "cardiological",
+      "respiratory"
+    ],
+    "name": {
+      "es": "Dolor Torácico",
+      "en": "Chest pain"
+    },
+    "pairs": [
+      "pb-051",
+      "pb-102",
+      "pb-103",
+      "pb-145"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "dorsalgia",
+    "system": "general",
+    "name": {
+      "es": "Dorsalgia",
+      "en": "Upper back pain (dorsalgia)"
+    },
+    "pairs": [
+      "pb-168"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 80
+    }
+  },
+  {
+    "id": "drogadiccion",
+    "system": "psychiatric",
+    "name": {
+      "es": "Drogadicción",
+      "en": "Drug addiction"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "duda",
+    "system": "general",
+    "name": {
+      "es": "Duda",
+      "en": "Doubt"
+    },
+    "pairs": [
+      "pb-314",
+      "pb-315"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 199
+    }
+  },
+  {
+    "id": "edema",
+    "system": "cardiological",
+    "name": {
+      "es": "Edema",
+      "en": "Edema"
+    },
+    "definition": {
+      "es": "acumulación de líquido en los tejidos"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "edema-abdominal",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Edema abdominal",
+      "en": "Abdominal edema"
+    },
+    "pairs": [
+      "pb-218"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 167
+    }
+  },
+  {
+    "id": "edema-de-tejidos-blandos",
+    "system": "general",
+    "name": {
+      "es": "Edema de tejidos blandos",
+      "en": "Soft-tissue edema"
+    },
+    "pairs": [
+      "pb-264"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 182
+    }
+  },
+  {
+    "id": "edema-facial-truncal",
+    "system": "endocrine",
+    "name": {
+      "es": "Edema Facial/Truncal",
+      "en": "Facial/truncal edema"
+    },
+    "definition": {
+      "es": "hinchazón en cara o cuerpo"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "embarazo",
+    "system": "general",
+    "name": {
+      "es": "Embarazo",
+      "en": "Pregnancy"
+    },
+    "pairs": [
+      "pb-170"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 81
+    }
+  },
+  {
+    "id": "enfermedad-de-crohn",
+    "system": "general",
+    "name": {
+      "es": "Enfermedad de Crohn",
+      "en": "Crohn's disease"
+    },
+    "pairs": [
+      "pb-081",
+      "pb-082"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 51
+    }
+  },
+  {
+    "id": "enfermedad-de-peyronie",
+    "system": "general",
+    "name": {
+      "es": "Enfermedad de Peyronie",
+      "en": "Peyronie's disease"
+    },
+    "pairs": [
+      "pb-056"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 43
+    }
+  },
+  {
+    "id": "enfermedad-pelvica-inflamatoria",
+    "system": "general",
+    "name": {
+      "es": "Enfermedad Pélvica Inflamatoria",
+      "en": "Pelvic inflammatory disease"
+    },
+    "pairs": [
+      "pb-122"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 65
+    }
+  },
+  {
+    "id": "entumecimiento",
+    "system": "neurological",
+    "name": {
+      "es": "Entumecimiento",
+      "en": "Numbness"
+    },
+    "pairs": [
+      "pb-048"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 40
+    }
+  },
+  {
+    "id": "enuresis",
+    "system": "urological",
+    "name": {
+      "es": "Enuresis",
+      "en": "Enuresis"
+    },
+    "definition": {
+      "es": "micción involuntaria"
+    },
+    "pairs": [
+      "pb-074",
+      "pb-194"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "envidia",
+    "system": "general",
+    "name": {
+      "es": "Envidia",
+      "en": "Envy"
+    },
+    "pairs": [
+      "pb-309"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 197
+    }
+  },
+  {
+    "id": "epifora",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Epifora",
+      "en": "Epiphora (watery eyes)"
+    },
+    "definition": {
+      "es": "lagrimeo"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "epigastralgia",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Epigastralgia",
+      "en": "Epigastric pain"
+    },
+    "definition": {
+      "es": "dolor en la boca del estómago"
+    },
+    "pairs": [
+      "pb-072",
+      "pb-076",
+      "pb-079",
+      "pb-088"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "epistaxis",
+    "system": "hematological",
+    "name": {
+      "es": "Epistaxis",
+      "en": "Epistaxis (nosebleed)"
+    },
+    "definition": {
+      "es": "hemorragia nasal"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "eritema",
+    "system": "dermatological",
+    "name": {
+      "es": "Eritema",
+      "en": "Erythema"
+    },
+    "definition": {
+      "es": "cambio de coloración rojiza con aumento de la temperatura local"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "erupcion-cutanea",
+    "system": "tropical",
+    "name": {
+      "es": "Erupción cutánea",
+      "en": "Skin rash"
+    },
+    "pairs": [
+      "pb-118"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "escama",
+    "system": "dermatological",
+    "name": {
+      "es": "Escama",
+      "en": "Scale"
+    },
+    "definition": {
+      "es": "lámina de tejido córneo que se desprende"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "escara",
+    "system": "dermatological",
+    "name": {
+      "es": "Escara",
+      "en": "Eschar"
+    },
+    "definition": {
+      "es": "masa de tejido de bordes delimitados y de color azul-negruzco, producida por isquemia y necrosis del tejido"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "escoliosis",
+    "system": "general",
+    "name": {
+      "es": "Escoliosis",
+      "en": "Scoliosis"
+    },
+    "pairs": [
+      "pb-108"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 60
+    }
+  },
+  {
+    "id": "escotoma",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Escotoma",
+      "en": "Scotoma"
+    },
+    "definition": {
+      "es": "zona de ceguera en el campo visual"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "espasmo-muscular",
+    "system": "musculoskeletal",
+    "name": {
+      "es": "Espasmo muscular",
+      "en": "Muscle spasm"
+    },
+    "pairs": [
+      "pb-184"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "esputo",
+    "system": "respiratory",
+    "name": {
+      "es": "Esputo",
+      "en": "Sputum"
+    },
+    "definition": {
+      "es": "flema"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "esteatorrea",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Esteatorrea",
+      "en": "Steatorrhea"
+    },
+    "definition": {
+      "es": "heces fecales grasosas y pastosas"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "esteatosis-hepatica",
+    "system": "general",
+    "name": {
+      "es": "Esteatosis Hepática",
+      "en": "Hepatic steatosis (fatty liver)"
+    },
+    "pairs": [
+      "pb-034",
+      "pb-035",
+      "pb-036",
+      "pb-037",
+      "pb-038",
+      "pb-039",
+      "pb-084",
+      "pb-093",
+      "pb-094",
+      "pb-095",
+      "pb-132",
+      "pb-209",
+      "pb-254"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 36
+    }
+  },
+  {
+    "id": "estornudo",
+    "system": "respiratory",
+    "name": {
+      "es": "Estornudo",
+      "en": "Sneezing"
+    },
+    "pairs": [
+      "pb-028",
+      "pb-029",
+      "pb-030",
+      "pb-031",
+      "pb-032",
+      "pb-033",
+      "pb-057",
+      "pb-058",
+      "pb-061",
+      "pb-062",
+      "pb-063",
+      "pb-065",
+      "pb-066",
+      "pb-068",
+      "pb-069",
+      "pb-070",
+      "pb-072",
+      "pb-075",
+      "pb-099",
+      "pb-100",
+      "pb-102",
+      "pb-103",
+      "pb-121",
+      "pb-145",
+      "pb-146",
+      "pb-215",
+      "pb-216",
+      "pb-217",
+      "pb-222",
+      "pb-232",
+      "pb-233",
+      "pb-234",
+      "pb-235",
+      "pb-237",
+      "pb-239",
+      "pb-241",
+      "pb-242",
+      "pb-244"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "estrenimiento",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Estreñimiento",
+      "en": "Constipation"
+    },
+    "pairs": [
+      "pb-046",
+      "pb-157",
+      "pb-173"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "estridor-inspiratorio",
+    "system": "respiratory",
+    "name": {
+      "es": "Estridor Inspiratorio",
+      "en": "Inspiratory stridor"
+    },
+    "pairs": [
+      "pb-059"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 44
+    }
+  },
+  {
+    "id": "exantema",
+    "system": "dermatological",
+    "name": {
+      "es": "Exantema",
+      "en": "Exanthem"
+    },
+    "definition": {
+      "es": "eritema inflamatorio generalizado"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "excoriacion",
+    "system": "dermatological",
+    "name": {
+      "es": "Excoriación",
+      "en": "Excoriation"
+    },
+    "definition": {
+      "es": "pérdida de sustancia provocada por el rascado"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "falso-embarazo",
+    "system": "general",
+    "name": {
+      "es": "Falso Embarazo",
+      "en": "False pregnancy (pseudocyesis)"
+    },
+    "pairs": [
+      "pb-167"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 80
+    }
+  },
+  {
+    "id": "falta-de-crecimiento",
+    "system": "general",
+    "name": {
+      "es": "Falta de crecimiento",
+      "en": "Growth failure"
+    },
+    "pairs": [
+      "pb-155"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 76
+    }
+  },
+  {
+    "id": "falta-de-inspiracion",
+    "system": "general",
+    "name": {
+      "es": "Falta de inspiración",
+      "en": "Lack of inspiration"
+    },
+    "pairs": [
+      "pb-303"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 195
+    }
+  },
+  {
+    "id": "faringoamigdalitis-recurrente",
+    "system": "general",
+    "name": {
+      "es": "Faringoamigdalitis recurrente",
+      "en": "Recurrent pharyngotonsillitis"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-219",
+      "pb-220"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 26
+    }
+  },
+  {
+    "id": "fasciola-hepatica",
+    "system": "general",
+    "name": {
+      "es": "Fasciola Hepática",
+      "en": "Fasciola hepatica (liver fluke)"
+    },
+    "pairs": [
+      "pb-130"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 68
+    }
+  },
+  {
+    "id": "febricula",
+    "system": "general",
+    "name": {
+      "es": "Febrícula",
+      "en": "Low-grade fever"
+    },
+    "definition": {
+      "es": "Temp 37 - 37.5 ª C"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "fenomeno-de-raynaud",
+    "system": "hematological",
+    "name": {
+      "es": "Fenómeno de Raynaud",
+      "en": "Raynaud's phenomenon"
+    },
+    "definition": {
+      "es": "espamo vascular que bloquea el flujo sanguíneo como consecuencia de las bajas temperaturas"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "fiebre",
+    "system": "general",
+    "name": {
+      "es": "Fiebre",
+      "en": "Fever"
+    },
+    "definition": {
+      "es": "Temp > 37.5 ª C"
+    },
+    "pairs": [
+      "pb-050",
+      "pb-113"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "forunculos-en-la-espalda",
+    "system": "general",
+    "name": {
+      "es": "Forúnculos en la espalda",
+      "en": "Boils on the back"
+    },
+    "pairs": [
+      "pb-231"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 171
+    }
+  },
+  {
+    "id": "fosfenos",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Fosfenos",
+      "en": "Phosphenes"
+    },
+    "definition": {
+      "es": "manchas luminosas en el campo visual"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "fotofobia",
+    "system": "ophthalmological",
+    "systems": [
+      "neurological",
+      "ophthalmological"
+    ],
+    "name": {
+      "es": "Fotofobia",
+      "en": "Photophobia"
+    },
+    "definition": {
+      "es": "sensibilidad a la luz"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-219",
+      "pb-220"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "galactorrea",
+    "system": "endocrine",
+    "name": {
+      "es": "Galactorrea",
+      "en": "Galactorrhea"
+    },
+    "definition": {
+      "es": "secreción de productos lácteos por el pezón"
+    },
+    "pairs": [
+      "pb-288"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "gastritis",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Gastritis",
+      "en": "Gastritis"
+    },
+    "pairs": [
+      "pb-072",
+      "pb-076",
+      "pb-238",
+      "pb-252"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 48
+    }
+  },
+  {
+    "id": "gastritis-cronica-erosiva",
+    "system": "general",
+    "name": {
+      "es": "Gastritis Crónica Erosiva",
+      "en": "Chronic erosive gastritis"
+    },
+    "pairs": [
+      "pb-088"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 54
+    }
+  },
+  {
+    "id": "gastritis-cronica-erosiva-inespecifica",
+    "system": "general",
+    "name": {
+      "es": "Gastritis crónica erosiva inespecífica",
+      "en": "Chronic non-specific erosive gastritis"
+    },
+    "pairs": [
+      "pb-016"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 30
+    }
+  },
+  {
+    "id": "gastritis-oncogenico",
+    "system": "general",
+    "name": {
+      "es": "Gastritis Oncogénico",
+      "en": "Gastritis (oncogenic)"
+    },
+    "pairs": [
+      "pb-096"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 56
+    }
+  },
+  {
+    "id": "gingivitis",
+    "system": "dental",
+    "name": {
+      "es": "Gingivitis",
+      "en": "Gingivitis"
+    },
+    "definition": {
+      "es": "inflamación de encía"
+    },
+    "pairs": [
+      "pb-078",
+      "pb-255"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "glaucoma",
+    "system": "general",
+    "name": {
+      "es": "Glaucoma",
+      "en": "Glaucoma"
+    },
+    "pairs": [
+      "pb-147"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 73
+    }
+  },
+  {
+    "id": "gonalgia-de-rodilla-unilateral",
+    "system": "general",
+    "name": {
+      "es": "Gonalgia de rodilla unilateral",
+      "en": "Unilateral knee pain (gonalgia)"
+    },
+    "pairs": [
+      "pb-001"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 25
+    }
+  },
+  {
+    "id": "gula",
+    "system": "general",
+    "name": {
+      "es": "Gula",
+      "en": "Gluttony"
+    },
+    "pairs": [
+      "pb-308"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 197
+    }
+  },
+  {
+    "id": "halitosis",
+    "system": "gastrointestinal",
+    "systems": [
+      "dental",
+      "gastrointestinal"
+    ],
+    "name": {
+      "es": "Halitosis",
+      "en": "Halitosis (bad breath)"
+    },
+    "definition": {
+      "es": "mal aliento"
+    },
+    "pairs": [
+      "pb-078"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "hematoma",
+    "system": "hematological",
+    "name": {
+      "es": "Hematoma",
+      "en": "Hematoma"
+    },
+    "definition": {
+      "es": "acumulación de sangre entre los tejidos"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "hematuria",
+    "system": "urological",
+    "name": {
+      "es": "Hematuria",
+      "en": "Hematuria"
+    },
+    "definition": {
+      "es": "sangre en la orina"
+    },
+    "pairs": [
+      "pb-074",
+      "pb-097"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "hemoptisis",
+    "system": "respiratory",
+    "name": {
+      "es": "Hemoptisis",
+      "en": "Hemoptysis"
+    },
+    "definition": {
+      "es": "tos con sangre"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "hemorragia",
+    "system": "hematological",
+    "name": {
+      "es": "Hemorragia",
+      "en": "Hemorrhage"
+    },
+    "definition": {
+      "es": "sangrado"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "hemorragia-gingival",
+    "system": "dental",
+    "name": {
+      "es": "Hemorragia gingival",
+      "en": "Gingival bleeding"
+    },
+    "definition": {
+      "es": "sangrado de encías"
+    },
+    "pairs": [
+      "pb-078"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "hemorragias-intracraneales",
+    "system": "neurological",
+    "name": {
+      "es": "Hemorragias intracraneales",
+      "en": "Intracranial hemorrhages"
+    },
+    "pairs": [
+      "pb-067"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 47
+    }
+  },
+  {
+    "id": "hinchazon",
+    "system": "musculoskeletal",
+    "name": {
+      "es": "Hinchazón",
+      "en": "Swelling"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "hiperemia",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Hiperemia",
+      "en": "Hyperemia (red eye)"
+    },
+    "definition": {
+      "es": "ojo rojo"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "hiperglucemia",
+    "system": "general",
+    "name": {
+      "es": "Hiperglucemia",
+      "en": "Hyperglycemia"
+    },
+    "pairs": [
+      "pb-086",
+      "pb-282"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 53
+    }
+  },
+  {
+    "id": "hipermenorrea",
+    "system": "gynecological",
+    "name": {
+      "es": "Hipermenorrea",
+      "en": "Hypermenorrhea"
+    },
+    "definition": {
+      "es": "aumento de hemorragia menstrual en cantidad"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "hiperplasia-prostatica-benigna",
+    "system": "urological",
+    "name": {
+      "es": "Hiperplasia prostática benigna",
+      "en": "Benign prostatic hyperplasia"
+    },
+    "pairs": [
+      "pb-041",
+      "pb-222"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 38
+    }
+  },
+  {
+    "id": "hiperreflexia",
+    "system": "neurological",
+    "name": {
+      "es": "Hiperreflexia",
+      "en": "Hyperreflexia"
+    },
+    "definition": {
+      "es": "reflejos osteotendinosos aumentados"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "hipertension-arterial",
+    "system": "general",
+    "name": {
+      "es": "Hipertensión Arterial",
+      "en": "Arterial hypertension"
+    },
+    "pairs": [
+      "pb-175"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 83
+    }
+  },
+  {
+    "id": "hipertermia",
+    "system": "oncological",
+    "name": {
+      "es": "Hipertermia",
+      "en": "Hyperthermia"
+    },
+    "definition": {
+      "es": "aumento de la temperatura corporal"
+    },
+    "pairs": [
+      "pb-174"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "hipoacusia",
+    "system": "auditory",
+    "name": {
+      "es": "Hipoacusia",
+      "en": "Hearing loss (hypoacusis)"
+    },
+    "definition": {
+      "es": "disminución de la audición"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "hipoglucemia",
+    "system": "general",
+    "name": {
+      "es": "Hipoglucemia",
+      "en": "Hypoglycemia"
+    },
+    "pairs": [
+      "pb-282"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 188
+    }
+  },
+  {
+    "id": "hiporexia",
+    "system": "general",
+    "systems": [
+      "general",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Hiporexia",
+      "en": "Poor appetite (hyporexia)"
+    },
+    "definition": {
+      "es": "falta de apetito"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "hiporreflexia",
+    "system": "neurological",
+    "name": {
+      "es": "Hiporreflexia",
+      "en": "Hyporeflexia"
+    },
+    "definition": {
+      "es": "reflejos osteotendinosos disminuidos"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "hipotension-ortostatica",
+    "system": "cardiological",
+    "name": {
+      "es": "Hipotensión ortostática",
+      "en": "Orthostatic hypotension"
+    },
+    "definition": {
+      "es": "caída de la presión arterial al estar de pie"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "ictericia",
+    "system": "general",
+    "name": {
+      "es": "Ictericia",
+      "en": "Jaundice"
+    },
+    "pairs": [
+      "pb-092",
+      "pb-093",
+      "pb-094",
+      "pb-095",
+      "pb-227",
+      "pb-254"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 55
+    }
+  },
+  {
+    "id": "ideacion-suicida",
+    "system": "psychiatric",
+    "name": {
+      "es": "Ideación suicida",
+      "en": "Suicidal ideation"
+    },
+    "pairs": [
+      "pb-284"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "impaciencia",
+    "system": "general",
+    "name": {
+      "es": "Impaciencia",
+      "en": "Impatience"
+    },
+    "pairs": [
+      "pb-313"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 199
+    }
+  },
+  {
+    "id": "incontinencia-urinaria",
+    "system": "urological",
+    "name": {
+      "es": "Incontinencia urinaria",
+      "en": "Urinary incontinence"
+    },
+    "definition": {
+      "es": "pérdida del control vesical"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "infarto-al-miocardio",
+    "system": "general",
+    "name": {
+      "es": "Infarto al miocardio",
+      "en": "Myocardial infarction"
+    },
+    "pairs": [
+      "pb-069"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 47
+    }
+  },
+  {
+    "id": "infeccion-de-vias-urinarias",
+    "system": "general",
+    "systems": [
+      "general",
+      "urological"
+    ],
+    "name": {
+      "es": "Infección de vías urinarias (IVU)",
+      "en": "Urinary tract infection (UTI)"
+    },
+    "pairs": [
+      "pb-001",
+      "pb-056",
+      "pb-062",
+      "pb-074",
+      "pb-091",
+      "pb-097",
+      "pb-105",
+      "pb-114",
+      "pb-228",
+      "pb-229",
+      "pb-231",
+      "pb-251"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 25
+    }
+  },
+  {
+    "id": "infertilidad",
+    "system": "gynecological",
+    "name": {
+      "es": "Infertilidad",
+      "en": "Infertility"
+    },
+    "definition": {
+      "es": "incapacidad de embarazarse o culminar el embarazo"
+    },
+    "pairs": [
+      "pb-056",
+      "pb-114",
+      "pb-228",
+      "pb-229",
+      "pb-230"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "infertilidad-en-el-hombre",
+    "system": "general",
+    "name": {
+      "es": "Infertilidad en el hombre",
+      "en": "Male infertility"
+    },
+    "pairs": [
+      "pb-052"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 42
+    }
+  },
+  {
+    "id": "infertilidad-en-la-mujer",
+    "system": "general",
+    "name": {
+      "es": "Infertilidad en la mujer",
+      "en": "Female infertility"
+    },
+    "pairs": [
+      "pb-015"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 29
+    }
+  },
+  {
+    "id": "infiltracion",
+    "system": "dermatological",
+    "name": {
+      "es": "Infiltración",
+      "en": "Infiltration"
+    },
+    "definition": {
+      "es": "área de la piel con engrosamiento, inflamación y enrojecimiento"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "inflamacion-parotidea",
+    "system": "general",
+    "name": {
+      "es": "Inflamación Parotídea",
+      "en": "Parotid swelling"
+    },
+    "pairs": [
+      "pb-052"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 42
+    }
+  },
+  {
+    "id": "inmunodeficiencia-generalizada",
+    "system": "immunological",
+    "name": {
+      "es": "Inmunodeficiencia generalizada",
+      "en": "Generalized immunodeficiency"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "inmunodeficiencia-localizada",
+    "system": "immunological",
+    "name": {
+      "es": "Inmunodeficiencia localizada",
+      "en": "Localized immunodeficiency"
+    },
+    "definition": {
+      "es": "Tórax, Pelvis, etcétera"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "inmunoincompetencia",
+    "system": "general",
+    "name": {
+      "es": "Inmunoincompetencia",
+      "en": "Immune incompetence"
+    },
+    "pairs": [
+      "pb-162"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 78
+    }
+  },
+  {
+    "id": "insomnio",
+    "system": "neurological",
+    "name": {
+      "es": "Insomnio",
+      "en": "Insomnia"
+    },
+    "definition": {
+      "es": "falta anormal de sueño"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "integridad-moral",
+    "system": "general",
+    "name": {
+      "es": "Integridad Moral",
+      "en": "Moral integrity"
+    },
+    "pairs": [
+      "pb-300"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 194
+    }
+  },
+  {
+    "id": "intolerancia",
+    "system": "general",
+    "name": {
+      "es": "Intolerancia",
+      "en": "Intolerance"
+    },
+    "pairs": [
+      "pb-317"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 200
+    }
+  },
+  {
+    "id": "intolerancia-al-frio-calor",
+    "system": "endocrine",
+    "name": {
+      "es": "Intolerancia al frío/calor",
+      "en": "Cold/heat intolerance"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "ira",
+    "system": "general",
+    "name": {
+      "es": "Ira",
+      "en": "Anger"
+    },
+    "pairs": [
+      "pb-307"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 197
+    }
+  },
+  {
+    "id": "irritabilidad",
+    "system": "neurological",
+    "systems": [
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Irritabilidad",
+      "en": "Irritability"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-012",
+      "pb-027",
+      "pb-049",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-128",
+      "pb-133",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144",
+      "pb-154",
+      "pb-159",
+      "pb-165",
+      "pb-166",
+      "pb-169",
+      "pb-181",
+      "pb-209",
+      "pb-219",
+      "pb-220",
+      "pb-221",
+      "pb-243",
+      "pb-274",
+      "pb-276",
+      "pb-280",
+      "pb-286",
+      "pb-290",
+      "pb-291"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "letargia",
+    "system": "endocrine",
+    "name": {
+      "es": "Letargia",
+      "en": "Lethargy"
+    },
+    "definition": {
+      "es": "lentitud"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "leucemia",
+    "system": "hematological",
+    "name": {
+      "es": "Leucemia",
+      "en": "Leukemia"
+    },
+    "definition": {
+      "es": "aumento descontrolado en los elementos de la sangre y médula ósea"
+    },
+    "pairs": [
+      "pb-061",
+      "pb-084",
+      "pb-101",
+      "pb-189",
+      "pb-206"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "leucocitosis",
+    "system": "hematological",
+    "name": {
+      "es": "Leucocitosis",
+      "en": "Leukocytosis"
+    },
+    "definition": {
+      "es": "concentración aumentada de glóbulos blancos en sangre"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "leucopenia",
+    "system": "hematological",
+    "name": {
+      "es": "Leucopenia",
+      "en": "Leukopenia"
+    },
+    "definition": {
+      "es": "concentración disminuida de glóbulos blancos en sangre"
+    },
+    "pairs": [
+      "pb-084",
+      "pb-101",
+      "pb-189"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "leucorrea",
+    "system": "gynecological",
+    "name": {
+      "es": "Leucorrea",
+      "en": "Leukorrhea (vaginal discharge)"
+    },
+    "definition": {
+      "es": "flujo vaginal"
+    },
+    "pairs": [
+      "pb-046",
+      "pb-112",
+      "pb-135",
+      "pb-136",
+      "pb-137",
+      "pb-138",
+      "pb-151"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "litiasis",
+    "system": "general",
+    "name": {
+      "es": "Litiasis",
+      "en": "Lithiasis (stones)"
+    },
+    "pairs": [
+      "pb-056",
+      "pb-114",
+      "pb-228",
+      "pb-229"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 43
+    }
+  },
+  {
+    "id": "lujuria",
+    "system": "general",
+    "name": {
+      "es": "Lujuria",
+      "en": "Lust"
+    },
+    "pairs": [
+      "pb-306"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 196
+    }
+  },
+  {
+    "id": "lumbalgia",
+    "system": "general",
+    "systems": [
+      "general",
+      "musculoskeletal"
+    ],
+    "name": {
+      "es": "Lumbalgia",
+      "en": "Low back pain"
+    },
+    "pairs": [
+      "pb-073",
+      "pb-086",
+      "pb-107",
+      "pb-109",
+      "pb-113",
+      "pb-154",
+      "pb-168",
+      "pb-250",
+      "pb-257"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 49
+    }
+  },
+  {
+    "id": "lunares",
+    "system": "dermatological",
+    "name": {
+      "es": "Lunares",
+      "en": "Moles (nevi)"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "lupus-eritematoso-sistemico",
+    "system": "general",
+    "name": {
+      "es": "Lupus eritematoso sistémico",
+      "en": "Systemic lupus erythematosus"
+    },
+    "pairs": [
+      "pb-102",
+      "pb-103",
+      "pb-104",
+      "pb-105"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 58
+    }
+  },
+  {
+    "id": "macula",
+    "system": "dermatological",
+    "name": {
+      "es": "Mácula",
+      "en": "Macule"
+    },
+    "definition": {
+      "es": "cambio de coloración"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "mala-absorcion-de-nutrientes",
+    "system": "general",
+    "name": {
+      "es": "Mala absorción de nutrientes",
+      "en": "Nutrient malabsorption"
+    },
+    "pairs": [
+      "pb-192"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 88
+    }
+  },
+  {
+    "id": "malestar-general",
+    "system": "general",
+    "systems": [
+      "general",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Malestar General",
+      "en": "General malaise"
+    },
+    "definition": {
+      "es": "dolor muscular y articular generalizado"
+    },
+    "pairs": [
+      "pb-053",
+      "pb-054"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "malignidad",
+    "system": "general",
+    "name": {
+      "es": "Malignidad",
+      "en": "Malice"
+    },
+    "pairs": [
+      "pb-322"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 202
+    }
+  },
+  {
+    "id": "mareo",
+    "system": "neurological",
+    "systems": [
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Mareo",
+      "en": "Dizziness"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-010",
+      "pb-011",
+      "pb-012",
+      "pb-013",
+      "pb-014",
+      "pb-026",
+      "pb-027",
+      "pb-036",
+      "pb-048",
+      "pb-049",
+      "pb-067",
+      "pb-097",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-128",
+      "pb-133",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144",
+      "pb-154",
+      "pb-156",
+      "pb-159",
+      "pb-165",
+      "pb-166",
+      "pb-169",
+      "pb-181",
+      "pb-209",
+      "pb-219",
+      "pb-220",
+      "pb-221",
+      "pb-243",
+      "pb-256",
+      "pb-266",
+      "pb-274",
+      "pb-276",
+      "pb-280",
+      "pb-286",
+      "pb-290",
+      "pb-291"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "materialismo",
+    "system": "general",
+    "name": {
+      "es": "Materialismo",
+      "en": "Materialism"
+    },
+    "pairs": [
+      "pb-319"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 201
+    }
+  },
+  {
+    "id": "melanoma",
+    "system": "general",
+    "name": {
+      "es": "Melanoma",
+      "en": "Melanoma"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-219",
+      "pb-220"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 26
+    }
+  },
+  {
+    "id": "melenas",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Melenas",
+      "en": "Melena"
+    },
+    "definition": {
+      "es": "hemorragia rectal de color negro, sangre digerida"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "menopausia",
+    "system": "gynecological",
+    "name": {
+      "es": "Menopausia",
+      "en": "Menopause"
+    },
+    "definition": {
+      "es": "ausencia de ovulación y menstruación"
+    },
+    "pairs": [
+      "pb-171",
+      "pb-187"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "meteorismo",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Meteorismo",
+      "en": "Meteorism (flatulence)"
+    },
+    "definition": {
+      "es": "flatulencia"
+    },
+    "pairs": [
+      "pb-034",
+      "pb-037",
+      "pb-038",
+      "pb-039",
+      "pb-046",
+      "pb-092"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "metrorragias-irregulares",
+    "system": "gynecological",
+    "name": {
+      "es": "Metrorragias irregulares",
+      "en": "Irregular metrorrhagia"
+    },
+    "definition": {
+      "es": "hemorragia menstrual irregular"
+    },
+    "pairs": [
+      "pb-044"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "mialgias",
+    "system": "musculoskeletal",
+    "systems": [
+      "musculoskeletal",
+      "oncological"
+    ],
+    "name": {
+      "es": "Mialgias",
+      "en": "Myalgia (muscle pain)"
+    },
+    "definition": {
+      "es": "dolor muscular"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "miccion-dolorosa",
+    "system": "urological",
+    "name": {
+      "es": "Micción dolorosa",
+      "en": "Painful urination"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "miedo",
+    "system": "general",
+    "name": {
+      "es": "Miedo",
+      "en": "Fear"
+    },
+    "pairs": [
+      "pb-311"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 198
+    }
+  },
+  {
+    "id": "miocarditis",
+    "system": "general",
+    "name": {
+      "es": "Miocarditis",
+      "en": "Myocarditis"
+    },
+    "pairs": [
+      "pb-092"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 55
+    }
+  },
+  {
+    "id": "miodesopsias",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Miodesopsias",
+      "en": "Floaters (myodesopsia)"
+    },
+    "definition": {
+      "es": "manchas, puntos o filamentos suspendidos en el campo visual"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "miomatosis-uterina",
+    "system": "gynecological",
+    "name": {
+      "es": "Miomatosis uterina",
+      "en": "Uterine fibroids (myomatosis)"
+    },
+    "pairs": [
+      "pb-044",
+      "pb-167"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 39
+    }
+  },
+  {
+    "id": "movimiento-descoordinado",
+    "system": "neurological",
+    "name": {
+      "es": "Movimiento descoordinado",
+      "en": "Uncoordinated movement"
+    },
+    "pairs": [
+      "pb-048"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 40
+    }
+  },
+  {
+    "id": "multisistemico",
+    "system": "general",
+    "name": {
+      "es": "Multisistémico",
+      "en": "Multisystemic"
+    },
+    "pairs": [
+      "pb-056",
+      "pb-114",
+      "pb-224",
+      "pb-228",
+      "pb-229",
+      "pb-230",
+      "pb-231",
+      "pb-264",
+      "pb-265",
+      "pb-267",
+      "pb-325"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 43
+    }
+  },
+  {
+    "id": "nausea",
+    "system": "gastrointestinal",
+    "systems": [
+      "gastrointestinal",
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Náusea",
+      "en": "Nausea"
+    },
+    "pairs": [
+      "pb-014"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "neuralgia",
+    "system": "neurological",
+    "name": {
+      "es": "Neuralgia",
+      "en": "Neuralgia"
+    },
+    "pairs": [
+      "pb-256"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 180
+    }
+  },
+  {
+    "id": "neuralgia-del-trigemino",
+    "system": "general",
+    "name": {
+      "es": "Neuralgia del trigémino",
+      "en": "Trigeminal neuralgia"
+    },
+    "pairs": [
+      "pb-165",
+      "pb-256"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 79
+    }
+  },
+  {
+    "id": "neurocisticercosis",
+    "system": "general",
+    "name": {
+      "es": "Neurocisticercosis",
+      "en": "Neurocysticercosis"
+    },
+    "pairs": [
+      "pb-124"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 66
+    }
+  },
+  {
+    "id": "neurosis",
+    "system": "psychiatric",
+    "name": {
+      "es": "Neurosis",
+      "en": "Neurosis"
+    },
+    "pairs": [
+      "pb-284"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "nicturia",
+    "system": "urological",
+    "name": {
+      "es": "Nicturia",
+      "en": "Nocturia"
+    },
+    "definition": {
+      "es": "aumento en la frecuencia de la micción nocturna"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "nilo-virus",
+    "system": "tropical",
+    "name": {
+      "es": "Nilo Virus",
+      "en": "West Nile virus"
+    },
+    "pairs": [
+      "pb-045"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 39
+    }
+  },
+  {
+    "id": "nodulo",
+    "system": "dermatological",
+    "name": {
+      "es": "Nódulo",
+      "en": "Nodule"
+    },
+    "definition": {
+      "es": "lesión sólida, profunda, palpable, puede tener relieve y de tamaño variable, está cubierta por una epidermis normal"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "odinofagia",
+    "system": "respiratory",
+    "name": {
+      "es": "Odinofagia",
+      "en": "Odynophagia (sore throat)"
+    },
+    "definition": {
+      "es": "dolor de garganta"
+    },
+    "pairs": [
+      "pb-028",
+      "pb-029",
+      "pb-030",
+      "pb-031",
+      "pb-032",
+      "pb-033",
+      "pb-054",
+      "pb-057",
+      "pb-058",
+      "pb-059",
+      "pb-061",
+      "pb-062",
+      "pb-063",
+      "pb-065",
+      "pb-066",
+      "pb-068",
+      "pb-069",
+      "pb-070",
+      "pb-072",
+      "pb-075",
+      "pb-099",
+      "pb-100",
+      "pb-101",
+      "pb-102",
+      "pb-103",
+      "pb-121",
+      "pb-145",
+      "pb-146",
+      "pb-215",
+      "pb-216",
+      "pb-217",
+      "pb-222",
+      "pb-232",
+      "pb-233",
+      "pb-234",
+      "pb-235",
+      "pb-237",
+      "pb-239",
+      "pb-241",
+      "pb-242",
+      "pb-244"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "odio",
+    "system": "general",
+    "name": {
+      "es": "Odio",
+      "en": "Hatred"
+    },
+    "pairs": [
+      "pb-320"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 201
+    }
+  },
+  {
+    "id": "odontalgia",
+    "system": "dental",
+    "name": {
+      "es": "Odontalgia",
+      "en": "Toothache"
+    },
+    "definition": {
+      "es": "dolor de diente"
+    },
+    "pairs": [
+      "pb-078",
+      "pb-255"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "oligomenorrea",
+    "system": "gynecological",
+    "name": {
+      "es": "Oligomenorrea",
+      "en": "Oligomenorrhea"
+    },
+    "definition": {
+      "es": "período menstrual con intervalo > 35 días"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "oncogenico",
+    "system": "general",
+    "name": {
+      "es": "Oncogénico",
+      "en": "Oncogenic (tumoral)"
+    },
+    "pairs": [
+      "pb-035",
+      "pb-047",
+      "pb-093",
+      "pb-095",
+      "pb-114",
+      "pb-228",
+      "pb-229",
+      "pb-252",
+      "pb-258"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 36
+    }
+  },
+  {
+    "id": "otalgia",
+    "system": "auditory",
+    "name": {
+      "es": "Otalgia",
+      "en": "Earache (otalgia)"
+    },
+    "definition": {
+      "es": "dolor de oído"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "otorrea",
+    "system": "auditory",
+    "name": {
+      "es": "Otorrea",
+      "en": "Otorrhea (ear discharge)"
+    },
+    "definition": {
+      "es": "secreción de oído"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "palidez",
+    "system": "hematological",
+    "name": {
+      "es": "Palidez",
+      "en": "Pallor"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "palpitaciones",
+    "system": "cardiological",
+    "name": {
+      "es": "Palpitaciones",
+      "en": "Palpitations"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "pancreatitis",
+    "system": "general",
+    "name": {
+      "es": "Pancreatitis",
+      "en": "Pancreatitis"
+    },
+    "pairs": [
+      "pb-282"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 188
+    }
+  },
+  {
+    "id": "panencefalitis-esclerosante-subaguda",
+    "system": "general",
+    "name": {
+      "es": "Panencefalitis esclerosante subaguda",
+      "en": "Subacute sclerosing panencephalitis"
+    },
+    "pairs": [
+      "pb-016"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 30
+    }
+  },
+  {
+    "id": "papula",
+    "system": "dermatological",
+    "name": {
+      "es": "Pápula",
+      "en": "Papule"
+    },
+    "definition": {
+      "es": "elevación circunscripta de la piel, superficial y de consistencia sólida < 1 cm"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "paralisis-facial",
+    "system": "general",
+    "name": {
+      "es": "Parálisis facial",
+      "en": "Facial palsy"
+    },
+    "pairs": [
+      "pb-165",
+      "pb-256"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 79
+    }
+  },
+  {
+    "id": "paralisis-muscular",
+    "system": "neurological",
+    "name": {
+      "es": "Parálisis muscular",
+      "en": "Muscle paralysis"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-007",
+      "pb-097",
+      "pb-219",
+      "pb-220"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 26
+    }
+  },
+  {
+    "id": "paralisis-muscular-ascendente",
+    "system": "neurological",
+    "name": {
+      "es": "Parálisis muscular ascendente",
+      "en": "Ascending muscle paralysis"
+    },
+    "pairs": [
+      "pb-048"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 40
+    }
+  },
+  {
+    "id": "paresia",
+    "system": "neurological",
+    "name": {
+      "es": "Paresia",
+      "en": "Paresis"
+    },
+    "definition": {
+      "es": "parálisis parcial muscular"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "parestesias",
+    "system": "neurological",
+    "name": {
+      "es": "Parestesias",
+      "en": "Paresthesia (numbness)"
+    },
+    "definition": {
+      "es": "adormecimiento"
+    },
+    "pairs": [
+      "pb-184"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "parkinson",
+    "system": "general",
+    "name": {
+      "es": "Parkinson",
+      "en": "Parkinson's disease"
+    },
+    "pairs": [
+      "pb-280"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 188
+    }
+  },
+  {
+    "id": "pensamientos-negativos",
+    "system": "psychiatric",
+    "name": {
+      "es": "Pensamientos negativos",
+      "en": "Negative thoughts"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "perdida-de-la-consciencia",
+    "system": "neurological",
+    "name": {
+      "es": "Pérdida de la consciencia",
+      "en": "Loss of consciousness"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "perdida-de-peso",
+    "system": "endocrine",
+    "systems": [
+      "endocrine",
+      "oncological"
+    ],
+    "name": {
+      "es": "Pérdida de Peso",
+      "en": "Weight loss"
+    },
+    "pairs": [
+      "pb-204"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "pereza",
+    "system": "general",
+    "name": {
+      "es": "Pereza",
+      "en": "Sloth (laziness)"
+    },
+    "pairs": [
+      "pb-310"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 198
+    }
+  },
+  {
+    "id": "pie-de-atleta",
+    "system": "general",
+    "name": {
+      "es": "Pie de atleta",
+      "en": "Athlete's foot"
+    },
+    "pairs": [
+      "pb-148",
+      "pb-149"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 74
+    }
+  },
+  {
+    "id": "pirosis",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Pirosis",
+      "en": "Heartburn (pyrosis)"
+    },
+    "definition": {
+      "es": "acidez, agruras o sensación de quemazón en el esófago"
+    },
+    "pairs": [
+      "pb-088"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "pitiriasis-versicolor",
+    "system": "general",
+    "name": {
+      "es": "Pitiriasis Versicolor",
+      "en": "Pityriasis versicolor"
+    },
+    "pairs": [
+      "pb-153"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 75
+    }
+  },
+  {
+    "id": "placa",
+    "system": "dermatological",
+    "name": {
+      "es": "Placa",
+      "en": "Plaque"
+    },
+    "definition": {
+      "es": "agrupación de pápulas"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "pleuresia",
+    "system": "respiratory",
+    "name": {
+      "es": "Pleuresía",
+      "en": "Pleuritic chest pain (pleurisy)"
+    },
+    "definition": {
+      "es": "dolor torácico al respirar o toser como consecuencia de la inflamación de las pleuras"
+    },
+    "pairs": [
+      "pb-051",
+      "pb-063"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "policitemia",
+    "system": "hematological",
+    "name": {
+      "es": "Policitemia",
+      "en": "Polycythemia"
+    },
+    "definition": {
+      "es": "concentración aumentada de glóbulos rojos en sangre"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "polidipsia",
+    "system": "endocrine",
+    "name": {
+      "es": "Polidipsia",
+      "en": "Polydipsia"
+    },
+    "definition": {
+      "es": "aumento en la sensación de sed"
+    },
+    "pairs": [
+      "pb-204",
+      "pb-205"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "polifagia",
+    "system": "endocrine",
+    "name": {
+      "es": "Polifagia",
+      "en": "Polyphagia"
+    },
+    "definition": {
+      "es": "aumento en la sensación de hambre"
+    },
+    "pairs": [
+      "pb-204",
+      "pb-279",
+      "pb-287"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "poliglobulia",
+    "system": "general",
+    "name": {
+      "es": "Poliglobulia",
+      "en": "Polyglobulia (erythrocytosis)"
+    },
+    "pairs": [
+      "pb-172"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 82
+    }
+  },
+  {
+    "id": "polimenorrea",
+    "system": "gynecological",
+    "name": {
+      "es": "Polimenorrea",
+      "en": "Polymenorrhea"
+    },
+    "definition": {
+      "es": "período menstrual frecuente con intervalo < 21 días"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "polipos-intestinales",
+    "system": "general",
+    "name": {
+      "es": "Pólipos intestinales",
+      "en": "Intestinal polyps"
+    },
+    "pairs": [
+      "pb-081",
+      "pb-082"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 51
+    }
+  },
+  {
+    "id": "polipos-nasales",
+    "system": "general",
+    "name": {
+      "es": "Pólipos nasales",
+      "en": "Nasal polyps"
+    },
+    "pairs": [
+      "pb-066"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 46
+    }
+  },
+  {
+    "id": "poliuria",
+    "system": "endocrine",
+    "name": {
+      "es": "Poliuria",
+      "en": "Polyuria"
+    },
+    "definition": {
+      "es": "aumento en la cantidad de secreción de orina"
+    },
+    "pairs": [
+      "pb-204",
+      "pb-205"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "propension-a-infecciones",
+    "system": "general",
+    "name": {
+      "es": "Propensión a Infecciones",
+      "en": "Susceptibility to infections"
+    },
+    "pairs": [
+      "pb-204"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 92
+    }
+  },
+  {
+    "id": "prurito",
+    "system": "dermatological",
+    "name": {
+      "es": "Prurito",
+      "en": "Pruritus (itching)"
+    },
+    "definition": {
+      "es": "comezón"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "prurito-anal",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Prurito anal",
+      "en": "Anal itching"
+    },
+    "definition": {
+      "es": "comezón anal"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "prurito-ocular",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Prurito Ocular",
+      "en": "Eye itching"
+    },
+    "definition": {
+      "es": "comezón ocular"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "psoriasis",
+    "system": "general",
+    "name": {
+      "es": "Psoriasis",
+      "en": "Psoriasis"
+    },
+    "pairs": [
+      "pb-070",
+      "pb-074"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 48
+    }
+  },
+  {
+    "id": "pterigion",
+    "system": "general",
+    "name": {
+      "es": "Pterigión",
+      "en": "Pterygium"
+    },
+    "pairs": [
+      "pb-121"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 65
+    }
+  },
+  {
+    "id": "pustula",
+    "system": "dermatological",
+    "name": {
+      "es": "Pústula",
+      "en": "Pustule"
+    },
+    "definition": {
+      "es": "lesión sobreelevada de contenido purulento"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "quemazon",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Quemazón",
+      "en": "Burning sensation (eye)"
+    },
+    "definition": {
+      "es": "sensación de ardor en el ojo"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "quiste",
+    "system": "dermatological",
+    "name": {
+      "es": "Quiste",
+      "en": "Cyst"
+    },
+    "definition": {
+      "es": "cavidad con contenido líquido o semisólido, recubierto de una membrana"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "radiculopatia",
+    "system": "general",
+    "name": {
+      "es": "Radiculopatía",
+      "en": "Radiculopathy"
+    },
+    "pairs": [
+      "pb-275"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 186
+    }
+  },
+  {
+    "id": "rascado",
+    "system": "dermatological",
+    "name": {
+      "es": "Rascado",
+      "en": "Scratching"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "rashes",
+    "system": "dermatological",
+    "name": {
+      "es": "Rashes",
+      "en": "Rashes"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "rechazo-de-trasplante-renal",
+    "system": "general",
+    "name": {
+      "es": "Rechazo de Trasplante Renal",
+      "en": "Kidney transplant rejection"
+    },
+    "pairs": [
+      "pb-225",
+      "pb-226"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 169
+    }
+  },
+  {
+    "id": "rectorragia",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Rectorragia",
+      "en": "Rectal bleeding (hematochezia)"
+    },
+    "definition": {
+      "es": "hemorragia rectal de color rojo"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "reflujo-gastroesofagico",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Reflujo gastroesofágico",
+      "en": "Gastroesophageal reflux"
+    },
+    "pairs": [
+      "pb-079",
+      "pb-088"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 51
+    }
+  },
+  {
+    "id": "regurgitacion",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Regurgitación",
+      "en": "Regurgitation"
+    },
+    "pairs": [
+      "pb-088"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 54
+    }
+  },
+  {
+    "id": "reservorio",
+    "system": "general",
+    "name": {
+      "es": "Reservorio",
+      "en": "Reservoir"
+    },
+    "pairs": [
+      "pb-097"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 57
+    }
+  },
+  {
+    "id": "retardo-de-la-respuesta-inmunitaria",
+    "system": "immunological",
+    "name": {
+      "es": "Retardo de la respuesta inmunitaria",
+      "en": "Delayed immune response"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "retardo-en-el-vaciamiento-gastrico",
+    "system": "general",
+    "name": {
+      "es": "Retardo en el vaciamiento gástrico",
+      "en": "Delayed gastric emptying"
+    },
+    "pairs": [
+      "pb-193"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 89
+    }
+  },
+  {
+    "id": "retencion-de-orina",
+    "system": "general",
+    "name": {
+      "es": "Retención de orina",
+      "en": "Urinary retention"
+    },
+    "pairs": [
+      "pb-222"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 168
+    }
+  },
+  {
+    "id": "retinitis-pigmentaria",
+    "system": "general",
+    "name": {
+      "es": "Retinitis Pigmentaria",
+      "en": "Retinitis pigmentosa"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-219",
+      "pb-220"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 26
+    }
+  },
+  {
+    "id": "retinopatia",
+    "system": "general",
+    "name": {
+      "es": "Retinopatía",
+      "en": "Retinopathy"
+    },
+    "pairs": [
+      "pb-147"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 73
+    }
+  },
+  {
+    "id": "rigidez",
+    "system": "musculoskeletal",
+    "name": {
+      "es": "Rigidez",
+      "en": "Stiffness"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "rinorrea",
+    "system": "respiratory",
+    "name": {
+      "es": "Rinorrea",
+      "en": "Rhinorrhea (runny nose)"
+    },
+    "definition": {
+      "es": "escurrimiento nasal"
+    },
+    "pairs": [
+      "pb-028",
+      "pb-029",
+      "pb-030",
+      "pb-031",
+      "pb-032",
+      "pb-033",
+      "pb-053",
+      "pb-054",
+      "pb-057",
+      "pb-058",
+      "pb-061",
+      "pb-062",
+      "pb-063",
+      "pb-065",
+      "pb-066",
+      "pb-068",
+      "pb-069",
+      "pb-070",
+      "pb-072",
+      "pb-075",
+      "pb-099",
+      "pb-100",
+      "pb-101",
+      "pb-102",
+      "pb-103",
+      "pb-121",
+      "pb-145",
+      "pb-146",
+      "pb-210",
+      "pb-215",
+      "pb-216",
+      "pb-217",
+      "pb-232",
+      "pb-233",
+      "pb-234",
+      "pb-235",
+      "pb-237",
+      "pb-239",
+      "pb-241",
+      "pb-242",
+      "pb-244"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "secrecion-ocular",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Secreción ocular",
+      "en": "Eye discharge"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "sequedad-de-boca",
+    "system": "dental",
+    "name": {
+      "es": "Sequedad de boca",
+      "en": "Dry mouth"
+    },
+    "pairs": [
+      "pb-078"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "sibilancias",
+    "system": "respiratory",
+    "name": {
+      "es": "Sibilancias",
+      "en": "Wheezing"
+    },
+    "definition": {
+      "es": "sonido silbante durante la respiración"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "sincope",
+    "system": "cardiological",
+    "name": {
+      "es": "Síncope",
+      "en": "Syncope"
+    },
+    "definition": {
+      "es": "pérdida temporal abrupta de conciencia y del tono postural, de resolución espontanea y sin secuelas"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "sindrome-de-fournier",
+    "system": "general",
+    "name": {
+      "es": "Síndrome de Fournier",
+      "en": "Fournier's syndrome"
+    },
+    "pairs": [
+      "pb-064",
+      "pb-104"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 46
+    }
+  },
+  {
+    "id": "sindrome-de-ovario-poliquistico",
+    "system": "general",
+    "name": {
+      "es": "Síndrome de Ovario Poliquístico",
+      "en": "Polycystic ovary syndrome"
+    },
+    "pairs": [
+      "pb-171",
+      "pb-187"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 81
+    }
+  },
+  {
+    "id": "sintomas-cardiological",
+    "system": "cardiological",
+    "name": {
+      "es": "Síntomas Cardiológicos",
+      "en": "Cardiological symptoms"
+    },
+    "pairs": [
+      "pb-221",
+      "pb-235"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 168
+    }
+  },
+  {
+    "id": "sintomas-dental",
+    "system": "dental",
+    "name": {
+      "es": "Síntomas Odontológicos",
+      "en": "Dental symptoms"
+    },
+    "pairs": [
+      "pb-106",
+      "pb-256"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 60
+    }
+  },
+  {
+    "id": "sintomas-dermatological",
+    "system": "dermatological",
+    "name": {
+      "es": "Síntomas Dermatológicos",
+      "en": "Dermatological symptoms"
+    },
+    "pairs": [
+      "pb-150",
+      "pb-153",
+      "pb-248",
+      "pb-260",
+      "pb-272",
+      "pb-273"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 74
+    }
+  },
+  {
+    "id": "sintomas-gastrointestinal",
+    "system": "gastrointestinal",
+    "name": {
+      "es": "Síntomas Gastrointestinales",
+      "en": "Gastrointestinal symptoms"
+    },
+    "pairs": [
+      "pb-093",
+      "pb-095",
+      "pb-098",
+      "pb-120",
+      "pb-141",
+      "pb-250",
+      "pb-258",
+      "pb-260",
+      "pb-269",
+      "pb-282"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 55
+    }
+  },
+  {
+    "id": "sintomas-general",
+    "system": "general",
+    "name": {
+      "es": "Síntomas Generales",
+      "en": "General symptoms"
+    },
+    "pairs": [
+      "pb-014",
+      "pb-016",
+      "pb-017",
+      "pb-018",
+      "pb-019",
+      "pb-020",
+      "pb-028",
+      "pb-029",
+      "pb-030",
+      "pb-031",
+      "pb-032",
+      "pb-033",
+      "pb-034",
+      "pb-035",
+      "pb-036",
+      "pb-037",
+      "pb-038",
+      "pb-039",
+      "pb-040",
+      "pb-045",
+      "pb-050",
+      "pb-056",
+      "pb-057",
+      "pb-058",
+      "pb-059",
+      "pb-061",
+      "pb-062",
+      "pb-063",
+      "pb-064",
+      "pb-065",
+      "pb-068",
+      "pb-069",
+      "pb-070",
+      "pb-071",
+      "pb-075",
+      "pb-076",
+      "pb-078",
+      "pb-084",
+      "pb-086",
+      "pb-087",
+      "pb-092",
+      "pb-093",
+      "pb-094",
+      "pb-095",
+      "pb-096",
+      "pb-098",
+      "pb-099",
+      "pb-100",
+      "pb-101",
+      "pb-102",
+      "pb-103",
+      "pb-105",
+      "pb-106",
+      "pb-107",
+      "pb-108",
+      "pb-109",
+      "pb-110",
+      "pb-111",
+      "pb-112",
+      "pb-113",
+      "pb-114",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-119",
+      "pb-122",
+      "pb-123",
+      "pb-124",
+      "pb-129",
+      "pb-130",
+      "pb-131",
+      "pb-132",
+      "pb-134",
+      "pb-145",
+      "pb-146",
+      "pb-152",
+      "pb-215",
+      "pb-216",
+      "pb-217",
+      "pb-228",
+      "pb-229",
+      "pb-232",
+      "pb-233",
+      "pb-234",
+      "pb-235",
+      "pb-237",
+      "pb-239",
+      "pb-241",
+      "pb-242",
+      "pb-243",
+      "pb-244",
+      "pb-245",
+      "pb-246",
+      "pb-247",
+      "pb-248",
+      "pb-249",
+      "pb-250",
+      "pb-251",
+      "pb-253",
+      "pb-254",
+      "pb-255",
+      "pb-256",
+      "pb-259",
+      "pb-260",
+      "pb-261",
+      "pb-269",
+      "pb-270",
+      "pb-271",
+      "pb-282"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 29
+    }
+  },
+  {
+    "id": "sintomas-gynecological",
+    "system": "gynecological",
+    "name": {
+      "es": "Síntomas Ginecológicos",
+      "en": "Gynecological symptoms"
+    },
+    "pairs": [
+      "pb-106",
+      "pb-108",
+      "pb-122"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 60
+    }
+  },
+  {
+    "id": "sintomas-hematological",
+    "system": "hematological",
+    "name": {
+      "es": "Síntomas Hematológicos",
+      "en": "Hematological symptoms"
+    },
+    "pairs": [
+      "pb-106",
+      "pb-108",
+      "pb-122",
+      "pb-206",
+      "pb-269"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 60
+    }
+  },
+  {
+    "id": "sintomas-hepaticos",
+    "system": "general",
+    "name": {
+      "es": "Síntomas Hepáticos",
+      "en": "Hepatic symptoms"
+    },
+    "pairs": [
+      "pb-269"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 184
+    }
+  },
+  {
+    "id": "sintomas-hepatobiliares",
+    "system": "general",
+    "name": {
+      "es": "Síntomas hepatobiliares",
+      "en": "Hepatobiliary symptoms"
+    },
+    "pairs": [
+      "pb-195"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 89
+    }
+  },
+  {
+    "id": "sintomas-inespecificos",
+    "system": "general",
+    "name": {
+      "es": "Síntomas inespecíficos",
+      "en": "Non-specific symptoms"
+    },
+    "pairs": [
+      "pb-047"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 40
+    }
+  },
+  {
+    "id": "sintomas-musculoskeletal",
+    "system": "musculoskeletal",
+    "name": {
+      "es": "Síntomas Osteomusculares",
+      "en": "Musculoskeletal symptoms"
+    },
+    "pairs": [
+      "pb-106",
+      "pb-107",
+      "pb-108",
+      "pb-109",
+      "pb-122",
+      "pb-275"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 60
+    }
+  },
+  {
+    "id": "sintomas-neurological",
+    "system": "neurological",
+    "name": {
+      "es": "Síntomas Neurológicos",
+      "en": "Neurological symptoms"
+    },
+    "pairs": [
+      "pb-092",
+      "pb-275",
+      "pb-284"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 55
+    }
+  },
+  {
+    "id": "sintomas-ophthalmological",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Síntomas Oftalmológicos",
+      "en": "Ophthalmological symptoms"
+    },
+    "pairs": [
+      "pb-147",
+      "pb-277"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 73
+    }
+  },
+  {
+    "id": "sintomas-psychiatric",
+    "system": "psychiatric",
+    "name": {
+      "es": "Síntomas Psiquiátricos",
+      "en": "Psychiatric symptoms"
+    },
+    "pairs": [
+      "pb-302"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 195
+    }
+  },
+  {
+    "id": "sintomas-respiratory",
+    "system": "respiratory",
+    "name": {
+      "es": "Síntomas Respiratorios",
+      "en": "Respiratory symptoms"
+    },
+    "pairs": [
+      "pb-243"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 175
+    }
+  },
+  {
+    "id": "sintomas-toxicological",
+    "system": "general",
+    "name": {
+      "es": "Síntomas Toxicológicos",
+      "en": "Toxicological symptoms"
+    },
+    "pairs": [
+      "pb-036",
+      "pb-282"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 36
+    }
+  },
+  {
+    "id": "sintomas-tropical",
+    "system": "tropical",
+    "name": {
+      "es": "Síntomas Tropicales",
+      "en": "Tropical symptoms"
+    },
+    "pairs": [
+      "pb-008",
+      "pb-009",
+      "pb-126",
+      "pb-127",
+      "pb-139",
+      "pb-140",
+      "pb-223",
+      "pb-224",
+      "pb-227",
+      "pb-258",
+      "pb-262",
+      "pb-267",
+      "pb-323",
+      "pb-324"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 27
+    }
+  },
+  {
+    "id": "soberbia",
+    "system": "general",
+    "name": {
+      "es": "Soberbia",
+      "en": "Pride (arrogance)"
+    },
+    "pairs": [
+      "pb-304"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 196
+    }
+  },
+  {
+    "id": "somnolencia",
+    "system": "neurological",
+    "systems": [
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Somnolencia",
+      "en": "Drowsiness (somnolence)"
+    },
+    "definition": {
+      "es": "estado intermedio entre sueño y vigilia"
+    },
+    "pairs": [
+      "pb-006",
+      "pb-012",
+      "pb-013",
+      "pb-026",
+      "pb-027",
+      "pb-048",
+      "pb-049",
+      "pb-067",
+      "pb-090",
+      "pb-115",
+      "pb-116",
+      "pb-117",
+      "pb-118",
+      "pb-128",
+      "pb-133",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144",
+      "pb-154",
+      "pb-159",
+      "pb-165",
+      "pb-169",
+      "pb-181",
+      "pb-209",
+      "pb-219",
+      "pb-220",
+      "pb-221",
+      "pb-243",
+      "pb-266",
+      "pb-274",
+      "pb-276",
+      "pb-280",
+      "pb-286",
+      "pb-290",
+      "pb-291"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "sudoracion",
+    "system": "dermatological",
+    "name": {
+      "es": "Sudoración",
+      "en": "Sweating"
+    },
+    "pairs": [
+      "pb-190",
+      "pb-191"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "talasemia",
+    "system": "general",
+    "name": {
+      "es": "Talasemia",
+      "en": "Thalassemia"
+    },
+    "pairs": [
+      "pb-108"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 60
+    }
+  },
+  {
+    "id": "taquicardia",
+    "system": "cardiological",
+    "name": {
+      "es": "Taquicardia",
+      "en": "Tachycardia"
+    },
+    "definition": {
+      "es": "latidos cardíacos > 100 lpm"
+    },
+    "pairs": [
+      "pb-177",
+      "pb-190",
+      "pb-191"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "taquipnea",
+    "system": "respiratory",
+    "name": {
+      "es": "Taquipnea",
+      "en": "Tachypnea"
+    },
+    "definition": {
+      "es": "respiraciones rápidas >20 rpm"
+    },
+    "pairs": [
+      "pb-051"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "tenesmo-vesical",
+    "system": "urological",
+    "name": {
+      "es": "Tenesmo Vesical",
+      "en": "Vesical tenesmus"
+    },
+    "definition": {
+      "es": "contracción dolorosa de la vejiga, sin conseguir orinar y con sensación de vaciado incompleto"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "tinnitus",
+    "system": "auditory",
+    "name": {
+      "es": "Tinnitus",
+      "en": "Tinnitus"
+    },
+    "definition": {
+      "es": "sonido constante en el oído"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "tos",
+    "system": "respiratory",
+    "name": {
+      "es": "Tos",
+      "en": "Cough"
+    },
+    "pairs": [
+      "pb-028",
+      "pb-032",
+      "pb-033",
+      "pb-045",
+      "pb-051",
+      "pb-057",
+      "pb-058",
+      "pb-059",
+      "pb-061",
+      "pb-062",
+      "pb-063",
+      "pb-065",
+      "pb-066",
+      "pb-068",
+      "pb-069",
+      "pb-070",
+      "pb-072",
+      "pb-075",
+      "pb-079",
+      "pb-099",
+      "pb-100",
+      "pb-101",
+      "pb-102",
+      "pb-103",
+      "pb-121",
+      "pb-145",
+      "pb-146",
+      "pb-216",
+      "pb-217",
+      "pb-222",
+      "pb-232",
+      "pb-233",
+      "pb-234",
+      "pb-235",
+      "pb-237",
+      "pb-239",
+      "pb-241",
+      "pb-242",
+      "pb-244"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "tos-productiva",
+    "system": "respiratory",
+    "name": {
+      "es": "Tos productiva",
+      "en": "Productive cough"
+    },
+    "pairs": [
+      "pb-029",
+      "pb-030",
+      "pb-031",
+      "pb-215"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 34
+    }
+  },
+  {
+    "id": "triada-de-la-meningitis",
+    "system": "neurological",
+    "name": {
+      "es": "Triada de la Meningitis",
+      "en": "Meningitis triad"
+    },
+    "pairs": [
+      "pb-050",
+      "pb-113"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 41
+    }
+  },
+  {
+    "id": "tristeza",
+    "system": "general",
+    "name": {
+      "es": "Tristeza",
+      "en": "Sadness"
+    },
+    "pairs": [
+      "pb-318"
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 200
+    }
+  },
+  {
+    "id": "trombocitopenia",
+    "system": "hematological",
+    "name": {
+      "es": "Trombocitopenia",
+      "en": "Thrombocytopenia"
+    },
+    "definition": {
+      "es": "concentración disminuida de plaquetas en sangre"
+    },
+    "pairs": [
+      "pb-084",
+      "pb-092",
+      "pb-101",
+      "pb-189"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "trombocitosis",
+    "system": "hematological",
+    "name": {
+      "es": "Trombocitosis",
+      "en": "Thrombocytosis"
+    },
+    "definition": {
+      "es": "concentración aumentada de plaquetas en sangre"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "tuberculomas",
+    "system": "general",
+    "name": {
+      "es": "Tuberculomas",
+      "en": "Tuberculomas"
+    },
+    "pairs": [
+      "pb-056"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 43
+    }
+  },
+  {
+    "id": "tumor",
+    "system": "dermatological",
+    "name": {
+      "es": "Tumor",
+      "en": "Tumor"
+    },
+    "definition": {
+      "es": "proliferación celular no inflamatoria, benigna o maligna, con tendencia a continuar y persistir en el tiempo"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "tumoraciones",
+    "system": "oncological",
+    "systems": [
+      "gastrointestinal",
+      "oncological"
+    ],
+    "name": {
+      "es": "Tumoraciones",
+      "en": "Tumors (masses)"
+    },
+    "pairs": [
+      "pb-046"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 118
+    }
+  },
+  {
+    "id": "tumoraciones-intestinales",
+    "system": "general",
+    "name": {
+      "es": "Tumoraciones intestinales",
+      "en": "Intestinal tumors"
+    },
+    "pairs": [
+      "pb-081",
+      "pb-082"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 51
+    }
+  },
+  {
+    "id": "tumores-cerebrales",
+    "system": "neurological",
+    "name": {
+      "es": "Tumores cerebrales",
+      "en": "Brain tumors"
+    },
+    "pairs": [
+      "pb-013",
+      "pb-134",
+      "pb-142",
+      "pb-143",
+      "pb-144"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 29
+    }
+  },
+  {
+    "id": "tumores-intracraneales",
+    "system": "neurological",
+    "name": {
+      "es": "Tumores intracraneales",
+      "en": "Intracranial tumors"
+    },
+    "pairs": [
+      "pb-067"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 47
+    }
+  },
+  {
+    "id": "ulcera",
+    "system": "dermatological",
+    "name": {
+      "es": "Úlcera",
+      "en": "Ulcer"
+    },
+    "definition": {
+      "es": "lesión por pérdida de sustancia ausente de cicatrización"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "ulcera-de-decubito",
+    "system": "general",
+    "name": {
+      "es": "Úlcera de Decúbito",
+      "en": "Pressure ulcer (bedsore)"
+    },
+    "pairs": [
+      "pb-064",
+      "pb-104"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 46
+    }
+  },
+  {
+    "id": "verrugas",
+    "system": "dermatological",
+    "name": {
+      "es": "Verrugas",
+      "en": "Warts"
+    },
+    "pairs": [
+      "pb-055",
+      "pb-211",
+      "pb-212"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 43
+    }
+  },
+  {
+    "id": "verrugas-genitales",
+    "system": "gynecological",
+    "name": {
+      "es": "Verrugas genitales",
+      "en": "Genital warts"
+    },
+    "pairs": [
+      "pb-042",
+      "pb-043"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 38
+    }
+  },
+  {
+    "id": "vertigo",
+    "system": "neurological",
+    "systems": [
+      "auditory",
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Vértigo",
+      "en": "Vertigo"
+    },
+    "definition": {
+      "es": "sensación ilusoria de movimiento de los objetos externos o nuestro propio cuerpo"
+    },
+    "pairs": [
+      "pb-048",
+      "pb-163",
+      "pb-165"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 115
+    }
+  },
+  {
+    "id": "vesicula",
+    "system": "dermatological",
+    "name": {
+      "es": "Vesícula",
+      "en": "Vesicle"
+    },
+    "definition": {
+      "es": "lesión de contenido líquido < 0.5 cm"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 116
+    }
+  },
+  {
+    "id": "vision-borrosa",
+    "system": "ophthalmological",
+    "name": {
+      "es": "Visión borrosa",
+      "en": "Blurred vision"
+    },
+    "pairs": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 117
+    }
+  },
+  {
+    "id": "vomito",
+    "system": "gastrointestinal",
+    "systems": [
+      "gastrointestinal",
+      "neurological",
+      "toxicological"
+    ],
+    "name": {
+      "es": "Vómito",
+      "en": "Vomiting"
+    },
+    "pairs": [
+      "pb-014"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 114
+    }
+  },
+  {
+    "id": "vomito-despues-de-toser",
+    "system": "respiratory",
+    "name": {
+      "es": "Vómito después de toser",
+      "en": "Post-tussive vomiting"
+    },
+    "pairs": [
+      "pb-059"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 44
+    }
+  },
+  {
+    "id": "vomito-en-proyectil",
+    "system": "neurological",
+    "name": {
+      "es": "Vómito en proyectil",
+      "en": "Projectile vomiting"
+    },
+    "pairs": [
+      "pb-012"
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 28
+    }
+  }
+]

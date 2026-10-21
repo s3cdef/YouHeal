@@ -65,7 +65,7 @@ export function protocolEn(pr) {
 
 // ------------------------------------------------------------------ entities
 // Latin binomials (Genus species) keep their Latin name in English, with conventional capitalisation.
-const LATIN_GENERA = /^(Acinetobacter|Actinomyces|Aerobacter|Aeromonas|Anisakis|Ascaris|Aspergillus|Babesia|Bacillus|Bacteroides|Balantidium|Balatidium|Bartonella|Blastocystis|Blastomyces|Bordetella|Borrelia|Brucella|Burkholderia|Campylobacter|Candida|Chlamydia|Chlamydophila|Citrobacter|Clostridium|Corynebacterium|Coxiella|Cryptococcus|Cryptosporidium|Cryptocides|Criptoceles|Echinococcus|Equinococcus|Entamoeba|Enterobacter|Enterobius|Enterococcus|Epidermophyton|Escherichia|Fasciola|Fasciolopsis|Francisella|Gardnerella|Garnerella|Giardia|Haemophilus|Helicobacter|Histoplasma|Klebsiella|Legionella|Leishmania|Leptospira|Listeria|Malassezia|Microsporum|Moraxella|Morganella|Mycobacterium|Mycoplasma|Necator|Neisseria|Nocardia|Neocardia|Onchocerca|Pasteurella|Plasmodium|Pneumocystis|Proteus|Pseudomona|Pseudomonas|Rickettsia|Ricketssia|Salmonella|Sarcoptes|Schistosoma|Serratia|Shigella|Spirochaetes|Staphylococcus|Streptococcus|Strongyloides|Taenia|Toxocara|Toxoplasma|Treponema|Trichinella|Trichomonas|Trichophyton|Trichuris|Trypanosoma|Ureaplasma|Veillonella|Veillonela|Vibrio|Yersinia)\b/;
+const LATIN_GENERA = /^(Acinetobacter|Actinomyces|Aerobacter|Aeromonas|Anisakis|Ascaris|Aspergillus|Babesia|Bacillus|Bacteroides|Balantidium|Balatidium|Bartonella|Blastocystis|Blastomyces|Bordetella|Borrelia|Brucella|Burkholderia|Campylobacter|Candida|Chlamydia|Chlamydophila|Citrobacter|Clostridium|Corynebacterium|Coxiella|Cryptococcus|Cryptosporidium|Cryptocides|Criptoceles|Echinococcus|Endolimax|Equinococcus|Entamoeba|Enterobacter|Enterobius|Enterococcus|Epidermophyton|Escherichia|Fasciola|Fasciolopsis|Francisella|Gardnerella|Garnerella|Giardia|Haemophilus|Helicobacter|Histoplasma|Klebsiella|Legionella|Leishmania|Leptospira|Listeria|Malassezia|Microsporum|Moraxella|Morganella|Mycobacterium|Mycoplasma|Necator|Neisseria|Nocardia|Neocardia|Onchocerca|Pasteurella|Plasmodium|Pneumocystis|Proteus|Pseudomona|Pseudomonas|Rickettsia|Ricketssia|Salmonella|Sarcoptes|Schistosoma|Serratia|Shigella|Spirochaetes|Staphylococcus|Streptococcus|Strongyloides|Taenia|Toxocara|Toxoplasma|Treponema|Trichinella|Trichomonas|Trichophyton|Trichuris|Trypanosoma|Ureaplasma|Veillonella|Veillonela|Vibrio|Yersinia)\b/;
 export function entityEn(ent) {
   const es = ent.name.es;
   const id = ent.id;
@@ -84,7 +84,7 @@ export function symptomEn(id, es) {
   if ((m = id.match(/^sintomas-(.+)$/)) && SYSTEM_EN[m[1]]) return `${SYSTEM_EN[m[1]]} symptoms`;
   return null;
 }
-export const contraEn = text => CONTRA_EN[slug(text)] || null;
+export const contraEn = text => CONTRA_EN[slugKeep(text)] || CONTRA_EN[slug(text)] || null;
 
 // ------------------------------------------------------------ recommendations
 export const REC_IDS = {
@@ -137,6 +137,9 @@ export function intakeRecord(intake, source) {
         { id: 'authorization', title: { es: 'Autorización para realización de rastreo con Par Biomagnético', en: 'Authorization for a Biomagnetic Pair scan' }, text: { es: intake.consent } },
         { id: 'explanation', title: { es: '¿Qué es el Par Biomagnético?', en: 'What is the Biomagnetic Pair?' }, text: { es: intake.explanation } },
         { id: 'screening', title: { es: 'Preguntas de alcance', en: 'Scope questions' }, questions },
+        { id: 'contraindication-screening', title: { es: 'Contraindicaciones (relativas y absolutas)', en: 'Contraindications (relative and absolute)' },
+          ref: 'contraindications.json', kinds: ['relative', 'absolute'],
+          text: { es: 'Las contraindicaciones relativas permiten el rastreo a distancia (segundo nivel); las absolutas no permiten ningún rastreo.', en: 'Relative contraindications still allow remote scanning (level 2); absolute contraindications allow no scanning at all.' } },
         { id: 'signature', title: { es: 'Consentimiento', en: 'Consent' }, text: { es: intake.legal }, fields: [{ id: 'signature-name', label: { es: 'Nombre y firma del cliente', en: 'Client name and signature' } }] },
         { id: 'scan-record', title: { es: 'Registro del rastreo', en: 'Scan record' }, columns: recordColumns,
           methodologies: [{ id: 'biomagnetism', abbr: 'BM', label: { es: 'Biomagnetismo', en: 'Biomagnetism' } }, { id: 'bioenergetics', abbr: 'BE', label: { es: 'Bioenergética', en: 'Bioenergetics' } }, { id: 'telebioenergetics', abbr: 'TB', label: { es: 'Telebioenergética', en: 'Telebioenergetics' } }] },

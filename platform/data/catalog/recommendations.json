@@ -1,0 +1,1116 @@
+[
+  {
+    "id": "recommendation-types",
+    "title": {
+      "es": "Tipos de Recomendación",
+      "en": "Types of recommendations"
+    },
+    "body": {
+      "es": "Las recomendaciones de los PB son de vital importancia para reducir su incidencia, prevalencia y morbilidad; así como para aumentar su resolución, grado de despolarización y disminuir la sintomatología clínica. Tenemos 4 tipos de recomendaciones específicas para los distintos PB, los cuales son:\n• Recomendaciones Generales\n• Recomendaciones para Enfermedades Parasitarias\n• Recomendaciones para Enfermedades Tropicales\n• Recomendaciones para Infecciones de Transmisión Sexual (ITS)"
+    },
+    "items": [],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 96
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 204
+      }
+    ]
+  },
+  {
+    "id": "general-full",
+    "title": {
+      "es": "Recomendaciones Generales (Versión Completa)",
+      "en": "General recommendations (full version)"
+    },
+    "body": {
+      "es": "Las recomendaciones generales, señalan las especificaciones que podrá seguir todo Biomagnetista (no médico) con sus usuarios, después de la realización de un rastreo con la técnica del PB.\n1. Cambiar cepillo de dientes\n2. Realizar baño con agua caliente y fría al terminar el día. Al finalizar cambiar ropa\n3. Fortalecer los Pilares de la Salud (alimentación saludable, ejercicio terapéutico y\n4. Seguir las recomendaciones del buen comer, el buen dormir y el buen ir al baño (pg.\n5. Seguir las recomendaciones para la realización de ejercicio terapéutico (pg. 103)\n6. Seguir las recomendaciones para el manejo del estrés (pg. 104)\n7. Procurar un adecuado estado de hidratación, alimentación y oxigenación, una sema-\n8. Mantener contacto con el usuario vía telefónica\n9. Segundo rastreo dentro de los próximos 5 a 10 días. En caso de persistir los síntomas\n10. Hacer énfasis al usuario en continuar con las indicaciones de su médico tratante\n11. En caso de persistir los síntomas, consultar a su médico tratante y realizar segundo\n12. En caso de crisis curativa, consultar a su médico tratante y seguir las recomendacio-\n13. Procurar continuar con los rastreos de PB bajo supervisión y autorización médica\n14. Complementar el rastreo de PB, rastreando con especial cuidado y/o impactando de\nmanejo del estrés) 101 -102) na antes y una semana después del rastreo, para ayudar a desintoxicar el organismo o de presentar crisis curativa, realizar segundo rastreo antes rastreo después de la consulta o asesoría médica nes para crisis curativa (pg. 100) manera profiláctica, el Protocolo Básico (pg. 105)"
+    },
+    "items": [
+      {
+        "es": "Cambiar cepillo de dientes"
+      },
+      {
+        "es": "Realizar baño con agua caliente y fría al terminar el día. Al finalizar cambiar ropa"
+      },
+      {
+        "es": "Fortalecer los Pilares de la Salud (alimentación saludable, ejercicio terapéutico y"
+      },
+      {
+        "es": "Seguir las recomendaciones del buen comer, el buen dormir y el buen ir al baño (pg."
+      },
+      {
+        "es": "Seguir las recomendaciones para la realización de ejercicio terapéutico (pg. 103)"
+      },
+      {
+        "es": "Seguir las recomendaciones para el manejo del estrés (pg. 104)"
+      },
+      {
+        "es": "Procurar un adecuado estado de hidratación, alimentación y oxigenación, una sema-"
+      },
+      {
+        "es": "Mantener contacto con el usuario vía telefónica"
+      },
+      {
+        "es": "Segundo rastreo dentro de los próximos 5 a 10 días. En caso de persistir los síntomas"
+      },
+      {
+        "es": "Hacer énfasis al usuario en continuar con las indicaciones de su médico tratante"
+      },
+      {
+        "es": "En caso de persistir los síntomas, consultar a su médico tratante y realizar segundo"
+      },
+      {
+        "es": "En caso de crisis curativa, consultar a su médico tratante y seguir las recomendacio-"
+      },
+      {
+        "es": "Procurar continuar con los rastreos de PB bajo supervisión y autorización médica"
+      },
+      {
+        "es": "Complementar el rastreo de PB, rastreando con especial cuidado y/o impactando de"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 96
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 204
+      }
+    ]
+  },
+  {
+    "id": "general-short",
+    "title": {
+      "es": "Recomendaciones Generales (Versión Corta)",
+      "en": "General recommendations (short version)"
+    },
+    "body": {
+      "es": "1. Cambiar cepillo de dientes\n2. Fortalecer los Pilares de la Salud (alimentación saludable, ejercicio terapéutico y\n3. Mantenerse en contacto con el Usuario (segundo rastreo en 8 días)\nmanejo del estrés)"
+    },
+    "items": [
+      {
+        "es": "Cambiar cepillo de dientes"
+      },
+      {
+        "es": "Fortalecer los Pilares de la Salud (alimentación saludable, ejercicio terapéutico y"
+      },
+      {
+        "es": "Mantenerse en contacto con el Usuario (segundo rastreo en 8 días)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 97
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 205
+      }
+    ]
+  },
+  {
+    "id": "parasitic",
+    "title": {
+      "es": "Recomendaciones para Enfermedades Parasitarias",
+      "en": "Recommendations for parasitic diseases"
+    },
+    "body": {
+      "es": "Las recomendaciones para enfermedades parasitarias, señalan las especificaciones que podrá seguir todo Biomagnetista (no médico) con sus usuarios, en caso de que estos presenten síntomas y condiciones que hagan sospechar de una posible parasitosis (dolor abdominal, distensión abdominal, diarrea, evacuaciones pastosas o sanguinolentas, cefalea, debilidad, cansancio, condición socioeconómica precaria, falta de agua potable, alimentación fuera de casa con regularidad frecuencia, etcétera)\n1. Recomendaciones Generales (pg. 96)\n2. Top 5 Desparasitación (pg. 111)\n3. Cambiar sábanas, toallas y ropa de cama\n4. Utilizar vinagre blanco, vinagre de manzana y/o sal de mar para desinfectar los ali-\n5. Cocer la carne lo suficiente\n6. Lavarse las manos antes de ir al baño, y antes de consumir o preparar algún alimento\n7. Moderar el consumo de alimentos fuera de casa\n8. Evitar consumir hielos en los restaurantes\n9. Evitar tener agua al aire libre\n10. Asolear la ropa de cama\n11. Tener las uñas cortas y limpias. No morderse las uñas\n12. Mantener limpios y desinfectados aparatos electrónicos de usual manejo (celular,\n13. No recetar o indicar algún tipo de desparasitación\n14. Sugerir al usuario realizar desparasitación alopática o con remedios naturales, espe-\n15. Informar al usuario acerca de la desparasitación, ya que debe realizarse en toda la\n16. Informar al usuario de evitar tomar alcohol durante el tratamiento de desparasitación\n17. Desparasitar a las mascotas con el veterinario\n18. Evitar que las mascotas convivan en espacios personales (baño, recamara, sala,\nmentos tablet, etc.), bolsas y monederos con regularidad frecuencia (cada 2 - 5 días) cificando que debe ser un especialista quien indique el tratamiento familia el mismo día, cada 6 meses, y siguiendo las indicaciones médicas etcétera)"
+    },
+    "items": [
+      {
+        "es": "Recomendaciones Generales (pg. 96)"
+      },
+      {
+        "es": "Top 5 Desparasitación (pg. 111)"
+      },
+      {
+        "es": "Cambiar sábanas, toallas y ropa de cama"
+      },
+      {
+        "es": "Utilizar vinagre blanco, vinagre de manzana y/o sal de mar para desinfectar los ali-"
+      },
+      {
+        "es": "Cocer la carne lo suficiente"
+      },
+      {
+        "es": "Lavarse las manos antes de ir al baño, y antes de consumir o preparar algún alimento"
+      },
+      {
+        "es": "Moderar el consumo de alimentos fuera de casa"
+      },
+      {
+        "es": "Evitar consumir hielos en los restaurantes"
+      },
+      {
+        "es": "Evitar tener agua al aire libre"
+      },
+      {
+        "es": "Asolear la ropa de cama"
+      },
+      {
+        "es": "Tener las uñas cortas y limpias. No morderse las uñas"
+      },
+      {
+        "es": "Mantener limpios y desinfectados aparatos electrónicos de usual manejo (celular,"
+      },
+      {
+        "es": "No recetar o indicar algún tipo de desparasitación"
+      },
+      {
+        "es": "Sugerir al usuario realizar desparasitación alopática o con remedios naturales, espe-"
+      },
+      {
+        "es": "Informar al usuario acerca de la desparasitación, ya que debe realizarse en toda la"
+      },
+      {
+        "es": "Informar al usuario de evitar tomar alcohol durante el tratamiento de desparasitación"
+      },
+      {
+        "es": "Desparasitar a las mascotas con el veterinario"
+      },
+      {
+        "es": "Evitar que las mascotas convivan en espacios personales (baño, recamara, sala,"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 97
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 205
+      }
+    ]
+  },
+  {
+    "id": "tropical",
+    "title": {
+      "es": "Recomendaciones para Enfermedades Tropicales",
+      "en": "Recommendations for tropical diseases"
+    },
+    "body": {
+      "es": "Las enfermedades tropicales son aquellas que se relacionan a transmisión por vectores (mosquitos). Se presentan principalmente en zonas pluviales, rurales, cerca de lagos, lagunas, ríos, mar o concentraciones de agua, con clima cálido y/o húmedo; se caracterizan por presentar los siguientes síntomas:\n• Síntomas neurológicos (cefalea, mareo y vómito)\n• Síntomas osteomusculares (mialgias y artralgias generalizadas)\n• Síntomas hematológicos (anemia, leucocitosis y trombocitopenia)\n• Síntomas generales (fiebre, astenia, adinamia, hiporexia y diaforesis)\n• Otros Síntomas:\n• Erupción cutánea\n• Conjuntivitis\nEjemplos de enfermedades tropicales:\n• Dengue\n• Paludismo\n• Chikungunya\n• Zika\n• Tripanosomiasis\nLas recomendaciones para enfermedades Tropicales, señalan las especificaciones que podrá seguir todo Biomagnetista (no médico) con sus usuarios, en caso de que ellos vivan en zonas endémicas y presenten síntomas que hagan sospechar de una posible enfermedad tropical.\n1. Recomendaciones generales (pg. 96)\n2. Top 10 Tropical (pg. 110)\n3. Lavar cada 8 días tanques y albercas que almacenen agua\n4. Mantener el patio u otros espacios abiertos sin objetos que puedan almacenar agua\n5. Limpiar los canales de agua lluvia\n6. Recoger basuras o residuos sólidos en predios y lotes baldíos\n7. Procurar cerrar puertas y ventanas durante la noche para evitar picaduras\n8. Utilizar mosquitero para dormir\n9. Usar repelentes naturales para mosquitos (eucalipto, citronela, etcétera)\n10. Permitir la fumigación y proteger al Usuario con Top 5 Desintoxicación (pg. 111)\n11. Hacer énfasis al usuario en no automedicarse\n12. Referir al usuario con su médico tratante\ncomo llantas, chatarra, tarros, botellas, etcétera"
+    },
+    "items": [
+      {
+        "es": "Recomendaciones generales (pg. 96)"
+      },
+      {
+        "es": "Top 10 Tropical (pg. 110)"
+      },
+      {
+        "es": "Lavar cada 8 días tanques y albercas que almacenen agua"
+      },
+      {
+        "es": "Mantener el patio u otros espacios abiertos sin objetos que puedan almacenar agua"
+      },
+      {
+        "es": "Limpiar los canales de agua lluvia"
+      },
+      {
+        "es": "Recoger basuras o residuos sólidos en predios y lotes baldíos"
+      },
+      {
+        "es": "Procurar cerrar puertas y ventanas durante la noche para evitar picaduras"
+      },
+      {
+        "es": "Utilizar mosquitero para dormir"
+      },
+      {
+        "es": "Usar repelentes naturales para mosquitos (eucalipto, citronela, etcétera)"
+      },
+      {
+        "es": "Permitir la fumigación y proteger al Usuario con Top 5 Desintoxicación (pg. 111)"
+      },
+      {
+        "es": "Hacer énfasis al usuario en no automedicarse"
+      },
+      {
+        "es": "Referir al usuario con su médico tratante"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 98
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 206
+      }
+    ]
+  },
+  {
+    "id": "sti",
+    "title": {
+      "es": "Recomendaciones para Infecciones de Transmisión Sexual (ITS)",
+      "en": "Recommendations for sexually transmitted infections (STI)"
+    },
+    "body": {
+      "es": "Las recomendaciones para ITS, señalan las especificaciones que podrá seguir todo Biomagnetista (no médico) con sus usuarios, en caso de que estos presenten el diagnóstico, los síntomas o condiciones que hagan sospechar de una ITS. Las recomendaciones también se deben seguir en caso de reinfección o persistencia de PB relacionados a ITS.\n1. Recomendaciones generales (pg. 96)\n2. Top 10 Ginecológico (pg. 107)\n3. Rastrear a la pareja en caso de tener diagnóstico médico de ITS\n4. Rastrear a la pareja en caso de reinfección\n5. Rastrear a la pareja en caso de persistencia o reincidencia de PB´s relacionados a\n6. Rastrear a distancia a la pareja, en caso de que no pueda presentarse físicamente al\nITS rastreo de PB (segundo nivel) Existen otro tipo de recomendaciones complementarias para proteger la actividad del Biomagnetista (no médico), así como para obtener un máximo aprovechamiento de la técnica por parte de los usuarios."
+    },
+    "items": [
+      {
+        "es": "Recomendaciones generales (pg. 96)"
+      },
+      {
+        "es": "Top 10 Ginecológico (pg. 107)"
+      },
+      {
+        "es": "Rastrear a la pareja en caso de tener diagnóstico médico de ITS"
+      },
+      {
+        "es": "Rastrear a la pareja en caso de reinfección"
+      },
+      {
+        "es": "Rastrear a la pareja en caso de persistencia o reincidencia de PB´s relacionados a"
+      },
+      {
+        "es": "Rastrear a distancia a la pareja, en caso de que no pueda presentarse físicamente al"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 99
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 207
+      }
+    ]
+  },
+  {
+    "id": "legal",
+    "title": {
+      "es": "Recomendaciones Legales",
+      "en": "Legal recommendations"
+    },
+    "body": {
+      "es": "1. Hacer énfasis a los usuarios de asistir con el médico tratante\n2. En caso de persistir los síntomas, consultar a su médico tratante y realizar segundo\n3. En caso de crisis curativa, consultar a su médico tratante y seguir las recomendacio-\n4. No cambiar dosis de medicamentos\n5. No alterar las indicaciones médicas\n6. No desinformar acerca de tratamientos y/o procedimientos médicos\n7. No retrasar o impedir procedimientos quirúrgicos u odontológicos\n8. No indicar la realización de estudios de laboratorio\n9. No interpretar estudios de laboratorio o gabinete\n10. No indicar algún tipo de tratamiento\n11. No medicar\n12. No sugerir remedios caseros\n13. No dar diagnósticos\n14. No dar pronósticos\n15. No dar falsas esperanzas de curación\n16. Mencionar los objetivos de la técnica de PB (mejorar la sintomatología, disminuir los\n17. Mencionar que el PB es una técnica facilitadora, no milagrosa\n18. Mencionar que la salud depende en gran medida de los Pilares de la Salud (alimen-\n19. Hacer énfasis en continuar con el tratamiento médico de base\n20. Hacer énfasis en seguir las indicaciones médicas\n21. Hacer énfasis en no automedicarse\n22. Hacer énfasis en seguir consultando a su médico\n23. Referir al especialista en caso de ser necesario (psicólogo, nutriólogo, odontólogo,\n24. Seguir con los rastreos de PB bajo supervisión y autorización médica\n25. Procurar utilizar la palabra usuario o cliente, en vez de paciente\n26. Procurar utilizar la palabra practicante en Biomagnetismo o Biomagnetista, en vez de\n27. Procurar utilizar la palabra rastreo, en vez de terapia\n28. Procurar utilizar la palabra mejoría, en vez de curación\n29. Procurar utilizar la palabra desequilibrio (energético, bioeléctrico, bioquímico, pH,\n30. Practicar los rastreos de PB con ética y moralidad, respetando la privacidad de las\nrastreo después de la consulta o asesoría médica nes para crisis curativa (pg. 100) riesgos de la enfermedad, complementar el tratamiento médico de base, disminuir los efectos adversos de los tratamientos farmacológicos, y mejorar la calidad de vida) tación saludable, ejercicio terapéutico y manejo del estrés), del tiempo de evolución de la enfermedad, así como de una adecuada valoración, tratamiento, indicaciones y seguimiento médico oftalmólogo, ginecólogo, etcétera) Terapeuta o Doctor etc.), en vez de diagnóstico personas"
+    },
+    "items": [
+      {
+        "es": "Hacer énfasis a los usuarios de asistir con el médico tratante"
+      },
+      {
+        "es": "En caso de persistir los síntomas, consultar a su médico tratante y realizar segundo"
+      },
+      {
+        "es": "En caso de crisis curativa, consultar a su médico tratante y seguir las recomendacio-"
+      },
+      {
+        "es": "No cambiar dosis de medicamentos"
+      },
+      {
+        "es": "No alterar las indicaciones médicas"
+      },
+      {
+        "es": "No desinformar acerca de tratamientos y/o procedimientos médicos"
+      },
+      {
+        "es": "No retrasar o impedir procedimientos quirúrgicos u odontológicos"
+      },
+      {
+        "es": "No indicar la realización de estudios de laboratorio"
+      },
+      {
+        "es": "No interpretar estudios de laboratorio o gabinete"
+      },
+      {
+        "es": "No indicar algún tipo de tratamiento"
+      },
+      {
+        "es": "No medicar"
+      },
+      {
+        "es": "No sugerir remedios caseros"
+      },
+      {
+        "es": "No dar diagnósticos"
+      },
+      {
+        "es": "No dar pronósticos"
+      },
+      {
+        "es": "No dar falsas esperanzas de curación"
+      },
+      {
+        "es": "Mencionar los objetivos de la técnica de PB (mejorar la sintomatología, disminuir los"
+      },
+      {
+        "es": "Mencionar que el PB es una técnica facilitadora, no milagrosa"
+      },
+      {
+        "es": "Mencionar que la salud depende en gran medida de los Pilares de la Salud (alimen-"
+      },
+      {
+        "es": "Hacer énfasis en continuar con el tratamiento médico de base"
+      },
+      {
+        "es": "Hacer énfasis en seguir las indicaciones médicas"
+      },
+      {
+        "es": "Hacer énfasis en no automedicarse"
+      },
+      {
+        "es": "Hacer énfasis en seguir consultando a su médico"
+      },
+      {
+        "es": "Referir al especialista en caso de ser necesario (psicólogo, nutriólogo, odontólogo,"
+      },
+      {
+        "es": "Seguir con los rastreos de PB bajo supervisión y autorización médica"
+      },
+      {
+        "es": "Procurar utilizar la palabra usuario o cliente, en vez de paciente"
+      },
+      {
+        "es": "Procurar utilizar la palabra practicante en Biomagnetismo o Biomagnetista, en vez de"
+      },
+      {
+        "es": "Procurar utilizar la palabra rastreo, en vez de terapia"
+      },
+      {
+        "es": "Procurar utilizar la palabra mejoría, en vez de curación"
+      },
+      {
+        "es": "Procurar utilizar la palabra desequilibrio (energético, bioeléctrico, bioquímico, pH,"
+      },
+      {
+        "es": "Practicar los rastreos de PB con ética y moralidad, respetando la privacidad de las"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 99
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 207
+      }
+    ]
+  },
+  {
+    "id": "healing-crisis",
+    "title": {
+      "es": "Recomendaciones para Crisis Curativa",
+      "en": "Recommendations for a healing crisis"
+    },
+    "body": {
+      "es": "Las recomendaciones para Crisis Curativa, señalan las especificaciones que podrá seguir todo Biomagnetista (no médico) con sus usuarios, en caso de que estos persistan con los síntomas, exacerben o presenten de forma leve los siguientes:\nFebrícula, cansancio, debilidad, dolor muscular, dolor articular, falta de apetito, poliuria, cefalea, mareo, vómito, somnolencia, diarrea y/o estreñimiento.\n1. Recomendaciones Generales (pg. 96)\n2. Recomendaciones para enfermedades parasitarias (pg. 97)\n3. Protocolo Básico (pg. 105)\n4. Top 5 Desintoxicación (pg. 111)\n5. Top 10 Respiratorio (pg. 110)\n6. Top 10 Gastrointestinal (pg. 107)"
+    },
+    "items": [
+      {
+        "es": "Recomendaciones Generales (pg. 96)"
+      },
+      {
+        "es": "Recomendaciones para enfermedades parasitarias (pg. 97)"
+      },
+      {
+        "es": "Protocolo Básico (pg. 105)"
+      },
+      {
+        "es": "Top 5 Desintoxicación (pg. 111)"
+      },
+      {
+        "es": "Top 10 Respiratorio (pg. 110)"
+      },
+      {
+        "es": "Top 10 Gastrointestinal (pg. 107)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 100
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 208
+      }
+    ]
+  },
+  {
+    "id": "good-eating",
+    "title": {
+      "es": "Recomendaciones del buen comer",
+      "en": "Healthy eating recommendations"
+    },
+    "body": {
+      "es": "Las recomendaciones del buen comer son una lista de sugerencias que todos podríamos llevar a cabo en nuestra vida diaria, para fortalecer los pilares de la salud y tener una alimentación más saludable.\n1. Realizar una dieta saludable y balanceada, procurando hacer 5 comidas al día, 3\n2. Tener horarios establecidos para realizar las comidas y las colaciones\n3. Procurar masticar lo suficiente cada bocado\n4. No tomar agua con los alimentos\n5. No tomar agua fría en general\n6. Tomar agua caliente o tibia, 1 a 2 horas después de consumir alimentos\n7. Mantener un adecuado estado de hidratación\n8. No cometer atracones\n9. No comer hasta sentirse completamente lleno\n10. Procurar que el conjunto de alimentos servidos en el plato tengan 3 o más colores\n11. Procurar consumir carbohidratos 40 - 60%, proteínas 30 - 40% y grasas 10 - 20%\n12. Moderar, y de ser posible evitar, el consumo de alimentos industrializados, procesa-\n13. Moderar el consumo de azúcar, sal y harinas refinadas\n14. Procurar que el consumo de sal sea de mar y de buena calidad\n15. Moderar el consumo de aceites y grasas procesadas para cocinar\n16. Procurar consumir un solo tipo de fruta al día\n17. Moderar el consumo de proteína animal 2 o 3 veces a la semana\n18. Evitar el consumo de alcohol y otras sustancias adictivas\n19. Evitar consumir hielos en los restaurantes para evitar infecciones parasitarias\n20. Limpiar los cubiertos antes de usarlos\n21. Moderar el consumo de alimentos fuera de casa\n22. Al comenzar el día, sin lavarse los dientes, realizar enjuague bucal por 1 min con\n23. Comer en un estado emocional positivo, calmado y enfocado en los alimentos\n24. No comer cerca de aparatos electrónicos\n25. Mantener los alimentos en lugares limpios, seguros, y alejados de insectos y anima-\nfuertes y 2 colaciones dos, enlatados, transgénicos y lácteos agua tibia y tragar. Ayuda a aumentar la flora intestinal y la secreción de amilasa salival, mejorando la digestión les"
+    },
+    "items": [
+      {
+        "es": "Realizar una dieta saludable y balanceada, procurando hacer 5 comidas al día, 3"
+      },
+      {
+        "es": "Tener horarios establecidos para realizar las comidas y las colaciones"
+      },
+      {
+        "es": "Procurar masticar lo suficiente cada bocado"
+      },
+      {
+        "es": "No tomar agua con los alimentos"
+      },
+      {
+        "es": "No tomar agua fría en general"
+      },
+      {
+        "es": "Tomar agua caliente o tibia, 1 a 2 horas después de consumir alimentos"
+      },
+      {
+        "es": "Mantener un adecuado estado de hidratación"
+      },
+      {
+        "es": "No cometer atracones"
+      },
+      {
+        "es": "No comer hasta sentirse completamente lleno"
+      },
+      {
+        "es": "Procurar que el conjunto de alimentos servidos en el plato tengan 3 o más colores"
+      },
+      {
+        "es": "Procurar consumir carbohidratos 40 - 60%, proteínas 30 - 40% y grasas 10 - 20%"
+      },
+      {
+        "es": "Moderar, y de ser posible evitar, el consumo de alimentos industrializados, procesa-"
+      },
+      {
+        "es": "Moderar el consumo de azúcar, sal y harinas refinadas"
+      },
+      {
+        "es": "Procurar que el consumo de sal sea de mar y de buena calidad"
+      },
+      {
+        "es": "Moderar el consumo de aceites y grasas procesadas para cocinar"
+      },
+      {
+        "es": "Procurar consumir un solo tipo de fruta al día"
+      },
+      {
+        "es": "Moderar el consumo de proteína animal 2 o 3 veces a la semana"
+      },
+      {
+        "es": "Evitar el consumo de alcohol y otras sustancias adictivas"
+      },
+      {
+        "es": "Evitar consumir hielos en los restaurantes para evitar infecciones parasitarias"
+      },
+      {
+        "es": "Limpiar los cubiertos antes de usarlos"
+      },
+      {
+        "es": "Moderar el consumo de alimentos fuera de casa"
+      },
+      {
+        "es": "Al comenzar el día, sin lavarse los dientes, realizar enjuague bucal por 1 min con"
+      },
+      {
+        "es": "Comer en un estado emocional positivo, calmado y enfocado en los alimentos"
+      },
+      {
+        "es": "No comer cerca de aparatos electrónicos"
+      },
+      {
+        "es": "Mantener los alimentos en lugares limpios, seguros, y alejados de insectos y anima-"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 101
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 209
+      }
+    ]
+  },
+  {
+    "id": "good-sleep",
+    "title": {
+      "es": "Recomendaciones del buen dormir",
+      "en": "Healthy sleep recommendations"
+    },
+    "body": {
+      "es": "Las recomendaciones del buen dormir son una lista de sugerencias que todos podríamos llevar a cabo en nuestra vida diaria para tener un sueño reparador.\n1. Dormir 8 horas continuas\n2. Procurar dormir a una misma hora\n3. Procurar despertar a una misma hora\n4. No despertar con despertador\n5. Dormir completamente a oscuras\n6. Evitar estímulos luminosos muy fuertes después de las 7 pm (smartphones, tablets,\n7. No dormir cerca de aparatos electrónicos\n8. Apagar wifi, bluetooth y señal telefónica al dormir\n9. No consumir cafeína o taurina antes de dormir\n10. Dormir sin estresantes (pendientes, listas de tareas, situaciones de trabajo, proble-\n11. Dormir sin estresantes externos, en caso ser necesario incluso solo\n12. Alinear cabecera de la cama hacia el polo magnético más cercano\n13. Observar el cambio de luz gradual por la tarde para facilitar la activación de la glán-\ncomputadoras, etcétera) mas de estudio, televisión prendida, etcétera) dula pineal de manera fisiológica"
+    },
+    "items": [
+      {
+        "es": "Dormir 8 horas continuas"
+      },
+      {
+        "es": "Procurar dormir a una misma hora"
+      },
+      {
+        "es": "Procurar despertar a una misma hora"
+      },
+      {
+        "es": "No despertar con despertador"
+      },
+      {
+        "es": "Dormir completamente a oscuras"
+      },
+      {
+        "es": "Evitar estímulos luminosos muy fuertes después de las 7 pm (smartphones, tablets,"
+      },
+      {
+        "es": "No dormir cerca de aparatos electrónicos"
+      },
+      {
+        "es": "Apagar wifi, bluetooth y señal telefónica al dormir"
+      },
+      {
+        "es": "No consumir cafeína o taurina antes de dormir"
+      },
+      {
+        "es": "Dormir sin estresantes (pendientes, listas de tareas, situaciones de trabajo, proble-"
+      },
+      {
+        "es": "Dormir sin estresantes externos, en caso ser necesario incluso solo"
+      },
+      {
+        "es": "Alinear cabecera de la cama hacia el polo magnético más cercano"
+      },
+      {
+        "es": "Observar el cambio de luz gradual por la tarde para facilitar la activación de la glán-"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 102
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 210
+      }
+    ]
+  },
+  {
+    "id": "good-toileting",
+    "title": {
+      "es": "Recomendaciones del buen ir al baño",
+      "en": "Healthy bathroom-habit recommendations"
+    },
+    "body": {
+      "es": "Las recomendaciones del buen ir al baño son una lista de sugerencias que todos podríamos llevar a cabo en nuestra vida diaria, para obtener un tránsito intestinal saludable, una evacuación fisiológica de las heces, una adecuada excreción de orina, así como para mejorar las condiciones higiénicas cuando vamos al baño.\n1. Lavarse las manos antes y después de ir al baño\n2. Limpiar área genital después de ir al baño\n3. Si la tubería lo permite, tirar el papel de baño utilizado en la taza del baño\n4. No tardarse más de 10 min defecando en el baño\n5. Limpiarse de adelante hacia atrás\n6. Defecar en posición sentadilla\n7. Evitar la contracción constante del piso pélvico\n8. Procurar un adecuado manejo de la toalla sanitaria\n9. Utilizar ropa de algodón y fibras naturales\n10. No utilizar ropa muy ajustada\n11. Mantener limpia el área genital\n12. Orinar antes y después de la actividad sexual\n13. No aguantarse las ganas de ir al baño\n14. Mantener uñas cortas y limpias\n15. Procurar no utilizar baños públicos\n16. No realizar mucho esfuerzo para hacer del baño\n17. Consumir fibra liposoluble e hidrosoluble en adecuada cantidad y calidad\n18. Lavar el inodoro con jabón y cloro todos los días\n19. Limpiar la taza del baño previamente antes de sentarse\n20. Valorar la coloración, consistencia y olor de las heces y la orina\n21. Lavarse los dientes después de comer\n22. Caminar 30 min continuos al día para mejora el tránsito intestinal\n23. Procurar el baño en regadera\n24. No desperdiciar el agua al bañarse\n25. Cambiar toalla para bañarse con regularidad frecuencia\n26. Utilizar sandalías para bañarse\n27. En caso de tener prepucio, retraerlo para lavar la cabeza del pene durante el baño"
+    },
+    "items": [
+      {
+        "es": "Lavarse las manos antes y después de ir al baño"
+      },
+      {
+        "es": "Limpiar área genital después de ir al baño"
+      },
+      {
+        "es": "Si la tubería lo permite, tirar el papel de baño utilizado en la taza del baño"
+      },
+      {
+        "es": "No tardarse más de 10 min defecando en el baño"
+      },
+      {
+        "es": "Limpiarse de adelante hacia atrás"
+      },
+      {
+        "es": "Defecar en posición sentadilla"
+      },
+      {
+        "es": "Evitar la contracción constante del piso pélvico"
+      },
+      {
+        "es": "Procurar un adecuado manejo de la toalla sanitaria"
+      },
+      {
+        "es": "Utilizar ropa de algodón y fibras naturales"
+      },
+      {
+        "es": "No utilizar ropa muy ajustada"
+      },
+      {
+        "es": "Mantener limpia el área genital"
+      },
+      {
+        "es": "Orinar antes y después de la actividad sexual"
+      },
+      {
+        "es": "No aguantarse las ganas de ir al baño"
+      },
+      {
+        "es": "Mantener uñas cortas y limpias"
+      },
+      {
+        "es": "Procurar no utilizar baños públicos"
+      },
+      {
+        "es": "No realizar mucho esfuerzo para hacer del baño"
+      },
+      {
+        "es": "Consumir fibra liposoluble e hidrosoluble en adecuada cantidad y calidad"
+      },
+      {
+        "es": "Lavar el inodoro con jabón y cloro todos los días"
+      },
+      {
+        "es": "Limpiar la taza del baño previamente antes de sentarse"
+      },
+      {
+        "es": "Valorar la coloración, consistencia y olor de las heces y la orina"
+      },
+      {
+        "es": "Lavarse los dientes después de comer"
+      },
+      {
+        "es": "Caminar 30 min continuos al día para mejora el tránsito intestinal"
+      },
+      {
+        "es": "Procurar el baño en regadera"
+      },
+      {
+        "es": "No desperdiciar el agua al bañarse"
+      },
+      {
+        "es": "Cambiar toalla para bañarse con regularidad frecuencia"
+      },
+      {
+        "es": "Utilizar sandalías para bañarse"
+      },
+      {
+        "es": "En caso de tener prepucio, retraerlo para lavar la cabeza del pene durante el baño"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 102
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 210
+      }
+    ]
+  },
+  {
+    "id": "therapeutic-exercise",
+    "title": {
+      "es": "Recomendaciones para la realización de Ejercicio Terapéutico",
+      "en": "Therapeutic exercise recommendations"
+    },
+    "body": {
+      "es": "Las recomendaciones para la realización de Ejercicio Terapéutico, son una lista de sugerencias que la mayoría de personas podríamos llevar a cabo para fortalecer los pilares de la salud, y tener una vida más saludable.\n1. Caminar 30 min continuos al día\n2. Realizar estiramientos y calentamiento durante 5 a 10 min antes de caminar\n3. Caminar a la misma hora para activar más fácilmente el metabolismo\n4. No caminar en horarios muy calurosos o soleados, para evitar el golpe de calor\n5. Llevar agua al tiempo para tomar al finalizar la caminata\n6. Utilizar palo de montaña en caso de caminar por subidas y bajadas\n7. Utilizar calzado y ropa adecuada para caminar\n8. No maquillarse o utilizar accesorios de belleza para caminar\n9. Bañarse después de hacer ejercicio\n10. Utilizar calcetines limpios y adecuados para caminar\n11. Detener la caminata en caso de sentirse fatigado, mareado, débil, acelerado o pre-\n12. Se sugiere realizar ejercicios de respiración, yoga, meditación, Tai-chi, Qi-Gong, et-\nsentar los siguientes síntomas: visión borrosa, náusea, debilidad, cansancio extenuante, falla muscular, desconcentración, etc. y acudir a su médico cétera"
+    },
+    "items": [
+      {
+        "es": "Caminar 30 min continuos al día"
+      },
+      {
+        "es": "Realizar estiramientos y calentamiento durante 5 a 10 min antes de caminar"
+      },
+      {
+        "es": "Caminar a la misma hora para activar más fácilmente el metabolismo"
+      },
+      {
+        "es": "No caminar en horarios muy calurosos o soleados, para evitar el golpe de calor"
+      },
+      {
+        "es": "Llevar agua al tiempo para tomar al finalizar la caminata"
+      },
+      {
+        "es": "Utilizar palo de montaña en caso de caminar por subidas y bajadas"
+      },
+      {
+        "es": "Utilizar calzado y ropa adecuada para caminar"
+      },
+      {
+        "es": "No maquillarse o utilizar accesorios de belleza para caminar"
+      },
+      {
+        "es": "Bañarse después de hacer ejercicio"
+      },
+      {
+        "es": "Utilizar calcetines limpios y adecuados para caminar"
+      },
+      {
+        "es": "Detener la caminata en caso de sentirse fatigado, mareado, débil, acelerado o pre-"
+      },
+      {
+        "es": "Se sugiere realizar ejercicios de respiración, yoga, meditación, Tai-chi, Qi-Gong, et-"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 103
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 211
+      }
+    ]
+  },
+  {
+    "id": "stress-management",
+    "title": {
+      "es": "Recomendaciones para manejo del estrés",
+      "en": "Stress management recommendations"
+    },
+    "body": {
+      "es": "Las recomendaciones para el manejo del estrés, son una lista de sugerencias que la mayoría de personas podríamos llevar a cabo para fortalecer los pilares de la salud y tener un estilo de vida más saludable.\n1. Procurar un estado mental calmado\n2. Procurar un estado emocional positivo\n3. Procurar un estado físico activo\n4. Pensar y actuar de forma proactiva\n5. Tener buenos hábitos y costumbres\n6. Tener pasatiempos saludables\n7. Fomar proyectos, tareas, metas y objetivos predeterminados a corto, mediano y largo\n8. Tener disciplina para cumplir con nuestras metas y objetivos\n9. Descansar lo suficiente, pero no más de lo necesario\n10. Desarrollar el autoestioma, la amabilidad y la empatía hacia uno mismo y hacia las\n11. Tener un circulo de familiares y/o amigos que apoyen y favorezcan nuestro crecimien-\n12. Se sugiere realizar ejercicios de respiración, yoga, meditación, Tai-chi, Qi-Gong, et-\n13. Respirar profundamente colocando la atención sobre el flujo natural de la respiración,\n14. Sentarse 5 min al día para sentir las diferentes partes de nuestro cuerpo, relajando\nplazo, y cumplirlos demás personas to personal. Evitar a las personas tóxicas cétera dejando pasar los pensamientos como si fueran nubes las zonas de tensión mediante la atención dirigida"
+    },
+    "items": [
+      {
+        "es": "Procurar un estado mental calmado"
+      },
+      {
+        "es": "Procurar un estado emocional positivo"
+      },
+      {
+        "es": "Procurar un estado físico activo"
+      },
+      {
+        "es": "Pensar y actuar de forma proactiva"
+      },
+      {
+        "es": "Tener buenos hábitos y costumbres"
+      },
+      {
+        "es": "Tener pasatiempos saludables"
+      },
+      {
+        "es": "Fomar proyectos, tareas, metas y objetivos predeterminados a corto, mediano y largo"
+      },
+      {
+        "es": "Tener disciplina para cumplir con nuestras metas y objetivos"
+      },
+      {
+        "es": "Descansar lo suficiente, pero no más de lo necesario"
+      },
+      {
+        "es": "Desarrollar el autoestioma, la amabilidad y la empatía hacia uno mismo y hacia las"
+      },
+      {
+        "es": "Tener un circulo de familiares y/o amigos que apoyen y favorezcan nuestro crecimien-"
+      },
+      {
+        "es": "Se sugiere realizar ejercicios de respiración, yoga, meditación, Tai-chi, Qi-Gong, et-"
+      },
+      {
+        "es": "Respirar profundamente colocando la atención sobre el flujo natural de la respiración,"
+      },
+      {
+        "es": "Sentarse 5 min al día para sentir las diferentes partes de nuestro cuerpo, relajando"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 104
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 212
+      }
+    ]
+  },
+  {
+    "id": "intake-form",
+    "title": {
+      "es": "Hoja de Registro",
+      "en": "Registration (intake) form"
+    },
+    "body": {
+      "es": "La Hoja de Registro representa un documento legal que el Biomagnetista podrá utilizar durante su práctica del PB. En ella se encuentra toda la información relevante que ocupará para la realización de rastreos dirigidos, impactación de protocolos Biomagnéticos y recopilación de datos que arroje el rastreo completo de los usuarios. Se le podrá dar seguimiento, estudio, y a su vez, formará parte de la protección legal del Biomagnetista. La hoja de registro comienza con la recopilación de datos personales del usuario para dar un adecuado seguimineto a los rastreos, posteriormente una explicación sencilla, pero detallada de la técnica, sus alcances, objetivos y condicionamientos. Se continúa con una serie de preguntas específicas para delimitar el tipo de atención y metodología de rastreo que deberá realizarse, y por último, una autorización del usuario. La recopilación de datos del rastreo completo debe llevar las siguientes especificaciones:"
+    },
+    "form": {
+      "sections": [
+        {
+          "id": "header",
+          "title": {
+            "es": "Encabezado",
+            "en": "Header"
+          },
+          "fields": [
+            {
+              "id": "city",
+              "label": {
+                "es": "Ciudad",
+                "en": "City"
+              }
+            },
+            {
+              "id": "day",
+              "label": {
+                "es": "Dia",
+                "en": "Day"
+              }
+            },
+            {
+              "id": "month",
+              "label": {
+                "es": "Mes",
+                "en": "Month"
+              }
+            },
+            {
+              "id": "year",
+              "label": {
+                "es": "Año",
+                "en": "Year"
+              }
+            }
+          ]
+        },
+        {
+          "id": "demographics",
+          "title": {
+            "es": "Datos personales",
+            "en": "Personal data"
+          },
+          "fields": [
+            {
+              "id": "name",
+              "label": {
+                "es": "Nombre",
+                "en": "Name"
+              }
+            },
+            {
+              "id": "age",
+              "label": {
+                "es": "Edad",
+                "en": "Age"
+              }
+            },
+            {
+              "id": "address",
+              "label": {
+                "es": "Dirección",
+                "en": "Address"
+              }
+            },
+            {
+              "id": "occupation",
+              "label": {
+                "es": "Ocupación",
+                "en": "Occupation"
+              }
+            },
+            {
+              "id": "phone",
+              "label": {
+                "es": "Teléfono",
+                "en": "Phone"
+              }
+            },
+            {
+              "id": "email",
+              "label": {
+                "es": "e-mail",
+                "en": "E-mail"
+              }
+            }
+          ]
+        },
+        {
+          "id": "authorization",
+          "title": {
+            "es": "Autorización para realización de rastreo con Par Biomagnético",
+            "en": "Authorization for a Biomagnetic Pair scan"
+          },
+          "text": {
+            "es": "Acepto y autorizo ser rastreado con la técnica del Par Biomagnético por el Biomagnetista el (Nombre del Biomagnetista) y sus colaboradores, así como el registro de mis datos particulares sin fines de lucro. Siendo debidamente informado que no es medicina alopática, que no se introducirá ni extraerá ningún sólido, líquido o gas de mi cuerpo durante el rastreo, y que pudiera presentar los siguientes síntomas después del rastreo: excreción abundante de orina, sudoración, cansancio, debilidad, falta de apetito, aumento de la temperatura corporal, dolor de cabeza, mareo, diarrea, pesadez, dolor muscular, dolor articular y/o somnolencia, los cuales deben ser de intensidad leve y no deben durar más de 48 a 72 horas después de haber sido realizado el rastreo con la técnica del Par Biomagnético. En caso de persistir o presentar síntomas más intensos favor de llamar al (teléfono de asistencia) para pedir orientación y soporte, además de consultar a su médico de cabecera para descartar la interacción con otros padecimientos. Admito que no se me han ofrecido pronósticos, promesas o garantías acerca de los resultados esperados por el rastreo a efectuarse, tampoco recibiré un diagnóstico, cambio o alteración en las prescripciones o indicaciones médicas de base, y únicamente se buscará estabilizar, normalizar y equilibrar el sistema bioeléctrico del organismo para fines homeostáticos, lo cual se espera ayude a mejorar la respuesta inmunitaria del organismo, el reestablecimiento en la función normal de órganos, glándulas y tejidos dañados, así como ayudar en el proceso de desintoxicación del cuerpo."
+          }
+        },
+        {
+          "id": "explanation",
+          "title": {
+            "es": "¿Qué es el Par Biomagnético?",
+            "en": "What is the Biomagnetic Pair?"
+          },
+          "text": {
+            "es": "El Par Biomagnético (PB) es una técnica terapéutica desarrollada por el científico Mexicano el Dr. Isaac Goiz Durán hace más de 28 años. Está enfocada en facilitar el restablecimiento y/o mantenimiento de las condiciones de salud, mediante el posicionamiento de pares de imanes en diferentes y específicas zonas del cuerpo que se encuentran en “Resonancia Biomagnética” con base en la metodología de rastreo por períodos cortos de tiempo (10 - 30 min), con el objetivo de proporcionar al organismo un estado equilibrado y balanceado de bioelectricidad. La técnica del PB posibilita complementar el tratamiento médico de base de distintas enfermedades infecto-contagiosas, crónico degenerativas, metabólicas, disfuncionales, autoinmunes, psicoemocionales, tumorales, y por intoxicación; promoviendo un estado de homeostasis en el cuerpo, una correcta activación de la respuesta inmunitaria, una autoregulación de pH en las diferentes células y su entorno, restableciendo las funciones normales de glándulas, órganos y sistemas en el organismo, facilitando la desintoxicación del cuerpo y ayudando en la reparación de tejidos dañados; obteniendo así mejoría clínica y calidad de vida, evitando efectos adversos de los tratamientos convencionales, intoxicación farmacológica por sobredosis o anafilaxia, resistencia antimicrobiana y disminuyendo los riesgos de infección, hemorragia o complicación quirúrgica, así como tiempos de hospitalización, convalecencia y rehabilitación, siendo estos los objetivos a alcanzar del PB."
+          }
+        },
+        {
+          "id": "screening",
+          "title": {
+            "es": "Preguntas de alcance",
+            "en": "Scope questions"
+          },
+          "questions": [
+            {
+              "id": "surgeries",
+              "text": {
+                "es": "¿Ha recibido cirugías? ¿Cuáles? ¿Hace cuánto?",
+                "en": "Have you had surgery? Which? How long ago?"
+              }
+            },
+            {
+              "id": "transfusions-transplants",
+              "text": {
+                "es": "¿Ha recibido transfusiones o trasplantes? ¿Cuáles? ¿Hace cuánto?",
+                "en": "Have you received transfusions or transplants? Which? How long ago?"
+              }
+            },
+            {
+              "id": "pregnancy",
+              "text": {
+                "es": "¿Está embarazada? ¿Está planeando embarazarse? ¿Está en tratamiento de fertilidad?",
+                "en": "Are you pregnant? Are you planning a pregnancy? Are you in fertility treatment?"
+              }
+            },
+            {
+              "id": "implanted-devices",
+              "text": {
+                "es": "¿Tiene Marcapasos o algún aparato que utilice baterías en el cuerpo?",
+                "en": "Do you have a pacemaker or any battery-powered device in your body?"
+              }
+            },
+            {
+              "id": "cancer-treatment",
+              "text": {
+                "es": "¿Ha recibido Quimioterapia, Radioterapia o tratamiento para cáncer? ¿Hace cuánto?",
+                "en": "Have you received chemotherapy, radiotherapy or cancer treatment? How long ago?"
+              }
+            },
+            {
+              "id": "chief-complaint",
+              "text": {
+                "es": "Escriba sus síntomas, diagnósticos y/o motivo de consulta:",
+                "en": "Describe your symptoms, diagnoses and/or reason for the visit:"
+              }
+            }
+          ]
+        },
+        {
+          "id": "contraindication-screening",
+          "title": {
+            "es": "Contraindicaciones (relativas y absolutas)",
+            "en": "Contraindications (relative and absolute)"
+          },
+          "ref": "contraindications.json",
+          "kinds": [
+            "relative",
+            "absolute"
+          ],
+          "text": {
+            "es": "Las contraindicaciones relativas permiten el rastreo a distancia (segundo nivel); las absolutas no permiten ningún rastreo.",
+            "en": "Relative contraindications still allow remote scanning (level 2); absolute contraindications allow no scanning at all."
+          }
+        },
+        {
+          "id": "signature",
+          "title": {
+            "es": "Consentimiento",
+            "en": "Consent"
+          },
+          "text": {
+            "es": "El cliente está consciente y conoce perfectamente los riesgos, limitaciones y posibles consecuencias que implica el rastreo con Par Biomagnético, y en cumplimiento con el artículo 51 Bis 1 y 51 Bis 2 de la ley general de salud de México da su consentimiento para realizarlo."
+          },
+          "fields": [
+            {
+              "id": "signature-name",
+              "label": {
+                "es": "Nombre y firma del cliente",
+                "en": "Client name and signature"
+              }
+            }
+          ]
+        },
+        {
+          "id": "scan-record",
+          "title": {
+            "es": "Registro del rastreo",
+            "en": "Scan record"
+          },
+          "columns": [
+            {
+              "id": "date",
+              "label": {
+                "es": "Fecha (día/mes/año/hora)",
+                "en": "Date (day/month/year/time)"
+              }
+            },
+            {
+              "id": "tracking-point",
+              "label": {
+                "es": "Punto de Rastreo (se especifica el posicionamiento D, I, S, Inf, A, P, Lat, C)",
+                "en": "Tracking point (position: R, L, S, Inf, A, P, Lat, C)"
+              }
+            },
+            {
+              "id": "impact-point",
+              "label": {
+                "es": "Punto de Impacto (se especifica el posicionamiento D, I, S, Inf, A, P, Lat, C)",
+                "en": "Impact point (position: R, L, S, Inf, A, P, Lat, C)"
+              }
+            },
+            {
+              "id": "phenomena",
+              "label": {
+                "es": "Fenómenos Agregados (infiltrado, exudado, quiste, absceso, neoplasia, etcétera)",
+                "en": "Associated phenomena (infiltrate, exudate, cyst, abscess, neoplasia, etc.)"
+              }
+            },
+            {
+              "id": "methodology",
+              "label": {
+                "es": "Metodología de Rastreo (Biomagnetismo, Bioenergética o Telebioenergética)",
+                "en": "Scanning methodology (Biomagnetism, Bioenergetics or Telebioenergetics)"
+              }
+            },
+            {
+              "id": "notes",
+              "label": {
+                "es": "Notas (aparición de síntomas posterior al rastreo, tipo de preparación previa, tiempo de duración del rastreo, protocolo de estudio, etcétera)",
+                "en": "Notes (symptoms after the scan, prior preparation, scan duration, study protocol, etc.)"
+              }
+            }
+          ],
+          "methodologies": [
+            {
+              "id": "biomagnetism",
+              "abbr": "BM",
+              "label": {
+                "es": "Biomagnetismo",
+                "en": "Biomagnetism"
+              }
+            },
+            {
+              "id": "bioenergetics",
+              "abbr": "BE",
+              "label": {
+                "es": "Bioenergética",
+                "en": "Bioenergetics"
+              }
+            },
+            {
+              "id": "telebioenergetics",
+              "abbr": "TB",
+              "label": {
+                "es": "Telebioenergética",
+                "en": "Telebioenergetics"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "source": {
+      "doc": "goiz-n2",
+      "page": 248
+    }
+  }
+]

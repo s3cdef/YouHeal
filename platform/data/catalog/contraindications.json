@@ -1,0 +1,1892 @@
+[
+  {
+    "id": "rel-01",
+    "kind": "relative",
+    "number": 1,
+    "text": {
+      "es": "Quimioterapia",
+      "en": "Chemotherapy"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-02",
+    "kind": "relative",
+    "number": 2,
+    "text": {
+      "es": "Radioterapia",
+      "en": "Radiotherapy"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-03",
+    "kind": "relative",
+    "number": 3,
+    "text": {
+      "es": "Embarazo después de las 12 semanas",
+      "en": "Pregnancy after 12 weeks"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-04",
+    "kind": "relative",
+    "number": 4,
+    "text": {
+      "es": "Marcapasos",
+      "en": "Pacemaker"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-05",
+    "kind": "relative",
+    "number": 5,
+    "text": {
+      "es": "Aparatos electrónicos intracorpóreos",
+      "en": "Implanted electronic devices"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-06",
+    "kind": "relative",
+    "number": 6,
+    "text": {
+      "es": "Quemaduras de bajo grado",
+      "en": "Low-grade burns"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-07",
+    "kind": "relative",
+    "number": 7,
+    "text": {
+      "es": "Sepsis",
+      "en": "Sepsis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-08",
+    "kind": "relative",
+    "number": 8,
+    "text": {
+      "es": "Síncope",
+      "en": "Syncope"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-09",
+    "kind": "relative",
+    "number": 9,
+    "text": {
+      "es": "Urgencia hipertensiva",
+      "en": "Hypertensive urgency"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-10",
+    "kind": "relative",
+    "number": 10,
+    "text": {
+      "es": "Insuficiencia respiratoria aguda",
+      "en": "Acute respiratory failure"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-11",
+    "kind": "relative",
+    "number": 11,
+    "text": {
+      "es": "Tromboembolia Pulmonar",
+      "en": "Pulmonary embolism"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-12",
+    "kind": "relative",
+    "number": 12,
+    "text": {
+      "es": "Crisis asmática",
+      "en": "Asthma attack"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-13",
+    "kind": "relative",
+    "number": 13,
+    "text": {
+      "es": "Hemorragia de la parte baja del tubo digestivo",
+      "en": "Lower gastrointestinal bleeding"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-14",
+    "kind": "relative",
+    "number": 14,
+    "text": {
+      "es": "Pancreatitis aguda",
+      "en": "Acute pancreatitis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-15",
+    "kind": "relative",
+    "number": 15,
+    "text": {
+      "es": "Peritonitis",
+      "en": "Peritonitis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-16",
+    "kind": "relative",
+    "number": 16,
+    "text": {
+      "es": "Encefalopatía hepática",
+      "en": "Hepatic encephalopathy"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-17",
+    "kind": "relative",
+    "number": 17,
+    "text": {
+      "es": "Obstrucción intestinal",
+      "en": "Bowel obstruction"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-18",
+    "kind": "relative",
+    "number": 18,
+    "text": {
+      "es": "Megacolon tóxico",
+      "en": "Toxic megacolon"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-19",
+    "kind": "relative",
+    "number": 19,
+    "text": {
+      "es": "Falla hepática aguda",
+      "en": "Acute liver failure"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-20",
+    "kind": "relative",
+    "number": 20,
+    "text": {
+      "es": "Ingestión de cuerpos extraños y cáusticos",
+      "en": "Ingestion of foreign bodies or caustics"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-21",
+    "kind": "relative",
+    "number": 21,
+    "text": {
+      "es": "Urgencia en vías biliares",
+      "en": "Biliary emergency"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-22",
+    "kind": "relative",
+    "number": 22,
+    "text": {
+      "es": "Cetoacidosis Diabética",
+      "en": "Diabetic ketoacidosis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-23",
+    "kind": "relative",
+    "number": 23,
+    "text": {
+      "es": "Insuficiencia renal aguda",
+      "en": "Acute kidney failure"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-24",
+    "kind": "relative",
+    "number": 24,
+    "text": {
+      "es": "Transtornos acidobásicos sin compromiso de los signos vitales",
+      "en": "Acid–base disorders without compromised vital signs"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-25",
+    "kind": "relative",
+    "number": 25,
+    "text": {
+      "es": "Endocarditis",
+      "en": "Endocarditis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-26",
+    "kind": "relative",
+    "number": 26,
+    "text": {
+      "es": "Neumonía",
+      "en": "Pneumonia"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-27",
+    "kind": "relative",
+    "number": 27,
+    "text": {
+      "es": "Hipertensión intracraneal",
+      "en": "Intracranial hypertension"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 130
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-28",
+    "kind": "relative",
+    "number": 28,
+    "text": {
+      "es": "Estado de coma con autorización de los familiares",
+      "en": "Coma, with family authorization"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-29",
+    "kind": "relative",
+    "number": 29,
+    "text": {
+      "es": "Epilepsia",
+      "en": "Epilepsy"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-30",
+    "kind": "relative",
+    "number": 30,
+    "text": {
+      "es": "Síndrome de Guillain Barré",
+      "en": "Guillain–Barré syndrome"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-31",
+    "kind": "relative",
+    "number": 31,
+    "text": {
+      "es": "Miastenia grave",
+      "en": "Myasthenia gravis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-32",
+    "kind": "relative",
+    "number": 32,
+    "text": {
+      "es": "Psicosis",
+      "en": "Psychosis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-33",
+    "kind": "relative",
+    "number": 33,
+    "text": {
+      "es": "Crisis de ansiedad",
+      "en": "Anxiety attack"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-34",
+    "kind": "relative",
+    "number": 34,
+    "text": {
+      "es": "Depresión",
+      "en": "Depression"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-35",
+    "kind": "relative",
+    "number": 35,
+    "text": {
+      "es": "Intento de suicidio",
+      "en": "Suicide attempt"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-36",
+    "kind": "relative",
+    "number": 36,
+    "text": {
+      "es": "Vasculitis",
+      "en": "Vasculitis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-37",
+    "kind": "relative",
+    "number": 37,
+    "text": {
+      "es": "Anafilaxia",
+      "en": "Anaphylaxis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-38",
+    "kind": "relative",
+    "number": 38,
+    "text": {
+      "es": "Intoxicación farmacológica",
+      "en": "Drug poisoning"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-39",
+    "kind": "relative",
+    "number": 39,
+    "text": {
+      "es": "Envenenamiento por picadura de animales ponzoñosos",
+      "en": "Envenomation by venomous animal bite or sting"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-40",
+    "kind": "relative",
+    "number": 40,
+    "text": {
+      "es": "Intoxicación alcohólica",
+      "en": "Alcohol intoxication"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-41",
+    "kind": "relative",
+    "number": 41,
+    "text": {
+      "es": "Gangrena de Fournier",
+      "en": "Fournier's gangrene"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-42",
+    "kind": "relative",
+    "number": 42,
+    "text": {
+      "es": "Traumatismo ocular",
+      "en": "Eye trauma"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-43",
+    "kind": "relative",
+    "number": 43,
+    "text": {
+      "es": "Paciente politraumatizado sin compromiso hemodinámico",
+      "en": "Polytrauma without haemodynamic compromise"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-44",
+    "kind": "relative",
+    "number": 44,
+    "text": {
+      "es": "Embarazo ectópico",
+      "en": "Ectopic pregnancy"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-45",
+    "kind": "relative",
+    "number": 45,
+    "text": {
+      "es": "Hemorragia uterina",
+      "en": "Uterine bleeding"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "rel-46",
+    "kind": "relative",
+    "number": 46,
+    "text": {
+      "es": "Preeclampsia o eclampsia",
+      "en": "Pre-eclampsia or eclampsia"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 246
+      }
+    ]
+  },
+  {
+    "id": "abs-01",
+    "kind": "absolute",
+    "number": 1,
+    "text": {
+      "es": "Inestabilidad de los signos vitales (FC, FR, TA, Temp)",
+      "en": "Unstable vital signs (HR, RR, BP, temperature)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-02",
+    "kind": "absolute",
+    "number": 2,
+    "text": {
+      "es": "FC < 60 lpm",
+      "en": "Heart rate < 60 bpm"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-03",
+    "kind": "absolute",
+    "number": 3,
+    "text": {
+      "es": "FC > 100 lpm",
+      "en": "Heart rate > 100 bpm"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-04",
+    "kind": "absolute",
+    "number": 4,
+    "text": {
+      "es": "FR < 16 rpm",
+      "en": "Respiratory rate < 16 breaths/min"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-05",
+    "kind": "absolute",
+    "number": 5,
+    "text": {
+      "es": "FR > 20 rpm",
+      "en": "Respiratory rate > 20 breaths/min"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-06",
+    "kind": "absolute",
+    "number": 6,
+    "text": {
+      "es": "Temperatura > 40 º C",
+      "en": "Temperature > 40 °C"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-07",
+    "kind": "absolute",
+    "number": 7,
+    "text": {
+      "es": "Temperatura < 36 º C",
+      "en": "Temperature < 36 °C"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-08",
+    "kind": "absolute",
+    "number": 8,
+    "text": {
+      "es": "Tensión arterial sistólica > 180 mmHg",
+      "en": "Systolic blood pressure > 180 mmHg"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-09",
+    "kind": "absolute",
+    "number": 9,
+    "text": {
+      "es": "Tensión arterial diastólica < 50 mmHg",
+      "en": "Diastolic blood pressure < 50 mmHg"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-10",
+    "kind": "absolute",
+    "number": 10,
+    "text": {
+      "es": "Oximetría de Pulso < 80%",
+      "en": "Pulse oximetry < 80%"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-11",
+    "kind": "absolute",
+    "number": 11,
+    "text": {
+      "es": "Glucosa < 70 mg/dl",
+      "en": "Glucose < 70 mg/dl"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-12",
+    "kind": "absolute",
+    "number": 12,
+    "text": {
+      "es": "Glucosa > 450 mg/dl",
+      "en": "Glucose > 450 mg/dl"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-13",
+    "kind": "absolute",
+    "number": 13,
+    "text": {
+      "es": "Paro cardiorespiratorio",
+      "en": "Cardiorespiratory arrest"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-14",
+    "kind": "absolute",
+    "number": 14,
+    "text": {
+      "es": "Insuficiencia cardiaca descompensada",
+      "en": "Decompensated heart failure"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-15",
+    "kind": "absolute",
+    "number": 15,
+    "text": {
+      "es": "Angina inestable",
+      "en": "Unstable angina"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-16",
+    "kind": "absolute",
+    "number": 16,
+    "text": {
+      "es": "Infarto al miocardio",
+      "en": "Myocardial infarction"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-17",
+    "kind": "absolute",
+    "number": 17,
+    "text": {
+      "es": "Hemorragia masiva",
+      "en": "Massive haemorrhage"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-18",
+    "kind": "absolute",
+    "number": 18,
+    "text": {
+      "es": "Agina de pecho",
+      "en": "Angina pectoris"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-19",
+    "kind": "absolute",
+    "number": 19,
+    "text": {
+      "es": "Taponamiento cardiaco",
+      "en": "Cardiac tamponade"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-20",
+    "kind": "absolute",
+    "number": 20,
+    "text": {
+      "es": "Emergencia hipertensiva",
+      "en": "Hypertensive emergency"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-21",
+    "kind": "absolute",
+    "number": 21,
+    "text": {
+      "es": "Disección aórtica",
+      "en": "Aortic dissection"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-22",
+    "kind": "absolute",
+    "number": 22,
+    "text": {
+      "es": "Durante un Evento Vascular Cerebral (EVC)",
+      "en": "During a stroke (cerebrovascular event)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ],
+    "variants": [
+      {
+        "es": "Evento Vascular Cerebral (EVC)",
+        "source": {
+          "doc": "goiz-n2",
+          "page": 247
+        }
+      }
+    ]
+  },
+  {
+    "id": "abs-23",
+    "kind": "absolute",
+    "number": 23,
+    "text": {
+      "es": "Oclusión arterial aguda",
+      "en": "Acute arterial occlusion"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-24",
+    "kind": "absolute",
+    "number": 24,
+    "text": {
+      "es": "Quemaduras que ponen en riesgo la vida",
+      "en": "Life-threatening burns"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-25",
+    "kind": "absolute",
+    "number": 25,
+    "text": {
+      "es": "Compromiso de consciencia agudo",
+      "en": "Acute impairment of consciousness"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 131
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-26",
+    "kind": "absolute",
+    "number": 26,
+    "text": {
+      "es": "Neumotórax",
+      "en": "Pneumothorax"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-27",
+    "kind": "absolute",
+    "number": 27,
+    "text": {
+      "es": "Abdomen agudo",
+      "en": "Acute abdomen"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-28",
+    "kind": "absolute",
+    "number": 28,
+    "text": {
+      "es": "Deshidratación severa",
+      "en": "Severe dehydration"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-29",
+    "kind": "absolute",
+    "number": 29,
+    "text": {
+      "es": "Desnutrición severa",
+      "en": "Severe malnutrition"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-30",
+    "kind": "absolute",
+    "number": 30,
+    "text": {
+      "es": "Abdomen agudo",
+      "en": "Acute abdomen"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-31",
+    "kind": "absolute",
+    "number": 31,
+    "text": {
+      "es": "Estado de Shock",
+      "en": "Shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-32",
+    "kind": "absolute",
+    "number": 32,
+    "text": {
+      "es": "Shock cardiogénico",
+      "en": "Cardiogenic shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-33",
+    "kind": "absolute",
+    "number": 33,
+    "text": {
+      "es": "Shock hipovolémico",
+      "en": "Hypovolaemic shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-34",
+    "kind": "absolute",
+    "number": 34,
+    "text": {
+      "es": "Shock anafiláctico",
+      "en": "Anaphylactic shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-35",
+    "kind": "absolute",
+    "number": 35,
+    "text": {
+      "es": "Shock neurogénico",
+      "en": "Neurogenic shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-36",
+    "kind": "absolute",
+    "number": 36,
+    "text": {
+      "es": "Shock distributivo",
+      "en": "Distributive shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-37",
+    "kind": "absolute",
+    "number": 37,
+    "text": {
+      "es": "Shock obstructivo",
+      "en": "Obstructive shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-38",
+    "kind": "absolute",
+    "number": 38,
+    "text": {
+      "es": "Shock séptico",
+      "en": "Septic shock"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-39",
+    "kind": "absolute",
+    "number": 39,
+    "text": {
+      "es": "Sepsis grave",
+      "en": "Severe sepsis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-40",
+    "kind": "absolute",
+    "number": 40,
+    "text": {
+      "es": "Estado convulsivo",
+      "en": "Status epilepticus (convulsive state)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-41",
+    "kind": "absolute",
+    "number": 41,
+    "text": {
+      "es": "Compresión medular",
+      "en": "Spinal cord compression"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-42",
+    "kind": "absolute",
+    "number": 42,
+    "text": {
+      "es": "Respuesta inflamatoria sistémica",
+      "en": "Systemic inflammatory response"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-43",
+    "kind": "absolute",
+    "number": 43,
+    "text": {
+      "es": "Coagulación intravascular diseminada",
+      "en": "Disseminated intravascular coagulation"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-44",
+    "kind": "absolute",
+    "number": 44,
+    "text": {
+      "es": "Hemorragia de la parte alta del tubo digestivo",
+      "en": "Upper gastrointestinal bleeding"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-45",
+    "kind": "absolute",
+    "number": 45,
+    "text": {
+      "es": "Hipoglucemia",
+      "en": "Hypoglycaemia"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-46",
+    "kind": "absolute",
+    "number": 46,
+    "text": {
+      "es": "Estado hiperosmolar no cetócico",
+      "en": "Hyperosmolar non-ketotic state"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-47",
+    "kind": "absolute",
+    "number": 47,
+    "text": {
+      "es": "Preeclampsia o eclampsia grave",
+      "en": "Severe pre-eclampsia or eclampsia"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-48",
+    "kind": "absolute",
+    "number": 48,
+    "text": {
+      "es": "Síndrome de HELLP",
+      "en": "HELLP syndrome"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-49",
+    "kind": "absolute",
+    "number": 49,
+    "text": {
+      "es": "Durante procedicmientos quirúrgicos u odontológicos",
+      "en": "During surgical or dental procedures"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 247
+      }
+    ]
+  },
+  {
+    "id": "abs-50",
+    "kind": "absolute",
+    "number": 50,
+    "text": {
+      "es": "Durante estudios de laboratorio o gabinete",
+      "en": "During laboratory or imaging studies"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 248
+      }
+    ]
+  },
+  {
+    "id": "abs-51",
+    "kind": "absolute",
+    "number": 51,
+    "text": {
+      "es": "Estado de coma sin autorización de los familiares",
+      "en": "Coma, without family authorization"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 248
+      }
+    ]
+  },
+  {
+    "id": "abs-52",
+    "kind": "absolute",
+    "number": 52,
+    "text": {
+      "es": "Paciente politraumatizado con compromiso hemodinámico",
+      "en": "Polytrauma with haemodynamic compromise"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 248
+      }
+    ]
+  },
+  {
+    "id": "abs-53",
+    "kind": "absolute",
+    "number": 53,
+    "text": {
+      "es": "Estados hemodinámicos alterados",
+      "en": "Altered haemodynamic states"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 132
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 248
+      }
+    ]
+  }
+]

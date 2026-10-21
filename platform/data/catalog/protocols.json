@@ -1,0 +1,8325 @@
+[
+  {
+    "id": "basic-columna",
+    "kind": "basic",
+    "name": {
+      "es": "Columna Básico",
+      "en": "Basic Spine"
+    },
+    "items": [
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "cx-lumbar--rinon"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 105
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 213
+      }
+    ]
+  },
+  {
+    "id": "basic-detox",
+    "kind": "basic",
+    "name": {
+      "es": "Detox Básico",
+      "en": "Basic Detox"
+    },
+    "items": [
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "pair": "pb-097"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 105
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 213
+      }
+    ]
+  },
+  {
+    "id": "basic-disfuncional",
+    "kind": "basic",
+    "name": {
+      "es": "Disfuncional Básico",
+      "en": "Basic Dysfunctional"
+    },
+    "items": [
+      {
+        "pair": "pb-181"
+      },
+      {
+        "pair": "pb-182"
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-184"
+      },
+      {
+        "pair": "pb-193"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 105
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 213
+      }
+    ]
+  },
+  {
+    "id": "basic-extended",
+    "kind": "basic",
+    "name": {
+      "es": "Protocolo Básico (extendido)",
+      "en": "Basic Protocol (extended)"
+    },
+    "items": [
+      {
+        "protocol": "basic-reservorios"
+      },
+      {
+        "protocol": "basic-detox"
+      },
+      {
+        "protocol": "basic-columna"
+      },
+      {
+        "protocol": "basic-pb"
+      },
+      {
+        "protocol": "basic-disfuncional"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 105
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 213
+      }
+    ]
+  },
+  {
+    "id": "basic-pb",
+    "kind": "basic",
+    "name": {
+      "es": "PB Básico",
+      "en": "Basic BP (Biomagnetic Pair)"
+    },
+    "items": [
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-246"
+      },
+      {
+        "pair": "pb-142"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 105
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 213
+      }
+    ]
+  },
+  {
+    "id": "basic-pb-diabetogenicos",
+    "kind": "basic",
+    "name": {
+      "es": "PB´s Diabetogénicos",
+      "en": "Diabetogenic pairs"
+    },
+    "items": [
+      {
+        "pair": "pb-017"
+      },
+      {
+        "pair": "pb-014"
+      },
+      {
+        "pair": "pb-016"
+      },
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-045"
+      },
+      {
+        "pair": "pb-094"
+      },
+      {
+        "pair": "pb-110"
+      },
+      {
+        "pair": "pb-111"
+      },
+      {
+        "pair": "pb-159",
+        "samePoints": [
+          "pb-218",
+          "pb-282"
+        ]
+      },
+      {
+        "pair": "pb-192"
+      },
+      {
+        "pair": "pb-006"
+      }
+    ],
+    "notes": [
+      {
+        "es": "Nilo Virus (PB 45)"
+      },
+      {
+        "es": "PB´s relacionados a Virus patogénicos"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 216
+    }
+  },
+  {
+    "id": "basic-pb-hiperglicemicos",
+    "kind": "basic",
+    "name": {
+      "es": "PB´s Hiperglicémicos",
+      "en": "Hyperglycemic pairs"
+    },
+    "items": [
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-086"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "pair": "pb-081"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-018"
+      },
+      {
+        "pair": "pb-084"
+      },
+      {
+        "pair": "pb-094"
+      },
+      {
+        "pair": "pb-129"
+      },
+      {
+        "pair": "pb-132"
+      },
+      {
+        "pair": "pb-254"
+      },
+      {
+        "pair": "pb-279"
+      },
+      {
+        "pair": "pb-304"
+      },
+      {
+        "pair": "pb-307"
+      },
+      {
+        "pair": "pb-106"
+      },
+      {
+        "pair": "pb-194",
+        "samePoints": [
+          "pb-074"
+        ]
+      },
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-158"
+      },
+      {
+        "pair": "pb-159",
+        "samePoints": [
+          "pb-218",
+          "pb-282"
+        ]
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      },
+      {
+        "es": "PB´s relacionados a Hígado (expandido a 16 pares por punto)"
+      },
+      {
+        "es": "PB´s relacionados a Bacterias patogénicas"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 216
+    }
+  },
+  {
+    "id": "basic-reservorios",
+    "kind": "basic",
+    "name": {
+      "es": "Reservorios Básico",
+      "en": "Basic Reservoirs"
+    },
+    "items": [
+      {
+        "pair": "cx-caries--rinon"
+      },
+      {
+        "pair": "cx-cicatriz--rinon"
+      },
+      {
+        "pair": "pb-200",
+        "samePoints": [
+          "pb-100"
+        ]
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 105
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 213
+      }
+    ]
+  },
+  {
+    "id": "basic-short",
+    "kind": "basic",
+    "name": {
+      "es": "Protocolo Básico (corto)",
+      "en": "Basic Protocol (short)"
+    },
+    "items": [
+      {
+        "protocol": "basic-detox"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-083"
+      },
+      {
+        "pair": "pb-100",
+        "samePoints": [
+          "pb-200"
+        ]
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 105
+    },
+    "alsoIn": [
+      {
+        "doc": "goiz-n2",
+        "page": 213
+      }
+    ]
+  },
+  {
+    "id": "top10-cardiologico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Cardiológico",
+      "en": "Top 10 Cardiology"
+    },
+    "items": [
+      {
+        "pair": "pb-069"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-075"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-177"
+      },
+      {
+        "pair": "pb-102"
+      },
+      {
+        "pair": "pb-061"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-221",
+        "sides": {
+          "tracking": "L",
+          "impact": "C"
+        }
+      },
+      {
+        "pair": "pb-081"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 106
+    }
+  },
+  {
+    "id": "top10-columna",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Columna",
+      "en": "Top 10 Spine"
+    },
+    "items": [
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "cx-lumbar--rinon"
+      },
+      {
+        "pair": "pb-154",
+        "samePoints": [
+          "pb-286"
+        ]
+      },
+      {
+        "pair": "pb-141"
+      },
+      {
+        "pair": "pb-090"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-073"
+      },
+      {
+        "pair": "pb-106"
+      },
+      {
+        "pair": "pb-107"
+      },
+      {
+        "pair": "pb-108",
+        "samePoints": [
+          "pb-268"
+        ]
+      },
+      {
+        "pair": "pb-109"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 214
+    }
+  },
+  {
+    "id": "top10-dermatologico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Dermatológico",
+      "en": "Top 10 Dermatology"
+    },
+    "items": [
+      {
+        "pair": "pb-024"
+      },
+      {
+        "pair": "pb-014"
+      },
+      {
+        "pair": "pb-016"
+      },
+      {
+        "pair": "pb-017",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        }
+      },
+      {
+        "pair": "pb-125"
+      },
+      {
+        "pair": "pb-055"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-211"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 106
+    }
+  },
+  {
+    "id": "top10-disfuncional",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Disfuncional",
+      "en": "Top 10 Dysfunctional"
+    },
+    "items": [
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-193"
+      },
+      {
+        "pair": "cx-articulacion--rinon"
+      },
+      {
+        "pair": "pb-195"
+      },
+      {
+        "pair": "pb-194",
+        "samePoints": [
+          "pb-074"
+        ]
+      },
+      {
+        "pair": "pb-192"
+      },
+      {
+        "pair": "pb-165"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 106
+    }
+  },
+  {
+    "id": "top10-disnea",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Disnea",
+      "en": "Top 10 Dyspnea"
+    },
+    "items": [
+      {
+        "pair": "pb-030"
+      },
+      {
+        "pair": "pb-029"
+      },
+      {
+        "pair": "pb-075"
+      },
+      {
+        "pair": "pb-239",
+        "note": {
+          "es": "Torácica 7"
+        }
+      },
+      {
+        "pair": "pb-069"
+      },
+      {
+        "pair": "pb-006"
+      },
+      {
+        "pair": "pb-066"
+      },
+      {
+        "pair": "pb-059"
+      },
+      {
+        "pair": "pb-102"
+      },
+      {
+        "pair": "pb-145"
+      },
+      {
+        "pair": "pb-097"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 106
+    }
+  },
+  {
+    "id": "top10-endocrinologico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Endocrinológico",
+      "en": "Top 10 Endocrinology"
+    },
+    "items": [
+      {
+        "pair": "pb-181"
+      },
+      {
+        "pair": "pb-182"
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-184"
+      },
+      {
+        "pair": "pb-186"
+      },
+      {
+        "pair": "pb-159",
+        "samePoints": [
+          "pb-218",
+          "pb-282"
+        ]
+      },
+      {
+        "pair": "pb-171"
+      },
+      {
+        "pair": "pb-187"
+      },
+      {
+        "pair": "pb-188",
+        "samePoints": [
+          "pb-099"
+        ]
+      },
+      {
+        "pair": "pb-288"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 107
+    }
+  },
+  {
+    "id": "top10-gastritis",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Gastritis",
+      "en": "Top 10 Gastritis"
+    },
+    "items": [
+      {
+        "pair": "pb-245"
+      },
+      {
+        "pair": "pb-246"
+      },
+      {
+        "pair": "pb-252"
+      },
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "pb-238"
+      },
+      {
+        "pair": "pb-096"
+      },
+      {
+        "pair": "pb-193"
+      },
+      {
+        "pair": "pb-016"
+      },
+      {
+        "pair": "pb-072"
+      },
+      {
+        "pair": "pb-088"
+      },
+      {
+        "pair": "pb-076"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 214
+    }
+  },
+  {
+    "id": "top10-gastrointestinal",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Gastrointestinal",
+      "en": "Top 10 Gastrointestinal"
+    },
+    "items": [
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-246"
+      },
+      {
+        "pair": "pb-081"
+      },
+      {
+        "pair": "pb-094"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-245"
+      },
+      {
+        "pair": "pb-259"
+      },
+      {
+        "pair": "pb-124"
+      },
+      {
+        "pair": "pb-129"
+      },
+      {
+        "pair": "pb-088"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 107
+    }
+  },
+  {
+    "id": "top10-ginecologico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Ginecológico",
+      "en": "Top 10 Gynecology"
+    },
+    "items": [
+      {
+        "pair": "pb-100",
+        "samePoints": [
+          "pb-200"
+        ],
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-046"
+      },
+      {
+        "pair": "pb-044"
+      },
+      {
+        "pair": "pb-015"
+      },
+      {
+        "pair": "pb-071"
+      },
+      {
+        "pair": "pb-171"
+      },
+      {
+        "pair": "pb-187"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-135"
+      },
+      {
+        "pair": "pb-005"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 107
+    }
+  },
+  {
+    "id": "top10-hematologico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Hematológico",
+      "en": "Top 10 Hematology"
+    },
+    "items": [
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-101",
+        "samePoints": [
+          "pb-189"
+        ]
+      },
+      {
+        "pair": "pb-084"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-206"
+      },
+      {
+        "pair": "pb-106"
+      },
+      {
+        "pair": "pb-108",
+        "samePoints": [
+          "pb-268"
+        ]
+      },
+      {
+        "pair": "pb-061"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 107
+    }
+  },
+  {
+    "id": "top10-hepatobiliar",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Hepatobiliar",
+      "en": "Top 10 Hepatobiliary"
+    },
+    "items": [
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "pair": "pb-132",
+        "samePoints": [
+          "pb-209"
+        ]
+      },
+      {
+        "pair": "pb-195"
+      },
+      {
+        "pair": "pb-246"
+      },
+      {
+        "pair": "pb-094"
+      },
+      {
+        "pair": "pb-093"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-038"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 108
+    }
+  },
+  {
+    "id": "top10-inmunologico-enfermedades-autoinmunes",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Inmunológico (enfermedades autoinmunes)",
+      "en": "Top 10 Immunology (autoimmune diseases)"
+    },
+    "items": [
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-102"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      },
+      {
+        "pair": "pb-101",
+        "samePoints": [
+          "pb-189"
+        ]
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-061"
+      },
+      {
+        "pair": "pb-105"
+      },
+      {
+        "pair": "pb-114"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 108
+    }
+  },
+  {
+    "id": "top10-inmunologico-inmunodeficiencia",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Inmunológico (Inmunodeficiencia)",
+      "en": "Top 10 Immunology (immunodeficiency)"
+    },
+    "items": [
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-004"
+      },
+      {
+        "pair": "pb-005"
+      },
+      {
+        "pair": "pb-102"
+      },
+      {
+        "pair": "pb-162"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-002"
+      },
+      {
+        "pair": "pb-003"
+      },
+      {
+        "pair": "pb-185"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 108
+    }
+  },
+  {
+    "id": "top10-intrahospitalario",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Intrahospitalario",
+      "en": "Top 10 In-hospital"
+    },
+    "items": [
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-063",
+        "samePoints": [
+          "pb-051"
+        ]
+      },
+      {
+        "pair": "pb-064"
+      },
+      {
+        "pair": "pb-104"
+      },
+      {
+        "pair": "pb-233"
+      },
+      {
+        "pair": "pb-096"
+      },
+      {
+        "pair": "pb-252"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-050"
+      },
+      {
+        "pair": "cx-dorsal--lumbar"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 214
+    }
+  },
+  {
+    "id": "top10-lesiones-deportivas",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Lesiones Deportivas",
+      "en": "Top 10 Sports injuries"
+    },
+    "items": [
+      {
+        "pair": "cx-rodilla--rinon"
+      },
+      {
+        "pair": "cx-hombro--rinon"
+      },
+      {
+        "pair": "cx-muneca--rinon"
+      },
+      {
+        "pair": "cx-lumbar--rinon"
+      },
+      {
+        "pair": "cx-tobillo--rinon"
+      },
+      {
+        "pair": "cx-cervical--rinon"
+      },
+      {
+        "pair": "pb-141"
+      },
+      {
+        "pair": "pb-090"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "cx-codo--rinon"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 214
+    }
+  },
+  {
+    "id": "top10-neurologico-adultos",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Neurológico (adultos)",
+      "en": "Top 10 Neurology (adults)"
+    },
+    "items": [
+      {
+        "pair": "pb-142"
+      },
+      {
+        "pair": "pb-027"
+      },
+      {
+        "pair": "pb-012"
+      },
+      {
+        "pair": "pb-067"
+      },
+      {
+        "pair": "pb-049"
+      },
+      {
+        "pair": "pb-013",
+        "samePoints": [
+          "pb-115",
+          "pb-174"
+        ]
+      },
+      {
+        "pair": "pb-134"
+      },
+      {
+        "pair": "pb-128"
+      },
+      {
+        "pair": "pb-133"
+      },
+      {
+        "pair": "pb-291"
+      },
+      {
+        "pair": "pb-048"
+      },
+      {
+        "pair": "pb-280"
+      },
+      {
+        "pair": "pb-124"
+      },
+      {
+        "pair": "pb-290"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 108
+    }
+  },
+  {
+    "id": "top10-neurologico-ninos",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Neurológico (niños)",
+      "en": "Top 10 Neurology (children)"
+    },
+    "items": [
+      {
+        "pair": "pb-142"
+      },
+      {
+        "pair": "pb-026"
+      },
+      {
+        "pair": "pb-027"
+      },
+      {
+        "pair": "pb-012"
+      },
+      {
+        "pair": "pb-067"
+      },
+      {
+        "pair": "pb-014"
+      },
+      {
+        "pair": "pb-049"
+      },
+      {
+        "pair": "pb-134"
+      },
+      {
+        "pair": "pb-016"
+      },
+      {
+        "pair": "pb-133"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 109
+    }
+  },
+  {
+    "id": "top10-nutricional",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Nutricional",
+      "en": "Top 10 Nutritional"
+    },
+    "items": [
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "pair": "pb-193"
+      },
+      {
+        "pair": "pb-192"
+      },
+      {
+        "pair": "pb-195"
+      },
+      {
+        "pair": "pb-158"
+      },
+      {
+        "pair": "pb-157"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 214
+    }
+  },
+  {
+    "id": "top10-oftalmologico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Oftalmológico",
+      "en": "Top 10 Ophthalmology"
+    },
+    "items": [
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-026"
+      },
+      {
+        "pair": "pb-147"
+      },
+      {
+        "pair": "pb-057"
+      },
+      {
+        "pair": "pb-277"
+      },
+      {
+        "pair": "pb-285",
+        "sides": {
+          "tracking": "RL",
+          "impact": "C"
+        }
+      },
+      {
+        "pair": "pb-027"
+      },
+      {
+        "pair": "pb-010"
+      },
+      {
+        "pair": "pb-114"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 215
+    }
+  },
+  {
+    "id": "top10-oncogenico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Oncogénico",
+      "en": "Top 10 Oncogenic"
+    },
+    "items": [
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-265",
+        "sides": {
+          "tracking": "RL",
+          "impact": "RL"
+        }
+      },
+      {
+        "pair": "pb-264"
+      },
+      {
+        "pair": "pb-095"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-142"
+      },
+      {
+        "pair": "pb-081"
+      },
+      {
+        "pair": "pb-267"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 109
+    }
+  },
+  {
+    "id": "top10-osteomuscular",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Osteomuscular",
+      "en": "Top 10 Musculoskeletal"
+    },
+    "items": [
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-007"
+      },
+      {
+        "pair": "pb-086"
+      },
+      {
+        "pair": "cx-lumbar--rinon"
+      },
+      {
+        "pair": "pb-106"
+      },
+      {
+        "pair": "pb-108",
+        "samePoints": [
+          "pb-268"
+        ]
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "cx-articulacion--rinon"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 109
+    }
+  },
+  {
+    "id": "top10-patogenico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Patogénico",
+      "en": "Top 10 Pathogenic"
+    },
+    "items": [
+      {
+        "pair": "pb-265",
+        "sides": {
+          "tracking": "RL",
+          "impact": "RL"
+        }
+      },
+      {
+        "pair": "pb-264"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-017",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        }
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-081"
+      },
+      {
+        "pair": "pb-095"
+      },
+      {
+        "pair": "pb-258"
+      },
+      {
+        "pair": "pb-267"
+      },
+      {
+        "pair": "pb-142"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 109
+    }
+  },
+  {
+    "id": "top10-psicoemocional",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Psicoemocional",
+      "en": "Top 10 Psycho-emotional"
+    },
+    "items": [
+      {
+        "pair": "pb-311",
+        "note": {
+          "es": "miedo"
+        }
+      },
+      {
+        "pair": "pb-307",
+        "note": {
+          "es": "ira"
+        }
+      },
+      {
+        "pair": "pb-318",
+        "sides": {
+          "tracking": "RL",
+          "impact": "C"
+        },
+        "note": {
+          "es": "tristeza"
+        }
+      },
+      {
+        "pair": "pb-316",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        },
+        "note": {
+          "es": "culpa"
+        }
+      },
+      {
+        "pair": "pb-309",
+        "note": {
+          "es": "envidia"
+        }
+      },
+      {
+        "pair": "pb-310",
+        "note": {
+          "es": "pereza"
+        }
+      },
+      {
+        "pair": "pb-313",
+        "note": {
+          "es": "impaciencia"
+        }
+      },
+      {
+        "pair": "pb-308",
+        "note": {
+          "es": "gula"
+        }
+      },
+      {
+        "pair": "pb-314",
+        "note": {
+          "es": "duda"
+        }
+      },
+      {
+        "pair": "pb-315",
+        "note": {
+          "es": "duda"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 215
+    }
+  },
+  {
+    "id": "top10-psiquiatrico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Psiquiátrico",
+      "en": "Top 10 Psychiatric"
+    },
+    "items": [
+      {
+        "pair": "pb-302",
+        "note": {
+          "es": "depresión"
+        }
+      },
+      {
+        "pair": "pb-174",
+        "samePoints": [
+          "pb-013",
+          "pb-115"
+        ],
+        "note": {
+          "es": "criminalidad / agresividad"
+        }
+      },
+      {
+        "pair": "pb-321",
+        "note": {
+          "es": "celos"
+        }
+      },
+      {
+        "pair": "pb-312",
+        "samePoints": [
+          "pb-283"
+        ],
+        "note": {
+          "es": "cruelda"
+        }
+      },
+      {
+        "pair": "pb-317",
+        "note": {
+          "es": "intolerancia"
+        }
+      },
+      {
+        "pair": "pb-320",
+        "note": {
+          "es": "odio"
+        }
+      },
+      {
+        "pair": "pb-322",
+        "note": {
+          "es": "malignidad"
+        }
+      },
+      {
+        "pair": "pb-306",
+        "note": {
+          "es": "lujuria"
+        }
+      },
+      {
+        "pair": "pb-298",
+        "note": {
+          "es": "complejo de Edipo"
+        }
+      },
+      {
+        "pair": "pb-299",
+        "note": {
+          "es": "complejo de Elektra"
+        }
+      },
+      {
+        "pair": "pb-284",
+        "note": {
+          "es": "drogadicción"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 215
+    }
+  },
+  {
+    "id": "top10-regularizacion-intestinal",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Regularización intestinal",
+      "en": "Top 10 Bowel regulation"
+    },
+    "items": [
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      },
+      {
+        "pair": "pb-157"
+      },
+      {
+        "pair": "pb-173"
+      },
+      {
+        "pair": "pb-193"
+      },
+      {
+        "pair": "pb-192"
+      },
+      {
+        "pair": "pb-195"
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-158"
+      },
+      {
+        "pair": "pb-274"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 215
+    }
+  },
+  {
+    "id": "top10-reservorios",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Reservorios",
+      "en": "Top 10 Reservoirs"
+    },
+    "items": [
+      {
+        "pair": "cx-caries--rinon"
+      },
+      {
+        "pair": "cx-cicatriz--rinon"
+      },
+      {
+        "pair": "pb-200",
+        "samePoints": [
+          "pb-100"
+        ],
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-202"
+      },
+      {
+        "pair": "pb-294"
+      },
+      {
+        "pair": "pb-295"
+      },
+      {
+        "pair": "pb-289"
+      },
+      {
+        "pair": "pb-195"
+      },
+      {
+        "pair": "pb-201",
+        "samePoints": [
+          "pb-032"
+        ]
+      },
+      {
+        "pair": "cx-articulacion--rinon"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 110
+    }
+  },
+  {
+    "id": "top10-respiratorio",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Respiratorio",
+      "en": "Top 10 Respiratory"
+    },
+    "items": [
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-069",
+        "sides": {
+          "tracking": "C",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-099",
+        "samePoints": [
+          "pb-188"
+        ]
+      },
+      {
+        "pair": "pb-100",
+        "samePoints": [
+          "pb-200"
+        ],
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-029",
+        "sides": {
+          "tracking": "R",
+          "impact": "C"
+        }
+      },
+      {
+        "pair": "pb-030"
+      },
+      {
+        "pair": "pb-059"
+      },
+      {
+        "pair": "pb-075"
+      },
+      {
+        "pair": "pb-237"
+      },
+      {
+        "pair": "pb-068"
+      },
+      {
+        "pair": "pb-235",
+        "note": {
+          "es": "Norte de EU y Canadá"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 110
+    }
+  },
+  {
+    "id": "top10-top",
+    "kind": "top10",
+    "name": {
+      "es": "Top Top 10",
+      "en": "Top Top 10"
+    },
+    "items": [
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-tropical"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 112
+    }
+  },
+  {
+    "id": "top10-tropical",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Tropical",
+      "en": "Top 10 Tropical"
+    },
+    "items": [
+      {
+        "pair": "pb-008"
+      },
+      {
+        "pair": "pb-267"
+      },
+      {
+        "pair": "pb-126"
+      },
+      {
+        "pair": "pb-045"
+      },
+      {
+        "pair": "pb-139",
+        "sides": {
+          "tracking": "L",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-223"
+      },
+      {
+        "pair": "pb-009"
+      },
+      {
+        "pair": "pb-227"
+      },
+      {
+        "pair": "pb-224"
+      },
+      {
+        "pair": "pb-258"
+      },
+      {
+        "pair": "pb-323"
+      },
+      {
+        "pair": "pb-324"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 110
+    }
+  },
+  {
+    "id": "top10-urologico",
+    "kind": "top10",
+    "name": {
+      "es": "Top 10 Urológico",
+      "en": "Top 10 Urology"
+    },
+    "items": [
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      },
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-081"
+      },
+      {
+        "pair": "pb-041"
+      },
+      {
+        "pair": "pb-032",
+        "samePoints": [
+          "pb-201"
+        ]
+      },
+      {
+        "pair": "pb-099",
+        "samePoints": [
+          "pb-188"
+        ]
+      },
+      {
+        "pair": "pb-100",
+        "samePoints": [
+          "pb-200"
+        ],
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-222"
+      },
+      {
+        "pair": "pb-230"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 110
+    }
+  },
+  {
+    "id": "top5-animales-en-casa",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Animales en casa",
+      "en": "Top 5 Pets at home"
+    },
+    "items": [
+      {
+        "pair": "pb-006"
+      },
+      {
+        "pair": "pb-044"
+      },
+      {
+        "pair": "pb-134"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      },
+      {
+        "pair": "pb-231"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 111
+    }
+  },
+  {
+    "id": "top5-cervicalgia",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Cervicalgia",
+      "en": "Top 5 Neck pain (cervicalgia)"
+    },
+    "items": [
+      {
+        "pair": "pb-141"
+      },
+      {
+        "pair": "pb-090"
+      },
+      {
+        "pair": "pb-089"
+      },
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-cervical--rinon"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 111
+    }
+  },
+  {
+    "id": "top5-conjuntivitis",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Conjuntivitis",
+      "en": "Top 5 Conjunctivitis"
+    },
+    "items": [
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-057"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-010"
+      },
+      {
+        "pair": "pb-058"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 111
+    }
+  },
+  {
+    "id": "top5-desintoxicacion",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Desintoxicación",
+      "en": "Top 5 Detoxification"
+    },
+    "items": [
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-159",
+        "samePoints": [
+          "pb-218",
+          "pb-282"
+        ]
+      },
+      {
+        "pair": "pb-316"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 111
+    }
+  },
+  {
+    "id": "top5-desparasitacion",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Desparasitación",
+      "en": "Top 5 Deworming (antiparasitic)"
+    },
+    "items": [
+      {
+        "pair": "pb-124"
+      },
+      {
+        "pair": "pb-131"
+      },
+      {
+        "pair": "pb-169"
+      },
+      {
+        "pair": "pb-132",
+        "samePoints": [
+          "pb-209"
+        ]
+      },
+      {
+        "pair": "pb-129"
+      },
+      {
+        "pair": "pb-123"
+      },
+      {
+        "pair": "pb-270"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 111
+    }
+  },
+  {
+    "id": "top5-infeccion-de-vias-urinarias",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Infección de Vías Urinarias",
+      "en": "Top 5 Urinary tract infection"
+    },
+    "items": [
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      },
+      {
+        "pair": "pb-081"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 111
+    }
+  },
+  {
+    "id": "top5-odontologico",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Odontológico",
+      "en": "Top 5 Dental"
+    },
+    "items": [
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-078"
+      },
+      {
+        "pair": "cx-caries--rinon"
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-106"
+      },
+      {
+        "pair": "pb-256"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 112
+    }
+  },
+  {
+    "id": "top5-perdida-de-la-memoria",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Pérdida de la Memoria",
+      "en": "Top 5 Memory loss"
+    },
+    "items": [
+      {
+        "pair": "pb-011"
+      },
+      {
+        "pair": "pb-156"
+      },
+      {
+        "pair": "pb-166"
+      },
+      {
+        "pair": "pb-115",
+        "samePoints": [
+          "pb-013",
+          "pb-174"
+        ]
+      },
+      {
+        "pair": "pb-117"
+      },
+      {
+        "pair": "pb-116"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 215
+    }
+  },
+  {
+    "id": "top5-postquirurgico",
+    "kind": "top5",
+    "name": {
+      "es": "Top 5 Postquirúrgico",
+      "en": "Top 5 Post-surgical"
+    },
+    "items": [
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-209",
+        "samePoints": [
+          "pb-132"
+        ]
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-056"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n1",
+      "page": 112
+    }
+  },
+  {
+    "id": "disease-acne",
+    "kind": "disease",
+    "number": 1,
+    "name": {
+      "es": "Acné",
+      "en": "Acne"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-reservorios"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "pair": "pb-077"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 218
+    }
+  },
+  {
+    "id": "disease-adenoma-hipofisiario",
+    "kind": "disease",
+    "number": 2,
+    "name": {
+      "es": "Adenoma Hipofisiario",
+      "en": "Pituitary adenoma"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "pair": "pb-066"
+      },
+      {
+        "pair": "pb-182"
+      },
+      {
+        "pair": "pb-171"
+      },
+      {
+        "pair": "pb-155"
+      },
+      {
+        "pair": "pb-288"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 218
+    }
+  },
+  {
+    "id": "disease-aftas-bucales",
+    "kind": "disease",
+    "number": 3,
+    "name": {
+      "es": "Aftas Bucales",
+      "en": "Mouth ulcers (aphthae)"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top5-odontologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-030"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 218
+    }
+  },
+  {
+    "id": "disease-alcoholismo",
+    "kind": "disease",
+    "number": 4,
+    "name": {
+      "es": "Alcoholismo",
+      "en": "Alcoholism"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-gastritis"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 218
+    }
+  },
+  {
+    "id": "disease-alergia",
+    "kind": "disease",
+    "number": 5,
+    "name": {
+      "es": "Alergia",
+      "en": "Allergy"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-conjuntivitis"
+      },
+      {
+        "pair": "pb-210",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-054"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 218
+    }
+  },
+  {
+    "id": "disease-alopecia",
+    "kind": "disease",
+    "number": 6,
+    "name": {
+      "es": "Alopecia",
+      "en": "Alopecia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-gastritis"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 219
+    }
+  },
+  {
+    "id": "disease-alzheimer",
+    "kind": "disease",
+    "number": 7,
+    "name": {
+      "es": "Alzheimer",
+      "en": "Alzheimer's disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top5-perdida-de-la-memoria"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 219
+    }
+  },
+  {
+    "id": "disease-amenorrea",
+    "kind": "disease",
+    "number": 8,
+    "name": {
+      "es": "Amenorrea",
+      "en": "Amenorrhea"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 219
+    }
+  },
+  {
+    "id": "disease-anemia",
+    "kind": "disease",
+    "number": 9,
+    "name": {
+      "es": "Anemia",
+      "en": "Anemia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hematologico"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-postquirurgico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 219
+    }
+  },
+  {
+    "id": "disease-anorexia",
+    "kind": "disease",
+    "number": 10,
+    "name": {
+      "es": "Anorexia",
+      "en": "Anorexia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-gastritis"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "pair": "pb-287"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 219
+    }
+  },
+  {
+    "id": "disease-ansiedad",
+    "kind": "disease",
+    "number": 11,
+    "name": {
+      "es": "Ansiedad",
+      "en": "Anxiety"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-gastritis"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 219
+    }
+  },
+  {
+    "id": "disease-antibioticoterapia-prolongada",
+    "kind": "disease",
+    "number": 12,
+    "name": {
+      "es": "Antibioticoterapia Prolongada",
+      "en": "Prolonged antibiotic therapy"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-134"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-arritmia",
+    "kind": "disease",
+    "number": 13,
+    "name": {
+      "es": "Arritmia",
+      "en": "Arrhythmia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-artritis-reumatoide",
+    "kind": "disease",
+    "number": 14,
+    "name": {
+      "es": "Artritis Reumatoide",
+      "en": "Rheumatoid arthritis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top10-lesiones-deportivas"
+      },
+      {
+        "pair": "cx-articulacion--rinon"
+      },
+      {
+        "pair": "pb-113"
+      },
+      {
+        "pair": "pb-106"
+      },
+      {
+        "pair": "pb-107"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-artrosis",
+    "kind": "disease",
+    "number": 15,
+    "name": {
+      "es": "Artrosis",
+      "en": "Osteoarthritis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top10-lesiones-deportivas"
+      },
+      {
+        "pair": "cx-articulacion--rinon"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-ascitis",
+    "kind": "disease",
+    "number": 16,
+    "name": {
+      "es": "Ascitis",
+      "en": "Ascites"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-asma",
+    "kind": "disease",
+    "number": 17,
+    "name": {
+      "es": "Asma",
+      "en": "Asthma"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-208",
+        "note": {
+          "es": "carina"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-ataxia",
+    "kind": "disease",
+    "number": 18,
+    "name": {
+      "es": "Ataxia",
+      "en": "Ataxia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-180"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-ateroesclerosis",
+    "kind": "disease",
+    "number": 19,
+    "name": {
+      "es": "Ateroesclerosis",
+      "en": "Atherosclerosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 220
+    }
+  },
+  {
+    "id": "disease-autismo",
+    "kind": "disease",
+    "number": 20,
+    "name": {
+      "es": "Autismo",
+      "en": "Autism"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-balanitis",
+    "kind": "disease",
+    "number": 21,
+    "name": {
+      "es": "Balanitis",
+      "en": "Balanitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      },
+      {
+        "pair": "cx-pene--pene"
+      },
+      {
+        "pair": "pb-099",
+        "samePoints": [
+          "pb-188"
+        ]
+      },
+      {
+        "pair": "pb-005"
+      },
+      {
+        "pair": "pb-052"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-bartolinitis",
+    "kind": "disease",
+    "number": 22,
+    "name": {
+      "es": "Bartolinitis",
+      "en": "Bartholinitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      },
+      {
+        "pair": "pb-100",
+        "samePoints": [
+          "pb-200"
+        ]
+      },
+      {
+        "pair": "pb-005"
+      },
+      {
+        "pair": "pb-052"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-bocio",
+    "kind": "disease",
+    "number": 23,
+    "name": {
+      "es": "Bocio",
+      "en": "Goitre"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-botulismo",
+    "kind": "disease",
+    "number": 24,
+    "name": {
+      "es": "Botulismo",
+      "en": "Botulism"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-094"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-bronquitis",
+    "kind": "disease",
+    "number": 25,
+    "name": {
+      "es": "Bronquitis",
+      "en": "Bronchitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-bruxismo",
+    "kind": "disease",
+    "number": 26,
+    "name": {
+      "es": "Bruxismo",
+      "en": "Bruxism"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-odontologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-bulimia",
+    "kind": "disease",
+    "number": 27,
+    "name": {
+      "es": "Bulimia",
+      "en": "Bulimia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-gastritis"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-cancer-de-colon",
+    "kind": "disease",
+    "number": 28,
+    "name": {
+      "es": "Cáncer de Colon",
+      "en": "Colon cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-081"
+      },
+      {
+        "pair": "pb-046"
+      },
+      {
+        "pair": "pb-085",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "cx-pliegue-inguinal--rinon",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 221
+    }
+  },
+  {
+    "id": "disease-cancer-de-estomago",
+    "kind": "disease",
+    "number": 29,
+    "name": {
+      "es": "Cáncer de Estómago",
+      "en": "Stomach cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-085",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 222
+    }
+  },
+  {
+    "id": "disease-cancer-de-higado",
+    "kind": "disease",
+    "number": 30,
+    "name": {
+      "es": "Cáncer de Hígado",
+      "en": "Liver cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-085",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 222
+    }
+  },
+  {
+    "id": "disease-cancer-de-mama",
+    "kind": "disease",
+    "number": 31,
+    "name": {
+      "es": "Cáncer de Mama",
+      "en": "Breast cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "cx-mediastino--rinon",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        },
+        "note": {
+          "es": "zona de conflicto"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 222
+    }
+  },
+  {
+    "id": "disease-cancer-de-ovario",
+    "kind": "disease",
+    "number": 32,
+    "name": {
+      "es": "Cáncer de Ovario",
+      "en": "Ovarian cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "cx-pliegue-inguinal--rinon",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "pb-187"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 222
+    }
+  },
+  {
+    "id": "disease-cancer-de-pancreas",
+    "kind": "disease",
+    "number": 33,
+    "name": {
+      "es": "Cáncer de Páncreas",
+      "en": "Pancreatic cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-085",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "pb-282"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 222
+    }
+  },
+  {
+    "id": "disease-cancer-de-piel",
+    "kind": "disease",
+    "number": 34,
+    "name": {
+      "es": "Cáncer de Piel",
+      "en": "Skin cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 222
+    }
+  },
+  {
+    "id": "disease-cancer-de-prostata",
+    "kind": "disease",
+    "number": 35,
+    "name": {
+      "es": "Cáncer de Próstata",
+      "en": "Prostate cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-222"
+      },
+      {
+        "pair": "pb-041"
+      },
+      {
+        "pair": "pb-042"
+      },
+      {
+        "pair": "cx-prostata--prostata"
+      },
+      {
+        "pair": "cx-pliegue-inguinal--rinon",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 223
+    }
+  },
+  {
+    "id": "disease-cancer-de-pulmon",
+    "kind": "disease",
+    "number": 36,
+    "name": {
+      "es": "Cáncer de Pulmón",
+      "en": "Lung cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "cx-mediastino--rinon",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        },
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "pb-316",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 223
+    }
+  },
+  {
+    "id": "disease-cancer-de-rinon",
+    "kind": "disease",
+    "number": 37,
+    "name": {
+      "es": "Cáncer de Riñón",
+      "en": "Kidney cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-085",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "pb-097"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 223
+    }
+  },
+  {
+    "id": "disease-cancer-de-testiculo",
+    "kind": "disease",
+    "number": 38,
+    "name": {
+      "es": "Cáncer de Testículo",
+      "en": "Testicular cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "cx-pliegue-inguinal--rinon",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "pb-099",
+        "samePoints": [
+          "pb-188"
+        ]
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 223
+    }
+  },
+  {
+    "id": "disease-cancer-de-tiroides",
+    "kind": "disease",
+    "number": 39,
+    "name": {
+      "es": "Cáncer de Tiroides",
+      "en": "Thyroid cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "cx-mediastino--rinon",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        },
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 223
+    }
+  },
+  {
+    "id": "disease-cancer-de-vejiga",
+    "kind": "disease",
+    "number": 40,
+    "name": {
+      "es": "Cáncer de Vejiga",
+      "en": "Bladder cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "cx-pliegue-inguinal--rinon",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 223
+    }
+  },
+  {
+    "id": "disease-cancer-oseo",
+    "kind": "disease",
+    "number": 41,
+    "name": {
+      "es": "Cáncer Óseo",
+      "en": "Bone cancer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-candidiasis-vaginal",
+    "kind": "disease",
+    "number": 42,
+    "name": {
+      "es": "Candidiasis Vaginal",
+      "en": "Vaginal candidiasis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-100",
+        "samePoints": [
+          "pb-200"
+        ]
+      },
+      {
+        "pair": "pb-005"
+      },
+      {
+        "pair": "cx-pliegue-inguinal--pliegue-inguinal"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-ciatica",
+    "kind": "disease",
+    "number": 43,
+    "name": {
+      "es": "Ciática",
+      "en": "Sciatica"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-columna"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-007"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-cistitis",
+    "kind": "disease",
+    "number": 44,
+    "name": {
+      "es": "Cistitis",
+      "en": "Cystitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-colico-nefritico",
+    "kind": "disease",
+    "number": 45,
+    "name": {
+      "es": "Cólico Nefrítico",
+      "en": "Renal colic"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-164"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-colitis-ulcerativa",
+    "kind": "disease",
+    "number": 46,
+    "name": {
+      "es": "Colitis Ulcerativa",
+      "en": "Ulcerative colitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-conjuntivitis",
+    "kind": "disease",
+    "number": 47,
+    "name": {
+      "es": "Conjuntivitis",
+      "en": "Conjunctivitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-oftalmologico"
+      },
+      {
+        "protocol": "top5-conjuntivitis"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-deficit-de-hormona-de-crecimiento",
+    "kind": "disease",
+    "number": 48,
+    "name": {
+      "es": "Déficit de Hormona de Crecimiento",
+      "en": "Growth hormone deficiency"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "pair": "pb-155"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-degeneracion-macular",
+    "kind": "disease",
+    "number": 49,
+    "name": {
+      "es": "Degeneración Macular",
+      "en": "Macular degeneration"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-oftalmologico"
+      },
+      {
+        "protocol": "top5-conjuntivitis"
+      },
+      {
+        "pair": "cx-macula--rinon",
+        "sides": {
+          "tracking": "RL",
+          "impact": "RL"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-demencia",
+    "kind": "disease",
+    "number": 50,
+    "name": {
+      "es": "Demencia",
+      "en": "Dementia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-depresion",
+    "kind": "disease",
+    "number": 51,
+    "name": {
+      "es": "Depresión",
+      "en": "Depression"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 224
+    }
+  },
+  {
+    "id": "disease-dermatitis-atopica",
+    "kind": "disease",
+    "number": 52,
+    "name": {
+      "es": "Dermatitis Atópica",
+      "en": "Atopic dermatitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-016"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-diabetes-mellitus",
+    "kind": "disease",
+    "number": 53,
+    "name": {
+      "es": "Diabetes Mellitus",
+      "en": "Diabetes mellitus"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "basic-pb-diabetogenicos"
+      },
+      {
+        "protocol": "basic-pb-hiperglicemicos"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-204",
+        "sides": {
+          "tracking": "L",
+          "impact": "C"
+        }
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-disfuncion-erectil",
+    "kind": "disease",
+    "number": 54,
+    "name": {
+      "es": "Disfunción Eréctil",
+      "en": "Erectile dysfunction"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-052"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-dislexia",
+    "kind": "disease",
+    "number": 55,
+    "name": {
+      "es": "Dislexia",
+      "en": "Dyslexia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-dismenorrea",
+    "kind": "disease",
+    "number": 56,
+    "name": {
+      "es": "Dismenorrea",
+      "en": "Dysmenorrhea"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-dispepsia",
+    "kind": "disease",
+    "number": 57,
+    "name": {
+      "es": "Dispepsia",
+      "en": "Dyspepsia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastritis"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-diverticulitis",
+    "kind": "disease",
+    "number": 58,
+    "name": {
+      "es": "Diverticulitis",
+      "en": "Diverticulitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-edema-pulmonar",
+    "kind": "disease",
+    "number": 59,
+    "name": {
+      "es": "Edema Pulmonar",
+      "en": "Pulmonary oedema"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-endocarditis",
+    "kind": "disease",
+    "number": 60,
+    "name": {
+      "es": "Endocarditis",
+      "en": "Endocarditis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-endometriosis",
+    "kind": "disease",
+    "number": 61,
+    "name": {
+      "es": "Endometriosis",
+      "en": "Endometriosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "pair": "cx-utero--sacro"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-enfermedad-celiaca",
+    "kind": "disease",
+    "number": 62,
+    "name": {
+      "es": "Enfermedad Celiaca",
+      "en": "Coeliac disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 225
+    }
+  },
+  {
+    "id": "disease-enfermedad-de-crohn",
+    "kind": "disease",
+    "number": 63,
+    "name": {
+      "es": "Enfermedad de Crohn",
+      "en": "Crohn's disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfermedad-de-huntington",
+    "kind": "disease",
+    "number": 64,
+    "name": {
+      "es": "Enfermedad de Huntington",
+      "en": "Huntington's disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfermedad-de-kawasaki",
+    "kind": "disease",
+    "number": 65,
+    "name": {
+      "es": "Enfermedad de Kawasaki",
+      "en": "Kawasaki disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfermedad-de-lyme",
+    "kind": "disease",
+    "number": 66,
+    "name": {
+      "es": "Enfermedad de Lyme",
+      "en": "Lyme disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "protocol": "top10-reservorios"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfermedad-de-peyronie",
+    "kind": "disease",
+    "number": 67,
+    "name": {
+      "es": "Enfermedad de Peyronie",
+      "en": "Peyronie's disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "pair": "pb-056"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfermedad-inflamatoria-pelvica",
+    "kind": "disease",
+    "number": 68,
+    "name": {
+      "es": "Enfermedad Inflamatoria Pélvica",
+      "en": "Pelvic inflammatory disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfermedad-pulmonar-intersticial",
+    "kind": "disease",
+    "number": 69,
+    "name": {
+      "es": "Enfermedad Pulmonar Intersticial",
+      "en": "Interstitial lung disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfermedad-pulmonar-obstructiva-cronica",
+    "kind": "disease",
+    "number": 70,
+    "name": {
+      "es": "Enfermedad Pulmonar Obstructiva Crónica (EPOC)",
+      "en": "Chronic obstructive pulmonary disease (COPD)"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-enfisema-pulmonar",
+    "kind": "disease",
+    "number": 71,
+    "name": {
+      "es": "Enfisema Pulmonar",
+      "en": "Pulmonary emphysema"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-114"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-epilepsia",
+    "kind": "disease",
+    "number": 72,
+    "name": {
+      "es": "Epilepsia",
+      "en": "Epilepsy"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "pair": "pb-180"
+      },
+      {
+        "pair": "pb-124"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-epoc",
+    "kind": "disease",
+    "number": 73,
+    "name": {
+      "es": "EPOC",
+      "en": "COPD"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 226
+    }
+  },
+  {
+    "id": "disease-esclerosis-multiple",
+    "kind": "disease",
+    "number": 74,
+    "name": {
+      "es": "Esclerosis Múltiple",
+      "en": "Multiple sclerosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-026"
+      },
+      {
+        "pair": "pb-142"
+      },
+      {
+        "pair": "pb-097"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-esofago-de-barret",
+    "kind": "disease",
+    "number": 75,
+    "name": {
+      "es": "Esófago de Barret",
+      "en": "Barrett's oesophagus"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastritis"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-espondilitis-anquilosante",
+    "kind": "disease",
+    "number": 76,
+    "name": {
+      "es": "Espondilitis Anquilosante",
+      "en": "Ankylosing spondylitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-esquizofrenia",
+    "kind": "disease",
+    "number": 77,
+    "name": {
+      "es": "Esquizofrenia",
+      "en": "Schizophrenia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-esteatosis-hepatica",
+    "kind": "disease",
+    "number": 78,
+    "name": {
+      "es": "Esteatosis Hepática (hígado graso)",
+      "en": "Hepatic steatosis (fatty liver)"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-018"
+      },
+      {
+        "pair": "pb-084"
+      },
+      {
+        "pair": "pb-094"
+      },
+      {
+        "pair": "pb-129"
+      },
+      {
+        "pair": "pb-132"
+      },
+      {
+        "pair": "pb-209"
+      },
+      {
+        "pair": "pb-254"
+      },
+      {
+        "pair": "pb-279"
+      },
+      {
+        "pair": "pb-304"
+      },
+      {
+        "pair": "pb-307"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      },
+      {
+        "es": "PB´s relacionados a Hígado (expandido a 16 pares por punto)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-estrabismo",
+    "kind": "disease",
+    "number": 79,
+    "name": {
+      "es": "Estrabismo",
+      "en": "Strabismus"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-oftalmologico"
+      },
+      {
+        "pair": "pb-165"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-estrenimiento",
+    "kind": "disease",
+    "number": 80,
+    "name": {
+      "es": "Estreñimiento",
+      "en": "Constipation"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-eyaculacion-precoz",
+    "kind": "disease",
+    "number": 81,
+    "name": {
+      "es": "Eyaculación Precoz",
+      "en": "Premature ejaculation"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "pair": "pb-052"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-fibromialgia",
+    "kind": "disease",
+    "number": 82,
+    "name": {
+      "es": "Fibromialgia",
+      "en": "Fibromyalgia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-tropical"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "pair": "pb-126",
+        "sides": {
+          "tracking": "RL",
+          "impact": "RL"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-fibrosis-quistica",
+    "kind": "disease",
+    "number": 83,
+    "name": {
+      "es": "Fibrosis Quística",
+      "en": "Cystic fibrosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-galactorrea",
+    "kind": "disease",
+    "number": 84,
+    "name": {
+      "es": "Galactorrea",
+      "en": "Galactorrhoea"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 227
+    }
+  },
+  {
+    "id": "disease-gastritis",
+    "kind": "disease",
+    "number": 85,
+    "name": {
+      "es": "Gastritis",
+      "en": "Gastritis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastritis"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-glaucoma",
+    "kind": "disease",
+    "number": 86,
+    "name": {
+      "es": "Glaucoma",
+      "en": "Glaucoma"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-oftalmologico"
+      },
+      {
+        "protocol": "top5-conjuntivitis"
+      },
+      {
+        "protocol": "basic-pb-hiperglicemicos"
+      },
+      {
+        "pair": "pb-147"
+      },
+      {
+        "pair": "pb-026"
+      },
+      {
+        "pair": "pb-277"
+      },
+      {
+        "pair": "pb-285",
+        "sides": {
+          "tracking": "RL",
+          "impact": "C"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-gota",
+    "kind": "disease",
+    "number": 87,
+    "name": {
+      "es": "Gota",
+      "en": "Gout"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hemofilia",
+    "kind": "disease",
+    "number": 88,
+    "name": {
+      "es": "Hemofilia",
+      "en": "Haemophilia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hematologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hemorroides",
+    "kind": "disease",
+    "number": 89,
+    "name": {
+      "es": "Hemorroides",
+      "en": "Haemorrhoids"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hernia-de-hiato",
+    "kind": "disease",
+    "number": 90,
+    "name": {
+      "es": "Hernia de Hiato",
+      "en": "Hiatal hernia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-gastritis"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hernia-inguinal",
+    "kind": "disease",
+    "number": 91,
+    "name": {
+      "es": "Hernia inguinal",
+      "en": "Inguinal hernia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "pair": "pb-052"
+      },
+      {
+        "pair": "cx-hernia--rinon",
+        "sides": {
+          "tracking": "RL",
+          "impact": "RL"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-herpes",
+    "kind": "disease",
+    "number": 92,
+    "name": {
+      "es": "Herpes",
+      "en": "Herpes"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-reservorios"
+      },
+      {
+        "pair": "pb-021"
+      },
+      {
+        "pair": "pb-022"
+      },
+      {
+        "pair": "pb-023"
+      },
+      {
+        "pair": "pb-024"
+      },
+      {
+        "pair": "pb-025"
+      },
+      {
+        "pair": "pb-213"
+      },
+      {
+        "pair": "pb-214"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Herpes (expandido a 7 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hiperhidrosis",
+    "kind": "disease",
+    "number": 93,
+    "name": {
+      "es": "Hiperhidrosis",
+      "en": "Hyperhidrosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-191"
+      },
+      {
+        "pair": "cx-bulbo-raquideo--lumbar"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hiperplasia-prostatica-benigna",
+    "kind": "disease",
+    "number": 94,
+    "name": {
+      "es": "Hiperplasia Prostática Benigna",
+      "en": "Benign prostatic hyperplasia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-reservorios"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hipertension-arterial",
+    "kind": "disease",
+    "number": 95,
+    "name": {
+      "es": "Hipertensión Arterial",
+      "en": "Arterial hypertension"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-097"
+      },
+      {
+        "pair": "pb-175"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 228
+    }
+  },
+  {
+    "id": "disease-hipertiroidismo",
+    "kind": "disease",
+    "number": 96,
+    "name": {
+      "es": "Hipertiroidismo",
+      "en": "Hyperthyroidism"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-hipo",
+    "kind": "disease",
+    "number": 97,
+    "name": {
+      "es": "Hipo",
+      "en": "Hiccups"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "pair": "pb-190"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-hipotiroidismo",
+    "kind": "disease",
+    "number": 98,
+    "name": {
+      "es": "Hipotiroidismo",
+      "en": "Hypothyroidism"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-incontinencia-urinaria",
+    "kind": "disease",
+    "number": 99,
+    "name": {
+      "es": "Incontinencia Urinaria",
+      "en": "Urinary incontinence"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-infarto-al-miocardio",
+    "kind": "disease",
+    "number": 100,
+    "name": {
+      "es": "Infarto al Miocardio",
+      "en": "Myocardial infarction"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-069",
+        "sides": {
+          "tracking": "C",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-081"
+      },
+      {
+        "pair": "pb-177"
+      },
+      {
+        "pair": "pb-097"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-infertilidad",
+    "kind": "disease",
+    "number": 101,
+    "name": {
+      "es": "Infertilidad",
+      "en": "Infertility"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top10-reservorios"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "pair": "pb-044"
+      },
+      {
+        "pair": "pb-015"
+      },
+      {
+        "pair": "pb-052"
+      },
+      {
+        "pair": "pb-099",
+        "samePoints": [
+          "pb-188"
+        ]
+      },
+      {
+        "pair": "pb-100",
+        "samePoints": [
+          "pb-200"
+        ],
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-230"
+      },
+      {
+        "pair": "pb-291"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-228"
+      },
+      {
+        "pair": "pb-229"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a M. Tuberculosis (expandido a 3 pares por relación)"
+      },
+      {
+        "es": "PB´s relacionados a M. Leprae (expandido a 3 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-insomnio",
+    "kind": "disease",
+    "number": 102,
+    "name": {
+      "es": "Insomnio",
+      "en": "Insomnia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-insuficiencia-cardiaca",
+    "kind": "disease",
+    "number": 103,
+    "name": {
+      "es": "Insuficiencia Cardiaca",
+      "en": "Heart failure"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-insuficiencia-renal-cronica",
+    "kind": "disease",
+    "number": 104,
+    "name": {
+      "es": "Insuficiencia Renal Crónica",
+      "en": "Chronic kidney failure"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "basic-pb-hiperglicemicos"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-018"
+      },
+      {
+        "pair": "pb-084"
+      },
+      {
+        "pair": "pb-094"
+      },
+      {
+        "pair": "pb-129"
+      },
+      {
+        "pair": "pb-132"
+      },
+      {
+        "pair": "pb-209"
+      },
+      {
+        "pair": "pb-254"
+      },
+      {
+        "pair": "pb-279"
+      },
+      {
+        "pair": "pb-304"
+      },
+      {
+        "pair": "pb-307"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hepatitis (expandido a 6 pares por relación)"
+      },
+      {
+        "es": "PB´s relacionados a Hígado (expandido a 16 pares por punto)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 229
+    }
+  },
+  {
+    "id": "disease-intoxicacion-etilica",
+    "kind": "disease",
+    "number": 105,
+    "name": {
+      "es": "Intoxicación Etílica",
+      "en": "Alcohol intoxication"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-018"
+      },
+      {
+        "pair": "pb-034"
+      },
+      {
+        "pair": "pb-035"
+      },
+      {
+        "pair": "pb-036"
+      },
+      {
+        "pair": "pb-037"
+      },
+      {
+        "pair": "pb-038"
+      },
+      {
+        "pair": "pb-039"
+      },
+      {
+        "pair": "pb-084"
+      },
+      {
+        "pair": "pb-094"
+      },
+      {
+        "pair": "pb-129"
+      },
+      {
+        "pair": "pb-132"
+      },
+      {
+        "pair": "pb-209"
+      },
+      {
+        "pair": "pb-254"
+      },
+      {
+        "pair": "pb-279"
+      },
+      {
+        "pair": "pb-304"
+      },
+      {
+        "pair": "pb-307"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Hígado (expandido a 16 pares por punto)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-leucemia",
+    "kind": "disease",
+    "number": 106,
+    "name": {
+      "es": "Leucemia",
+      "en": "Leukaemia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hematologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-101",
+        "samePoints": [
+          "pb-189"
+        ]
+      },
+      {
+        "pair": "pb-084"
+      },
+      {
+        "pair": "pb-206"
+      },
+      {
+        "pair": "pb-061"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-litiasis-biliar",
+    "kind": "disease",
+    "number": 107,
+    "name": {
+      "es": "Litiasis Biliar",
+      "en": "Gallstones (cholelithiasis)"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-lumbalgia",
+    "kind": "disease",
+    "number": 108,
+    "name": {
+      "es": "Lumbalgia",
+      "en": "Low back pain"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-columna"
+      },
+      {
+        "protocol": "top10-reservorios"
+      },
+      {
+        "pair": "pb-250"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-lupus-eritematoso-sistemico",
+    "kind": "disease",
+    "number": 109,
+    "name": {
+      "es": "Lupus Eritematoso Sistémico",
+      "en": "Systemic lupus erythematosus"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "pair": "pb-102"
+      },
+      {
+        "pair": "pb-103"
+      },
+      {
+        "pair": "pb-104"
+      },
+      {
+        "pair": "pb-105"
+      },
+      {
+        "pair": "pb-240"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Proteus Mirabilis (expandido a 5 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-luxaciones",
+    "kind": "disease",
+    "number": 110,
+    "name": {
+      "es": "Luxaciones",
+      "en": "Dislocations"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-lesiones-deportivas"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-melanoma",
+    "kind": "disease",
+    "number": 111,
+    "name": {
+      "es": "Melanoma",
+      "en": "Melanoma"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-meningitis",
+    "kind": "disease",
+    "number": 112,
+    "name": {
+      "es": "Meningitis",
+      "en": "Meningitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-intrahospitalario"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-menopausia",
+    "kind": "disease",
+    "number": 113,
+    "name": {
+      "es": "Menopausia",
+      "en": "Menopause"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-miastenia-gravis",
+    "kind": "disease",
+    "number": 114,
+    "name": {
+      "es": "Miastenia Gravis",
+      "en": "Myasthenia gravis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-mielomeningocele",
+    "kind": "disease",
+    "number": 115,
+    "name": {
+      "es": "Mielomeningocele",
+      "en": "Myelomeningocele"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-intrahospitalario"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-migrana",
+    "kind": "disease",
+    "number": 116,
+    "name": {
+      "es": "Migraña",
+      "en": "Migraine"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 230
+    }
+  },
+  {
+    "id": "disease-miomatosis-uterina",
+    "kind": "disease",
+    "number": 117,
+    "name": {
+      "es": "Miomatosis Uterina",
+      "en": "Uterine fibroids (myomatosis)"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "pair": "pb-044"
+      },
+      {
+        "pair": "pb-167"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-narcolepsia",
+    "kind": "disease",
+    "number": 118,
+    "name": {
+      "es": "Narcolepsia",
+      "en": "Narcolepsy"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-neuralgia-del-trigemino",
+    "kind": "disease",
+    "number": 119,
+    "name": {
+      "es": "Neuralgia del Trigémino",
+      "en": "Trigeminal neuralgia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-obesidad",
+    "kind": "disease",
+    "number": 120,
+    "name": {
+      "es": "Obesidad",
+      "en": "Obesity"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-183",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-182"
+      },
+      {
+        "pair": "pb-279"
+      },
+      {
+        "pair": "pb-287"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-onicomicosis",
+    "kind": "disease",
+    "number": 121,
+    "name": {
+      "es": "Onicomicosis",
+      "en": "Onychomycosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-148"
+      },
+      {
+        "pair": "pb-149"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-osteoporosis",
+    "kind": "disease",
+    "number": 122,
+    "name": {
+      "es": "Osteoporosis",
+      "en": "Osteoporosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-pancreatitis-aguda",
+    "kind": "disease",
+    "number": 123,
+    "name": {
+      "es": "Pancreatitis Aguda",
+      "en": "Acute pancreatitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-282"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-paralisis-cerebral",
+    "kind": "disease",
+    "number": 124,
+    "name": {
+      "es": "Parálisis Cerebral",
+      "en": "Cerebral palsy"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-paralisis-facial",
+    "kind": "disease",
+    "number": 125,
+    "name": {
+      "es": "Parálisis Facial",
+      "en": "Facial palsy"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-parkinson",
+    "kind": "disease",
+    "number": 126,
+    "name": {
+      "es": "Parkinson",
+      "en": "Parkinson's disease"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "pair": "pb-280"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 231
+    }
+  },
+  {
+    "id": "disease-parotiditis",
+    "kind": "disease",
+    "number": 127,
+    "name": {
+      "es": "Parotiditis",
+      "en": "Mumps (parotitis)"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "pair": "pb-052"
+      }
+    ],
+    "notes": [
+      {
+        "es": "Pudendo (D) – Pudendo (I): + Bacteria"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-pericarditis",
+    "kind": "disease",
+    "number": 128,
+    "name": {
+      "es": "Pericarditis",
+      "en": "Pericarditis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-peritonitis",
+    "kind": "disease",
+    "number": 129,
+    "name": {
+      "es": "Peritonitis",
+      "en": "Peritonitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-peste-bubonica",
+    "kind": "disease",
+    "number": 130,
+    "name": {
+      "es": "Peste Bubónica",
+      "en": "Bubonic plague"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "pair": "pb-099"
+      },
+      {
+        "pair": "pb-100"
+      },
+      {
+        "pair": "pb-101"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-228"
+      },
+      {
+        "pair": "pb-229"
+      },
+      {
+        "pair": "pb-017"
+      },
+      {
+        "pair": "pb-045"
+      },
+      {
+        "pair": "pb-046"
+      },
+      {
+        "pair": "pb-225"
+      },
+      {
+        "pair": "pb-226"
+      },
+      {
+        "pair": "pb-227"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Yersini Pestis (expandido a 3 pares por relación)"
+      },
+      {
+        "es": "PB´s relacionados a Mycobacterium Leprae (expandido a 3 pares por relación)"
+      },
+      {
+        "es": "PB´s relacionados a Virus (expandido a 6 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-pie-de-atleta",
+    "kind": "disease",
+    "number": 131,
+    "name": {
+      "es": "Pie de atleta",
+      "en": "Athlete's foot"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "pair": "pb-148"
+      },
+      {
+        "pair": "pb-149"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-pielonefritis",
+    "kind": "disease",
+    "number": 132,
+    "name": {
+      "es": "Pielonefritis",
+      "en": "Pyelonephritis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-polipos-nasales",
+    "kind": "disease",
+    "number": 133,
+    "name": {
+      "es": "Pólipos Nasales",
+      "en": "Nasal polyps"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "pair": "pb-054"
+      },
+      {
+        "pair": "pb-053"
+      },
+      {
+        "pair": "pb-066"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-preeclampsia",
+    "kind": "disease",
+    "number": 134,
+    "name": {
+      "es": "Preeclampsia",
+      "en": "Pre-eclampsia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "pair": "pb-093"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-prostatitis",
+    "kind": "disease",
+    "number": 135,
+    "name": {
+      "es": "Prostatitis",
+      "en": "Prostatitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-psoriasis",
+    "kind": "disease",
+    "number": 136,
+    "name": {
+      "es": "Psoriasis",
+      "en": "Psoriasis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "pair": "pb-069",
+        "sides": {
+          "tracking": "C",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-070"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-pterigion",
+    "kind": "disease",
+    "number": 137,
+    "name": {
+      "es": "Pterigión",
+      "en": "Pterygium"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-oftalmologico"
+      },
+      {
+        "protocol": "top5-conjuntivitis"
+      },
+      {
+        "pair": "pb-121"
+      },
+      {
+        "pair": "pb-122"
+      },
+      {
+        "pair": "pb-258"
+      },
+      {
+        "pair": "pb-259"
+      }
+    ],
+    "notes": [
+      {
+        "es": "PB´s relacionados a Chlamydias (expandido a 4 pares por relación)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-quemaduras",
+    "kind": "disease",
+    "number": 138,
+    "name": {
+      "es": "Quemaduras",
+      "en": "Burns"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "pair": "cx-quemadura--quemadura"
+      },
+      {
+        "pair": "cx-quemadura--rinon",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-reacciones-alergicas",
+    "kind": "disease",
+    "number": 139,
+    "name": {
+      "es": "Reacciones Alérgicas",
+      "en": "Allergic reactions"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 232
+    }
+  },
+  {
+    "id": "disease-reflujo-gastroesofagico",
+    "kind": "disease",
+    "number": 140,
+    "name": {
+      "es": "Reflujo Gastroesofágico",
+      "en": "Gastro-oesophageal reflux"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastritis"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-resistencia-a-la-insulina",
+    "kind": "disease",
+    "number": 141,
+    "name": {
+      "es": "Resistencia a la Insulina",
+      "en": "Insulin resistance"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "basic-pb-diabetogenicos"
+      },
+      {
+        "protocol": "basic-pb-hiperglicemicos"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-retinitis-pigmentaria",
+    "kind": "disease",
+    "number": 142,
+    "name": {
+      "es": "Retinitis Pigmentaria",
+      "en": "Retinitis pigmentosa"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-oftalmologico"
+      },
+      {
+        "pair": "pb-006"
+      },
+      {
+        "pair": "pb-219"
+      },
+      {
+        "pair": "pb-220"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-rinitis",
+    "kind": "disease",
+    "number": 143,
+    "name": {
+      "es": "Rinitis",
+      "en": "Rhinitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "pair": "pb-210",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-054"
+      },
+      {
+        "pair": "pb-053"
+      },
+      {
+        "pair": "pb-066"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-sarcoma-de-kaposi",
+    "kind": "disease",
+    "number": 144,
+    "name": {
+      "es": "Sarcoma de Kaposi",
+      "en": "Kaposi's sarcoma"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "pair": "pb-035"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-sepsis",
+    "kind": "disease",
+    "number": 145,
+    "name": {
+      "es": "Sepsis",
+      "en": "Sepsis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-sida",
+    "kind": "disease",
+    "number": 146,
+    "name": {
+      "es": "SIDA",
+      "en": "AIDS"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-inmunologico-inmunodeficiencia"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      },
+      {
+        "pair": "pb-001"
+      },
+      {
+        "pair": "pb-035"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-sindrome-de-colon-irritable",
+    "kind": "disease",
+    "number": 147,
+    "name": {
+      "es": "Síndrome de Colon Irritable",
+      "en": "Irritable bowel syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 233
+    }
+  },
+  {
+    "id": "disease-sindrome-de-cushing",
+    "kind": "disease",
+    "number": 148,
+    "name": {
+      "es": "Síndrome de Cushing",
+      "en": "Cushing's syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-186"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-sindrome-de-down",
+    "kind": "disease",
+    "number": 149,
+    "name": {
+      "es": "Síndrome de Down",
+      "en": "Down syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-inmunologico-inmunodeficiencia"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-sindrome-de-fatiga-cronica",
+    "kind": "disease",
+    "number": 150,
+    "name": {
+      "es": "Síndrome de Fatiga crónica",
+      "en": "Chronic fatigue syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-regularizacion-intestinal"
+      },
+      {
+        "protocol": "top10-nutricional"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-sindrome-de-guillain-barre",
+    "kind": "disease",
+    "number": 151,
+    "name": {
+      "es": "Síndrome de Guillain - Barré",
+      "en": "Guillain–Barré syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-sindrome-de-ovario-poliquistico",
+    "kind": "disease",
+    "number": 152,
+    "name": {
+      "es": "Síndrome de Ovario Poliquístico",
+      "en": "Polycystic ovary syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "pair": "pb-171"
+      },
+      {
+        "pair": "pb-187"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-sindrome-de-sjogren",
+    "kind": "disease",
+    "number": 153,
+    "name": {
+      "es": "Síndrome de Sjögren",
+      "en": "Sjögren's syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      }
+    ],
+    "notes": [
+      {
+        "es": "Rastrear 3 virus (cualesquiera)"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-sindrome-metabolico",
+    "kind": "disease",
+    "number": 154,
+    "name": {
+      "es": "Síndrome Metabólico",
+      "en": "Metabolic syndrome"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "basic-pb-diabetogenicos"
+      },
+      {
+        "protocol": "basic-pb-hiperglicemicos"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-sinusitis",
+    "kind": "disease",
+    "number": 155,
+    "name": {
+      "es": "Sinusitis",
+      "en": "Sinusitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "pair": "pb-054"
+      },
+      {
+        "pair": "pb-053"
+      },
+      {
+        "pair": "pb-210",
+        "sides": {
+          "tracking": "R",
+          "impact": "L"
+        }
+      },
+      {
+        "pair": "pb-066"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-talasemia",
+    "kind": "disease",
+    "number": 156,
+    "name": {
+      "es": "Talasemia",
+      "en": "Thalassaemia"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hematologico"
+      },
+      {
+        "pair": "pb-108",
+        "samePoints": [
+          "pb-268"
+        ]
+      },
+      {
+        "pair": "pb-109"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 234
+    }
+  },
+  {
+    "id": "disease-trastorno-de-deficit-de-atencion-con-hiperactividad",
+    "kind": "disease",
+    "number": 157,
+    "name": {
+      "es": "Trastorno de Déficit de Atención con Hiperactividad (TDAH)",
+      "en": "Attention-deficit/hyperactivity disorder (ADHD)"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-286",
+        "samePoints": [
+          "pb-154"
+        ]
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-tendinitis",
+    "kind": "disease",
+    "number": 158,
+    "name": {
+      "es": "Tendinitis",
+      "en": "Tendinitis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-osteomuscular"
+      },
+      {
+        "protocol": "top10-lesiones-deportivas"
+      },
+      {
+        "pair": "cx-tendon--rinon",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-tinnitus",
+    "kind": "disease",
+    "number": 159,
+    "name": {
+      "es": "Tinnitus",
+      "en": "Tinnitus"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-trastorno-obsesivo-compulsivo",
+    "kind": "disease",
+    "number": 160,
+    "name": {
+      "es": "Trastorno Obsesivo Compulsivo",
+      "en": "Obsessive–compulsive disorder"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-tratamientos-prolongados-con-corticoesteroides",
+    "kind": "disease",
+    "number": 161,
+    "name": {
+      "es": "Tratamientos prolongados con Corticoesteroides",
+      "en": "Prolonged corticosteroid treatment"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-disfuncional"
+      },
+      {
+        "protocol": "top10-inmunologico-enfermedades-autoinmunes"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-186"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-traumatismo-craneoencefalico",
+    "kind": "disease",
+    "number": 162,
+    "name": {
+      "es": "Traumatismo Craneoencefálico",
+      "en": "Traumatic brain injury"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-tromboembolia-pulmonar",
+    "kind": "disease",
+    "number": 163,
+    "name": {
+      "es": "Tromboembolia Pulmonar",
+      "en": "Pulmonary embolism"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-respiratorio"
+      },
+      {
+        "protocol": "top10-disnea"
+      },
+      {
+        "protocol": "top10-cardiologico"
+      },
+      {
+        "protocol": "top10-hematologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-trombosis-venosa-profunda",
+    "kind": "disease",
+    "number": 164,
+    "name": {
+      "es": "Trombosis venosa profunda",
+      "en": "Deep vein thrombosis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hematologico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "pair": "pb-007"
+      },
+      {
+        "pair": "pb-071"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-tumores-cerebrales",
+    "kind": "disease",
+    "number": 165,
+    "name": {
+      "es": "Tumores cerebrales",
+      "en": "Brain tumours"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-oncogenico"
+      },
+      {
+        "protocol": "top10-patogenico"
+      },
+      {
+        "pair": "cx-occipital--rinon",
+        "note": {
+          "es": "zona de conflicto"
+        }
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 235
+    }
+  },
+  {
+    "id": "disease-ulcera-peptica",
+    "kind": "disease",
+    "number": 166,
+    "name": {
+      "es": "Úlcera Péptica",
+      "en": "Peptic ulcer"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-gastrointestinal"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-gastritis"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 236
+    }
+  },
+  {
+    "id": "disease-ulceras",
+    "kind": "disease",
+    "number": 167,
+    "name": {
+      "es": "Úlceras",
+      "en": "Ulcers"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-intrahospitalario"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      }
+    ],
+    "notes": [
+      {
+        "es": "Rastreo dirigido a Pseudomona Aeruginosa, Proteus Mirabilis, Clostridium, E. Coli y Klebsiella"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 236
+    }
+  },
+  {
+    "id": "disease-uretritis",
+    "kind": "disease",
+    "number": 168,
+    "name": {
+      "es": "Uretritis",
+      "en": "Urethritis"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-urologico"
+      },
+      {
+        "protocol": "top10-ginecologico"
+      },
+      {
+        "protocol": "top5-infeccion-de-vias-urinarias"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 236
+    }
+  },
+  {
+    "id": "disease-varices",
+    "kind": "disease",
+    "number": 169,
+    "name": {
+      "es": "Varices",
+      "en": "Varicose veins"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-hematologico"
+      },
+      {
+        "pair": "pb-071"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 236
+    }
+  },
+  {
+    "id": "disease-verruga-plana",
+    "kind": "disease",
+    "number": 170,
+    "name": {
+      "es": "Verruga Plana",
+      "en": "Flat warts"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-reservorios"
+      },
+      {
+        "pair": "pb-014"
+      },
+      {
+        "pair": "pb-017",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        }
+      },
+      {
+        "pair": "pb-056"
+      },
+      {
+        "pair": "pb-042"
+      },
+      {
+        "pair": "pb-043"
+      },
+      {
+        "pair": "pb-114"
+      },
+      {
+        "pair": "pb-074",
+        "samePoints": [
+          "pb-194"
+        ]
+      },
+      {
+        "pair": "pb-212"
+      },
+      {
+        "pair": "cx-verruga--rinon",
+        "sides": {
+          "tracking": "C",
+          "impact": "RL"
+        }
+      },
+      {
+        "pair": "pb-055"
+      },
+      {
+        "pair": "pb-006"
+      },
+      {
+        "pair": "pb-219"
+      },
+      {
+        "pair": "pb-220"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 236
+    }
+  },
+  {
+    "id": "disease-vertigo",
+    "kind": "disease",
+    "number": 171,
+    "name": {
+      "es": "Vértigo",
+      "en": "Vertigo"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 236
+    }
+  },
+  {
+    "id": "disease-vitiligo",
+    "kind": "disease",
+    "number": 172,
+    "name": {
+      "es": "Vitíligo",
+      "en": "Vitiligo"
+    },
+    "items": [
+      {
+        "protocol": "basic-short"
+      },
+      {
+        "protocol": "top10-dermatologico"
+      },
+      {
+        "protocol": "top10-neurologico-adultos"
+      },
+      {
+        "protocol": "top10-hepatobiliar"
+      },
+      {
+        "protocol": "top10-endocrinologico"
+      },
+      {
+        "protocol": "top10-psicoemocional"
+      },
+      {
+        "protocol": "top10-psiquiatrico"
+      },
+      {
+        "protocol": "top5-desintoxicacion"
+      },
+      {
+        "protocol": "top5-desparasitacion"
+      }
+    ],
+    "notes": [
+      {
+        "es": "Rastrear el punto Pineal"
+      },
+      {
+        "es": "Rastrear la glándula Hipófisis"
+      },
+      {
+        "es": "Rastrear los puntos de Hígado"
+      },
+      {
+        "es": "Rastrear problemas psicoemocionales"
+      }
+    ],
+    "source": {
+      "doc": "goiz-n2",
+      "page": 236
+    }
+  }
+]

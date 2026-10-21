@@ -1,0 +1,755 @@
+[
+  {
+    "abbr": "BRI",
+    "meaning": {
+      "es": "Biomagnetism Research Institute",
+      "en": "Biomagnetism Research Institute"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "PB",
+    "meaning": {
+      "es": "Par Biomagnético",
+      "en": "Biomagnetic Pair (BP)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "PB´s",
+    "meaning": {
+      "es": "Pares Biomagnéticos",
+      "en": "Biomagnetic Pairs"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "pH",
+    "meaning": {
+      "es": "Potencial de Hidrógeno",
+      "en": "Potential of hydrogen (pH)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "DMP",
+    "meaning": {
+      "es": "Dismetría de Miembros Pélvicos",
+      "en": "Pelvic limb length discrepancy"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "D",
+    "meaning": {
+      "es": "Derecho(a)",
+      "en": "Right"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "I",
+    "meaning": {
+      "es": "Izquierdo(a)",
+      "en": "Left"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "C",
+    "meaning": {
+      "es": "Central",
+      "en": "Central"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "S",
+    "meaning": {
+      "es": "Superior",
+      "en": "Superior"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "Inf",
+    "meaning": {
+      "es": "Inferior",
+      "en": "Inferior"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "Lat",
+    "meaning": {
+      "es": "Lateral",
+      "en": "Lateral"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "A",
+    "meaning": {
+      "es": "Anterior",
+      "en": "Anterior"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "P",
+    "meaning": {
+      "es": "Posterior",
+      "en": "Posterior"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "IVU",
+    "meaning": {
+      "es": "Infección de Vías Urinarias",
+      "en": "Urinary tract infection (UTI)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "IRA",
+    "meaning": {
+      "es": "Infección Respiratoria Aguda",
+      "en": "Acute respiratory infection"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "SIDA",
+    "meaning": {
+      "es": "Síndrome de Inmunodeficiencia Adquirida",
+      "en": "Acquired immunodeficiency syndrome (AIDS)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "VIH",
+    "meaning": {
+      "es": "Virus de Inmunodeficiencia Humana",
+      "en": "Human immunodeficiency virus (HIV)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "E. Coli",
+    "meaning": {
+      "es": "Escherichia Coli",
+      "en": "Escherichia coli"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "HTLV",
+    "meaning": {
+      "es": "Human T Linfocite Virus",
+      "en": "Human T-lymphotropic virus"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "EM",
+    "meaning": {
+      "es": "Esclerosis Múltiple",
+      "en": "Multiple sclerosis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "MT",
+    "meaning": {
+      "es": "Miembros Torácicos",
+      "en": "Upper (thoracic) limbs"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "MP",
+    "meaning": {
+      "es": "Miembros Pélvicos",
+      "en": "Lower (pelvic) limbs"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "Enf.",
+    "meaning": {
+      "es": "Enfermedad",
+      "en": "Disease"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "Pb",
+    "meaning": {
+      "es": "Probable",
+      "en": "Probable"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "ITS",
+    "meaning": {
+      "es": "Infección de Transmisión Sexual",
+      "en": "Sexually transmitted infection (STI)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "AH1N1",
+    "meaning": {
+      "es": "Aviar Hexosaminidasa 1 Neuraminidasa 1",
+      "en": "Influenza A (H1N1)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "EP",
+    "meaning": {
+      "es": "Edema Pulmonar",
+      "en": "Pulmonary oedema"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "EPOC",
+    "meaning": {
+      "es": "Enfermedad Pulmonar Obstructiva Crónica",
+      "en": "Chronic obstructive pulmonary disease (COPD)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "CUCI",
+    "meaning": {
+      "es": "Colitis Ulcerativa Crónica Inespecífica",
+      "en": "Chronic non-specific ulcerative colitis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "EPI",
+    "meaning": {
+      "es": "Enfermedad Pélvica Inflamatoria",
+      "en": "Pelvic inflammatory disease (PID)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "TB",
+    "meaning": {
+      "es": "Tuberculosis",
+      "en": "Tuberculosis"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "DM",
+    "meaning": {
+      "es": "Diabetes Mellitus",
+      "en": "Diabetes mellitus"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "Temp",
+    "meaning": {
+      "es": "Temperatura",
+      "en": "Temperature"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "FC",
+    "meaning": {
+      "es": "Frecuencia Cardiaca",
+      "en": "Heart rate"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "FR",
+    "meaning": {
+      "es": "Frecuencia Respiratoria",
+      "en": "Respiratory rate"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "TA",
+    "meaning": {
+      "es": "Tensión Arterial",
+      "en": "Blood pressure"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "EVC",
+    "meaning": {
+      "es": "Evento Vascular Cerebral",
+      "en": "Cerebrovascular event (stroke)"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "lpm",
+    "meaning": {
+      "es": "latidos por minuto",
+      "en": "beats per minute"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "rpm",
+    "meaning": {
+      "es": "respiraciones por minuto",
+      "en": "breaths per minute"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "mmHg",
+    "meaning": {
+      "es": "milímetros de mercurio",
+      "en": "millimetres of mercury"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "mg",
+    "meaning": {
+      "es": "miligramos",
+      "en": "milligrams"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "dl",
+    "meaning": {
+      "es": "decilitros",
+      "en": "decilitres"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "º C",
+    "meaning": {
+      "es": "grados centígrados",
+      "en": "degrees Celsius"
+    },
+    "source": {
+      "doc": "goiz-n1",
+      "page": 4
+    }
+  },
+  {
+    "abbr": "TDAH",
+    "meaning": {
+      "es": "Trastorno de Déficit de Atención con Hiperactividad",
+      "en": "Attention-deficit/hyperactivity disorder (ADHD)"
+    },
+    "source": {
+      "doc": "goiz-n2",
+      "page": 144
+    }
+  },
+  {
+    "abbr": "Pt",
+    "meaning": {
+      "es": "Patógeno",
+      "en": "Pathogen"
+    },
+    "group": "leal-type",
+    "source": {
+      "doc": "leal-2018",
+      "page": 16
+    }
+  },
+  {
+    "abbr": "Pr",
+    "meaning": {
+      "es": "Par",
+      "en": "Named pair"
+    },
+    "group": "leal-type",
+    "source": {
+      "doc": "leal-2018",
+      "page": 16
+    }
+  },
+  {
+    "abbr": "Pd",
+    "meaning": {
+      "es": "Padecimiento",
+      "en": "Condition (disease)"
+    },
+    "group": "leal-type",
+    "source": {
+      "doc": "leal-2018",
+      "page": 16
+    }
+  },
+  {
+    "abbr": "Vi",
+    "meaning": {
+      "es": "Virus",
+      "en": "Virus"
+    },
+    "group": "leal-classification",
+    "category": "virus",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Ba",
+    "meaning": {
+      "es": "Bacteria",
+      "en": "Bacterium"
+    },
+    "group": "leal-classification",
+    "category": "bacteria",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Ho",
+    "meaning": {
+      "es": "Hongo",
+      "en": "Fungus"
+    },
+    "group": "leal-classification",
+    "category": "fungus",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Pa",
+    "meaning": {
+      "es": "Parásito",
+      "en": "Parasite"
+    },
+    "group": "leal-classification",
+    "category": "parasite",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Pn",
+    "meaning": {
+      "es": "Prion",
+      "en": "Prion"
+    },
+    "group": "leal-classification",
+    "category": "prion",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Re",
+    "meaning": {
+      "es": "Reservorio",
+      "en": "Reservoir"
+    },
+    "group": "leal-classification",
+    "category": "reservoir",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Co",
+    "meaning": {
+      "es": "Complejo",
+      "en": "Complex"
+    },
+    "group": "leal-classification",
+    "category": "complex",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "DG",
+    "meaning": {
+      "es": "Disfunción Glandular",
+      "en": "Glandular dysfunction"
+    },
+    "group": "leal-classification",
+    "category": "glandular-dysfunction",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Es",
+    "meaning": {
+      "es": "Especial",
+      "en": "Special"
+    },
+    "group": "leal-classification",
+    "category": "special",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Em",
+    "meaning": {
+      "es": "Psicoemocional",
+      "en": "Psycho-emotional"
+    },
+    "group": "leal-classification",
+    "category": "psychoemotional",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Te",
+    "meaning": {
+      "es": "Temporal",
+      "en": "Temporary"
+    },
+    "group": "leal-classification",
+    "category": "temporary",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "RV",
+    "meaning": {
+      "es": "Reservorio de Virus",
+      "en": "Virus reservoir"
+    },
+    "group": "leal-classification",
+    "category": "reservoir",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "RB",
+    "meaning": {
+      "es": "Reservorio de Bacterias",
+      "en": "Bacteria reservoir"
+    },
+    "group": "leal-classification",
+    "category": "reservoir",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "RH",
+    "meaning": {
+      "es": "Reservorio de Hongos",
+      "en": "Fungus reservoir"
+    },
+    "group": "leal-classification",
+    "category": "reservoir",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "RP",
+    "meaning": {
+      "es": "Reservorio de Parásitos",
+      "en": "Parasite reservoir"
+    },
+    "group": "leal-classification",
+    "category": "reservoir",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "RR",
+    "meaning": {
+      "es": "Reservorio de Priones",
+      "en": "Prion reservoir"
+    },
+    "group": "leal-classification",
+    "category": "reservoir",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "RU",
+    "meaning": {
+      "es": "Reservorio Universal",
+      "en": "Universal reservoir"
+    },
+    "group": "leal-classification",
+    "category": "reservoir",
+    "source": {
+      "doc": "leal-2018",
+      "page": 17
+    }
+  },
+  {
+    "abbr": "Est",
+    "meaning": {
+      "es": "Estado (código no definido en el glosario; usado en 15 entradas)",
+      "en": "State (code not defined in the glossary; used by 15 entries)"
+    },
+    "group": "leal-type",
+    "source": {
+      "doc": "leal-2018",
+      "page": 95
+    }
+  }
+]

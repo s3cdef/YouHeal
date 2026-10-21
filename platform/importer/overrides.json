@@ -80,6 +80,14 @@
         ]
       },
       "_why": "Both magnets go on the left temporal; the block's recommendation specifies 'Imán negativo adelante, imán positivo atrás' (negative anterior, positive posterior)."
+    },
+    "115": {
+      "relation": "Rickettsia Prowazecki",
+      "_why": "Block 'Relación' line reads 'Enterococcus Faecalis' (repeating pair 90); the figure caption, the index (p.8) and both alphabetical lists (p.124, p.129) read 'Rickettsia Prowazecki'."
+    },
+    "253": {
+      "relation": "Listeria Monocytogenes (1)",
+      "_why": "Block 'Relación' line reads 'Campylobacter Jejuni' (repeating pair 247); the figure caption ('253. Listeria Monocytogenes (1)') and the index (p.146) read 'Listeria Monocytogenes'."
     }
   },
   "typeNumberedEntities": [
@@ -253,5 +261,10 @@
       "Faringoamigdalitis recurrente (niños)",
       "Disnea"
     ]
+  },
+  "diseaseNames": {
+    "_doc": "Disease protocol names where the block heading has a typo and the Level 2 index (p.149–153) is correct.",
+    "109": "Lupus Eritematoso Sistémico",
+    "168": "Uretritis"
   }
 }
