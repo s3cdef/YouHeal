@@ -231,14 +231,15 @@ test('patients: CSRF/Origin enforcement, encryption at rest, blind-index search,
   const dupMrn = await doc.post('/api/v1/patients', { ...PATIENT, mrn: state.mrn });
   assert.equal(dupMrn.status, 409);
 
-  const byName = await doc.get(`/api/v1/patients?q=${encodeURIComponent('lopez nunez')}`);
+  const search = (b) => doc.post('/api/v1/patients/search', b);
+  const byName = await search({ q: 'lopez nunez' });
   assert.equal(byName.json.total, 1, 'accent/case-insensitive exact match');
   assert.equal(byName.json.items[0].id, state.patientId);
-  assert.equal((await doc.get(`/api/v1/patients?q=${state.mrn.toLowerCase()}`)).json.items[0].id, state.patientId);
-  assert.equal((await doc.get('/api/v1/patients?q=lopez')).json.total, 0, 'exact match only — no partial leakage');
-  const letter = await doc.get('/api/v1/patients?q=L');
+  assert.equal((await search({ q: state.mrn.toLowerCase() })).json.items[0].id, state.patientId);
+  assert.equal((await search({ q: 'lopez' })).json.total, 0, 'exact match only — no partial leakage');
+  const letter = await search({ q: 'L' });
   assert.deepEqual(letter.json.items.map((p) => p.id), [state.patientId]);
-  assert.equal((await doc.get('/api/v1/patients?dob=1980-05-17')).json.total, 2);
+  assert.equal((await search({ dob: '1980-05-17' })).json.total, 2);
   const page = await doc.get('/api/v1/patients?limit=1&offset=0');
   assert.equal(page.json.items.length, 1);
   assert.equal(page.json.total, 2);
@@ -471,7 +472,7 @@ test('cross-patient session list, patient summaries', async () => {
   const ps = await doc.get(`/api/v1/patients/${state.patientId}/sessions`);
   assert.equal(ps.json.items[0].chiefComplaint, 'Heartburn after meals');
   assert.equal(ps.json.items[0].findingsCount, 2);
-  const plist = await doc.get('/api/v1/patients?q=L');
+  const plist = await doc.post('/api/v1/patients/search', { q: 'L' });
   assert.equal(plist.json.items[0].sessionCount, 1, 'superseded revisions not counted');
   assert.equal(plist.json.items[0].lastSessionDate, it.startedAt);
   const sug = await doc.post('/api/v1/catalog/suggest', { symptoms: ['acidez'] });

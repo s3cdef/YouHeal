@@ -100,15 +100,15 @@ export function register(router, { db, keyring, catalog }) {
     return { items, total };
   }
 
-  // Deprecated (F-08): search terms in the URL end up in proxy/browser logs. Use POST /patients/search.
+  // F-08: search terms in the URL end up in proxy/browser logs. GET keeps the plain paginated listing only;
+  // any PHI search parameter (q, dob) is refused with 410 Gone — use POST /patients/search.
   router.get('/patients', (ctx) => {
+    if (ctx.query.has('q') || ctx.query.has('dob')) {
+      throw new HttpError(410, 'GONE', 'Searching via URL parameters was removed; use POST /api/v1/patients/search');
+    }
     const { limit, offset } = paging(ctx.query, { defLimit: 25, maxLimit: 200 });
-    ctx.res.setHeader('Deprecation', 'true');
-    ctx.res.setHeader('Link', '</api/v1/patients/search>; rel="successor-version"');
-    return searchPatients(ctx, {
-      q: ctx.query.get('q'), dobQ: ctx.query.get('dob'),
-      includeArchived: ctx.query.get('archived') === '1' || ctx.query.get('archived') === 'true', limit, offset,
-    });
+    ctx.res.setHeader('Link', '</api/v1/patients/search>; rel="search"');
+    return searchPatients(ctx, { includeArchived: ctx.query.get('archived') === '1' || ctx.query.get('archived') === 'true', limit, offset });
   }, { roles: PERM.patientRead });
 
   const searchSchema = v.object({

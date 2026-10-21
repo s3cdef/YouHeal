@@ -215,7 +215,7 @@ test('F-07 finalize: signature bound to the signer, password re-entry required',
   } finally { await srv.close(); }
 });
 
-test('F-08 POST /patients/search (no PHI in URLs); GET kept but marked deprecated', async () => {
+test('F-08 POST /patients/search (no PHI in URLs); GET with q/dob → 410 Gone, plain listing kept', async () => {
   const { srv, admin } = await bootstrap();
   try {
     const pt = (await admin.post('/api/v1/patients', { firstName: 'Ana', lastName: 'Núñez', dob: '1980-02-03' })).json;
@@ -225,9 +225,12 @@ test('F-08 POST /patients/search (no PHI in URLs); GET kept but marked deprecate
     assert.equal((await admin.post('/api/v1/patients/search', { dob: '1980-02-03' })).json.total, 1);
     assert.equal((await admin.post('/api/v1/patients/search', { q: 'x', bogus: 1 })).status, 400);
     assert.equal((await admin.post('/api/v1/patients/search', { q: 'nunez' }, { csrf: false })).status, 403, 'CSRF still applies');
-    const g = await admin.get('/api/v1/patients?q=nunez');
-    assert.equal(g.json.total, 1);
-    assert.equal(g.headers.get('deprecation'), 'true');
+    for (const qs of ['q=nunez', 'dob=1980-02-03', 'q=']) {
+      const g = await admin.get(`/api/v1/patients?${qs}`);
+      assert.equal(g.status, 410, qs);
+      assert.equal(g.json.error.code, 'GONE');
+    }
+    assert.equal((await admin.get('/api/v1/patients?limit=10')).json.total, 1, 'listing without PHI params still allowed');
   } finally { await srv.close(); }
 });
 
@@ -479,18 +482,18 @@ test('F-19 shadow lockouts for unknown accounts persist across restarts', async 
 test('F-20 connection caps: per-client concurrent limit and maxConnections', async () => {
   const srv = await startTestServer({ YH_MAX_CONN_PER_IP: '3', YH_MAX_CONNECTIONS: '50' });
   try {
-    assert.equal(srv.server.maxConnections, 50);
+    assert.ok(srv.server.maxConnections >= 50, 'hard backstop above the polite cap');
     assert.equal(srv.server.headersTimeout, 15_000);
     const port = Number(new URL(srv.url).port);
     const socks = await Promise.all(Array.from({ length: 5 }, () => new Promise((resolve) => {
       const s = net.connect(port, '127.0.0.1', () => resolve(s));
+      s.data = ''; s.on('data', (d) => { s.data += d; });
+      s.on('close', () => { s.gone = true; });
       s.on('error', () => {});
     })));
-    const closed = await Promise.all(socks.map((s) => new Promise((resolve) => {
-      const tm = setTimeout(() => resolve(false), 500);
-      s.once('close', () => { clearTimeout(tm); resolve(true); });
-    })));
-    assert.equal(closed.filter(Boolean).length, 2, 'connections beyond the per-IP cap are dropped');
+    await new Promise((r) => setTimeout(r, 300));
+    assert.equal(socks.filter((s) => s.gone).length, 2, 'connections beyond the per-IP cap are closed');
+    assert.equal(socks.filter((s) => s.data.startsWith('HTTP/1.1 503')).length, 2, '…with a 503, not a silent reset');
     socks.forEach((s) => s.destroy());
   } finally { await srv.close(); }
 });

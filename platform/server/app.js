@@ -51,6 +51,17 @@ export function createApp({ cfg, db, keyring, log }) {
 
   if (cfg.devNoMfa) log.loud('YH_DEV_INSECURE_NO_MFA=1 — admin MFA enforcement is DISABLED (loopback dev only). Never use with real PHI.');
 
+  // NEW-4: rejected Host values are logged (max once per minute per distinct value, truncated)
+  const hostLogAt = new Map();
+  function logRejectedHost(req) {
+    const host = String(req.headers.host ?? '(none)').slice(0, 100);
+    const now = Date.now();
+    if (now - (hostLogAt.get(host) || 0) < 60_000) return;
+    if (hostLogAt.size > 1000) hostLogAt.clear();
+    hostLogAt.set(host, now);
+    log.warn('rejected request for a Host that is not allowed (set YH_ALLOWED_HOSTS / YH_PUBLIC_ORIGIN if legitimate)', { host, ip: req.ip, reqId: req.id });
+  }
+
   function restrictionOf(user) {
     if (user.must_change_password) return 'password';
     if (user.role === 'admin' && !user.mfa_enabled && !cfg.devNoMfa) return 'mfa';
@@ -59,7 +70,10 @@ export function createApp({ cfg, db, keyring, log }) {
 
   async function handleApi(req, res, pathname, search) {
     const ip = req.ip;
-    if (!hostAllowed(req, cfg)) throw new HttpError(421, 'MISDIRECTED_REQUEST', 'Host not allowed');
+    if (!hostAllowed(req, cfg)) {
+      logRejectedHost(req);
+      throw new HttpError(421, 'MISDIRECTED_REQUEST', 'Host not allowed');
+    }
     const rl = limits.api.take(ipBucketKey(ip));
     if (!rl.ok) throw Object.assign(new HttpError(429, 'RATE_LIMITED', 'Too many requests'), { retryAfter: rl.retryAfter });
 

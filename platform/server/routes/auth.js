@@ -11,6 +11,7 @@ import {
 import { verifyTotp, generateSecret, base32Encode, otpauthUrl } from '../lib/totp.js';
 import { HttpError, conflict, forbidden } from '../lib/http.js';
 import { nowIso, userView, orgView, getOrg, LOCALES, THEMES } from './_shared.js';
+import { createReauth } from './_reauth.js';
 
 const loginSchema = v.object({
   email: v.string({ min: 1, max: 254, lower: true }),
@@ -30,6 +31,8 @@ export function mePayload(ctx, user, session) {
     org: orgView(org),
     csrfToken: session.csrf,
     mfaEnrollmentRequired: restriction === 'mfa',
+    recoveryCodesRegenerationRequired: Boolean(user.mfa_enabled &&
+      ctx.db.get('SELECT 1 AS x FROM user_recovery_codes WHERE user_id = ? AND key_id IS NULL AND used_at IS NULL LIMIT 1', user.id)),
     passwordChangeRequired: restriction === 'password',
     session: {
       expiresAt: session.expires_at,
@@ -59,6 +62,16 @@ function consumeSecondFactor({ db, keyring }, user, code) {
 
 export function register(router, deps) {
   const { db, keyring, sessions, ghost, cfg, limits } = deps;
+  const reauth = createReauth(deps);
+
+  /** Password + second factor step-up (NEW-3: failures count toward lockout). */
+  async function stepUp(ctx, password, code, reason) {
+    if (!(await reauth.password(ctx, password, `${reason}_password`))) return false;
+    const fresh = db.get('SELECT * FROM users WHERE id = ?', ctx.user.id);
+    const second = fresh.mfa_enabled ? db.tx(() => consumeSecondFactor(deps, fresh, code)) : { ok: false };
+    if (!second.ok) { reauth.fail(ctx, fresh, `${reason}_code`); return false; }
+    return true;
+  }
   const { maxAttempts, windowMin } = cfg.lockout;
   const windowMs = windowMin * 60_000;
 
@@ -157,7 +170,7 @@ export function register(router, deps) {
   router.post('/auth/password', async (ctx) => {
     const body = check(v.object({ current: v.string({ min: 1, max: 1024, trim: false }), next: v.string({ min: 1, max: 1024, trim: false }) }), ctx.body);
     const user = ctx.user;
-    if (!(await verifyPassword(body.current, user.password_hash))) {
+    if (!(await reauth.password(ctx, body.current, 'password_change_reauth'))) {
       ctx.audit('auth.password.change', { targetType: 'user', targetId: user.id, outcome: 'failure', detail: { reason: 'bad_current' } });
       throw new HttpError(400, 'VALIDATION', 'Current password is incorrect', { current: 'is incorrect' });
     }
@@ -187,12 +200,15 @@ export function register(router, deps) {
     const user = db.get('SELECT * FROM users WHERE id = ?', ctx.user.id);
     if (user.mfa_enabled) throw conflict('MFA_ALREADY_ENABLED', 'MFA is already enabled');
     if (!user.mfa_pending_enc) throw conflict('MFA_SETUP_REQUIRED', 'Call /auth/mfa/setup first');
+    reauth.guard(ctx);
     const secretB64 = decryptField(keyring, user.mfa_pending_enc, mfaPendingAad(user.id));
     const step = verifyTotp(Buffer.from(secretB64, 'base64'), body.code);
     if (step === null) {
+      reauth.fail(ctx, user, 'mfa_enable_code');
       ctx.audit('auth.mfa.enable', { targetType: 'user', targetId: user.id, outcome: 'failure', detail: { reason: 'bad_code' } });
       throw new HttpError(400, 'MFA_INVALID', 'The code did not match. Check the time on your device and try again.', { code: 'is invalid' });
     }
+    reauth.succeed(user);
     const codes = generateRecoveryCodes(10);
     db.tx(() => {
       db.run(`UPDATE users SET mfa_enabled = 1, mfa_secret_enc = ?, mfa_pending_enc = NULL, mfa_last_step = ?, recovery_codes = NULL, updated_at = ? WHERE id = ?`,
@@ -208,10 +224,7 @@ export function register(router, deps) {
     const body = check(v.object({ password: v.string({ min: 1, max: 1024, trim: false }), code: v.string({ min: 6, max: 16 }) }), ctx.body);
     const user = db.get('SELECT * FROM users WHERE id = ?', ctx.user.id);
     if (!user.mfa_enabled) throw conflict('MFA_NOT_ENABLED', 'MFA is not enabled');
-    const pwOk = await verifyPassword(body.password, user.password_hash);
-    const fresh = db.get('SELECT * FROM users WHERE id = ?', ctx.user.id);
-    const second = pwOk && fresh.mfa_enabled ? db.tx(() => consumeSecondFactor(deps, fresh, body.code)) : { ok: false };
-    if (!pwOk || !second.ok) {
+    if (!(await stepUp(ctx, body.password, body.code, 'mfa_disable'))) {
       ctx.audit('auth.mfa.disable', { targetType: 'user', targetId: user.id, outcome: 'failure' });
       throw forbidden('Password or authentication code is incorrect', 'REAUTH_FAILED');
     }
@@ -222,6 +235,23 @@ export function register(router, deps) {
       ctx.audit('auth.mfa.disable', { targetType: 'user', targetId: user.id });
     });
     return { ok: true };
+  }, { rate: 'auth' });
+
+  // F-10 residual: replace every recovery code (legacy unkeyed ones included) with 10 new keyed codes
+  router.post('/auth/mfa/recovery-codes', async (ctx) => {
+    const body = check(v.object({ password: v.string({ min: 1, max: 1024, trim: false }), code: v.string({ min: 6, max: 16 }) }), ctx.body);
+    const user = db.get('SELECT * FROM users WHERE id = ?', ctx.user.id);
+    if (!user.mfa_enabled) throw conflict('MFA_NOT_ENABLED', 'MFA is not enabled');
+    if (!(await stepUp(ctx, body.password, body.code, 'recovery_codes'))) {
+      ctx.audit('auth.mfa.recovery_codes', { targetType: 'user', targetId: user.id, outcome: 'failure' });
+      throw forbidden('Password or authentication code is incorrect', 'REAUTH_FAILED');
+    }
+    const codes = generateRecoveryCodes(10);
+    db.tx(() => {
+      storeRecoveryCodes(db, keyring, user.id, codes); // deletes all previous codes
+      ctx.audit('auth.mfa.recovery_codes', { targetType: 'user', targetId: user.id, detail: { count: codes.length } });
+    });
+    return { ok: true, recoveryCodes: codes };
   }, { rate: 'auth' });
 
   router.patch('/auth/prefs', (ctx) => {

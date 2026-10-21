@@ -6,7 +6,7 @@ import http from 'node:http';
 import https from 'node:https';
 import { fileURLToPath } from 'node:url';
 import { loadConfig, ConfigError, isLoopbackHost } from './lib/config.js';
-import { ipBucketKey } from './lib/http.js';
+import { ipBucketKey, isTrustedAddress } from './lib/http.js';
 import { ensureSetupToken } from './routes/setup.js';
 import { createLogger } from './lib/log.js';
 import { loadKeyring, ensureDir } from './lib/keys.js';
@@ -48,26 +48,56 @@ export function bootstrap(cfg, log, { loadCatalogFiles = true } = {}) {
   return { db, keyring, keySource: source };
 }
 
-/** F-20: global and per-client (IPv4 / IPv6 /64) concurrent connection caps. */
+const OVER_CAP_RESPONSE = 'HTTP/1.1 503 Service Unavailable\r\nRetry-After: 5\r\nContent-Type: text/plain\r\nContent-Length: 19\r\nConnection: close\r\n\r\nService Unavailable';
+
+/**
+ * F-20 / NEW-1: connection hygiene.
+ *  - first-byte timeout: a socket must deliver a complete request head within YH_FIRST_BYTE_MS, else it is
+ *    destroyed (idle zero-byte sockets can no longer pin the caps); cleared on its first 'request'
+ *  - global cap (YH_MAX_CONNECTIONS) and per-client cap (YH_MAX_CONN_PER_IP, IPv6 per /64); trusted proxy
+ *    peers (YH_TRUSTED_PROXIES, when YH_TRUST_PROXY is on) are exempt from the per-client cap
+ *  - over cap: plain-HTTP clients get a minimal 503 + Retry-After (TLS sockets are closed)
+ */
 export function limitConnections(server, cfg, log) {
-  server.maxConnections = cfg.maxConnections;
+  server.maxConnections = cfg.maxConnections + 64; // hard backstop above our own (polite) cap
   const perIp = new Map();
+  const pending = new Map(); // "addr|port" -> first-byte timer
+  let total = 0;
+  const reject = (socket, why, key) => {
+    log.warn('connection cap reached; refusing connection', { ip: key, event: why });
+    if (cfg.tls) { socket.destroy(); return; }
+    socket.end(OVER_CAP_RESPONSE);
+    setTimeout(() => socket.destroy(), 1000).unref();
+  };
   server.on('connection', (socket) => {
     const key = ipBucketKey(socket.remoteAddress);
+    if (total >= cfg.maxConnections) return reject(socket, 'global', key);
+    const exempt = Boolean(cfg.trustProxy) && isTrustedAddress(socket.remoteAddress, cfg);
     const n = (perIp.get(key) || 0) + 1;
-    if (n > cfg.maxConnPerIp) {
-      log.warn('per-client connection cap reached; dropping connection', { ip: key, count: n - 1 });
-      socket.destroy();
-      return;
-    }
+    if (!exempt && n > cfg.maxConnPerIp) return reject(socket, 'per-ip', key);
+    total++;
     perIp.set(key, n);
-    socket.once('close', () => { const m = (perIp.get(key) || 1) - 1; if (m <= 0) perIp.delete(key); else perIp.set(key, m); });
+    const id = `${socket.remoteAddress}|${socket.remotePort}`;
+    const timer = setTimeout(() => { pending.delete(id); socket.destroy(); }, cfg.firstByteMs);
+    timer.unref();
+    pending.set(id, timer);
+    socket.once('close', () => {
+      total--;
+      const t = pending.get(id); if (t) { clearTimeout(t); pending.delete(id); }
+      const m = (perIp.get(key) || 1) - 1; if (m <= 0) perIp.delete(key); else perIp.set(key, m);
+    });
   });
-  return perIp;
+  server.on('request', (req) => {
+    const id = `${req.socket.remoteAddress}|${req.socket.remotePort}`;
+    const t = pending.get(id);
+    if (t) { clearTimeout(t); pending.delete(id); }
+  });
+  return { perIp, pending, get total() { return total; } };
 }
 
 export async function startServer(cfg, { log = createLogger({ level: cfg.logLevel }), handleSignals = false, writePid = false } = {}) {
   const { db, keyring } = bootstrap(cfg, log);
+  for (const w of cfg.warnings || []) log.warn(`configuration: ${w}`);
   ensureSetupToken(cfg, db, log); // F-04: one-time token while unconfigured (no-op otherwise)
   if (cfg.trustProxy && !isLoopbackHost(cfg.host)) {
     log.loud(`YH_TRUST_PROXY is set while listening on ${cfg.host}: X-Forwarded-* is honored ONLY from ${cfg.trustedProxies.join(', ')} ` +
@@ -79,7 +109,7 @@ export async function startServer(cfg, { log = createLogger({ level: cfg.logLeve
     ? https.createServer({ cert: fs.readFileSync(cfg.tlsCert), key: fs.readFileSync(cfg.tlsKey), minVersion: 'TLSv1.2' }, app.handler)
     : http.createServer(app.handler);
   server.headersTimeout = 15_000;
-  server.requestTimeout = 120_000;
+  server.requestTimeout = 30_000;
   server.keepAliveTimeout = 5_000;
   server.maxHeadersCount = 100;
   limitConnections(server, cfg, log);

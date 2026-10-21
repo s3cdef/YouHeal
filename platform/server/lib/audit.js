@@ -49,6 +49,8 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
     if (!anchorFile) return;
     try {
       fs.appendFileSync(anchorFile, `${new Date().toISOString()} ${id} ${hash} ${anchorMac(keyring, id, hash)}\n`, { mode: 0o600 });
+      // remember the export point so a missing/rolled-back log is detectable (F-16 residual)
+      db.run('UPDATE audit_anchor SET exported_id = ?, exported_hash = ? WHERE id = 1 AND (exported_id IS NULL OR exported_id < ?)', id, hash, id);
     } catch (e) { log?.warn('audit anchor export failed', { err: e.message }); }
   }
   /** Write the current chain head to the anchor file (on shutdown). */
@@ -83,7 +85,7 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
       db.run(`INSERT INTO audit_anchor (id, last_id, last_hash, mac, updated_at) VALUES (1,?,?,?,?)
         ON CONFLICT(id) DO UPDATE SET last_id = excluded.last_id, last_hash = excluded.last_hash, mac = excluded.mac, updated_at = excluded.updated_at`,
       row.id, hash, anchorMac(keyring, row.id, hash), row.ts);
-      if (anchorFile && row.id % anchorEvery === 0) exportHead(row.id, hash);
+      if (anchorFile && row.id % anchorEvery === 0) db.afterCommit(() => exportHead(row.id, hash)); // only committed rows
       return row.id;
     });
   }
@@ -115,8 +117,17 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
       if (!safeEqual(anchor.mac, anchorMac(keyring, anchor.last_id, anchor.last_hash))) return { ok: false, checked, brokenAt: null, reason: 'chain anchor signature invalid' };
       if (anchor.last_id !== lastId || anchor.last_hash !== lastHash) return { ok: false, checked, brokenAt: null, reason: 'chain head does not match anchor (truncation?)' };
     }
-    // F-16: cross-check the external append-only anchor log, if present
-    for (const a of readAnchorLog(anchorFile)) {
+    // F-16: cross-check the external append-only anchor log
+    const exported = anchorFile ? db.get('SELECT exported_id, exported_hash FROM audit_anchor WHERE id = 1') : null;
+    const logLines = readAnchorLog(anchorFile);
+    if (exported?.exported_id) {
+      if (!fs.existsSync(anchorFile)) return { ok: false, checked, brokenAt: null, reason: 'anchor log missing' };
+      const maxLogged = logLines.reduce((m, a) => Math.max(m, a.id), 0);
+      if (maxLogged < exported.exported_id) return { ok: false, checked, brokenAt: null, reason: `anchor log behind DB (log ends at ${maxLogged}, exported through ${exported.exported_id})` };
+      const line = logLines.find((a) => a.id === exported.exported_id);
+      if (!line || line.hash !== exported.exported_hash) return { ok: false, checked, brokenAt: null, reason: 'anchor log does not contain the recorded export point' };
+    }
+    for (const a of logLines) {
       if (!anyKeyMac(keyring, a.id, a.hash, a.mac)) return { ok: false, checked, brokenAt: null, reason: `anchor log line for row ${a.id} has an invalid MAC` };
       if (a.id > lastId) return { ok: false, checked, brokenAt: null, reason: `audit log truncated: anchor log records row ${a.id} but the chain ends at ${lastId}` };
       if (hashes.get(a.id) !== a.hash) return { ok: false, checked, brokenAt: null, reason: `row ${a.id} differs from the exported anchor` };

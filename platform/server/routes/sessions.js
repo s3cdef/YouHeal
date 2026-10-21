@@ -1,7 +1,7 @@
 // Scan sessions (rastreo), findings, finalize/amend, report assembly + immutable snapshots (ADR-006).
 
 import { v, check, uuidStr, catalogId, paging } from '../lib/validate.js';
-import { uuid, sha256hex, canonicalJson, safeEqual, normalizeText, verifyPassword } from '../lib/crypto.js';
+import { uuid, sha256hex, canonicalJson, safeEqual, normalizeText } from '../lib/crypto.js';
 import { notFound, conflict, HttpError, badRequest } from '../lib/http.js';
 import { PERM } from '../lib/rbac.js';
 import { encCol, decCol, decryptPatient } from '../lib/phi.js';
@@ -9,6 +9,7 @@ import { SIDES, QUALIFIERS } from '../catalog/load.js';
 import { catalogMeta } from '../catalog/load.js';
 import { nowIso, today, addDays, parseJson, orgView, getOrg, ageAt } from './_shared.js';
 import { getPatientRow } from './patients.js';
+import { createReauth } from './_reauth.js';
 
 export const METHODOLOGIES = ['biomagnetism', 'bioenergetics', 'telebioenergetics'];
 export const PHENOMENA = ['infiltrate', 'exudate', 'cyst', 'abscess', 'neoplasia'];
@@ -314,6 +315,7 @@ export const reportHash = (report) => sha256hex(canonicalJson(report));
 
 export function register(router, deps) {
   const { db, keyring, catalog } = deps;
+  const reauth = createReauth(deps);
 
   const getSession = (ctx, id = ctx.params.id) => {
     check(uuidStr(), id);
@@ -572,8 +574,7 @@ export function register(router, deps) {
       ctx.audit('session.finalize', { targetType: 'session', targetId: s.id, outcome: 'failure', detail: { reason: 'signature_mismatch' } });
       throw new HttpError(422, 'SIGNATURE_MISMATCH', 'The signature name must match your account name', { signatureName: `must be "${ctx.user.name}"` });
     }
-    const signer = db.get('SELECT password_hash FROM users WHERE id = ?', ctx.user.id);
-    if (!(await verifyPassword(body.password, signer.password_hash))) {
+    if (!(await reauth.password(ctx, body.password, 'finalize_reauth'))) {
       ctx.audit('session.finalize', { targetType: 'session', targetId: s.id, outcome: 'failure', detail: { reason: 'reauth_failed' } });
       throw new HttpError(403, 'REAUTH_FAILED', 'Password is incorrect', { password: 'is incorrect' });
     }

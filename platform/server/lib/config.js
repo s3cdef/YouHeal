@@ -47,6 +47,15 @@ function parseLicenses(v) {
   return list;
 }
 
+/** NEW-1: default global connection cap = 75% of the soft open-files limit (Linux /proc), else 1024. */
+export function defaultMaxConnections() {
+  try {
+    const m = /Max open files\s+(\d+|unlimited)/.exec(fs.readFileSync('/proc/self/limits', 'utf8'));
+    if (m && m[1] !== 'unlimited') return Math.max(64, Math.floor(Number(m[1]) * 0.75));
+  } catch { /* not Linux */ }
+  return 1024;
+}
+
 export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
   const resolve = (p, base) => path.resolve(base || cwd, p);
 
@@ -103,12 +112,22 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
   }
 
   // F-09: X-Forwarded-* are honored only from these peers (IPs or CIDRs). Default: loopback.
-  const trustedProxies = String(env.YH_TRUSTED_PROXIES ?? '127.0.0.1,::1').split(',').map((x) => x.trim()).filter(Boolean);
+  const warnings = [];
+  // NEW-2: an empty/blank YH_TRUSTED_PROXIES means "unset" (loopback default), never "trust nobody/everybody"
+  let trustedProxies = String(env.YH_TRUSTED_PROXIES ?? '').split(',').map((x) => x.trim()).filter(Boolean);
+  if (!trustedProxies.length) trustedProxies = ['127.0.0.1', '::1'];
   for (const t of trustedProxies) {
     const [ip, bits] = t.split('/');
     if (net.isIP(ip) === 0 || (bits !== undefined && !(/^\d+$/.test(bits) && Number(bits) <= (net.isIP(ip) === 4 ? 32 : 128)))) {
       throw new ConfigError(`YH_TRUSTED_PROXIES: invalid address or CIDR "${t}"`);
     }
+  }
+  if (trustProxy && !trustedProxies.length) throw new ConfigError('YH_TRUST_PROXY is enabled but no trusted proxy addresses are configured');
+  for (const t of trustedProxies) {
+    if (/^(0\.0\.0\.0\/0|::\/0)$/.test(t)) warnings.push(`YH_TRUSTED_PROXIES contains ${t}: every client can spoof X-Forwarded-For`);
+  }
+  if (!isLoopbackHost(host) && !env.YH_ALLOWED_HOSTS && !env.YH_PUBLIC_ORIGIN) {
+    warnings.push(`listening on ${host} but neither YH_ALLOWED_HOSTS nor YH_PUBLIC_ORIGIN is set: only localhost names, this machine's hostname and its IPs are accepted in the Host header`);
   }
   // F-05: Host header allow-list for /api (localhost names + public origin + YH_ALLOWED_HOSTS + own names when exposed)
   const allowedHosts = new Set(['localhost', '127.0.0.1', '::1']);
@@ -145,8 +164,10 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
     trustedProxies,
     allowedHosts,
     publicOrigin,
-    maxConnections: int(env, 'YH_MAX_CONNECTIONS', 512, 1, 100000),
+    maxConnections: int(env, 'YH_MAX_CONNECTIONS', defaultMaxConnections(), 1, 1000000),
     maxConnPerIp: int(env, 'YH_MAX_CONN_PER_IP', 64, 1, 100000),
+    firstByteMs: int(env, 'YH_FIRST_BYTE_MS', 10000, 50, 600000),
+    warnings,
     sessionIdleMin: int(env, 'YH_SESSION_IDLE_MIN', 15, 1, 240),
     sessionAbsHours: int(env, 'YH_SESSION_ABS_HOURS', 12, 1, 72),
     logLevel,

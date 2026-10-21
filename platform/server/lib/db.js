@@ -32,6 +32,7 @@ export class Db {
     this.raw = new DatabaseSync(file, { readOnly });
     this.cache = new Map();
     this.depth = 0;
+    this.commitHooks = [];
     this.raw.exec('PRAGMA busy_timeout = 5000');
     if (!readOnly) {
       this.raw.exec('PRAGMA journal_mode = WAL');
@@ -72,8 +73,13 @@ export class Db {
         const r = fn(this);
         if (r && typeof r.then === 'function') throw new Error('db.tx callback must be synchronous');
         this.raw.exec('COMMIT');
+        const hooks = this.commitHooks; this.commitHooks = [];
+        this.depth--;
+        for (const h of hooks) { try { h(); } catch (e) { this.log?.warn('after-commit hook failed', { err: e.message }); } }
+        this.depth++;
         return r;
       } catch (e) {
+        this.commitHooks = [];
         try { this.raw.exec('ROLLBACK'); } catch { /* already rolled back */ }
         throw e;
       } finally { this.depth--; }
@@ -89,6 +95,11 @@ export class Db {
       this.raw.exec(`ROLLBACK TO ${sp}`); this.raw.exec(`RELEASE ${sp}`);
       throw e;
     } finally { this.depth--; }
+  }
+
+  /** Run fn after the outermost transaction commits (immediately when not in a transaction); dropped on rollback. */
+  afterCommit(fn) {
+    if (this.depth === 0) fn(); else this.commitHooks.push(fn);
   }
 
   checkpoint(mode = 'PASSIVE') {

@@ -143,7 +143,12 @@ function trustedList(cfg) {
 /** F-09: forwarding headers count only when trust is enabled AND the TCP peer is a configured proxy. */
 export function isTrustedPeer(req, cfg) {
   if (!cfg?.trustProxy) return false;
-  const peer = normIp(req.socket?.remoteAddress);
+  return isTrustedAddress(req.socket?.remoteAddress, cfg);
+}
+
+/** Is this address in YH_TRUSTED_PROXIES (regardless of YH_TRUST_PROXY)? */
+export function isTrustedAddress(addr, cfg) {
+  const peer = normIp(addr);
   const fam = net.isIP(peer);
   if (!fam) return false;
   return trustedList(cfg).check(peer, fam === 6 ? 'ipv6' : 'ipv4');
