@@ -1,7 +1,7 @@
 // Small presentational components: tabs, table, empty state, chips, meters, polarity glyphs, fields.
 import { el, nextId, clear } from './dom.js';
 import { icon } from './icons.js';
-import { t, locText } from '../i18n.js';
+import { t, locText, vocab } from '../i18n.js';
 
 // ---------- Tabs (roving tabindex, arrow keys) ----------
 /** tabs({ tabs:[{id,label,icon,count}], active, onChange(id), label, variant }) → { root, panel, select(id) } */
@@ -80,7 +80,7 @@ export const CATEGORY_TONES = {
 };
 export function categoryChip(cat) {
   if (!cat) return null;
-  return el(`span.chip.chip-cat.tone-${CATEGORY_TONES[cat] || 'slate'}`, t(`category.${cat}`));
+  return el(`span.chip.chip-cat.tone-${CATEGORY_TONES[cat] || 'slate'}`, vocab('categories', cat));
 }
 export function chip(text, tone = 'slate', extra = '') { return el(`span.chip.tone-${tone}${extra ? '.' + extra : ''}`, text); }
 
@@ -96,13 +96,17 @@ export function statusBadge(status) {
 
 /** F/P/R ratings as 1–3 dot meters. */
 export function ratingMeter(letter, value) {
+  if (value === null || value === undefined || value === '') {
+    return el('span.meter.is-na', { role: 'img', aria: { label: `${t(`ratings.${letter}`)}: ${t('ratings.na')}` }, title: `${t(`ratings.${letter}`)} — ${t('ratings.na')}` },
+      el('span.meter-letter', { aria: { hidden: 'true' } }, letter), el('span.meter-na', { aria: { hidden: 'true' } }, '—'));
+  }
   const v = Math.max(0, Math.min(3, Number(value) || 0));
   return el('span.meter', { role: 'img', aria: { label: `${t(`ratings.${letter}`)}: ${v} / 3` }, title: `${t(`ratings.${letter}`)} ${v}/3` },
     el('span.meter-letter', { aria: { hidden: 'true' } }, letter),
     el('span.meter-dots', { aria: { hidden: 'true' } }, [1, 2, 3].map((i) => el(`span.meter-dot${i <= v ? '.on' : ''}`))));
 }
 export function ratingsRow(r) {
-  if (!r) return null;
+  if (!r || (r.F == null && r.P == null && r.R == null)) return el('span.muted.small', { title: t('ratings.none') }, '—');
   return el('span.meters', ['F', 'P', 'R'].map((k) => ratingMeter(k, r[k])));
 }
 
@@ -112,7 +116,7 @@ export function pole(polarity, { small = false } = {}) {
   return el(`span.pole.${neg ? 'pole-neg' : 'pole-pos'}${small ? '.pole-sm' : ''}`, { role: 'img', aria: { label: neg ? t('polarity.negative') : t('polarity.positive') } }, neg ? '−' : '+');
 }
 
-export function sideLabel(side) { return side ? t(`side.${side}`) : ''; }
+export function sideLabel(side) { return side ? vocab('sides', side) : ''; }
 
 /** "Timo (−)  →  Recto (+)" pair line */
 export function pairPoles(pair, points, { sides = null, compact = false } = {}) {

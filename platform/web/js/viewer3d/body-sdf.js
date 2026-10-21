@@ -197,7 +197,9 @@ export function loft(a, b, front, keys, n = 2) {
       const ov = u < 0 ? -t : t - L;
       return d2 > 0 ? sqrt(d2 * d2 + ov * ov) : ov;
     }
-    return d2;
+    // inside the span: flat end caps keep the field continuous
+    const cap = -t > t - L ? -t : t - L;
+    return d2 > cap ? d2 : cap;
   };
   // Conservative bounding box
   let maxR = 0;

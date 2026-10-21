@@ -103,13 +103,13 @@
   display: block;
 }
 .yh-viewer__svg:focus-visible { outline: 3px solid var(--yh-viewer-focus); outline-offset: -3px; }
-.yh-viewer__svg .yh-body { fill: url(#yh-skin); stroke: #b98e70; stroke-width: 0.004; }
-.yh-viewer__svg .yh-pt { fill: #1e3a5f; stroke: #ffffff; stroke-width: 0.0028; cursor: pointer; }
-.yh-viewer__svg .yh-pt.is-hl { fill: #f59e0b; }
-.yh-viewer__svg .yh-pt.is-hover { fill: #0ea5e9; }
-.yh-viewer__svg .yh-pt.is-internal { fill: none; stroke: #7c3aed; stroke-width: 0.004; }
-.yh-viewer__svg .yh-glyph { stroke: #ffffff; stroke-width: 0.004; stroke-linecap: square; }
-.yh-viewer__svg .yh-arc { fill: none; stroke-width: 0.004; stroke-linecap: round; }
+.yh-viewer__svg .yh-pt { cursor: pointer; }
+.yh-viewer__svg .yh-pt.is-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: yh-pulse 1.1s ease-in-out infinite;
+}
+@keyframes yh-pulse { 50% { transform: scale(1.45); } }
 .yh-viewer__note {
   position: absolute;
   left: 8px;

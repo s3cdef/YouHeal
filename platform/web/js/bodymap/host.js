@@ -45,7 +45,6 @@ export async function renderSnapshots({ points, regions, polarity, locale, magne
     viewer.setPairs && viewer.setPairs(pairs);
     const out = {};
     for (const v of views) {
-      // eslint-disable-next-line no-await-in-loop
       out[v] = await viewer.snapshot({ view: v, width, height, transparent: false });
     }
     return out;

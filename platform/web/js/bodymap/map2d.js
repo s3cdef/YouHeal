@@ -52,6 +52,8 @@ function project(view, x, y, z) {
   }
 }
 
+const hasPos = (p) => !!(p && p.pos && Number.isFinite(p.pos.x) && Number.isFinite(p.pos.y));
+
 /** Instances of a point for a given side: bilateral pos is patient-RIGHT (x<0); left is mirrored. */
 function instances(point, side) {
   const p = point.pos || { x: 0, y: 1, z: 0 };
@@ -134,6 +136,7 @@ export async function createBodyMap2D(container, opts = {}) {
     // points
     const ptLayer = svgEl('g', { class: 'bm2d-points' });
     for (const p of points.values()) {
+      if (!hasPos(p)) continue;
       const visibleByFilter = filter ? filter.has(p.id) : true;
       const shown = (showAll && visibleByFilter) || highlighted.has(p.id) || (filter && filter.has(p.id));
       if (!shown) continue;
@@ -180,7 +183,7 @@ export async function createBodyMap2D(container, opts = {}) {
   }
 
   function locate(ref) {
-    const p = points.get(ref.pointId); if (!p) return null;
+    const p = points.get(ref.pointId); if (!hasPos(p)) return null;
     const inst = instances(p, ref.side === 'RL' ? 'R' : ref.side)[0];
     if (!inst || !visibleIn(view, p, inst)) return null;
     return project(view, inst.pos.x, inst.pos.y, inst.pos.z);
@@ -189,7 +192,7 @@ export async function createBodyMap2D(container, opts = {}) {
   function layoutMagnets(v) {
     const groups = new Map();
     for (const m of magnets) {
-      const p = points.get(m.pointId); if (!p) continue;
+      const p = points.get(m.pointId); if (!hasPos(p)) continue;
       for (const inst of instances(p, m.side === 'RL' ? null : m.side)) {
         if (!visibleIn(v, p, inst)) continue;
         const { X, Y } = project(v, inst.pos.x, inst.pos.y, inst.pos.z);
@@ -220,7 +223,7 @@ export async function createBodyMap2D(container, opts = {}) {
     setShowAllPoints(b) { showAll = !!b; draw(); },
     setPolarity(p) { polarity = { ...polarity, ...p }; draw(); },
     focusPoint(pointId, side) {
-      const p = points.get(pointId); if (!p) return;
+      const p = points.get(pointId); if (!hasPos(p)) return;
       focused = { pointId, side };
       const pv = p.view === 'posterior' ? 'posterior' : 'anterior';
       if ((view === 'anterior' || view === 'posterior') && view !== pv) view = pv;
@@ -266,7 +269,7 @@ function snapshot2D({ magnets, pairs, polarity, view, width, height, transparent
   // pair lines
   for (const pr of pairs) {
     const loc = (ref) => {
-      const p = points.get(ref.pointId); if (!p) return null;
+      const p = points.get(ref.pointId); if (!hasPos(p)) return null;
       const i = inst(p, ref.side === 'RL' ? 'R' : ref.side)[0];
       if (!i || !vis(view, p, i)) return null;
       return proj(view, i.pos.x, i.pos.y, i.pos.z);

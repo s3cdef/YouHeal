@@ -21,8 +21,8 @@ function segDist(p, a, b) {
 
 /** Default skeleton landmarks (patient LEFT side) matching body-sdf.js neutral. */
 export const DEFAULT_SKELETON = {
-  shoulderJ: [0.172, 1.402, -0.012], elbow: [0.27, 1.136, -0.008], wrist: [0.378, 0.92, 0.009],
-  fingertip: [0.475, 0.735, 0.04], hipJ: [0.088, 0.905, -0.004], knee: [0.103, 0.492, 0.004], ankle: [0.118, 0.086, -0.022],
+  shoulderJ: [0.17, 1.405, -0.012], elbow: [0.267, 1.132, -0.006], wrist: [0.375, 0.907, 0.014],
+  fingertip: [0.439, 0.747, 0.036], hipJ: [0.088, 0.905, -0.004], knee: [0.1, 0.49, 0.004], ankle: [0.112, 0.085, -0.022],
 };
 
 /**
@@ -60,7 +60,8 @@ export function regionAt(p, sk = DEFAULT_SKELETON) {
   if (y < 0.80 || (y < 0.86 && ax > 0.05 && z > -0.04) || (y < 0.84 && ax > 0.03)) return { regionId: 'thigh', side: legSide };
   // trunk
   const back = z < -0.015;
-  if (y >= 1.16) return { regionId: back ? 'upper-back' : 'thorax', side };
+  // anterior thorax/abdomen boundary follows the costal arch (xiphoid → lateral margin)
+  if (back ? y >= 1.15 : y >= 1.215 - 0.6 * ax) return { regionId: back ? 'upper-back' : 'thorax', side };
   if (y >= 0.95) return { regionId: back ? 'lower-back' : 'abdomen', side };
   return { regionId: back ? 'gluteal' : 'pelvis', side };
 }

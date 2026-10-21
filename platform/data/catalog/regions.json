@@ -1,0 +1,170 @@
+[
+ {
+  "id": "head-neck",
+  "name": {
+   "es": "Cabeza y cuello",
+   "en": "Head and neck"
+  },
+  "parent": null
+ },
+ {
+  "id": "head",
+  "name": {
+   "es": "Cabeza",
+   "en": "Head"
+  },
+  "parent": "head-neck"
+ },
+ {
+  "id": "face",
+  "name": {
+   "es": "Cara",
+   "en": "Face"
+  },
+  "parent": "head-neck"
+ },
+ {
+  "id": "neck",
+  "name": {
+   "es": "Cuello",
+   "en": "Neck"
+  },
+  "parent": "head-neck"
+ },
+ {
+  "id": "trunk",
+  "name": {
+   "es": "Tronco",
+   "en": "Trunk"
+  },
+  "parent": null
+ },
+ {
+  "id": "thorax",
+  "name": {
+   "es": "Tórax",
+   "en": "Thorax (chest)"
+  },
+  "parent": "trunk"
+ },
+ {
+  "id": "abdomen",
+  "name": {
+   "es": "Abdomen",
+   "en": "Abdomen"
+  },
+  "parent": "trunk"
+ },
+ {
+  "id": "pelvis",
+  "name": {
+   "es": "Pelvis",
+   "en": "Pelvis"
+  },
+  "parent": "trunk"
+ },
+ {
+  "id": "upper-back",
+  "name": {
+   "es": "Espalda alta (dorsal)",
+   "en": "Upper back"
+  },
+  "parent": "trunk"
+ },
+ {
+  "id": "lower-back",
+  "name": {
+   "es": "Espalda baja (lumbar)",
+   "en": "Lower back"
+  },
+  "parent": "trunk"
+ },
+ {
+  "id": "gluteal",
+  "name": {
+   "es": "Región glútea",
+   "en": "Gluteal region"
+  },
+  "parent": "trunk"
+ },
+ {
+  "id": "upper-limb",
+  "name": {
+   "es": "Miembro superior",
+   "en": "Upper limb"
+  },
+  "parent": null
+ },
+ {
+  "id": "shoulder",
+  "name": {
+   "es": "Hombro",
+   "en": "Shoulder"
+  },
+  "parent": "upper-limb"
+ },
+ {
+  "id": "arm",
+  "name": {
+   "es": "Brazo",
+   "en": "Arm"
+  },
+  "parent": "upper-limb"
+ },
+ {
+  "id": "forearm",
+  "name": {
+   "es": "Antebrazo",
+   "en": "Forearm"
+  },
+  "parent": "upper-limb"
+ },
+ {
+  "id": "hand",
+  "name": {
+   "es": "Mano",
+   "en": "Hand"
+  },
+  "parent": "upper-limb"
+ },
+ {
+  "id": "lower-limb",
+  "name": {
+   "es": "Miembro inferior",
+   "en": "Lower limb"
+  },
+  "parent": null
+ },
+ {
+  "id": "thigh",
+  "name": {
+   "es": "Muslo",
+   "en": "Thigh"
+  },
+  "parent": "lower-limb"
+ },
+ {
+  "id": "knee",
+  "name": {
+   "es": "Rodilla",
+   "en": "Knee"
+  },
+  "parent": "lower-limb"
+ },
+ {
+  "id": "leg",
+  "name": {
+   "es": "Pierna",
+   "en": "Leg (lower leg)"
+  },
+  "parent": "lower-limb"
+ },
+ {
+  "id": "foot",
+  "name": {
+   "es": "Pie",
+   "en": "Foot"
+  },
+  "parent": "lower-limb"
+ }
+]

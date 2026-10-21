@@ -3,7 +3,7 @@
 import { el, mount } from '../ui/dom.js';
 import { icon, brandMark } from '../ui/icons.js';
 import { api, errorMessage } from '../api.js';
-import { t, locText, locNode, fmtDate, fmtDateTime, getLocale, loc } from '../i18n.js';
+import { t, locText, locNode, fmtDate, fmtDateTime, getLocale, loc, vocab } from '../i18n.js';
 import { loadCore, polarity, can, state } from '../state.js';
 import { ratingsRow, skeleton, statusBadge, alertBox } from '../ui/components.js';
 import { renderSnapshots } from '../bodymap/host.js';
@@ -104,7 +104,7 @@ export async function renderReport({ main, params }) {
         el('th', { scope: 'col' }, t('session.status')),
         el('th.num', { scope: 'col' }, t('report.colDwell')))),
       groups.map((g) => el('tbody.rpt-group',
-        el('tr.rpt-group-row', el('th', { colspan: 8, scope: 'colgroup' }, g.category === 'uncatalogued' ? t('report.uncategorized') : t(`category.${g.category}`), el('span.rpt-group-n', ` · ${g.items.length}`))),
+        el('tr.rpt-group-row', el('th', { colspan: 8, scope: 'colgroup' }, g.category === 'uncatalogued' ? t('report.uncategorized') : vocab("categories", g.category), el('span.rpt-group-n', ` · ${g.items.length}`))),
         g.items.map((f) => el('tr',
           el('td.num', String(f.seq ?? '')),
           el('td', el('span.rpt-pair', f.pair && f.pair.number ? el('span.rpt-pairnum', `PB ${f.pair.number}`) : null, f.pair ? locNode(f.pair.name) : `${locText(f.tracking?.name)} – ${locText(f.impact?.name)}`),
@@ -135,7 +135,7 @@ export async function renderReport({ main, params }) {
   const syms = sess.symptoms || rep.symptoms || [];
   const symptoms = el('section.rpt-section.rpt-keep',
     el('h2.rpt-h2', t('report.symptoms')),
-    syms.length ? el('ul.rpt-sym', syms.map((s) => el('li', s.name ? locNode(s.name) : s.id, s.system ? el('span.muted', ` · ${t(`system.${s.system}`)}`) : null))) : el('p.muted', t('report.noSymptoms')));
+    syms.length ? el('ul.rpt-sym', syms.map((s) => el('li', s.name ? locNode(s.name) : s.id, s.system ? el('span.muted', ` · ${vocab("systems", s.system)}`) : null))) : el('p.muted', t('report.noSymptoms')));
   const fu = rep.followUp || {};
   const follow = el('section.rpt-section.rpt-keep.rpt-follow',
     el('h2.rpt-h2', t('report.followUp')),

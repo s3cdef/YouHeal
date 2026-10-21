@@ -28,8 +28,10 @@ async function loadCatalog() {
     getJSON('catalog-data/regions.json').catch(() => []),
   ]);
   // names + laterality: the Data team's points.json when present, else the demo list
+  const local = await getJSON('js/viewer3d/demo-points.json').catch(() => []);
   let meta = await getJSON('catalog-data/points.json').catch(() => null);
-  if (!Array.isArray(meta) || !meta.length) meta = await getJSON('js/viewer3d/demo-points.json').catch(() => []);
+  if (!Array.isArray(meta) || !meta.length) meta = local;
+  else { const have = new Set(meta.map((p) => p.id)); meta = meta.concat(local.filter((p) => !have.has(p.id))); }
   const points = meta.filter((p) => anatomy[p.id]).map((p) => ({ ...p, ...anatomy[p.id] }));
   return { points, regions };
 }

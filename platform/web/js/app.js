@@ -256,7 +256,7 @@ async function boot() {
   await initI18n(detectLocale());
   try {
     setupStatus = await api.get('/setup/status', null, { auth: false });
-  } catch (err) {
+  } catch {
     mount(app, el('div.boot-error', el('h1', t('errors.serverUnreachable')), el('p', t('errors.serverUnreachableBody')),
       el('button.btn.btn-primary', { type: 'button', onClick: () => location.reload() }, t('common.retry'))));
     return;

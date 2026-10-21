@@ -80,6 +80,22 @@ export function locNode(obj, tag = 'span', cls = '') {
   return node;
 }
 
+// ---- catalog vocabularies (GET /catalog/manifest → vocabularies: categories, systems, sides, qualifiers) ----
+const vocabs = {};
+export function setVocabularies(v) {
+  for (const [kind, list] of Object.entries(v || {})) if (Array.isArray(list)) vocabs[kind] = new Map(list.map((x) => [x.id, x]));
+}
+const VOCAB_KEY = { categories: 'category', systems: 'system', sides: 'side', qualifiers: 'qualifier' };
+/** Label for a vocabulary id: manifest first, then the UI catalog, then the id itself. */
+export function vocab(kind, id) {
+  const hit = vocabs[kind] && vocabs[kind].get(id);
+  if (hit && hit.name) { const l = loc(hit.name); if (l.text && !l.fallback) return l.text; }
+  const k = `${VOCAB_KEY[kind] || kind}.${id}`;
+  const v = t(k);
+  if (v !== k) return v;
+  return hit && hit.name ? loc(hit.name).text : String(id);
+}
+
 // ---- formatters ----
 function intlLocale() { return current === 'es' ? 'es-US' : 'en-US'; }
 

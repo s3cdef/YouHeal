@@ -66,7 +66,7 @@ export function combobox(opts) {
   }
   const run = debounce(async () => {
     const q = input.value.trim();
-    if (q.length < minChars) { results = []; open(false); return; }
+    if (q.length < minChars || (minChars === 0 && !q && document.activeElement !== input)) { results = []; open(false); return; }
     const my = ++seq;
     let r = [];
     try { r = await source(q); } catch { r = []; }

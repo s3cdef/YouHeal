@@ -3,39 +3,33 @@
   "id": "pineal",
   "name": {
    "es": "Pineal",
-   "en": "Pineal"
+   "en": "Pineal gland"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "prepineal",
   "name": {
    "es": "Prepineal",
-   "en": "Prepineal"
+   "en": "Prepineal region"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "pospineal",
   "name": {
    "es": "Pospineal",
-   "en": "Postpineal"
+   "en": "Postpineal region"
   },
-  "laterality": "central",
-  "aliases": [
-   "postpineal"
-  ]
+  "laterality": "central"
  },
  {
   "id": "coronilla",
   "name": {
    "es": "Coronilla",
-   "en": "Crown (vertex)"
+   "en": "Crown of the head (vertex)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cuerpo-calloso",
@@ -43,44 +37,39 @@
    "es": "Cuerpo Calloso",
    "en": "Corpus callosum"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cisura-media",
   "name": {
    "es": "Cisura Media",
-   "en": "Medial fissure"
+   "en": "Longitudinal (median) cerebral fissure"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "borde-calloso",
   "name": {
    "es": "Borde Calloso",
-   "en": "Callosal border"
+   "en": "Callosal border (edge of the corpus callosum)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "craneal",
   "name": {
    "es": "Craneal",
-   "en": "Cranial"
+   "en": "Cranial vault"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
-  "id": "fronto-parietal",
+  "id": "cisura-de-rolando",
   "name": {
-   "es": "Frontoparietal",
-   "en": "Frontoparietal"
+   "es": "Cisura de Rolando",
+   "en": "Rolandic fissure (central sulcus, fronto-parietal)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "parietal",
@@ -88,8 +77,7 @@
    "es": "Parietal",
    "en": "Parietal"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "temporal",
@@ -97,19 +85,15 @@
    "es": "Temporal",
    "en": "Temporal"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cisura-de-silvio",
   "name": {
    "es": "Cisura de Silvio",
-   "en": "Sylvian fissure"
+   "en": "Sylvian fissure (lateral sulcus)"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "cisura-silvio"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "talamo",
@@ -117,8 +101,7 @@
    "es": "Tálamo",
    "en": "Thalamus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "hipocampo",
@@ -126,8 +109,7 @@
    "es": "Hipocampo",
    "en": "Hippocampus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "poligono-de-willis",
@@ -135,8 +117,7 @@
    "es": "Polígono de Willis",
    "en": "Circle of Willis"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "amigdala-cerebral",
@@ -144,19 +125,15 @@
    "es": "Amígdala Cerebral",
    "en": "Amygdala (brain)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "temporoccipital",
   "name": {
    "es": "Temporoccipital",
-   "en": "Temporo-occipital"
+   "en": "Temporo-occipital region"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "tempor-occipital"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "hipotalamo",
@@ -164,8 +141,7 @@
    "es": "Hipotálamo",
    "en": "Hypothalamus"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "occipital",
@@ -173,8 +149,7 @@
    "es": "Occipital",
    "en": "Occipital"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cerebelo",
@@ -182,64 +157,55 @@
    "es": "Cerebelo",
    "en": "Cerebellum"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "retromastoides",
   "name": {
    "es": "Retromastoides",
-   "en": "Retromastoid"
+   "en": "Retromastoid region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "mastoides",
   "name": {
    "es": "Mastoides",
-   "en": "Mastoid"
+   "en": "Mastoid process"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "oreja",
   "name": {
    "es": "Oreja",
-   "en": "Ear (auricle)"
+   "en": "Auricle (outer ear)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "oido",
   "name": {
    "es": "Oído",
-   "en": "Ear canal"
+   "en": "Ear (auditory canal)"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "oido-contralateral"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "polo",
   "name": {
    "es": "Polo",
-   "en": "Frontal pole (hairline)"
+   "en": "Frontal hairline pole"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "frontal",
   "name": {
    "es": "Frontal",
-   "en": "Frontal"
+   "en": "Frontal bone"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "seno-frontal",
@@ -247,35 +213,31 @@
    "es": "Seno Frontal",
    "en": "Frontal sinus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "hipofisis",
   "name": {
    "es": "Hipófisis",
-   "en": "Pituitary"
+   "en": "Pituitary gland (hypophysis)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "interciliar",
   "name": {
    "es": "Interciliar",
-   "en": "Glabella"
+   "en": "Glabella (between the eyebrows)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "supraciliar",
   "name": {
    "es": "Supraciliar",
-   "en": "Supraciliary"
+   "en": "Supraciliary (above the eyebrows)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "ceja",
@@ -283,17 +245,15 @@
    "es": "Ceja",
    "en": "Eyebrow"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "fronto-orbital",
   "name": {
-   "es": "Frontoorbital",
-   "en": "Fronto-orbital"
+   "es": "Fronto Orbital",
+   "en": "Fronto-orbital region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "parpado",
@@ -301,8 +261,7 @@
    "es": "Párpado",
    "en": "Eyelid"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "ojo",
@@ -310,37 +269,31 @@
    "es": "Ojo",
    "en": "Eye"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "macula",
   "name": {
    "es": "Mácula",
-   "en": "Macula"
+   "en": "Macula (of the retina)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "lacrimal",
   "name": {
    "es": "Lacrimal",
-   "en": "Lacrimal"
+   "en": "Lacrimal gland"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "canto",
   "name": {
    "es": "Canto",
-   "en": "Outer canthus"
+   "en": "Lateral canthus of the eye"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "canto-externo"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "piso-orbital",
@@ -348,42 +301,31 @@
    "es": "Piso Orbital",
    "en": "Orbital floor"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "malar",
   "name": {
    "es": "Malar",
-   "en": "Malar"
+   "en": "Malar (zygomatic) bone"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "hueso-cigomatico"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "pomulo",
   "name": {
    "es": "Pómulo",
-   "en": "Cheek"
+   "en": "Cheek (cheekbone prominence)"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "pomulo-contralateral"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "seno-paranasal",
   "name": {
    "es": "Seno Paranasal",
-   "en": "Paranasal sinus"
+   "en": "Paranasal (maxillary) sinus"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "seno-nasal",
-   "paranasal"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "sien",
@@ -391,8 +333,7 @@
    "es": "Sien",
    "en": "Temple"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "quiasma",
@@ -400,19 +341,15 @@
    "es": "Quiasma",
    "en": "Optic chiasm"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "quiasma-optico"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "esfenoides",
   "name": {
    "es": "Esfenoides",
-   "en": "Sphenoid"
+   "en": "Sphenoid bone"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "arco-cigomatico",
@@ -420,17 +357,15 @@
    "es": "Arco Cigomático",
    "en": "Zygomatic arch"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "preauricular",
   "name": {
    "es": "Preauricular",
-   "en": "Preauricular"
+   "en": "Preauricular region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "articulacion-temporomandibular",
@@ -438,44 +373,31 @@
    "es": "Articulación Temporomandibular",
    "en": "Temporomandibular joint"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "parotida",
   "name": {
    "es": "Parótida",
-   "en": "Parotid"
+   "en": "Parotid gland"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "mordida",
-  "name": {
-   "es": "Mordida",
-   "en": "Bite (masseter)"
-  },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "rama-mandibular",
   "name": {
    "es": "Rama Mandibular",
-   "en": "Mandibular ramus"
+   "en": "Ramus of the mandible"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
-  "id": "angulo-mandibular",
+  "id": "angulo",
   "name": {
-   "es": "Ángulo Mandibular",
-   "en": "Mandibular angle"
+   "es": "Ángulo",
+   "en": "Angle of the mandible (gonion)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "nariz",
@@ -483,8 +405,7 @@
    "es": "Nariz",
    "en": "Nose"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "maxilar-superior",
@@ -492,10 +413,7 @@
    "es": "Maxilar Superior",
    "en": "Maxilla"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "maxilar"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "labio-superior",
@@ -503,26 +421,31 @@
    "es": "Labio Superior",
    "en": "Upper lip"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "diente",
   "name": {
    "es": "Diente",
-   "en": "Tooth"
+   "en": "Tooth (affected tooth)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
+ },
+ {
+  "id": "caries",
+  "name": {
+   "es": "Caries",
+   "en": "Dental caries (affected tooth)"
+  },
+  "laterality": "central"
  },
  {
   "id": "comisura",
   "name": {
    "es": "Comisura",
-   "en": "Mouth corner"
+   "en": "Labial commissure (corner of the mouth)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "lengua",
@@ -530,28 +453,23 @@
    "es": "Lengua",
    "en": "Tongue"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "mandibula",
   "name": {
    "es": "Mandíbula",
-   "en": "Mandible"
+   "en": "Mandible (jaw / chin)"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "maxilar-inferior"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "menton",
   "name": {
    "es": "Mentón",
-   "en": "Chin"
+   "en": "Chin (mentum)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "bulbo-raquideo",
@@ -559,48 +477,39 @@
    "es": "Bulbo Raquídeo",
    "en": "Medulla oblongata"
   },
-  "laterality": "central",
-  "aliases": [
-   "bulbo-raquideno"
-  ]
+  "laterality": "central"
  },
  {
   "id": "agujero",
   "name": {
-   "es": "Agujero (occipital)",
-   "en": "Foramen (occipital)"
+   "es": "Agujero",
+   "en": "Foramen point (Agujero)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "atlas",
   "name": {
    "es": "Atlas",
-   "en": "Atlas (C1)"
+   "en": "Atlas (C1, first cervical vertebra)"
   },
-  "laterality": "central",
-  "aliases": [
-   "cervical-1"
-  ]
+  "laterality": "central"
  },
  {
-  "id": "cervical-2",
+  "id": "axis",
   "name": {
-   "es": "Cervical 2",
-   "en": "Cervical 2 (C2)"
+   "es": "Axis",
+   "en": "Axis (C2, second cervical vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cervical-3",
   "name": {
    "es": "Cervical 3",
-   "en": "Cervical 3 (C3)"
+   "en": "C3 (third cervical vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cervical",
@@ -608,37 +517,23 @@
    "es": "Cervical",
    "en": "Cervical spine"
   },
-  "laterality": "central",
-  "aliases": [
-   "cervical-4"
-  ]
+  "laterality": "central"
  },
  {
-  "id": "cervical-5",
+  "id": "cervical-4",
   "name": {
-   "es": "Cervical 5",
-   "en": "Cervical 5 (C5)"
+   "es": "Cervical 4",
+   "en": "C4 (fourth cervical vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
- },
- {
-  "id": "cervical-6",
-  "name": {
-   "es": "Cervical 6",
-   "en": "Cervical 6 (C6)"
-  },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cervical-7",
   "name": {
    "es": "Cervical 7",
-   "en": "Cervical 7 (C7)"
+   "en": "C7 (seventh cervical vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "glandula-salival",
@@ -646,8 +541,7 @@
    "es": "Glándula Salival",
    "en": "Salivary gland"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "amigdala-palatina",
@@ -655,17 +549,15 @@
    "es": "Amígdala Palatina",
    "en": "Palatine tonsil"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "hueso-hioides",
   "name": {
    "es": "Hueso Hioides",
-   "en": "Hyoid"
+   "en": "Hyoid bone"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "garganta",
@@ -673,8 +565,7 @@
    "es": "Garganta",
    "en": "Throat"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "laringe",
@@ -682,30 +573,23 @@
    "es": "Laringe",
    "en": "Larynx"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "tiroides",
   "name": {
    "es": "Tiroides",
-   "en": "Thyroid"
+   "en": "Thyroid gland"
   },
-  "laterality": "central",
-  "aliases": [
-   "tiroides-contralateral"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "paratiroides",
   "name": {
    "es": "Paratiroides",
-   "en": "Parathyroid"
+   "en": "Parathyroid gland"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "paratiroides-contralateral"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "traquea",
@@ -713,8 +597,7 @@
    "es": "Tráquea",
    "en": "Trachea"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cuello",
@@ -722,26 +605,23 @@
    "es": "Cuello",
    "en": "Neck"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "esternocleidomastoideo",
   "name": {
    "es": "Esternocleidomastoideo",
-   "en": "Sternocleidomastoid"
+   "en": "Sternocleidomastoid muscle"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "carotida",
   "name": {
    "es": "Carótida",
-   "en": "Carotid"
+   "en": "Carotid artery"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "plexo-cervical",
@@ -749,8 +629,7 @@
    "es": "Plexo Cervical",
    "en": "Cervical plexus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "vago",
@@ -758,26 +637,39 @@
    "es": "Vago",
    "en": "Vagus nerve"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "nudo-braquial",
   "name": {
    "es": "Nudo Braquial",
-   "en": "Brachial plexus knot"
+   "en": "Brachial knot (brachial plexus)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
+ },
+ {
+  "id": "clavicula",
+  "name": {
+   "es": "Clavícula",
+   "en": "Clavicle"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "hueco-de-la-garganta",
+  "name": {
+   "es": "Hueco de la Garganta",
+   "en": "Suprasternal (jugular) notch"
+  },
+  "laterality": "central"
  },
  {
   "id": "esofago",
   "name": {
    "es": "Esófago",
-   "en": "Esophagus"
+   "en": "Oesophagus (esophagus)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "primera-costilla",
@@ -785,30 +677,23 @@
    "es": "Primera Costilla",
    "en": "First rib"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "costilla-1"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "subclavia",
   "name": {
    "es": "Subclavia",
-   "en": "Subclavian"
+   "en": "Subclavian artery"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "manubrio-del-esternon",
   "name": {
    "es": "Manubrio del Esternón",
-   "en": "Sternal manubrium"
+   "en": "Manubrium of the sternum"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "manubrio"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "timo",
@@ -816,26 +701,23 @@
    "es": "Timo",
    "en": "Thymus"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "carina",
   "name": {
    "es": "Carina",
-   "en": "Carina"
+   "en": "Carina (tracheal bifurcation)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "boton-aortico",
   "name": {
    "es": "Botón Aórtico",
-   "en": "Aortic knob"
+   "en": "Aortic knob (aortic arch)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cava",
@@ -843,8 +725,7 @@
    "es": "Cava",
    "en": "Vena cava"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "bronquio",
@@ -852,8 +733,7 @@
    "es": "Bronquio",
    "en": "Bronchus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "pulmon",
@@ -861,17 +741,15 @@
    "es": "Pulmón",
    "en": "Lung"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "costilla-3",
   "name": {
-   "es": "Tercera Costilla",
+   "es": "Costilla 3",
    "en": "Third rib"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "mediastino",
@@ -879,8 +757,7 @@
    "es": "Mediastino",
    "en": "Mediastinum"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "esternon",
@@ -888,17 +765,15 @@
    "es": "Esternón",
    "en": "Sternum"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "pectoral",
   "name": {
    "es": "Pectoral",
-   "en": "Pectoral"
+   "en": "Pectoralis (chest muscle)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "coronarias",
@@ -906,8 +781,7 @@
    "es": "Coronarias",
    "en": "Coronary arteries"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "pericardio",
@@ -915,8 +789,31 @@
    "es": "Pericardio",
    "en": "Pericardium"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
+ },
+ {
+  "id": "punta-del-corazon",
+  "name": {
+   "es": "Punta del Corazón",
+   "en": "Cardiac apex"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "vena-pulmonar",
+  "name": {
+   "es": "Vena Pulmonar",
+   "en": "Pulmonary vein"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "aorta",
+  "name": {
+   "es": "Aorta",
+   "en": "Aorta"
+  },
+  "laterality": "central"
  },
  {
   "id": "corazon",
@@ -924,28 +821,23 @@
    "es": "Corazón",
    "en": "Heart"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "seno-auriculoventricular",
   "name": {
    "es": "Seno Auriculoventricular",
-   "en": "Atrioventricular node"
+   "en": "Atrioventricular (AV) node region"
   },
-  "laterality": "central",
-  "aliases": [
-   "seno-auriculo-ventricular"
-  ]
+  "laterality": "central"
  },
  {
   "id": "mama",
   "name": {
    "es": "Mama",
-   "en": "Breast"
+   "en": "Breast (mammary gland)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "pleura",
@@ -953,19 +845,15 @@
    "es": "Pleura",
    "en": "Pleura"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "pleura-del-lado-contrario"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "condral",
   "name": {
    "es": "Condral",
-   "en": "Costochondral"
+   "en": "Costal cartilage (chondral)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "apendice-xifoides",
@@ -973,66 +861,63 @@
    "es": "Apéndice Xifoides",
    "en": "Xiphoid process"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "costilla-7",
   "name": {
-   "es": "Séptima Costilla",
+   "es": "Costilla 7",
    "en": "Seventh rib"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "suprahepatico",
   "name": {
    "es": "Suprahepático",
-   "en": "Suprahepatic"
+   "en": "Suprahepatic region"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "hiato-esofagico",
   "name": {
    "es": "Hiato Esofágico",
-   "en": "Esophageal hiatus"
+   "en": "Oesophageal hiatus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "costal-anterior",
   "name": {
    "es": "Costal Anterior",
-   "en": "Anterior costal"
+   "en": "Anterior rib cage"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "parrilla-costal-anterior"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "costal",
   "name": {
    "es": "Costal",
-   "en": "Costal (lateral ribs)"
+   "en": "Lateral rib cage (costal)"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "costilla"
-  ]
+  "laterality": "bilateral"
  },
  {
-  "id": "infra-axilar",
+  "id": "costilla",
+  "name": {
+   "es": "Costilla",
+   "en": "Rib"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "infraaxilar",
   "name": {
    "es": "Infraaxilar",
-   "en": "Infra-axillary"
+   "en": "Infra-axillary region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "axila",
@@ -1040,19 +925,15 @@
    "es": "Axila",
    "en": "Axilla (armpit)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "costodiafragmatico",
   "name": {
    "es": "Costodiafragmático",
-   "en": "Costodiaphragmatic"
+   "en": "Costodiaphragmatic recess"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "costo-diafragmatico"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "higado",
@@ -1060,8 +941,7 @@
    "es": "Hígado",
    "en": "Liver"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "diafragma",
@@ -1069,17 +949,15 @@
    "es": "Diafragma",
    "en": "Diaphragm"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "subdiafragma",
   "name": {
    "es": "Subdiafragma",
-   "en": "Subdiaphragm"
+   "en": "Subdiaphragmatic region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "epigastrio",
@@ -1087,17 +965,15 @@
    "es": "Epigastrio",
    "en": "Epigastrium"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cardias",
   "name": {
    "es": "Cardias",
-   "en": "Cardia"
+   "en": "Cardia (gastro-oesophageal junction)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "estomago",
@@ -1105,8 +981,7 @@
    "es": "Estómago",
    "en": "Stomach"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "ligamento-pancreatico",
@@ -1114,10 +989,7 @@
    "es": "Ligamento Pancreático",
    "en": "Pancreatic ligament"
   },
-  "laterality": "central",
-  "aliases": [
-   "ligamento-panreatico"
-  ]
+  "laterality": "central"
  },
  {
   "id": "ligamento-hepatico",
@@ -1125,26 +997,23 @@
    "es": "Ligamento Hepático",
    "en": "Hepatic ligament"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "costohepatico",
   "name": {
    "es": "Costohepático",
-   "en": "Costohepatic"
+   "en": "Costohepatic (right costal margin over the liver)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "perihepatico",
   "name": {
    "es": "Perihepático",
-   "en": "Perihepatic"
+   "en": "Perihepatic region"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "piloro",
@@ -1152,8 +1021,7 @@
    "es": "Píloro",
    "en": "Pylorus"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "vesicula",
@@ -1161,21 +1029,15 @@
    "es": "Vesícula",
    "en": "Gallbladder"
   },
-  "laterality": "central",
-  "aliases": [
-   "vesicula-biliar"
-  ]
+  "laterality": "central"
  },
  {
   "id": "conducto-de-la-vesicula",
   "name": {
    "es": "Conducto de la Vesícula",
-   "en": "Cystic duct"
+   "en": "Bile duct (cystic / common bile duct)"
   },
-  "laterality": "central",
-  "aliases": [
-   "conducto-de-la-vesicula-biliar"
-  ]
+  "laterality": "central"
  },
  {
   "id": "duodeno",
@@ -1183,28 +1045,23 @@
    "es": "Duodeno",
    "en": "Duodenum"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
-  "id": "valvula-hepatopancreatica",
+  "id": "ampolla-hepatopancreatica",
   "name": {
-   "es": "Válvula Hepatopancreática",
-   "en": "Hepatopancreatic valve"
+   "es": "Ampolla Hepatopancreática",
+   "en": "Hepatopancreatic ampulla (ampulla of Vater)"
   },
-  "laterality": "central",
-  "aliases": [
-   "ampolla-hepatopancreatica"
-  ]
+  "laterality": "central"
  },
  {
   "id": "cabeza-de-pancreas",
   "name": {
    "es": "Cabeza de Páncreas",
-   "en": "Pancreatic head"
+   "en": "Head of the pancreas"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "pancreas",
@@ -1212,35 +1069,31 @@
    "es": "Páncreas",
    "en": "Pancreas"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cuerpo-de-pancreas",
   "name": {
    "es": "Cuerpo de Páncreas",
-   "en": "Pancreatic body"
+   "en": "Body of the pancreas"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cola-de-pancreas",
   "name": {
    "es": "Cola de Páncreas",
-   "en": "Pancreatic tail"
+   "en": "Tail of the pancreas"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "punta-de-pancreas",
   "name": {
    "es": "Punta de Páncreas",
-   "en": "Pancreatic tip"
+   "en": "Tip of the pancreas"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "conducto-del-pancreas",
@@ -1248,17 +1101,31 @@
    "es": "Conducto del Páncreas",
    "en": "Pancreatic duct"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "peripancreatico",
   "name": {
    "es": "Peripancreático",
-   "en": "Peripancreatic"
+   "en": "Peripancreatic region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
+ },
+ {
+  "id": "vena-porta",
+  "name": {
+   "es": "Vena Porta",
+   "en": "Portal vein"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "yeyuno",
+  "name": {
+   "es": "Yeyuno",
+   "en": "Jejunum"
+  },
+  "laterality": "central"
  },
  {
   "id": "bazo",
@@ -1266,17 +1133,7 @@
    "es": "Bazo",
    "en": "Spleen"
   },
-  "laterality": "central",
-  "aliases": []
- },
- {
-  "id": "angulo",
-  "name": {
-   "es": "Ángulo (cólico)",
-   "en": "Colic flexure"
-  },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "colon-transverso",
@@ -1284,10 +1141,7 @@
    "es": "Colon Transverso",
    "en": "Transverse colon"
   },
-  "laterality": "central",
-  "aliases": [
-   "colon-trasnverso"
-  ]
+  "laterality": "central"
  },
  {
   "id": "mesenterio",
@@ -1295,26 +1149,23 @@
    "es": "Mesenterio",
    "en": "Mesentery"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "epiplon",
   "name": {
    "es": "Epiplón",
-   "en": "Omentum"
+   "en": "Greater omentum (epiploon)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "ombligo",
   "name": {
    "es": "Ombligo",
-   "en": "Navel"
+   "en": "Navel (umbilicus)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "colon-ascendente",
@@ -1322,8 +1173,7 @@
    "es": "Colon Ascendente",
    "en": "Ascending colon"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "colon-descendente",
@@ -1331,8 +1181,7 @@
    "es": "Colon Descendente",
    "en": "Descending colon"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "flanco",
@@ -1340,8 +1189,7 @@
    "es": "Flanco",
    "en": "Flank"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "peritoneo",
@@ -1349,55 +1197,47 @@
    "es": "Peritoneo",
    "en": "Peritoneum"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "valvula-ileocecal",
   "name": {
    "es": "Válvula Ileocecal",
-   "en": "Ileocecal valve"
+   "en": "Ileocaecal valve"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "uretero",
   "name": {
-   "es": "Uréter",
+   "es": "Uretero",
    "en": "Ureter"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "ureter"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "ciego",
   "name": {
    "es": "Ciego",
-   "en": "Cecum"
+   "en": "Caecum (cecum)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "contraciego",
   "name": {
    "es": "Contraciego",
-   "en": "Counter-cecum"
+   "en": "Contra-caecum (left iliac fossa, opposite the caecum)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "apendice",
   "name": {
    "es": "Apéndice",
-   "en": "Appendix"
+   "en": "Appendix (vermiform)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "colon-sigmoides",
@@ -1405,29 +1245,23 @@
    "es": "Colon Sigmoides",
    "en": "Sigmoid colon"
   },
-  "laterality": "central",
-  "aliases": [
-   "sigmoides",
-   "colon-sigmoide"
-  ]
+  "laterality": "central"
  },
  {
   "id": "iliaco",
   "name": {
    "es": "Ilíaco",
-   "en": "Iliac fossa"
+   "en": "Iliac fossa (iliacus)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "trompa-de-falopio",
   "name": {
    "es": "Trompa de Falopio",
-   "en": "Fallopian tube"
+   "en": "Fallopian (uterine) tube"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "utero",
@@ -1435,8 +1269,7 @@
    "es": "Útero",
    "en": "Uterus"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "ovario",
@@ -1444,57 +1277,47 @@
    "es": "Ovario",
    "en": "Ovary"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "anexo",
   "name": {
    "es": "Anexo",
-   "en": "Adnexa"
+   "en": "Uterine adnexa"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "vejiga",
   "name": {
    "es": "Vejiga",
-   "en": "Bladder"
+   "en": "Urinary bladder"
   },
-  "laterality": "central",
-  "aliases": [
-   "vejiga-urinaria"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "nervio-inguinal",
   "name": {
    "es": "Nervio Inguinal",
-   "en": "Inguinal nerve"
+   "en": "Inguinal (ilioinguinal) nerve"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "inguinal"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "suprapubico",
   "name": {
    "es": "Suprapúbico",
-   "en": "Suprapubic"
+   "en": "Suprapubic region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "saco-de-douglas",
   "name": {
    "es": "Saco de Douglas",
-   "en": "Pouch of Douglas"
+   "en": "Pouch of Douglas (recto-uterine pouch)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "ingle",
@@ -1502,8 +1325,7 @@
    "es": "Ingle",
    "en": "Groin"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "conducto-espermatico",
@@ -1511,17 +1333,7 @@
    "es": "Conducto Espermático",
    "en": "Spermatic cord"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "pubis",
-  "name": {
-   "es": "Pubis",
-   "en": "Pubis"
-  },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "prostata",
@@ -1529,8 +1341,7 @@
    "es": "Próstata",
    "en": "Prostate"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "conducto-deferente",
@@ -1538,8 +1349,7 @@
    "es": "Conducto Deferente",
    "en": "Vas deferens"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "uretra",
@@ -1547,8 +1357,7 @@
    "es": "Uretra",
    "en": "Urethra"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "clitoris",
@@ -1556,8 +1365,7 @@
    "es": "Clítoris",
    "en": "Clitoris"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "pene",
@@ -1565,8 +1373,7 @@
    "es": "Pene",
    "en": "Penis"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "esfinter-uretral",
@@ -1574,19 +1381,15 @@
    "es": "Esfínter Uretral",
    "en": "Urethral sphincter"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "esfintar-uretral"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "pudendo",
   "name": {
    "es": "Pudendo",
-   "en": "Pudendal"
+   "en": "Pudendal region (pudendal nerve)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "vagina",
@@ -1594,8 +1397,7 @@
    "es": "Vagina",
    "en": "Vagina"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "testiculo",
@@ -1603,8 +1405,7 @@
    "es": "Testículo",
    "en": "Testicle"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "suelo-pelvico",
@@ -1612,8 +1413,7 @@
    "es": "Suelo Pélvico",
    "en": "Pelvic floor"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cresta-iliaca",
@@ -1621,8 +1421,7 @@
    "es": "Cresta Ilíaca",
    "en": "Iliac crest"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cadera",
@@ -1630,8 +1429,7 @@
    "es": "Cadera",
    "en": "Hip"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "trapecio",
@@ -1639,8 +1437,7 @@
    "es": "Trapecio",
    "en": "Trapezius"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "supraespinoso",
@@ -1648,8 +1445,7 @@
    "es": "Supraespinoso",
    "en": "Supraspinatus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "escapula",
@@ -1657,19 +1453,15 @@
    "es": "Escápula",
    "en": "Scapula"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "retroaxilar",
   "name": {
    "es": "Retroaxilar",
-   "en": "Posterior axillary fold"
+   "en": "Retro-axillary (posterior axillary fold)"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "retro-axilar"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "latissimus-dorsi",
@@ -1677,169 +1469,111 @@
    "es": "Latissimus Dorsi",
    "en": "Latissimus dorsi"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "latisimus"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "paravertebral",
   "name": {
    "es": "Paravertebral",
-   "en": "Paravertebral"
+   "en": "Paravertebral region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "dorsal-1",
   "name": {
    "es": "Dorsal 1",
-   "en": "Thoracic 1 (T1)"
+   "en": "T1 (first thoracic vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "dorsal-2",
   "name": {
    "es": "Dorsal 2",
-   "en": "Thoracic 2 (T2)"
+   "en": "T2 (second thoracic vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "dorsal-3",
   "name": {
    "es": "Dorsal 3",
-   "en": "Thoracic 3 (T3)"
+   "en": "T3 (third thoracic vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
- },
- {
-  "id": "dorsal-4",
-  "name": {
-   "es": "Dorsal 4",
-   "en": "Thoracic 4 (T4)"
-  },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "dorsal-5",
   "name": {
    "es": "Dorsal 5",
-   "en": "Thoracic 5 (T5)"
+   "en": "T5 (fifth thoracic vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "dorsal",
   "name": {
    "es": "Dorsal",
-   "en": "Thoracic spine"
+   "en": "Thoracic spine (dorsal vertebrae)"
   },
-  "laterality": "central",
-  "aliases": [
-   "dorsal-6"
-  ]
+  "laterality": "central"
+ },
+ {
+  "id": "dorsal-6",
+  "name": {
+   "es": "Dorsal 6",
+   "en": "T6 (sixth thoracic vertebra)"
+  },
+  "laterality": "central"
  },
  {
   "id": "dorsal-7",
   "name": {
    "es": "Dorsal 7",
-   "en": "Thoracic 7 (T7)"
+   "en": "T7 (seventh thoracic vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "dorso",
   "name": {
    "es": "Dorso",
-   "en": "Upper back"
+   "en": "Upper back (dorsum)"
   },
-  "laterality": "central",
-  "aliases": []
- },
- {
-  "id": "dorsal-8",
-  "name": {
-   "es": "Dorsal 8",
-   "en": "Thoracic 8 (T8)"
-  },
-  "laterality": "central",
-  "aliases": []
- },
- {
-  "id": "dorsal-9",
-  "name": {
-   "es": "Dorsal 9",
-   "en": "Thoracic 9 (T9)"
-  },
-  "laterality": "central",
-  "aliases": []
- },
- {
-  "id": "dorsal-10",
-  "name": {
-   "es": "Dorsal 10",
-   "en": "Thoracic 10 (T10)"
-  },
-  "laterality": "central",
-  "aliases": []
- },
- {
-  "id": "dorsal-11",
-  "name": {
-   "es": "Dorsal 11",
-   "en": "Thoracic 11 (T11)"
-  },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "dorsal-12",
   "name": {
    "es": "Dorsal 12",
-   "en": "Thoracic 12 (T12)"
+   "en": "T12 (twelfth thoracic vertebra)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "retrohepatico",
   "name": {
    "es": "Retrohepático",
-   "en": "Retrohepatic"
+   "en": "Retrohepatic region"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "suprarrenal",
   "name": {
    "es": "Suprarrenal",
-   "en": "Adrenal gland"
+   "en": "Adrenal (suprarenal) gland"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "suprarrenales"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "lumbar-1",
   "name": {
-   "es": "Primera Lumbar",
-   "en": "Lumbar 1 (L1)"
+   "es": "Lumbar 1",
+   "en": "L1 (first lumbar vertebra)"
   },
-  "laterality": "central",
-  "aliases": [
-   "primera-lumbar"
-  ]
+  "laterality": "central"
  },
  {
   "id": "capsula-renal",
@@ -1847,8 +1581,7 @@
    "es": "Cápsula Renal",
    "en": "Renal capsule"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "rinon",
@@ -1856,11 +1589,7 @@
    "es": "Riñón",
    "en": "Kidney"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "rinon-contralateral",
-   "rinon-izq"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "caliz-renal",
@@ -1868,28 +1597,15 @@
    "es": "Cáliz Renal",
    "en": "Renal calyx"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "lumbar-2",
-  "name": {
-   "es": "Segunda Lumbar",
-   "en": "Lumbar 2 (L2)"
-  },
-  "laterality": "central",
-  "aliases": [
-   "segunda-lumbar"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "perirrenal",
   "name": {
    "es": "Perirrenal",
-   "en": "Perirenal"
+   "en": "Perirenal region"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "lumbar",
@@ -1897,11 +1613,15 @@
    "es": "Lumbar",
    "en": "Lumbar spine"
   },
-  "laterality": "central",
-  "aliases": [
-   "lumbar-3",
-   "tercera-lumbar"
-  ]
+  "laterality": "central"
+ },
+ {
+  "id": "lumbar-3",
+  "name": {
+   "es": "Lumbar 3",
+   "en": "L3 (third lumbar vertebra)"
+  },
+  "laterality": "central"
  },
  {
   "id": "plexo-lumbar",
@@ -1909,8 +1629,7 @@
    "es": "Plexo Lumbar",
    "en": "Lumbar plexus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cuadrado-lumbar",
@@ -1918,39 +1637,39 @@
    "es": "Cuadrado Lumbar",
    "en": "Quadratus lumborum"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cuarta-lumbar",
   "name": {
    "es": "Cuarta Lumbar",
-   "en": "Lumbar 4 (L4)"
+   "en": "L4 (fourth lumbar vertebra)"
   },
-  "laterality": "central",
-  "aliases": [
-   "lumbar-4"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "quinta-lumbar",
   "name": {
    "es": "Quinta Lumbar",
-   "en": "Lumbar 5 (L5)"
+   "en": "L5 (fifth lumbar vertebra)"
   },
-  "laterality": "central",
-  "aliases": [
-   "lumbar-5"
-  ]
+  "laterality": "bilateral"
+ },
+ {
+  "id": "cola-de-caballo",
+  "name": {
+   "es": "Cola de Caballo",
+   "en": "Cauda equina"
+  },
+  "laterality": "central"
  },
  {
   "id": "interiliaco",
   "name": {
    "es": "Interilíaco",
-   "en": "Interiliac"
+   "en": "Interiliac region (between the iliac crests)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "sacro",
@@ -1958,10 +1677,7 @@
    "es": "Sacro",
    "en": "Sacrum"
   },
-  "laterality": "central",
-  "aliases": [
-   "sacro-contralateral"
-  ]
+  "laterality": "central"
  },
  {
   "id": "escotadura-ciatica",
@@ -1969,8 +1685,7 @@
    "es": "Escotadura Ciática",
    "en": "Sciatic notch"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "coxis",
@@ -1978,19 +1693,15 @@
    "es": "Coxis",
    "en": "Coccyx"
   },
-  "laterality": "central",
-  "aliases": [
-   "coxigeo"
-  ]
+  "laterality": "central"
  },
  {
   "id": "gluteo",
   "name": {
    "es": "Glúteo",
-   "en": "Gluteus"
+   "en": "Gluteal region (buttock)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "recto",
@@ -1998,8 +1709,7 @@
    "es": "Recto",
    "en": "Rectum"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "ano",
@@ -2007,17 +1717,15 @@
    "es": "Ano",
    "en": "Anus"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "cresta-isquiatica",
   "name": {
    "es": "Cresta Isquiática",
-   "en": "Ischial crest"
+   "en": "Ischial crest (ischial tuberosity)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "isquion",
@@ -2025,8 +1733,7 @@
    "es": "Isquión",
    "en": "Ischium"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "rama-isquiatica",
@@ -2034,26 +1741,15 @@
    "es": "Rama Isquiática",
    "en": "Ischial ramus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "acromion",
   "name": {
-   "es": "Acromion",
+   "es": "Acromión",
    "en": "Acromion"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "munon",
-  "name": {
-   "es": "Muñón (del hombro)",
-   "en": "Shoulder cap"
-  },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "hombro",
@@ -2061,17 +1757,15 @@
    "es": "Hombro",
    "en": "Shoulder"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "bursa",
   "name": {
    "es": "Bursa",
-   "en": "Subacromial bursa"
+   "en": "Bursa (axilla–arm junction)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "deltoides",
@@ -2079,19 +1773,15 @@
    "es": "Deltoides",
    "en": "Deltoid"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "deltoides-medio"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "vacuna",
   "name": {
    "es": "Vacuna",
-   "en": "Vaccination site"
+   "en": "Vaccination site (vaccine scar)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "central"
  },
  {
   "id": "humero",
@@ -2099,26 +1789,23 @@
    "es": "Húmero",
    "en": "Humerus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "braquial",
   "name": {
    "es": "Braquial",
-   "en": "Brachial"
+   "en": "Brachial (upper arm, brachialis)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "biceps",
   "name": {
    "es": "Bíceps",
-   "en": "Biceps"
+   "en": "Biceps brachii"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "codo",
@@ -2126,8 +1813,7 @@
    "es": "Codo",
    "en": "Elbow"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "radio",
@@ -2135,8 +1821,7 @@
    "es": "Radio",
    "en": "Radius"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "cubito",
@@ -2144,8 +1829,7 @@
    "es": "Cúbito",
    "en": "Ulna"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "muneca",
@@ -2153,17 +1837,7 @@
    "es": "Muñeca",
    "en": "Wrist"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "lunar",
-  "name": {
-   "es": "Lunar (semilunar)",
-   "en": "Lunate (wrist)"
-  },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "tunel-carpiano",
@@ -2171,35 +1845,23 @@
    "es": "Túnel Carpiano",
    "en": "Carpal tunnel"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "palma",
   "name": {
    "es": "Palma",
-   "en": "Palm"
+   "en": "Palm of the hand"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "mano",
-  "name": {
-   "es": "Mano",
-   "en": "Hand"
-  },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "dorso-de-la-mano",
   "name": {
    "es": "Dorso de la Mano",
-   "en": "Back of the hand"
+   "en": "Back of the hand (dorsum of the hand)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "indice",
@@ -2207,10 +1869,7 @@
    "es": "Índice",
    "en": "Index finger"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "dedo-indice"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "trocanter-mayor",
@@ -2218,8 +1877,7 @@
    "es": "Trocánter Mayor",
    "en": "Greater trochanter"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "tensor-de-la-fascia-lata",
@@ -2227,22 +1885,15 @@
    "es": "Tensor de la Fascia Lata",
    "en": "Tensor fasciae latae"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "tensor-de-las-fascia-lata"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "retrotensor-de-la-fascia-lata",
   "name": {
    "es": "Retrotensor de la Fascia Lata",
-   "en": "Posterior tensor fasciae latae"
+   "en": "Posterior tensor fasciae latae region"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "retrotensor-de-las-fascia-lata",
-   "retro-tensor-de-la-fascia-lata"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "vena-femoral",
@@ -2250,8 +1901,7 @@
    "es": "Vena Femoral",
    "en": "Femoral vein"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "trocanter-menor",
@@ -2259,46 +1909,47 @@
    "es": "Trocánter Menor",
    "en": "Lesser trochanter"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "aductor",
   "name": {
    "es": "Aductor",
-   "en": "Adductor"
+   "en": "Adductor muscles (inner thigh)"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "aductor-menor"
-  ]
+  "laterality": "bilateral"
+ },
+ {
+  "id": "aductor-menor",
+  "name": {
+   "es": "Aductor Menor",
+   "en": "Adductor brevis"
+  },
+  "laterality": "bilateral"
  },
  {
   "id": "cuadriceps",
   "name": {
    "es": "Cuádriceps",
-   "en": "Quadriceps"
+   "en": "Quadriceps femoris"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
-  "id": "femur",
+  "id": "cuello-de-femur",
   "name": {
-   "es": "Fémur",
-   "en": "Femur"
+   "es": "Cuello de Fémur",
+   "en": "Neck of the femur"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "ciatico",
   "name": {
    "es": "Ciático",
-   "en": "Sciatic"
+   "en": "Sciatic nerve"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "rodilla",
@@ -2306,59 +1957,47 @@
    "es": "Rodilla",
    "en": "Knee"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
-  "id": "lig-ext-de-la-rodilla",
+  "id": "ligamento-externo-de-la-rodilla",
   "name": {
    "es": "Ligamento Externo de la Rodilla",
-   "en": "Lateral knee ligament"
+   "en": "Lateral collateral ligament of the knee"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "ligamento-externo-de-la-rodilla",
-   "ligamento-externo"
-  ]
+  "laterality": "bilateral"
  },
  {
-  "id": "lig-int-de-la-rodilla",
+  "id": "ligamento-interno-de-la-rodilla",
   "name": {
    "es": "Ligamento Interno de la Rodilla",
-   "en": "Medial knee ligament"
+   "en": "Medial collateral ligament of the knee"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "ligamento-interno-de-la-rodilla",
-   "ligamento-interno"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "rotula",
   "name": {
    "es": "Rótula",
-   "en": "Kneecap"
+   "en": "Patella (kneecap)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "articulacion",
   "name": {
    "es": "Articulación",
-   "en": "Joint (generic)"
+   "en": "Joint (any affected joint)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "popliteo",
   "name": {
    "es": "Poplíteo",
-   "en": "Popliteal"
+   "en": "Popliteal fossa (back of the knee)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "gastrocnemio",
@@ -2366,17 +2005,15 @@
    "es": "Gastrocnemio",
    "en": "Gastrocnemius"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "nutricia",
   "name": {
    "es": "Nutricia",
-   "en": "Nutrient foramen (tibia)"
+   "en": "Nutricia (nutrient-foramen point)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "tibia",
@@ -2384,8 +2021,7 @@
    "es": "Tibia",
    "en": "Tibia"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "perone",
@@ -2393,17 +2029,7 @@
    "es": "Peroné",
    "en": "Fibula"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "tibia-inferior",
-  "name": {
-   "es": "Tibia Inferior",
-   "en": "Lower tibia"
-  },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "aquiles",
@@ -2411,30 +2037,23 @@
    "es": "Aquiles",
    "en": "Achilles tendon"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
-  "id": "maleolo-int",
+  "id": "maleolo-interno",
   "name": {
    "es": "Maléolo Interno",
    "en": "Medial malleolus"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "maleolo-interno"
-  ]
+  "laterality": "bilateral"
  },
  {
-  "id": "maleolo-ext",
+  "id": "maleolo-externo",
   "name": {
    "es": "Maléolo Externo",
    "en": "Lateral malleolus"
   },
-  "laterality": "bilateral",
-  "aliases": [
-   "maleolo-externo"
-  ]
+  "laterality": "bilateral"
  },
  {
   "id": "tobillo",
@@ -2442,17 +2061,15 @@
    "es": "Tobillo",
    "en": "Ankle"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "empeine",
   "name": {
    "es": "Empeine",
-   "en": "Instep"
+   "en": "Instep (dorsum of the foot)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "tarso",
@@ -2460,26 +2077,15 @@
    "es": "Tarso",
    "en": "Tarsus"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
-  "id": "pie",
+  "id": "dedo-gordo-del-pie",
   "name": {
-   "es": "Pie",
-   "en": "Foot"
+   "es": "Dedo Gordo del Pie",
+   "en": "Big toe (hallux)"
   },
-  "laterality": "bilateral",
-  "aliases": []
- },
- {
-  "id": "dedo-gordo",
-  "name": {
-   "es": "Dedo Gordo",
-   "en": "Big toe"
-  },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "talon",
@@ -2487,43 +2093,214 @@
    "es": "Talón",
    "en": "Heel"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "calcaneo",
   "name": {
    "es": "Calcáneo",
-   "en": "Calcaneus"
+   "en": "Calcaneus (heel bone)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
   "id": "retroplantar",
   "name": {
    "es": "Retroplantar",
-   "en": "Rear sole"
+   "en": "Retroplantar (rear of the sole)"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
  },
  {
-  "id": "planta",
+  "id": "planta-del-pie",
   "name": {
-   "es": "Planta",
-   "en": "Sole"
+   "es": "Planta del Pie",
+   "en": "Sole of the foot"
   },
-  "laterality": "bilateral",
-  "aliases": []
+  "laterality": "bilateral"
+ },
+ {
+  "id": "arco-del-pie",
+  "name": {
+   "es": "Arco del Pie",
+   "en": "Arch of the foot"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "antecuerno",
+  "name": {
+   "es": "Antecuerno",
+   "en": "Antecuerno (anterior \"horn\" point of the head)"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "suprasensorial",
+  "name": {
+   "es": "Suprasensorial",
+   "en": "Suprasensorial point"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "nucleos-basales",
+  "name": {
+   "es": "Núcleos Basales",
+   "en": "Basal ganglia"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "nervio-trigemino",
+  "name": {
+   "es": "Nervio Trigémino",
+   "en": "Trigeminal nerve"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "tallo-cerebral",
+  "name": {
+   "es": "Tallo Cerebral",
+   "en": "Brainstem"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "lobulo-posterior-del-higado",
+  "name": {
+   "es": "Lóbulo Posterior del Hígado",
+   "en": "Posterior lobe of the liver"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "arteria-femoral",
+  "name": {
+   "es": "Arteria Femoral",
+   "en": "Femoral artery"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "nervio-femoral",
+  "name": {
+   "es": "Nervio Femoral",
+   "en": "Femoral nerve"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "pliegue-inguinal",
+  "name": {
+   "es": "Pliegue Inguinal",
+   "en": "Inguinal fold (groin crease)"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "hernia",
+  "name": {
+   "es": "Hernia",
+   "en": "Hernia site"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "cabeza-de-perone",
+  "name": {
+   "es": "Cabeza de Peroné",
+   "en": "Head of the fibula"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "tendon-del-cuadriceps",
+  "name": {
+   "es": "Tendón del Cuádriceps",
+   "en": "Quadriceps tendon"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "tendon-del-triceps",
+  "name": {
+   "es": "Tendón del Tríceps",
+   "en": "Triceps tendon"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "tendon",
+  "name": {
+   "es": "Tendón",
+   "en": "Tendon (affected tendon)"
+  },
+  "laterality": "bilateral"
+ },
+ {
+  "id": "cicatriz",
+  "name": {
+   "es": "Cicatriz",
+   "en": "Scar"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "quemadura",
+  "name": {
+   "es": "Quemadura",
+   "en": "Burn site"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "verruga",
+  "name": {
+   "es": "Verruga",
+   "en": "Wart site"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "lunar",
+  "name": {
+   "es": "Lunar",
+   "en": "Mole (naevus; any mole)"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "munon",
+  "name": {
+   "es": "Muñón",
+   "en": "Stump / scar-tissue knot"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "mordida",
+  "name": {
+   "es": "Mordida",
+   "en": "Animal-bite site"
+  },
+  "laterality": "central"
+ },
+ {
+  "id": "variable",
+  "name": {
+   "es": "Variable",
+   "en": "Variable (affected tissue, organ or system)"
+  },
+  "laterality": "central"
  },
  {
   "id": "todo-el-frente",
   "name": {
    "es": "Todo el Frente",
-   "en": "Whole front"
+   "en": "Entire front of the body (thorax and abdomen)"
   },
-  "laterality": "central",
-  "aliases": []
+  "laterality": "central"
  }
 ]

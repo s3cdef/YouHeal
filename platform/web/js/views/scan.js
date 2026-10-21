@@ -2,11 +2,11 @@
 import { el, mount, clear, debounce, isTypingTarget, nextId } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { api, items, errorMessage, NetworkError, ApiError } from '../api.js';
-import { t, locText, locNode, getLocale, fmtDuration, ageFrom, fmtDate } from '../i18n.js';
+import { t, locText, locNode, getLocale, fmtDuration, ageFrom, fmtDate, vocab } from '../i18n.js';
 import { navigate, setLeaveGuard } from '../router.js';
 import { state, can, loadCore, getPair, getPointPairs, getProtocol, protocolPairIds, polarity, getList, normSession, normQualifiers } from '../state.js';
 import { combobox } from '../ui/combobox.js';
-import { tabs, segmented, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, select, ratingsRow, statusBadge } from '../ui/components.js';
+import { tabs, segmented, toggleSwitch, stateBadge, categoryChip, pairPoles, emptyState, alertBox, skeleton, chip, field, input, textarea, kbd, ratingsRow, statusBadge } from '../ui/components.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { toast, announce } from '../ui/toast.js';
 import { createViewer, renderSnapshots } from '../bodymap/host.js';
@@ -202,7 +202,10 @@ export async function renderScan({ main, params }) {
     if (st.activeProtocols.includes(protoId)) { toast(t('scan.protocolAlready'), { tone: 'info' }); return; }
     let ids = [];
     if (protoId === '__h2t') {
-      ids = [...core.pairs.values()].sort((a, b) => (pointsMap.get(b.tracking.point)?.pos?.y ?? 0) - (pointsMap.get(a.tracking.point)?.pos?.y ?? 0) || a.number - b.number).map((p) => p.id);
+      // Full head-to-toe over the numbered guide pairs (levels 1–2): by tracking-point height when anatomy is known, else by number.
+      const y = (p) => pointsMap.get(p.tracking.point)?.pos?.y;
+      ids = [...core.pairs.values()].filter((p) => p.level === 1 || p.level === 2)
+        .sort((a, b) => ((y(b) ?? -1) - (y(a) ?? -1)) || (a.number ?? 1e9) - (b.number ?? 1e9)).map((p) => p.id);
     } else {
       try { ids = protocolPairIds(await getProtocol(protoId)); } catch (err) { toast(errorMessage(err), { tone: 'error' }); return; }
     }
@@ -325,15 +328,28 @@ export async function renderScan({ main, params }) {
   mount(left, el('div.pane-head', el('h2.pane-title', t('scan.protocolPane')), el('button.icon-btn.pane-close', { type: 'button', aria: { label: t('common.close') }, onClick: () => setPane('left', false) }, icon('x'))), leftTabs.root, leftTabs.panel);
 
   function protocolPanel() {
-    const opts = [{ value: '', label: t('scan.chooseProtocol') },
-      ...PROTOCOL_KINDS.map((k) => ({ group: t(`protocolKind.${k}`), options: core.protocols.filter((p) => p.kind === k).map((p) => ({ value: p.id, label: `${locText(p.name)}${p.count ? ` (${p.count})` : ''}` })) })).filter((g) => g.options.length),
-      { group: t('scan.other'), options: [{ value: '__h2t', label: t('scan.headToToe', { count: core.pairs.size }) }] }];
-    const sel = select(opts, { id: 'proto-select', disabled: readOnly });
-    const addBtn = el('button.btn.btn-secondary', { type: 'button', disabled: readOnly }, icon('plus', { size: 18 }), t('common.add'));
-    addBtn.addEventListener('click', () => { if (sel.value) { addProtocol(sel.value); sel.value = ''; } });
-    sel.addEventListener('change', () => { if (sel.value) { addProtocol(sel.value); sel.value = ''; } });
+    let kindFilter = '';
+    const kinds = PROTOCOL_KINDS.filter((k) => core.protocols.some((p) => p.kind === k));
+    const kindSeg = segmented({ name: 'pkind', label: t('scan.protocolKind'), value: '', size: 'xs',
+      options: [{ value: '', label: t('common.all') }, ...kinds.map((k) => ({ value: k, label: t(`protocolKindShort.${k}`) }))], onChange: (v) => { kindFilter = v; picker.focus(); } });
+    const nrm = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const picker = combobox({
+      label: t('scan.chooseProtocol'), placeholder: t('scan.searchProtocols', { count: core.protocols.length }), size: 'sm', iconName: 'list', minChars: 0,
+      emptyText: () => t('scan.noProtocolMatch'),
+      source: async (q) => {
+        const n = nrm(q);
+        return core.protocols
+          .filter((p) => (!kindFilter || p.kind === kindFilter) && (!n || nrm(`${p.name.en || ''} ${p.name.es || ''} ${p.id}`).includes(n)) && !st.activeProtocols.includes(p.id))
+          .sort((x, y) => PROTOCOL_KINDS.indexOf(x.kind) - PROTOCOL_KINDS.indexOf(y.kind) || locText(x.name).localeCompare(locText(y.name)))
+          .slice(0, 40)
+          .map((p) => ({ id: p.id, label: locText(p.name), sublabel: `${t(`protocolKind.${p.kind}`)}${p.count ? ` · ${t('catalog.pairsCount', { count: p.count })}` : ''}` }));
+      },
+      onSelect: (it) => addProtocol(it.id),
+    });
+    picker.input.addEventListener('focus', () => { if (!picker.input.value) picker.input.dispatchEvent(new Event('input')); });
+    const h2t = el('button.btn.btn-sm.btn-ghost', { type: 'button', disabled: readOnly, onClick: () => addProtocol('__h2t') }, icon('layers', { size: 16 }), t('scan.headToToe', { count: [...core.pairs.values()].filter((p) => p.level === 1 || p.level === 2).length }));
     const wrap = el('div.protocol-panel',
-      readOnly ? null : el('div.proto-add', el('label.sr-only', { for: 'proto-select' }, t('scan.chooseProtocol')), sel, addBtn),
+      readOnly ? null : el('div.proto-add', kindSeg, picker.root, h2t),
       activeProtoEl, progressEl, checklistEl,
       el('p.kbd-hint', kbd('J'), '/', kbd('K'), ` ${t('scan.kNav')} · `, kbd('F'), ` ${t('state.found')} · `, kbd('N'), ` ${t('state.not-present')} · `, kbd('I'), ` ${t('state.impacted')} · `, kbd('C'), ` ${t('state.cleared')}`));
     renderLeft();
@@ -393,7 +409,7 @@ export async function renderScan({ main, params }) {
     const resultsEl = el('div.suggest-results', { aria: { live: 'polite' } });
     const cb = combobox({
       label: t('scan.symptomSearch'), placeholder: t('scan.symptomPlaceholder'), hideLabel: false,
-      source: async (q) => items(await api.get('/catalog/symptoms', { q })).filter((s) => !st.symptoms.includes(s.id)).slice(0, 10).map((s) => ({ id: s.id, label: locText(s.name), sublabel: t(`system.${s.system}`) })),
+      source: async (q) => items(await api.get('/catalog/symptoms', { q })).filter((s) => !st.symptoms.includes(s.id)).slice(0, 10).map((s) => ({ id: s.id, label: locText(s.name), sublabel: vocab("systems", s.system) })),
       onSelect: (it) => { if (!st.symptoms.includes(it.id)) { st.symptoms.push(it.id); patchSession({ symptoms: st.symptoms }); renderSymptomChips(); } },
       onEnterText: (txt) => { freeText.value = freeText.value ? `${freeText.value}, ${txt}` : txt; directed.text = freeText.value; },
     });
@@ -503,11 +519,26 @@ export async function renderScan({ main, params }) {
           el('span', locText(p.name)), p.laterality === 'bilateral' ? el('span.muted.small', t('point.bilateral')) : null)))))));
   }
 
+  // Pairs with explicit multi-magnet placements (e.g. four-point pancreas) come from the pair detail.
+  const pairMagnets = new Map();
+  function ensurePairMagnets(pairId) {
+    if (!pairId || pairMagnets.has(pairId)) return;
+    pairMagnets.set(pairId, null);
+    getPair(pairId).then((d) => { if (d && Array.isArray(d.magnets) && d.magnets.length) { pairMagnets.set(pairId, d.magnets); syncViewer(); } }).catch(() => {});
+  }
   function magnetsAndPairs() {
     const mags = []; const prs = [];
     st.findings.forEach((f, i) => {
       const label = String(i + 1);
       const done = f.status === 'cleared' ? 'done' : 'active';
+      ensurePairMagnets(f.pairId);
+      const multi = pairMagnets.get(f.pairId);
+      if (multi) {
+        const seq = [...multi].sort((a, b) => (a.order || 0) - (b.order || 0));
+        seq.forEach((m, k) => mags.push({ id: `${f.id}-m${k}`, pointId: m.point, side: m.side || 'C', polarity: m.polarity, label, state: done }));
+        for (let k = 0; k + 1 < seq.length; k += 2) prs.push({ id: `${f.id}-p${k}`, a: { pointId: seq[k].point, side: seq[k].side || 'C' }, b: { pointId: seq[k + 1].point, side: seq[k + 1].side || 'C' }, state: f.status });
+        return;
+      }
       mags.push({ id: `${f.id}-n`, pointId: f.trackingPoint, side: f.trackingSide, polarity: 'negative', label, state: done });
       mags.push({ id: `${f.id}-p`, pointId: f.impactPoint, side: f.impactSide, polarity: 'positive', label, state: done });
       prs.push({ id: f.id, a: { pointId: f.trackingPoint, side: f.trackingSide }, b: { pointId: f.impactPoint, side: f.impactSide }, state: f.status });
@@ -535,7 +566,10 @@ export async function renderScan({ main, params }) {
     viewer = v; viewerKind = kind;
     const ld = viewerHost.querySelector('.viewer-loading'); if (ld) ld.remove();
     viewer.setView(st.view); viewer.setShowAllPoints(st.showAll);
-    if (kind === '2d') { fallbackNote.hidden = false; fallbackNote.textContent = t('viewer.fallbackNote'); }
+    const notes = [];
+    if (kind === '2d') notes.push(t('viewer.fallbackNote'));
+    if (core.positioned < core.pointList.length) notes.push(t('viewer.missingAnatomy', { n: core.pointList.length - core.positioned }));
+    if (notes.length) { fallbackNote.hidden = false; fallbackNote.textContent = notes.join(' '); }
     syncViewer();
     const cur = st.checklist[st.cursor]; if (cur) { const p = pairOf(cur.pairId); if (p) viewer.highlight([p.tracking.point, p.impact.point], { pulse: true }); }
     const ro = new ResizeObserver(() => { try { viewer.resize(); } catch { /* ignore */ } });
@@ -591,7 +625,7 @@ export async function renderScan({ main, params }) {
         const full = await getPair(summary.id);
         const inScan = st.checklist.some((c) => c.pairId === summary.id);
         const f = findingFor(summary.id);
-        mount(panel, pairDetailBody(full, pointsMap, { role }),
+        mount(panel, pairDetailBody(full, core, { role, onOpenPair: (pid) => { const q = pairOf(pid); if (q) openPointDrawer(q.tracking.point, { pairId: pid }); } }),
           readOnly ? null : el('div.pa-actions',
             el('button.btn.btn-primary', { type: 'button', disabled: !!f, onClick: () => { addFinding(summary.id, 'found'); setCursor(st.checklist.findIndex((c) => c.pairId === summary.id), { focus: false }); load(); } }, icon('target', { size: 18 }), f ? t('scan.alreadyFound') : t('scan.markFound')),
             el('button.btn.btn-secondary', { type: 'button', disabled: inScan, onClick: () => { addToChecklist(summary.id, 'manual'); renderLeft(); syncViewer(); load(); toast(t('scan.addedToScan', { count: 1 }), { tone: 'success' }); } }, icon('plus', { size: 18 }), inScan ? t('scan.inScan') : t('scan.addToScan'))));
@@ -613,7 +647,7 @@ export async function renderScan({ main, params }) {
   symChipTargets.add(symChipsRight);
   const symCb = readOnly ? null : combobox({
     label: t('scan.addSymptom'), placeholder: t('scan.addSymptom'), size: 'sm',
-    source: async (q) => items(await api.get('/catalog/symptoms', { q })).filter((s) => !st.symptoms.includes(s.id)).slice(0, 8).map((s) => ({ id: s.id, label: locText(s.name), sublabel: t(`system.${s.system}`) })),
+    source: async (q) => items(await api.get('/catalog/symptoms', { q })).filter((s) => !st.symptoms.includes(s.id)).slice(0, 8).map((s) => ({ id: s.id, label: locText(s.name), sublabel: vocab("systems", s.system) })),
     onSelect: (it) => { if (!st.symptoms.includes(it.id)) { st.symptoms.push(it.id); patchSession({ symptoms: st.symptoms }); renderSymptomChips(); } },
   });
   const findingsEl = el('ol.findings');

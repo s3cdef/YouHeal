@@ -1,6 +1,6 @@
 // App-wide state: signed-in user, clinic profile, catalog cache. In-memory only (no PHI in storage).
 import { api, items } from './api.js';
-import { locText } from './i18n.js';
+import { locText, setVocabularies } from './i18n.js';
 
 export const state = {
   user: null,
@@ -56,13 +56,17 @@ const cache = {
 export function loadCore() {
   if (cache.core) return cache.core;
   cache.core = (async () => {
-    const [points, regions, pairs, protocols] = await Promise.all([
-      api.get('/catalog/points'), api.get('/catalog/regions'), api.get('/catalog/pairs', { limit: 5000 }), api.get('/catalog/protocols'),
+    const [points, regions, pairs, protocols, symptoms, manifest] = await Promise.all([
+      api.get('/catalog/points', { limit: 5000 }), api.get('/catalog/regions', { limit: 5000 }), api.get('/catalog/pairs', { limit: 5000 }),
+      api.get('/catalog/protocols', { limit: 5000 }), api.get('/catalog/symptoms', { limit: 5000 }), api.get('/catalog/manifest').catch(() => null),
     ]);
+    if (manifest && manifest.vocabularies) setVocabularies(manifest.vocabularies);
     const pts = new Map(items(points).map((p) => [p.id, p]));
     const prs = new Map(items(pairs).map((p) => [p.id, p]));
     for (const p of items(protocols)) if (p.count === undefined && p.pairCount !== undefined) p.count = p.pairCount;
-    return { points: pts, pointList: items(points), regions: items(regions), pairs: prs, protocols: items(protocols) };
+    const syms = new Map(items(symptoms).map((x) => [x.id, x]));
+    const positioned = items(points).filter((p) => p.pos && Number.isFinite(p.pos.y)).length;
+    return { points: pts, pointList: items(points), regions: items(regions), pairs: prs, protocols: items(protocols), symptoms: syms, manifest, positioned };
   })().catch((e) => { cache.core = null; throw e; });
   return cache.core;
 }

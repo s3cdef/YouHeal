@@ -348,7 +348,7 @@ export async function createBodyViewer(container, opts = {}) {
       pl.mesh = mesh;
       magnetKeys.add(pl.inst.key);
       if (pl.m.label) {
-        const g = labelGroups.get(pl.inst.key) || { inst: pl.inst, labels: [], pos: pl.p.clone(), n: pl.n.clone() };
+        const g = labelGroups.get(pl.inst.key) || { inst: pl.inst, labels: [], center: pl.inst.position.clone(), n: pl.n.clone(), halfWidth: (pl.groupSize * (TILE + 0.003)) / 2 };
         if (!g.labels.includes(pl.m.label)) g.labels.push(pl.m.label);
         labelGroups.set(pl.inst.key, g);
       }
@@ -359,7 +359,7 @@ export async function createBodyViewer(container, opts = {}) {
       el.textContent = g.labels.join(' · ');
       el.hidden = true;
       overlay.appendChild(el);
-      labelEls.push({ el, pos: g.pos.clone().addScaledVector(g.n, 0.01), n: g.n });
+      labelEls.push({ el, pos: g.center.addScaledVector(g.n, 0.01), n: g.n, halfWidth: g.halfWidth, halfWidthPx: 14 });
     }
     lastPlacements = placed;
     updatePointMatrices(performance.now());
@@ -400,7 +400,8 @@ export async function createBodyViewer(container, opts = {}) {
       const mid = a.p.clone().add(b.p).multiplyScalar(0.5);
       const nsum = a.n.clone().add(b.n);
       let ctrl;
-      if (nsum.length() > 0.5) ctrl = mid.clone().addScaledVector(nsum.normalize(), 0.035 + 0.32 * dist);
+      const through = nsum.length() <= 0.5;
+      if (!through) ctrl = mid.clone().addScaledVector(nsum.normalize(), 0.035 + 0.32 * dist);
       else {
         // opposite faces (e.g. front → back): route around the nearer flank
         const sx = Math.abs(mid.x) > 0.02 ? Math.sign(mid.x) : 1;
@@ -410,10 +411,15 @@ export async function createBodyViewer(container, opts = {}) {
       const geo = new THREE.TubeGeometry(curve, 64, 0.0021, 8, false);
       const color = new THREE.Color(pairColors[pr.state] || pairColors.candidate);
       const solid = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, toneMapped: false }));
-      const ghost = new THREE.Mesh(geo.clone(), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.22, depthTest: false, depthWrite: false, toneMapped: false }));
-      ghost.renderOrder = 6;
-      solid.userData.pair = ghost.userData.pair = pr;
-      pairGroup.add(solid, ghost);
+      solid.userData.pair = pr;
+      pairGroup.add(solid);
+      if (through) {
+        // arcs that wrap around the body stay faintly visible through it
+        const ghost = new THREE.Mesh(geo.clone(), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.2, depthTest: false, depthWrite: false, toneMapped: false }));
+        ghost.renderOrder = 6;
+        ghost.userData.pair = pr;
+        pairGroup.add(ghost);
+      }
     }
     requestRender();
   }
@@ -516,12 +522,20 @@ export async function createBodyViewer(container, opts = {}) {
       tooltip.style.transform = `translate(${Math.round(s.x)}px, ${Math.round(s.y - 14)}px) translate(-50%, -100%)`;
       tooltip.hidden = false;
     } else tooltip.hidden = true;
+    const pxPerM = canvas.clientHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
     for (const l of labelEls) {
       const vis = facing(l.pos, l.n);
+      l.halfWidthPx = (l.halfWidth * pxPerM) / Math.max(0.1, camera.position.distanceTo(l.pos));
       l.el.hidden = !vis;
       if (!vis) continue;
       const s = toScreen(l.pos);
-      l.el.style.transform = `translate(${Math.round(s.x + 22)}px, ${Math.round(s.y)}px) translate(0, -50%)`;
+      // place the chip on the outer side of the body (left half → left of the magnets)
+      const c = toScreen(controls.target);
+      const left = s.x < c.x - 4;
+      const off = l.halfWidthPx + 10;
+      l.el.style.transform = left
+        ? `translate(${Math.round(s.x - off)}px, ${Math.round(s.y)}px) translate(-100%, -50%)`
+        : `translate(${Math.round(s.x + off)}px, ${Math.round(s.y)}px) translate(0, -50%)`;
     }
   }
   function setHovered(inst, fromKeyboard = false) {
