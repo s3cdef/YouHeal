@@ -23,7 +23,7 @@ import { openDb, migrate, listMigrations, MIGRATIONS_DIR } from '../../server/li
 import { Keyring, generateMasterKey, hashPassword, uuid, sha256hex } from '../../server/lib/crypto.js';
 import { storeRecoveryCodes, consumeRecoveryCode, generateRecoveryCodes } from '../../server/lib/auth.js';
 import { MAGIC, decryptBackup, restoreBackup, writeBackupFile } from '../../server/lib/backup.js';
-import { createAudit, anchorMac, readAnchorLog } from '../../server/lib/audit.js';
+import { createAudit, anchorMac, readAnchorLog, dbAnchorMac } from '../../server/lib/audit.js';
 import { jsonShapeError } from '../../server/lib/validate.js';
 
 const ADMIN = { email: 'admin@a.test', name: 'Alice Admin', password: 'Violet-Harbor-Lantern-42' };
@@ -408,7 +408,8 @@ test('F-16 restore is audited in the restored chain; external anchor log detects
   db.exec('DROP TRIGGER audit_log_no_delete');
   db.run('DELETE FROM audit_log WHERE id > 90');
   const r90 = db.get('SELECT hash FROM audit_log WHERE id = 90');
-  db.run('UPDATE audit_anchor SET last_id = 90, last_hash = ?, mac = ? WHERE id = 1', r90.hash, anchorMac(keyring, 90, r90.hash));
+  const ex = db.get('SELECT exported_id, exported_hash FROM audit_anchor WHERE id = 1');
+  db.run('UPDATE audit_anchor SET last_id = 90, last_hash = ?, mac = ? WHERE id = 1', r90.hash, dbAnchorMac(keyring, 90, r90.hash, ex.exported_id, ex.exported_hash));
   const v = audit.verify();
   assert.equal(v.ok, false);
   assert.match(v.reason, /truncated/);

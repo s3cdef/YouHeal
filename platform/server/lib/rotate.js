@@ -3,7 +3,7 @@
 
 import { Keyring, decryptField, encryptField } from './crypto.js';
 import { ENCRYPTED_COLUMNS, aadFor, rowKeyOf, patientIndexes } from './phi.js';
-import { anchorMac } from './audit.js';
+import { dbAnchorMac } from './audit.js';
 
 /**
  * @param db        Db
@@ -43,8 +43,11 @@ export function reencryptAll(db, oldRing, newMaster) {
       db.run('UPDATE patients SET last_name_bidx = ?, last_initial_bidx = ?, dob_bidx = ?, mrn_bidx = ? WHERE id = ?',
         ix.last_name_bidx, ix.last_initial_bidx, ix.dob_bidx, ix.mrn_bidx, p.id);
     }
-    const anchor = db.get('SELECT last_id, last_hash FROM audit_anchor WHERE id = 1');
-    if (anchor) db.run('UPDATE audit_anchor SET mac = ?, updated_at = ? WHERE id = 1', anchorMac(newRing, anchor.last_id, anchor.last_hash), new Date().toISOString());
+    const anchor = db.get('SELECT last_id, last_hash, exported_id, exported_hash FROM audit_anchor WHERE id = 1');
+    if (anchor) {
+      db.run('UPDATE audit_anchor SET mac = ?, updated_at = ? WHERE id = 1',
+        dbAnchorMac(newRing, anchor.last_id, anchor.last_hash, anchor.exported_id, anchor.exported_hash), new Date().toISOString());
+    }
   });
   return { newRing, counts };
 }

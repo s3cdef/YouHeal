@@ -52,11 +52,19 @@ export function createApp({ cfg, db, keyring, log }) {
   if (cfg.devNoMfa) log.loud('YH_DEV_INSECURE_NO_MFA=1 — admin MFA enforcement is DISABLED (loopback dev only). Never use with real PHI.');
 
   // NEW-4: rejected Host values are logged (max once per minute per distinct value, truncated)
+  // NEW-6: plus a global budget (10 lines/min across all values) so distinct Host values cannot flood the log
   const hostLogAt = new Map();
+  let hostLogWindow = 0, hostLogCount = 0, hostLogSuppressed = 0;
   function logRejectedHost(req) {
     const host = String(req.headers.host ?? '(none)').slice(0, 100);
     const now = Date.now();
+    if (now - hostLogWindow >= 60_000) {
+      if (hostLogSuppressed) log.warn('rejected-Host warnings suppressed in the last minute', { count: hostLogSuppressed });
+      hostLogWindow = now; hostLogCount = 0; hostLogSuppressed = 0;
+    }
     if (now - (hostLogAt.get(host) || 0) < 60_000) return;
+    if (hostLogCount >= 10) { hostLogSuppressed++; return; }
+    hostLogCount++;
     if (hostLogAt.size > 1000) hostLogAt.clear();
     hostLogAt.set(host, now);
     log.warn('rejected request for a Host that is not allowed (set YH_ALLOWED_HOSTS / YH_PUBLIC_ORIGIN if legitimate)', { host, ip: req.ip, reqId: req.id });
@@ -192,7 +200,11 @@ export function createApp({ cfg, db, keyring, log }) {
       const msg = String(err?.message || '');
       if (/session is finalized and immutable/.test(msg)) e = new HttpError(409, 'SESSION_LOCKED', 'Session is finalized and cannot be modified');
       else if (/last active admin/.test(msg)) e = new HttpError(409, 'LAST_ADMIN', 'The clinic must keep at least one active administrator');
-      else {
+      else if (err?.code === 'ECONNRESET' || msg === 'aborted' || req.aborted || req.socket?.destroyed) {
+        // NEW-7: the client went away mid-request; not a server fault
+        log.info('client disconnected before the request completed', { reqId: req.id, err: msg });
+        e = new HttpError(400, 'CLIENT_ABORTED', 'Request aborted');
+      } else {
         log.error('unhandled error', { reqId: req.id, err: msg, stack: err?.stack?.split('\n').slice(0, 6).join(' | ') });
         e = new HttpError(500, 'INTERNAL', 'Internal server error');
       }

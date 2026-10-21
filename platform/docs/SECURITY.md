@@ -344,8 +344,9 @@ Likelihood/Impact: L/M/H. Owner: V = vendor, C = clinic.
 An independent security assessor reviewed the server, SPA and deployment tooling (PoCs retained with the
 assessment working papers), then re-tested the fixes the same day. **Re-test summary: 13 findings verified
 fixed; partials resolved in round 4 (below); F-11 and F-12 risk-accepted for on-prem; five new items
-(NEW-1…NEW-5) raised and dispositioned.**Verdicts below are reconciled against the assessor's re-test sheet; the
-final round-4 re-test result is recorded in `docs/security/ASSESSMENT-2026-10-21.md`.
+(NEW-1…NEW-5) raised and dispositioned.**Verdicts below are reconciled against the assessor's re-test sheets. The final round-4 re-test and closure
+are recorded in [`docs/security/ASSESSMENT-2026-10-21.md`](security/ASSESSMENT-2026-10-21.md). In closure the
+DB anchor MAC was extended to cover the external-log export point (F-16), so clearing it is detected.
 
 | ID | Sev. | Area | Finding (summary) | Remediation | Status (round 1) | Re-test 2026-10-21 / round-4 disposition |
 |---|---|---|---|---|---|---|
@@ -374,6 +375,9 @@ final round-4 re-test result is recorded in `docs/security/ASSESSMENT-2026-10-21
 | NEW-3 | Low | server | Finalize / password change / MFA disable re-auth = password-guessing oracle with no lockout | Re-auth failures routed through the per-account failure counter and limiter (round 4) | Fixed (round 4) | Round-4 fix — pending final re-test |
 | NEW-4 | Low | deploy + docs | Upgrading to the Host allow-list release breaks installs without `YH_ALLOWED_HOSTS` (Docker especially) | Upgrade note in OPERATIONS §8 and reverse-proxy README; `upgrade.sh` / `Upgrade-YouHeal.ps1` warn (before and after staging) when `YH_ALLOWED_HOSTS` and `YH_PUBLIC_ORIGIN` are both empty on a non-loopback bind | — | Fixed (round 4) |
 | NEW-5 | Info | server | Per-account limiter usable to lock out any user (inherent lockout DoS) | Admin unlock refunds limiter; lockout window 15 min | Accepted | **ACCEPTED** — inherent trade-off of AC-7 lockout; mitigated by admin unlock and per-IP limits |
+| NEW-6 | Info | server | Rejected-Host warn not rate-limited across distinct values | Global budget 10 lines/min + suppressed summary | Closed (architect) | Live check: 40 distinct Hosts → 10 lines |
+| NEW-7 | Info | server | Client aborts logged as server errors | Classified as client disconnect (info) | Closed (architect) | Live check: 0 error lines |
+| NEW-8 | Info | server | Stolen session can lock owner out via step-up failures | — | Accepted | Consequence of NEW-3; monitor `auth.reauth.failure` |
 
 Validation after round 4: `bash -n` + ShellCheck clean; PowerShell parser + PSScriptAnalyzer clean;
 `docker compose config` valid (and value-less variables confirmed unset in a container); launchd plist

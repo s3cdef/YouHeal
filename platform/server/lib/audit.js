@@ -33,6 +33,14 @@ export function anchorMac(keyringOrSet, lastId, lastHash) {
   const ks = keyringOrSet.current || keyringOrSet;
   return hmacHex(ks.audit, `audit-anchor|${lastId}|${lastHash}`);
 }
+/**
+ * MAC of the in-DB anchor row. It also covers the external-log export point, so a DB writer without the
+ * key cannot clear `exported_id` to hide a deleted or rolled-back anchor log (F-16 residual).
+ */
+export function dbAnchorMac(keyringOrSet, lastId, lastHash, exportedId, exportedHash) {
+  const ks = keyringOrSet.current || keyringOrSet;
+  return hmacHex(ks.audit, `audit-anchor-db|${lastId}|${lastHash}|${exportedId ?? ''}|${exportedHash ?? ''}`);
+}
 const anyKeyMac = (keyring, id, hash, mac) => [...keyring.sets.values()].some((ks) => safeEqual(mac, anchorMac(ks, id, hash)));
 
 /** F-16: external, append-only export of the chain head ("<ts> <id> <hash> <mac>" per line). */
@@ -50,7 +58,11 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
     try {
       fs.appendFileSync(anchorFile, `${new Date().toISOString()} ${id} ${hash} ${anchorMac(keyring, id, hash)}\n`, { mode: 0o600 });
       // remember the export point so a missing/rolled-back log is detectable (F-16 residual)
-      db.run('UPDATE audit_anchor SET exported_id = ?, exported_hash = ? WHERE id = 1 AND (exported_id IS NULL OR exported_id < ?)', id, hash, id);
+      const a = db.get('SELECT last_id, last_hash, exported_id FROM audit_anchor WHERE id = 1');
+      if (a && (a.exported_id == null || a.exported_id < id)) {
+        db.run('UPDATE audit_anchor SET exported_id = ?, exported_hash = ?, mac = ? WHERE id = 1',
+          id, hash, dbAnchorMac(keyring, a.last_id, a.last_hash, id, hash));
+      }
     } catch (e) { log?.warn('audit anchor export failed', { err: e.message }); }
   }
   /** Write the current chain head to the anchor file (on shutdown). */
@@ -82,9 +94,10 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
       db.run(`INSERT INTO audit_log (id, ts, org_id, actor_id, actor_role, action, target_type, target_id, outcome, ip, request_id, detail, prev_hash, hash)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, row.id, row.ts, row.org_id, row.actor_id, row.actor_role, row.action, row.target_type,
       row.target_id, row.outcome, row.ip, row.request_id, row.detail, prev, hash);
+      const exp = db.get('SELECT exported_id, exported_hash FROM audit_anchor WHERE id = 1');
       db.run(`INSERT INTO audit_anchor (id, last_id, last_hash, mac, updated_at) VALUES (1,?,?,?,?)
         ON CONFLICT(id) DO UPDATE SET last_id = excluded.last_id, last_hash = excluded.last_hash, mac = excluded.mac, updated_at = excluded.updated_at`,
-      row.id, hash, anchorMac(keyring, row.id, hash), row.ts);
+      row.id, hash, dbAnchorMac(keyring, row.id, hash, exp?.exported_id, exp?.exported_hash), row.ts);
       if (anchorFile && row.id % anchorEvery === 0) db.afterCommit(() => exportHead(row.id, hash)); // only committed rows
       return row.id;
     });
@@ -111,10 +124,13 @@ export function createAudit(db, keyring, log, { anchorFile = null, anchorEvery =
       if (orgId !== undefined && r.org_id === orgId) orgRows++;
     }
     const checked = orgId === undefined ? total : orgRows;
-    const anchor = db.get('SELECT last_id, last_hash, mac FROM audit_anchor WHERE id = 1');
+    const anchor = db.get('SELECT last_id, last_hash, mac, exported_id, exported_hash FROM audit_anchor WHERE id = 1');
     if (anchor || total) {
       if (!anchor) return { ok: false, checked, brokenAt: null, reason: 'chain anchor missing' };
-      if (!safeEqual(anchor.mac, anchorMac(keyring, anchor.last_id, anchor.last_hash))) return { ok: false, checked, brokenAt: null, reason: 'chain anchor signature invalid' };
+      const macOk = safeEqual(anchor.mac, dbAnchorMac(keyring, anchor.last_id, anchor.last_hash, anchor.exported_id, anchor.exported_hash))
+        // pre-2026-10-21 anchors (no export point bound) stay valid until the next audit row rewrites them
+        || (anchor.exported_id == null && safeEqual(anchor.mac, anchorMac(keyring, anchor.last_id, anchor.last_hash)));
+      if (!macOk) return { ok: false, checked, brokenAt: null, reason: 'chain anchor signature invalid' };
       if (anchor.last_id !== lastId || anchor.last_hash !== lastHash) return { ok: false, checked, brokenAt: null, reason: 'chain head does not match anchor (truncation?)' };
     }
     // F-16: cross-check the external append-only anchor log
