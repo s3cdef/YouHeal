@@ -191,14 +191,15 @@ token (returned by `/auth/me` and `/auth/login`). Auth cookie: `__Host-yh_sid` o
 |---|---|---|
 | GET `/health` | public | `{status:"ok", version, catalogVersion}` |
 | GET `/setup/status` | public | `{needsSetup:boolean, tokenRequired:true}` |
-| POST `/setup` | public, only while no users, direct loopback only (refused if `X-Forwarded-For`/`Forwarded`/`X-Real-IP` present, unless `YH_ALLOW_REMOTE_SETUP=1`) | `{setupToken, org:{name}, admin:{email,name,password}}` → `{ok:true}`. `setupToken` = the one-time value the server writes to `<data>/setup-token` (0600) and prints in its log at first start; wrong/missing → `403 SETUP_TOKEN_INVALID`; the file is deleted after success |
+| POST `/setup` | public, only while no users, direct loopback only (refused if `X-Forwarded-For`/`Forwarded`/`X-Real-IP` present, unless `YH_ALLOW_REMOTE_SETUP=1`) | `{setupToken, org:{name}, admin:{email,name,password}}` → `{ok:true}`. `setupToken` = the one-time value the server writes to `<data>/setup-token` (0600) at first start (the log names the file but never contains the value — except a loopback bind with `NODE_ENV`≠`production`, as a dev convenience); wrong/missing → `403 SETUP_TOKEN_INVALID`; the file is deleted after success |
 | POST `/auth/login` | public | `{email,password,totp?}` → `{user, csrfToken}` or `401 {error:{code:"MFA_REQUIRED"}}`; `423 ACCOUNT_LOCKED`; `429 RATE_LIMITED` (per-IP or per-account bucket). A TOTP step and each recovery code are single-use even under concurrent requests |
 | POST `/auth/logout` | any | → `{ok:true}` |
-| GET `/auth/me` | any | `{user:{id,email,name,role,locale,mfaEnabled}, org:{...}, csrfToken}` |
+| GET `/auth/me` | any | `{user:{id,email,name,role,locale,mfaEnabled,recoveryCodesRemaining}, org:{...}, csrfToken, mfaEnrollmentRequired, passwordChangeRequired, recoveryCodesRegenerationRequired}` — the last is true while the user still holds legacy (pre-HMAC) recovery codes |
 | POST `/auth/password` | any | `{current,next}` |
 | POST `/auth/mfa/setup` | any | → `{secret, otpauthUrl}` |
 | POST `/auth/mfa/enable` | any | `{code}` → `{ok:true, recoveryCodes:[...]}` |
-| POST `/auth/mfa/disable` | any | `{password, code}` |
+| POST `/auth/mfa/disable` | any | `{password, code}` (code = TOTP or recovery code); revokes the user's other sessions |
+| POST `/auth/mfa/recovery-codes` | any (MFA enabled) | `{password, code}` → `{ok, recoveryCodes:[10]}` — invalidates every previous code (incl. legacy ones) |
 | PATCH `/auth/prefs` | any | `{locale?, theme?}` |
 | GET/POST `/users`, PATCH `/users/:id` | admin | `{email,name,role,password?, active?}` |
 | GET `/users?minimal=1` | admin, auditor | `{items:[{id,name}], total}` only (audit actor filter) |
@@ -216,7 +217,7 @@ token (returned by `/auth/me` and `/auth/login`). Auth cookie: `__Host-yh_sid` o
 | GET `/catalog/search` | any | `?q=` unified search across points/pairs/entities/protocols/symptoms |
 | GET `/catalog/contraindications` `/catalog/recommendations` `/catalog/glossary` | any | |
 | POST `/patients/search` | practitioner+ | `{q?, dob?, archived?, limit?, offset?}` — preferred (no PHI in URLs/logs); same result shape as GET `/patients` |
-| GET `/patients` | practitioner+ | **Deprecated** (search terms in the URL); responds with `Deprecation: true`. `?q=` (blind-index exact last-name / MRN, or first-letter list); items include `sessionCount`, `lastSessionDate` (superseded revisions excluded) |
+| GET `/patients` | practitioner+ | Paginated listing only (`?limit&offset&archived`). Any search parameter (`q`, `dob`) → `410 GONE` — use POST `/patients/search` (blind-index exact last-name / MRN, or first-letter list). items include `sessionCount`, `lastSessionDate` (superseded revisions excluded) |
 | POST `/patients` | practitioner, assistant | `{firstName,lastName,dob,sex,phone,email,address,mrn?,notes?}` |
 | GET/PATCH `/patients/:id` | practitioner+ | decrypted record |
 | POST `/patients/:id/consents` | practitioner, assistant | `{type:"intake", answers:{}, contraindications:{relative:[ids],absolute:[ids]}, signatureName, signedAt}` |
@@ -233,6 +234,8 @@ token (returned by `/auth/me` and `/auth/login`). Auth cookie: `__Host-yh_sid` o
 | GET `/audit` | admin, auditor | `?limit=&offset=&actor=&action=` |
 | GET `/audit/verify` | admin, auditor | `{ok, checked, brokenAt?, reason?}` — verifies the whole (global) chain, the keyed in-DB anchor and the external anchor log; `checked` = this org's row count; `brokenAt` is withheld (null) when the break is in another tenant's row. `GET /audit` lists only the caller's org rows (pre-login/unknown-account rows are platform-operator data) |
 | GET `/admin/backup` | admin | streams an encrypted backup |
+
+Step-up re-authentication (`/auth/password` `current`, `/auth/mfa/enable` `code`, `/auth/mfa/disable`, `/auth/mfa/recovery-codes`, `/sessions/:id/finalize` `password`) shares the login defenses: failures increment the account's lockout counter and consume the per-account bucket; a locked account gets `423 ACCOUNT_LOCKED`, an exhausted bucket `429`.
 
 Roles: `admin` (clinic owner), `practitioner` (biomagnetist / MD), `assistant` (front desk: patients +
 intake, no findings), `auditor` (read-only audit + reports).
@@ -276,13 +279,15 @@ Must degrade gracefully if WebGL is unavailable (render a 2D front/back SVG with
 - MFA: TOTP RFC 6238 (SHA-1, 30 s, 6 digits, ±1 step), steps claimed with a guarded UPDATE (no replay, also under concurrency); 10 single-use recovery codes stored one row each (`user_recovery_codes`), HMAC-SHA256 with a dedicated HKDF subkey + key id, consumed by a guarded UPDATE (`used_at IS NULL`, exactly one row). Codes stay valid after key rotation while the retired key is kept. Disabling MFA revokes the user's other sessions. Admins MUST enroll. (IA-2(1))
 - Sessions: 256-bit random token, stored **hashed** (SHA-256); idle timeout 15 min, absolute 12 h; rotate on login. (AC-11, AC-12, SC-23)
 - Lockout: 5 failed attempts / 15 min per account (atomic `UPDATE … RETURNING` counter; decision re-made on a fresh row after password verification) + per-account token bucket (≤ 5 verifications in flight / window; refunded on success and on admin unlock) + per-IP token bucket (IPv6 bucketed per /64). Unknown accounts lock identically (persisted shadow counters keyed by HMAC of the email). Last active admin protected in-transaction and by a DB trigger. (AC-7)
-- Proxies: `X-Forwarded-*` are honored only when `YH_TRUST_PROXY` is set AND the TCP peer is in `YH_TRUSTED_PROXIES` (IPs/CIDRs, default loopback). Connection caps: `YH_MAX_CONNECTIONS` (512) and `YH_MAX_CONN_PER_IP` (64); headers timeout 15 s. First-run setup needs the one-time setup token.
+- Proxies: `X-Forwarded-*` are honored only when `YH_TRUST_PROXY` is set AND the TCP peer is in `YH_TRUSTED_PROXIES` (IPs/CIDRs, default loopback). A blank `YH_TRUSTED_PROXIES` means the loopback default; `0.0.0.0/0`/`::/0` start with a warning. Connection hygiene: first-byte timeout `YH_FIRST_BYTE_MS` (10 s, until the first complete request head), headers 15 s, request 30 s, keep-alive 5 s; caps `YH_MAX_CONNECTIONS` (default 75 % of the soft open-files limit, else 1024) and `YH_MAX_CONN_PER_IP` (64; IPv6 per /64; trusted proxy peers exempt when `YH_TRUST_PROXY` is on); over-cap plain-HTTP clients get `503` + `Retry-After`. Rejected `Host` values are logged (≤ 1/min per value, 100 chars); a non-loopback bind without `YH_ALLOWED_HOSTS`/`YH_PUBLIC_ORIGIN` warns at startup. First-run setup needs the one-time setup token.
 - CSRF: per-session token header + `SameSite=Strict`. Origin/Referer check on mutations.
 - Headers: CSP `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'`, HSTS (TLS), `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy` minimal, `Cross-Origin-Opener-Policy: same-origin`. (SC-8, SI-10)
-- Audit: append-only table, each row `hash = SHA256(prev_hash || canonical_json(row))`; every auth event, PHI read, create/update/delete, export, finalize. DB triggers forbid UPDATE/DELETE on audit rows. The chain head is also exported (HMAC-signed) every 100 rows and at shutdown to the append-only file `<data>/audit-anchor.log`; `/audit/verify` cross-checks it to detect tail truncation. (AU-2, AU-3, AU-9, AU-10)
+- Audit: append-only table, each row `hash = SHA256(prev_hash || canonical_json(row))`; every auth event, PHI read, create/update/delete, export, finalize. DB triggers forbid UPDATE/DELETE on audit rows. The chain head is also exported (HMAC-signed) every 100 rows and at shutdown to the append-only file `<data>/audit-anchor.log`; The DB records the last exported row (`audit_anchor.exported_id/hash`); `/audit/verify` cross-checks the log and fails with "anchor log missing" / "anchor log behind DB" if it was deleted or rolled back. Only committed rows are exported. **Operator duty:** ship `audit-anchor.log` off-host (syslog/WORM storage) — a copy on the same host does not protect against a host-level compromise that rewrites both. (AU-2, AU-3, AU-9, AU-10)
 - PHI encrypted at rest (ADR-003), TLS in transit (installer generates a self-signed cert if none supplied), encrypted backups (AES-256-GCM, key = master key). Restore authenticates the whole file (GCM tag) in a first pass before producing any plaintext, then decompresses with an output cap equal to the header's byte count; each restore appends a `backup.restore` audit row (with the backup's sha256) to the restored chain. (SC-8, SC-28, CP-9)
 - Input validation on every route (schema validator in `lib/validate.js`), body size limit 1 MB (4 MB for report images), JSON only; free-form JSON is checked iteratively (bounded depth and element count, no `__proto__`/`constructor`/`prototype` keys).
 - Least privilege: service runs as dedicated non-root user; container read-only root FS; data dir 0700.
+- **Accepted risk (on-prem, single tenant) / SaaS prerequisite:** user emails are globally unique and login has no org selector, so an admin creating a user can infer that an address exists *somewhere* (responses are neutral, details go to the audit log). Multi-tenant SaaS requires per-tenant identity namespaces (org-scoped login) before launch.
+- **Residual (F-10):** recovery codes created before migration 003 are unkeyed SHA-256 and keep working until the user regenerates them (`/auth/me` → `recoveryCodesRegenerationRequired`).
 - Logs never contain PHI, tokens or passwords.
 
 ---
