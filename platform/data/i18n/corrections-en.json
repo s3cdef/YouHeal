@@ -1,0 +1,30 @@
+[
+  {
+    "key": "pairs/pb-277/name",
+    "srcHash": "9c2cfc9a118575b8",
+    "en": "Eye R/L – Cerebellum",
+    "severity": "MAJOR",
+    "reason": "Side qualifier dropped: ES 'Ojo D/I – Cerebelo' marks the eye point as right/left; EN 'Eye – Cerebellum' omits it (positioning information). Restored as R/L per style guide (D/I → R/L), keeping the source's unparenthesized form."
+  },
+  {
+    "key": "pairs/pb-291/name",
+    "srcHash": "eee437bbc398f3bb",
+    "en": "Callosal border (R/L) – Callosal border (post.)",
+    "severity": "MAJOR",
+    "reason": "Position qualifier '(Post)' (posterior) on the second point omitted, leaving a pair name whose two points are indistinguishable from the impact side. Restored using the pack's existing abbreviation convention (cf. pb-284 'Corpus callosum (ant.) – Corpus callosum (post.)')."
+  },
+  {
+    "key": "pairs/pb-313/name",
+    "srcHash": "bfe9e8cce5635080",
+    "en": "Thymus – Ovary/Testicle (R/L)",
+    "severity": "MAJOR",
+    "reason": "Omission: ES 'Ovario/Testículo (D/I)' gives the sex-specific point alternative; EN 'Ovary (R/L)' drops 'Testicle', so the pair name is wrong for male clients (the pair's own note already reads 'Ovary/Testicle (R/L)')."
+  },
+  {
+    "key": "pairs/pb-319/name",
+    "srcHash": "7bb6baae0de26b0b",
+    "en": "Transverse colon – Ovary/Testicle (R/L)",
+    "severity": "MAJOR",
+    "reason": "Omission: ES 'Ovario/Testículo (D/I)'; EN 'Ovary (R/L)' drops 'Testicle' (wrong point for male clients; inconsistent with the pair's own impact-point note 'Ovary/Testicle (R/L)')."
+  }
+]

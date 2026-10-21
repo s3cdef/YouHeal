@@ -36,3 +36,18 @@ bilingual practitioner. Keys are source hashes (`srcHash`); find them with Setti
 | 7d3add28d3339ad7 | "celulitis" defined as fat build-up | "cellulite" |
 | 803a679fad59ba68 | Cholera serotypes "01 and 0139" (should be O1/O139) | Kept as source |
 | (style) | Curated names used British spelling (oesophagus, tumour, oedema…) | Normalized to US English at the importer; Latin taxa (Haemophilus, E. faecalis) unchanged |
+| symptoms/disfagia/definition | Dysphagia defined as pain on swallowing (that is odynophagia) | Literal; **source error** |
+| recommendations (parasitic) | Wash hands "antes de ir al baño" (before using the toilet) — almost certainly "after" | Literal; **source error** |
+| recommendations (tropical) | Lists "leucocitosis" for dengue-type illness (leukopenia is typical) | Literal; **source accuracy review** |
+
+## Independent QA review (2026-10-21)
+
+Stratified random sample (seed 20261021): 250 machine-translated entries across pair symptoms,
+recommendations/notes, entity descriptions, protocols, recommendation items and symptom definitions, plus all
+14 general-recommendation bodies and all contraindications. **0 critical, 0 major** errors in machine text;
+minor style items only. Whole-mirror scan (6,290 keys): no empty, stale or missing entries; line/list structure
+intact; key terminology consistent (rastreo, impactar, despolarizar, reservorio, crisis curativa, usuario,
+Biomagnetista: 0 deviations); no scope-claim drift. 4 major errors found in *curated* pair names (dropped
+qualifiers) — fixed via `data/i18n/corrections-en.json`; remaining British spellings normalized at merge.
+Verdict: **fit to ship with status "machine"**; clinical confirmation of explanatory glosses (e.g. "odynophagia
+(sore throat)") recommended at the practitioner review.

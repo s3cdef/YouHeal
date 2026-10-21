@@ -165,7 +165,7 @@
   "status": "curated"
  },
  "contraindications/abs-33/text": {
-  "text": "Hypovolaemic shock",
+  "text": "Hypovolemic shock",
   "srcHash": "dd98be524a2566a8",
   "status": "curated"
  },
@@ -225,7 +225,7 @@
   "status": "curated"
  },
  "contraindications/abs-45/text": {
-  "text": "Hypoglycaemia",
+  "text": "Hypoglycemia",
   "srcHash": "125f7d8cdbd9b3d5",
   "status": "curated"
  },
@@ -790,7 +790,7 @@
   "status": "machine"
  },
  "entities/agnosia-de-colores/name": {
-  "text": "Colour agnosia",
+  "text": "Color agnosia",
   "srcHash": "df76594dfb82c176",
   "status": "curated"
  },
@@ -2275,7 +2275,7 @@
   "status": "machine"
  },
  "entities/celiaquia/name": {
-  "text": "Coeliac disease",
+  "text": "Celiac disease",
   "srcHash": "ad96b98c8311e04f",
   "status": "curated"
  },
@@ -5780,7 +5780,7 @@
   "status": "curated"
  },
  "entities/hiperglucemia/description": {
-  "text": "Hyperglycemia (hyperglycaemia) means an excessive amount of glucose in the blood. It is the basic finding in all types of diabetes mellitus, when it is uncontrolled or in its early stages. The opposite term is hypoglycemia. Hyperglycemia and insulin resistance have effects on patient outcomes: they reduce resistance to infection, favoring superinfection by gram-negative bacteria and fungi, they favor the onset of polyneuropathies and multiorgan dysfunction and, ultimately, they increase patients' crude mortality rate. In the fasting state, a person's blood glucose should not exceed 126 mg/dl, and 200 mg/dl the rest of the time. Maintaining high blood glucose levels for years contributes to seriously worsening the long-term complications of diabetes.",
+  "text": "Hyperglycemia (hyperglycemia) means an excessive amount of glucose in the blood. It is the basic finding in all types of diabetes mellitus, when it is uncontrolled or in its early stages. The opposite term is hypoglycemia. Hyperglycemia and insulin resistance have effects on patient outcomes: they reduce resistance to infection, favoring superinfection by gram-negative bacteria and fungi, they favor the onset of polyneuropathies and multiorgan dysfunction and, ultimately, they increase patients' crude mortality rate. In the fasting state, a person's blood glucose should not exceed 126 mg/dl, and 200 mg/dl the rest of the time. Maintaining high blood glucose levels for years contributes to seriously worsening the long-term complications of diabetes.",
   "srcHash": "4038820f7784e359",
   "status": "machine"
  },
@@ -7010,7 +7010,7 @@
   "status": "machine"
  },
  "entities/mal-olor-axilas/name": {
-  "text": "Underarm odour",
+  "text": "Underarm odor",
   "srcHash": "762bb30ed25206af",
   "status": "curated"
  },
@@ -7025,7 +7025,7 @@
   "status": "machine"
  },
  "entities/mal-olor-pies/name": {
-  "text": "Foot odour",
+  "text": "Foot odor",
   "srcHash": "73c24543e31e7aac",
   "status": "curated"
  },
@@ -11665,7 +11665,7 @@
   "status": "curated"
  },
  "glossary/abbr:dl/meaning": {
-  "text": "decilitres",
+  "text": "deciliters",
   "srcHash": "68bdf2ae679c4617",
   "status": "curated"
  },
@@ -11680,7 +11680,7 @@
   "status": "curated"
  },
  "glossary/abbr:mmHg/meaning": {
-  "text": "millimetres of mercury",
+  "text": "millimeters of mercury",
   "srcHash": "e73df863aeeb1831",
   "status": "curated"
  },
@@ -18390,7 +18390,7 @@
   "status": "machine"
  },
  "pairs/pb-108/symptoms[4].text": {
-  "text": "Thalassaemia",
+  "text": "Thalassemia",
   "srcHash": "09d367314ac1b221",
   "status": "machine"
  },
@@ -23745,7 +23745,7 @@
   "status": "machine"
  },
  "pairs/pb-277/name": {
-  "text": "Eye – Cerebellum",
+  "text": "Eye R/L – Cerebellum",
   "srcHash": "9c2cfc9a118575b8",
   "status": "curated"
  },
@@ -24120,7 +24120,7 @@
   "status": "machine"
  },
  "pairs/pb-288/symptoms[0].text": {
-  "text": "Galactorrhoea",
+  "text": "Galactorrhea",
   "srcHash": "b0a74a196e7a5970",
   "status": "machine"
  },
@@ -24165,7 +24165,7 @@
   "status": "machine"
  },
  "pairs/pb-291/name": {
-  "text": "Callosal border (R/L) – Callosal border",
+  "text": "Callosal border (R/L) – Callosal border (post.)",
   "srcHash": "eee437bbc398f3bb",
   "status": "curated"
  },
@@ -24545,7 +24545,7 @@
   "status": "machine"
  },
  "pairs/pb-313/name": {
-  "text": "Thymus – Ovary (R/L)",
+  "text": "Thymus – Ovary/Testicle (R/L)",
   "srcHash": "bfe9e8cce5635080",
   "status": "curated"
  },
@@ -24670,7 +24670,7 @@
   "status": "machine"
  },
  "pairs/pb-319/name": {
-  "text": "Transverse colon – Ovary (R/L)",
+  "text": "Transverse colon – Ovary/Testicle (R/L)",
   "srcHash": "7bb6baae0de26b0b",
   "status": "curated"
  },
@@ -26755,7 +26755,7 @@
   "status": "curated"
  },
  "protocols/disease-enfermedad-celiaca/name": {
-  "text": "Coeliac disease",
+  "text": "Celiac disease",
   "srcHash": "5ffd49ae332f0e01",
   "status": "curated"
  },
@@ -26875,7 +26875,7 @@
   "status": "curated"
  },
  "protocols/disease-galactorrea/name": {
-  "text": "Galactorrhoea",
+  "text": "Galactorrhea",
   "srcHash": "b0a74a196e7a5970",
   "status": "curated"
  },
@@ -26900,12 +26900,12 @@
   "status": "machine"
  },
  "protocols/disease-hemofilia/name": {
-  "text": "Haemophilia",
+  "text": "Hemophilia",
   "srcHash": "66538f59166d6d35",
   "status": "curated"
  },
  "protocols/disease-hemorroides/name": {
-  "text": "Haemorrhoids",
+  "text": "Hemorrhoids",
   "srcHash": "8e41ce3b6f14f501",
   "status": "curated"
  },
@@ -27305,7 +27305,7 @@
   "status": "curated"
  },
  "protocols/disease-talasemia/name": {
-  "text": "Thalassaemia",
+  "text": "Thalassemia",
   "srcHash": "09d367314ac1b221",
   "status": "curated"
  },
@@ -27730,7 +27730,7 @@
   "status": "curated"
  },
  "recommendations/general-full/body": {
-  "text": "The general recommendations set out the specifications that any (non-physician) biomagnetist may follow with their clients after performing a scan with the BP technique.\n1. Change toothbrush\n2. Take a hot and cold shower at the end of the day. Afterwards, change clothes\n3. Strengthen the Pillars of Health (healthy eating, therapeutic exercise and\n4. Follow the recommendations for eating well, sleeping well and good bowel habits (pg.\n5. Follow the recommendations for therapeutic exercise (pg. 103)\n6. Follow the recommendations for stress management (pg. 104)\n7. Ensure an adequate state of hydration, nutrition and oxygenation, one week\n8. Keep in contact with the client by telephone\n9. Second scan within the next 5 to 10 days. If symptoms persist\n10. Emphasize to the client that they should continue with the instructions of their attending physician\n11. If symptoms persist, consult your attending physician and perform a second\n12. In the event of a healing crisis, consult your attending physician and follow the recommendations\n13. Endeavor to continue the BP scans under medical supervision and authorization\n14. Complement the BP scan by scanning with special care and/or impacting\nstress management) 101 -102) before and one week after the scan, to help detoxify the body or a healing crisis occurs, perform a second scan beforehand scan after the medical consultation or advice for healing crisis (pg. 100) prophylactically, the Basic Protocol (pg. 105)",
+  "text": "The general recommendations set out the specifications that any (non-physician) biomagnetist may follow with their clients after performing a scan with the BP technique.\n1. Change toothbrush\n2. Take a hot and cold shower at the end of the day. Afterwards, change clothes\n3. Strengthen the Pillars of Health (healthy eating, therapeutic exercise and\n4. Follow the recommendations for eating well, sleeping well and good bowel habits (pg.\n5. Follow the recommendations for therapeutic exercise (p. 103)\n6. Follow the recommendations for stress management (p. 104)\n7. Ensure an adequate state of hydration, nutrition and oxygenation, one week\n8. Keep in contact with the client by telephone\n9. Second scan within the next 5 to 10 days. If symptoms persist\n10. Emphasize to the client that they should continue with the instructions of their attending physician\n11. If symptoms persist, consult your attending physician and perform a second\n12. In the event of a healing crisis, consult your attending physician and follow the recommendations\n13. Endeavor to continue the BP scans under medical supervision and authorization\n14. Complement the BP scan by scanning with special care and/or impacting\nstress management) 101 -102) before and one week after the scan, to help detoxify the body or a healing crisis occurs, perform a second scan beforehand scan after the medical consultation or advice for healing crisis (p. 100) prophylactically, the Basic Protocol (p. 105)",
   "srcHash": "d7c87d5607ff2104",
   "status": "machine"
  },
@@ -27740,12 +27740,12 @@
   "status": "machine"
  },
  "recommendations/general-full/items[10]": {
-  "text": "If symptoms persist, consult your treating physician and perform a second",
+  "text": "If symptoms persist, consult your attending physician and perform a second",
   "srcHash": "21f4f86d7ca1dd1f",
   "status": "machine"
  },
  "recommendations/general-full/items[11]": {
-  "text": "In case of a healing crisis, consult your treating physician and follow the recommenda-",
+  "text": "In case of a healing crisis, consult your attending physician and follow the recommenda-",
   "srcHash": "604dc93562335a04",
   "status": "machine"
  },
@@ -27800,7 +27800,7 @@
   "status": "machine"
  },
  "recommendations/general-full/items[9]": {
-  "text": "Emphasize to the client to keep following their treating physician's instructions",
+  "text": "Emphasize to the client to keep following their attending physician's instructions",
   "srcHash": "ffe735d0e6c042c4",
   "status": "machine"
  },
@@ -28430,12 +28430,12 @@
   "status": "curated"
  },
  "recommendations/legal/body": {
-  "text": "1. Emphasize to clients that they should see their treating physician\n2. If symptoms persist, consult your treating physician and perform a second\n3. In the event of a healing crisis, consult your treating physician and follow the recommen-\n4. Do not change medication doses\n5. Do not alter medical instructions\n6. Do not misinform about medical treatments and/or procedures\n7. Do not delay or prevent surgical or dental procedures\n8. Do not order laboratory tests\n9. Do not interpret laboratory or imaging studies\n10. Do not prescribe any type of treatment\n11. Do not medicate\n12. Do not suggest home remedies\n13. Do not give diagnoses\n14. Do not give prognoses\n15. Do not give false hopes of cure\n16. Mention the objectives of the BP technique (to improve symptoms, reduce the\n17. Mention that BP is a facilitating technique, not a miraculous one\n18. Mention that health depends to a great extent on the Pillars of Health (healthy\n19. Emphasize continuing with the underlying medical treatment\n20. Emphasize following medical instructions\n21. Emphasize not self-medicating\n22. Emphasize continuing to consult their physician\n23. Refer to a specialist when necessary (psychologist, nutritionist, dentist,\n24. Continue BP scans under medical supervision and authorization\n25. Try to use the word user or client, instead of patient\n26. Try to use the term Biomagnetism practitioner or biomagnetist, instead of\n27. Try to use the word scan, instead of therapy\n28. Try to use the word improvement, instead of cure\n29. Try to use the word imbalance (energetic, bioelectric, biochemical, pH,\n30. Carry out BP scans ethically and morally, respecting the privacy of\nscan after the medical consultation or advice -dations for the healing crisis (pg. 100) risks of the disease, complement the underlying medical treatment, reduce the adverse effects of pharmacological treatments, and improve quality of life) eating, therapeutic exercise and stress management), the time course of the disease, as well as an adequate medical assessment, treatment, instructions and follow-up ophthalmologist, gynecologist, etc.) Therapist or Doctor etc.), instead of diagnosis people",
+  "text": "1. Emphasize to clients that they should see their attending physician\n2. If symptoms persist, consult your attending physician and perform a second\n3. In the event of a healing crisis, consult your attending physician and follow the recommen-\n4. Do not change medication doses\n5. Do not alter medical instructions\n6. Do not misinform about medical treatments and/or procedures\n7. Do not delay or prevent surgical or dental procedures\n8. Do not order laboratory tests\n9. Do not interpret laboratory or imaging studies\n10. Do not prescribe any type of treatment\n11. Do not medicate\n12. Do not suggest home remedies\n13. Do not give diagnoses\n14. Do not give prognoses\n15. Do not give false hopes of cure\n16. Mention the objectives of the BP technique (to improve symptoms, reduce the\n17. Mention that BP is a facilitating technique, not a miraculous one\n18. Mention that health depends to a great extent on the Pillars of Health (healthy\n19. Emphasize continuing with the underlying medical treatment\n20. Emphasize following medical instructions\n21. Emphasize not self-medicating\n22. Emphasize continuing to consult their physician\n23. Refer to a specialist when necessary (psychologist, nutritionist, dentist,\n24. Continue BP scans under medical supervision and authorization\n25. Try to use the word user or client, instead of patient\n26. Try to use the term Biomagnetism practitioner or biomagnetist, instead of\n27. Try to use the word scan, instead of therapy\n28. Try to use the word improvement, instead of cure\n29. Try to use the word imbalance (energetic, bioelectric, biochemical, pH,\n30. Carry out BP scans ethically and morally, respecting the privacy of\nscan after the medical consultation or advice -dations for the healing crisis (p. 100) risks of the disease, complement the underlying medical treatment, reduce the adverse effects of pharmacological treatments, and improve quality of life) eating, therapeutic exercise and stress management), the time course of the disease, as well as an adequate medical assessment, treatment, instructions and follow-up ophthalmologist, gynecologist, etc.) Therapist or Doctor etc.), instead of diagnosis people",
   "srcHash": "aa1f82eb505b3ad4",
   "status": "machine"
  },
  "recommendations/legal/items[0]": {
-  "text": "Emphasize to clients that they should see their treating physician",
+  "text": "Emphasize to clients that they should see their attending physician",
   "srcHash": "c2e557f64ac2863d",
   "status": "machine"
  },
@@ -28490,7 +28490,7 @@
   "status": "machine"
  },
  "recommendations/legal/items[1]": {
-  "text": "If symptoms persist, consult your treating physician and perform a second",
+  "text": "If symptoms persist, consult your attending physician and perform a second",
   "srcHash": "21f4f86d7ca1dd1f",
   "status": "machine"
  },
@@ -28545,7 +28545,7 @@
   "status": "machine"
  },
  "recommendations/legal/items[2]": {
-  "text": "In case of a healing crisis, consult your treating physician and follow the recommenda-",
+  "text": "In case of a healing crisis, consult your attending physician and follow the recommenda-",
   "srcHash": "604dc93562335a04",
   "status": "machine"
  },
@@ -28590,7 +28590,7 @@
   "status": "curated"
  },
  "recommendations/parasitic/body": {
-  "text": "The recommendations for parasitic diseases set out the specifications that any (non-physician) biomagnetist may follow with their clients if they present symptoms and conditions that raise suspicion of a possible parasitosis (abdominal pain, abdominal distension, diarrhea, pasty or bloody stools, headache, weakness, tiredness, precarious socioeconomic conditions, lack of drinking water, eating away from home at regular frequency, etc.)\n1. General recommendations (pg. 96)\n2. Top 5 Deworming (antiparasitic) (pg. 111)\n3. Change sheets, towels and bedding\n4. Use white vinegar, apple cider vinegar and/or sea salt to disinfect food\n5. Cook meat sufficiently\n6. Wash your hands before going to the bathroom, and before eating or preparing any food\n7. Moderate eating away from home\n8. Avoid consuming ice in restaurants\n9. Avoid keeping water in the open air\n10. Sun the bedding\n11. Keep nails short and clean. Do not bite your nails\n12. Keep frequently handled electronic devices clean and disinfected (cell phone,\n13. Do not prescribe or indicate any type of deworming\n14. Suggest that the client carry out allopathic deworming or deworming with natural remedies,\n15. Inform the client about deworming, since it must be carried out by the whole\n16. Advise the client to avoid drinking alcohol during deworming treatment\n17. Have pets dewormed by the veterinarian\n18. Prevent pets from sharing personal spaces (bathroom, bedroom, living room,\ntablet, etc.), bags and purses at regular frequency (every 2 - 5 days) specifying that a specialist must be the one to indicate the treatment family on the same day, every 6 months, and following medical instructions etc.)",
+  "text": "The recommendations for parasitic diseases set out the specifications that any (non-physician) biomagnetist may follow with their clients if they present symptoms and conditions that raise suspicion of a possible parasitosis (abdominal pain, abdominal distension, diarrhea, pasty or bloody stools, headache, weakness, tiredness, precarious socioeconomic conditions, lack of drinking water, eating away from home at regular frequency, etc.)\n1. General recommendations (p. 96)\n2. Top 5 Deworming (antiparasitic) (p. 111)\n3. Change sheets, towels and bedding\n4. Use white vinegar, apple cider vinegar and/or sea salt to disinfect food\n5. Cook meat sufficiently\n6. Wash your hands before going to the bathroom, and before eating or preparing any food\n7. Moderate eating away from home\n8. Avoid consuming ice in restaurants\n9. Avoid keeping water in the open air\n10. Sun the bedding\n11. Keep nails short and clean. Do not bite your nails\n12. Keep frequently handled electronic devices clean and disinfected (cell phone,\n13. Do not prescribe or indicate any type of deworming\n14. Suggest that the client carry out allopathic deworming or deworming with natural remedies,\n15. Inform the client about deworming, since it must be carried out by the whole\n16. Advise the client to avoid drinking alcohol during deworming treatment\n17. Have pets dewormed by the veterinarian\n18. Prevent pets from sharing personal spaces (bathroom, bedroom, living room,\ntablet, etc.), bags and purses at regular frequency (every 2 - 5 days) specifying that a specialist must be the one to indicate the treatment family on the same day, every 6 months, and following medical instructions etc.)",
   "srcHash": "33c468a70dd49aa3",
   "status": "machine"
  },
@@ -28700,7 +28700,7 @@
   "status": "curated"
  },
  "recommendations/sti/body": {
-  "text": "The STI recommendations set out the specifications that every biomagnetist (non-physician) may follow with their clients if they present a diagnosis, symptoms or conditions that suggest an STI. The recommendations must also be followed in case of reinfection or persistence of BPs related to STIs.\n1. General recommendations (pg. 96)\n2. Top 10 Gynecology (pg. 107)\n3. Scan the partner if there is a medical diagnosis of an STI\n4. Scan the partner in case of reinfection\n5. Scan the partner in case of persistence or recurrence of BPs related to\n6. Scan the partner remotely, if they cannot be physically present for the\nSTI BP scan (second level) There are other types of complementary recommendations to protect the biomagnetist's (non-physician) practice, as well as to enable clients to obtain maximum benefit from the technique.",
+  "text": "The STI recommendations set out the specifications that every biomagnetist (non-physician) may follow with their clients if they present a diagnosis, symptoms or conditions that suggest an STI. The recommendations must also be followed in case of reinfection or persistence of BPs related to STIs.\n1. General recommendations (p. 96)\n2. Top 10 Gynecology (p. 107)\n3. Scan the partner if there is a medical diagnosis of an STI\n4. Scan the partner in case of reinfection\n5. Scan the partner in case of persistence or recurrence of BPs related to\n6. Scan the partner remotely, if they cannot be physically present for the\nSTI BP scan (second level) There are other types of complementary recommendations to protect the biomagnetist's (non-physician) practice, as well as to enable clients to obtain maximum benefit from the technique.",
   "srcHash": "c50e7a16dd37abd6",
   "status": "machine"
  },
@@ -28890,7 +28890,7 @@
   "status": "curated"
  },
  "recommendations/tropical/body": {
-  "text": "Tropical diseases are those related to vector-borne transmission (mosquitoes). They occur mainly in rainy and rural areas, near lakes, lagoons, rivers, the sea or bodies of water, with a hot and/or humid climate; they are characterized by the following symptoms:\n• Neurological symptoms (headache, dizziness and vomiting)\n• Musculoskeletal symptoms (generalized myalgia and arthralgia)\n• Hematological symptoms (anemia, leukocytosis and thrombocytopenia)\n• General symptoms (fever, asthenia, adynamia, hyporexia and diaphoresis)\n• Other symptoms:\n• Skin rash\n• Conjunctivitis\nExamples of tropical diseases:\n• Dengue\n• Malaria (paludism)\n• Chikungunya\n• Zika\n• Trypanosomiasis\nThe recommendations for tropical diseases set out the specifications that any (non-physician) biomagnetist may follow with their clients if they live in endemic areas and present symptoms that raise suspicion of a possible tropical disease.\n1. General recommendations (pg. 96)\n2. Top 10 Tropical (pg. 110)\n3. Wash tanks and pools that store water every 8 days\n4. Keep the yard and other open spaces free of objects that can collect water\n5. Clean rainwater gutters\n6. Collect garbage and solid waste on properties and vacant lots\n7. Try to close doors and windows at night to avoid bites\n8. Use a mosquito net for sleeping\n9. Use natural mosquito repellents (eucalyptus, citronella, etc.)\n10. Allow fumigation and protect the client with Top 5 Detoxification (pg. 111)\n11. Emphasize to the client not to self-medicate\n12. Refer the client to their attending physician\nsuch as tires, scrap metal, cans, bottles, etc.",
+  "text": "Tropical diseases are those related to vector-borne transmission (mosquitoes). They occur mainly in rainy and rural areas, near lakes, lagoons, rivers, the sea or bodies of water, with a hot and/or humid climate; they are characterized by the following symptoms:\n• Neurological symptoms (headache, dizziness and vomiting)\n• Musculoskeletal symptoms (generalized myalgia and arthralgia)\n• Hematological symptoms (anemia, leukocytosis and thrombocytopenia)\n• General symptoms (fever, asthenia, adynamia, hyporexia and diaphoresis)\n• Other symptoms:\n• Skin rash\n• Conjunctivitis\nExamples of tropical diseases:\n• Dengue\n• Malaria (paludism)\n• Chikungunya\n• Zika\n• Trypanosomiasis\nThe recommendations for tropical diseases set out the specifications that any (non-physician) biomagnetist may follow with their clients if they live in endemic areas and present symptoms that raise suspicion of a possible tropical disease.\n1. General recommendations (p. 96)\n2. Top 10 Tropical (p. 110)\n3. Wash tanks and pools that store water every 8 days\n4. Keep the yard and other open spaces free of objects that can collect water\n5. Clean rainwater gutters\n6. Collect garbage and solid waste on properties and vacant lots\n7. Try to close doors and windows at night to avoid bites\n8. Use a mosquito net for sleeping\n9. Use natural mosquito repellents (eucalyptus, citronella, etc.)\n10. Allow fumigation and protect the client with Top 5 Detoxification (p. 111)\n11. Emphasize to the client not to self-medicate\n12. Refer the client to their attending physician\nsuch as tires, scrap metal, cans, bottles, etc.",
   "srcHash": "e0e836f7871ba5fc",
   "status": "machine"
  },
@@ -28905,7 +28905,7 @@
   "status": "machine"
  },
  "recommendations/tropical/items[11]": {
-  "text": "Refer the client to their treating physician",
+  "text": "Refer the client to their attending physician",
   "srcHash": "156d586030d9cfb6",
   "status": "machine"
  },
