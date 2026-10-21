@@ -322,18 +322,21 @@ window.addEventListener('unhandledrejection', (e) => { console.error('Unhandled'
 async function boot() {
   mark('boot');
   applyTheme(getTheme());
-  // language pack, setup status and the session probe are independent: one round trip instead of four
-  const [, status, signedIn] = await Promise.all([
+  // Language pack, setup status and the session probe are independent: one round trip instead of four.
+  // A browser that never had a signed-in route (e.g. the very first setup) probes the session afterwards.
+  const probe = () => refreshMe().then((ok) => {
+    // the signed-in user's language pack starts downloading as soon as their preference is known
+    if (ok && state.user && state.user.locale) ensureLocale(state.user.locale);
+    // views that need the catalog core start it now, in parallel with the rest of the bootstrap
+    if (ok && !state.restriction && /^#\/(sessions|catalog)\//.test(location.hash) && (can.patients() || can.reports())) loadCore().catch(() => {});
+    return ok;
+  }).catch(() => false);
+  const early = lastRoute() ? probe() : null;
+  const [, status] = await Promise.all([
     initI18n().catch((err) => console.warn('[i18n]', err)),
     api.get('/setup/status', null, { auth: false }).catch(() => null),
-    // the signed-in user's language pack starts downloading as soon as their preference is known
-    refreshMe().then((ok) => {
-      if (ok && state.user && state.user.locale) ensureLocale(state.user.locale);
-      // views that need the catalog core start it now, in parallel with the rest of the bootstrap
-      if (ok && !state.restriction && /^#\/(sessions|catalog)\//.test(location.hash) && (can.patients() || can.reports())) loadCore().catch(() => {});
-      return ok;
-    }).catch(() => false),
   ]);
+  const signedIn = status && !status.needsSetup ? await (early || probe()) : false;
   localizeStatic();
   mark('i18n');
   setupStatus = status;
