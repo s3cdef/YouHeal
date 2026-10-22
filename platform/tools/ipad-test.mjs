@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 // YOU HEAL Clinical — iPad / tablet test launcher (TEST DATA ONLY — never point it at real patient data).
 //
-//   node tools/ipad-test.mjs [--mode lan|tailscale] [--port 8443] [--data <dir>] [--no-demo] [--reset]
+//   node tools/ipad-test.mjs [--mode lan|tailscale|codespaces] [--port 8443] [--data <dir>] [--no-demo] [--reset]
 //
 // lan (default): serves HTTPS on this computer's Wi-Fi/LAN address with a private test CA. The iPad installs
 //   and trusts the CA once (the launcher serves it at http://<ip>:8099/ for 15 minutes), then browses
 //   https://<ip>:<port>. Needs `openssl` (built into macOS/Linux; on Windows it ships with Git for Windows).
+// codespaces: for GitHub Codespaces (no computer needed — start it from Safari on iPad/iPhone): binds loopback and
+//   trusts GitHub's HTTPS port-forwarding proxy; demo credentials are written to <data>/DEMO-CREDENTIALS.txt.
 // tailscale: binds loopback only and publishes through `tailscale serve`, which provides a publicly trusted
 //   HTTPS certificate on your private tailnet — nothing to install on the iPad except the Tailscale app.
 //
@@ -37,7 +39,7 @@ const log = (...a) => console.log('[ipad-test]', ...a);
 const die = (m) => { console.error(`[ipad-test] ERROR: ${m}`); process.exit(1); };
 const run = (cmd, a, o = {}) => execFileSync(cmd, a, { stdio: ['ignore', 'pipe', 'pipe'], ...o }).toString();
 
-if (!['lan', 'tailscale'].includes(MODE)) die(`unknown --mode ${MODE}`);
+if (!['lan', 'tailscale', 'codespaces'].includes(MODE)) die(`unknown --mode ${MODE}`);
 if (flag('reset')) { fs.rmSync(DATA, { recursive: true, force: true }); log(`reset ${DATA}`); }
 fs.mkdirSync(TLS, { recursive: true, mode: 0o700 });
 
@@ -109,6 +111,13 @@ function request(method, url, body, headers = {}) {
   });
 }
 
+/** In proxied modes the server only accepts the public host/origin; loopback calls present them (no X-Forwarded-*
+ *  headers, so first-run setup still counts as local). In LAN mode the loopback origin is used as-is. */
+let PUBLIC_BASE = null;
+function originHeaders(base) {
+  return PUBLIC_BASE ? { origin: PUBLIC_BASE, host: new URL(PUBLIC_BASE).host } : { origin: base };
+}
+
 async function waitHealthy(base) {
   const t0 = Date.now();
   while (Date.now() - t0 < 30_000) {
@@ -128,7 +137,7 @@ async function seedDemo(base) {
   const token = fs.readFileSync(path.join(DATA, 'setup-token'), 'utf8').trim();
   let cookie = '', csrf = '';
   const call = async (m, p, b) => {
-    const r = await request(m, base + '/api/v1' + p, b, { cookie, 'x-csrf-token': csrf, origin: base });
+    const r = await request(m, base + '/api/v1' + p, b, { cookie, 'x-csrf-token': csrf, ...originHeaders(base) });
     const sc = [].concat(r.headers['set-cookie'] || []); if (sc.length) cookie = sc.map((c) => c.split(';')[0]).join('; ');
     const j = r.json; if (j.csrfToken) csrf = j.csrfToken;
     if (r.status >= 400) throw new Error(`${m} ${p} → ${r.status} ${JSON.stringify(j.error || j)}`);
@@ -149,7 +158,7 @@ async function seedDemo(base) {
 async function seedPatients(base, prac) {
   let cookie = '', csrf = '';
   const call = async (m, p, b) => {
-    const r = await request(m, base + '/api/v1' + p, b, { cookie, 'x-csrf-token': csrf, origin: base });
+    const r = await request(m, base + '/api/v1' + p, b, { cookie, 'x-csrf-token': csrf, ...originHeaders(base) });
     const sc = [].concat(r.headers['set-cookie'] || []); if (sc.length) cookie = sc.map((c) => c.split(';')[0]).join('; ');
     if (r.json.csrfToken) csrf = r.json.csrfToken;
     if (r.status >= 400) throw new Error(`${m} ${p} → ${r.status}`);
@@ -188,6 +197,18 @@ if (MODE === 'lan') {
     ips.length > 1 ? `  (other addresses on this computer: ${ips.slice(1).join(', ')})` : '',
     `If the iPad cannot connect, allow inbound TCP ${PORT} and ${CA_PORT} in this computer's firewall.`,
   ];
+} else if (MODE === 'codespaces') {
+  const name = process.env.CODESPACE_NAME, domain = process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN;
+  if (!name || !domain) die('not running inside GitHub Codespaces (CODESPACE_NAME / GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN unset)');
+  const pub = `${name}-${PORT}.${domain}`;
+  // GitHub's forwarding agent connects over loopback and terminates TLS; trust only loopback as the proxy.
+  Object.assign(env, { YH_HOST: '127.0.0.1', YH_TRUST_PROXY: '1', YH_TRUSTED_PROXIES: '127.0.0.1,::1', YH_ALLOWED_HOSTS: `${pub},localhost`, YH_PUBLIC_ORIGIN: `https://${pub}` });
+  publicBase = `https://${pub}`;
+  banner = [
+    `Open on iPad / iPhone (Safari, signed in to github.com as the codespace owner): ${publicBase}`,
+    `Tip: Share → Add to Home Screen. The port is PRIVATE (only you); to let other testers in, run:`,
+    `  gh codespace ports visibility ${PORT}:public -c ${name}     (the app's own sign-in still applies)`,
+  ];
 } else {
   const dns = tailscaleName();
   Object.assign(env, { YH_HOST: '127.0.0.1', YH_TRUST_PROXY: '1', YH_TRUSTED_PROXIES: '127.0.0.1,::1', YH_ALLOWED_HOSTS: `${dns},localhost`, YH_PUBLIC_ORIGIN: `https://${dns}` });
@@ -203,6 +224,7 @@ for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => child.kill(sig));
 
 const loop = MODE === 'lan' ? `https://127.0.0.1:${PORT}` : `http://127.0.0.1:${PORT}`;
 if (MODE === 'lan') LOOP_CA = fs.readFileSync(path.join(TLS, 'youheal-test-ca.crt'));
+if (MODE !== 'lan') PUBLIC_BASE = publicBase;
 await waitHealthy(loop);
 const creds = flag('no-demo') ? null : await seedDemo(loop).catch((e) => { log('demo seeding failed:', e.message); return null; });
 if (creds) await seedPatients(loop, creds.prac).catch((e) => log('demo patients skipped:', e.message));
@@ -212,6 +234,13 @@ console.log(' YOU HEAL Clinical — iPad TEST instance (fictitious data only)');
 console.log('='.repeat(78));
 for (const l of banner.filter(Boolean)) console.log(' ' + l);
 if (creds) {
+  // Codespaces runs headless in the background; keep the credentials in the (gitignored) test data folder.
+  const credFile = path.join(DATA, 'DEMO-CREDENTIALS.txt');
+  fs.writeFileSync(credFile, [`YOU HEAL Clinical — TEST instance (fictitious data only)`, `URL: ${publicBase}`, '',
+    `Practitioner  ${creds.prac.email}  ${creds.prac.password}`, `Admin         ${creds.admin.email}  ${creds.admin.password}`,
+    `Admin MFA key (authenticator app, manual entry, time-based): ${creds.admin.mfaSecret}`,
+    `Admin backup codes: ${creds.admin.recovery.join('  ')}`, ''].join('\n'), { mode: 0o600 });
+  console.log(`\n Credentials also saved to ${path.relative(root, credFile)} (gitignored, 0600).`);
   console.log('\n Sign-in accounts (shown once — note them now):');
   console.log(`   Practitioner  ${creds.prac.email}   ${creds.prac.password}   (ready to scan)`);
   console.log(`   Admin         ${creds.admin.email}        ${creds.admin.password}`);

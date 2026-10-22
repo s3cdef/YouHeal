@@ -1,0 +1,16 @@
+{
+  // YOU HEAL Clinical — GitHub Codespaces test environment (start it from Safari on iPad/iPhone; no computer needed).
+  // On every start it launches an isolated TEST instance (fictitious data, platform/data-ipad-test/, gitignored)
+  // and forwards it over HTTPS. Guide: platform/docs/CODESPACES.md
+  "name": "YOU HEAL Clinical (test)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "hostRequirements": { "cpus": 2 },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "YOU HEAL Clinical (test)", "onAutoForward": "notify" }
+  },
+  "postStartCommand": "cd platform && setsid nohup node tools/ipad-test.mjs --mode codespaces --port 8080 > /tmp/youheal-test.log 2>&1 &",
+  "customizations": {
+    "codespaces": { "openFiles": ["platform/docs/CODESPACES.md"] }
+  }
+}
