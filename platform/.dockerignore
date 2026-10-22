@@ -39,3 +39,4 @@ deploy
 !deploy/common
 !deploy/docker/entrypoint.sh
 dist
+data-ipad-test

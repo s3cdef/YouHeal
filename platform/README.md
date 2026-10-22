@@ -24,6 +24,8 @@ read-only non-root container, Windows virtual service account). Details: [`docs/
 
 More in [`docs/previews/`](docs/previews/README.md).
 
+**Test on an iPad** without any cloud server: [`docs/IPAD-TESTING.md`](docs/IPAD-TESTING.md) (`npm run ipad-test`).
+
 **Languages:** English and Spanish, complete — UI (951 strings) and the full clinical catalog (6,290 fields) as
 DB-embedded language packs mirrored from the Spanish baseline. See [`docs/I18N.md`](docs/I18N.md).
 
