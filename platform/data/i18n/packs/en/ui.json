@@ -1038,7 +1038,9 @@
       "PATIENT_ARCHIVED": "This patient is archived.",
       "SIGNATURE_MISMATCH": "The signature must match the signed-in practitioner’s name.",
       "SETUP_TOKEN_INVALID": "The setup token is not correct. Check the server log or the setup-token file in the data folder.",
-      "SETUP_TOKEN_REQUIRED": "Enter the setup token from the server log or the setup-token file in the data folder."
+      "SETUP_TOKEN_REQUIRED": "Enter the setup token from the server log or the setup-token file in the data folder.",
+      "BAD_ORIGIN": "Security check failed: this page’s address doesn’t match the server’s configured address. Open the app from its usual address (in GitHub Codespaces: the port 8080 address) and try again.",
+      "UPSTREAM_FORBIDDEN": "The hosting service refused this request before it reached YOU HEAL (HTTP 403). In GitHub Codespaces, reopen the port 8080 address and make sure you’re signed in to GitHub in this browser."
     },
     "rateLimitedFor": "Too many requests — please wait {s} seconds and try again.",
     "hostRejected": "This address is not allowed for the clinic server. Open YOU HEAL Clinical using the address configured by your administrator.",

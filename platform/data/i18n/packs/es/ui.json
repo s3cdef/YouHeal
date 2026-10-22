@@ -1038,7 +1038,9 @@
       "PATIENT_ARCHIVED": "Este paciente está archivado.",
       "SIGNATURE_MISMATCH": "La firma debe coincidir con el nombre del terapeuta que inició sesión.",
       "SETUP_TOKEN_INVALID": "El token de configuración no es correcto. Revise el registro del servidor o el archivo setup-token en la carpeta de datos.",
-      "SETUP_TOKEN_REQUIRED": "Ingrese el token de configuración del registro del servidor o del archivo setup-token en la carpeta de datos."
+      "SETUP_TOKEN_REQUIRED": "Ingrese el token de configuración del registro del servidor o del archivo setup-token en la carpeta de datos.",
+      "BAD_ORIGIN": "Falló una comprobación de seguridad: la dirección de esta página no coincide con la dirección configurada del servidor. Abra la aplicación desde su dirección habitual (en GitHub Codespaces: la dirección del puerto 8080) e inténtelo de nuevo.",
+      "UPSTREAM_FORBIDDEN": "El servicio de alojamiento rechazó esta solicitud antes de que llegara a YOU HEAL (HTTP 403). En GitHub Codespaces, vuelva a abrir la dirección del puerto 8080 y asegúrese de haber iniciado sesión en GitHub en este navegador."
     },
     "rateLimitedFor": "Demasiadas solicitudes — espere {s} segundos e intente de nuevo.",
     "hostRejected": "Esta dirección no está permitida para el servidor de la clínica. Abra YOU HEAL Clínica con la dirección configurada por su administrador.",

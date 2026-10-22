@@ -36,6 +36,8 @@ function errorFor(status, body) {
   if (status === 401 && e.code === 'MFA_REQUIRED') return new MfaRequiredError(...args);
   if (status === 401) return new AuthError(...args);
   if (status === 403 && (e.code === 'MFA_ENROLLMENT_REQUIRED' || e.code === 'PASSWORD_CHANGE_REQUIRED')) return new RestrictedError(...args);
+  // A 403 without the app's JSON error body came from something in front of the app (e.g. a hosting proxy)
+  if (status === 403 && !(body && body.error)) return new ForbiddenError(403, 'UPSTREAM_FORBIDDEN', 'Forbidden by an upstream proxy');
   if (status === 403) return new ForbiddenError(...args);
   if (status === 423) return new LockedError(...args);
   if (status === 404) return new NotFoundError(...args);

@@ -7,6 +7,7 @@ import { Router } from './lib/router.js';
 import {
   HttpError, applySecurityHeaders, sendJson, sendError, readJsonBody, parseCookies, serializeCookie, DUPES,
   clientIp, requestProto, createStaticHandler, forbidden, unauthorized, hostAllowed, ipBucketKey, etagMatches,
+  expectedOrigin,
 } from './lib/http.js';
 import { TokenBucket } from './lib/ratelimit.js';
 import { checkOrigin, checkCsrfToken } from './lib/csrf.js';
@@ -85,6 +86,20 @@ export function createApp({ cfg, db, keyring, log }) {
     return `"${h.slice(0, 32)}"`;
   }
 
+  // Refused origins are logged (expected vs received, truncated, ≤ 10 lines/min) so a mis-set public address —
+  // e.g. behind a hosting proxy — is diagnosable from the server log without exposing anything to the client.
+  let originLogWindow = 0, originLogCount = 0;
+  function logRejectedOrigin(req) {
+    const now = Date.now();
+    if (now - originLogWindow >= 60_000) { originLogWindow = now; originLogCount = 0; }
+    if (++originLogCount > 10) return;
+    log.warn('refused a state-changing request: Origin/Referer does not match the expected origin (check YH_PUBLIC_ORIGIN)', {
+      expected: expectedOrigin(req, cfg), origin: String(req.headers.origin ?? '').slice(0, 120),
+      referer: req.headers.referer ? String(req.headers.referer).slice(0, 120) : undefined,
+      secFetchSite: req.headers['sec-fetch-site'], path: req.url?.split('?')[0], reqId: req.id,
+    });
+  }
+
   function restrictionOf(user) {
     if (user.must_change_password) return 'password';
     if (user.role === 'admin' && !user.mfa_enabled && !cfg.devNoMfa) return 'mfa';
@@ -161,7 +176,7 @@ export function createApp({ cfg, db, keyring, log }) {
     }
 
     if (MUTATING.has(req.method)) {
-      checkOrigin(req, cfg);
+      try { checkOrigin(req, cfg); } catch (e) { logRejectedOrigin(req); throw e; }
       const needCsrf = o.public ? Boolean(o.csrfIfSession && ctx.session) : o.csrf !== false;
       if (needCsrf) checkCsrfToken(req, ctx.session);
       ctx.body = await readJsonBody(req, o.bodyLimit || DEFAULT_BODY_LIMIT);
