@@ -175,3 +175,17 @@ test('session list orderings are served from an index (no temp B-tree)', () => {
   assert.doesNotMatch(p2, /TEMP B-TREE/);
   db.close();
 });
+
+test('GET /sessions/:id embeds the patient demographics the scan header needs (name, sex, DOB, language)', async () => {
+  const { srv, admin } = await bootstrap();
+  try {
+    const p = (await admin.post('/api/v1/patients', { firstName: 'Jane', lastName: 'Sample', dob: '1980-01-01', sex: 'female' })).json;
+    await admin.post(`/api/v1/patients/${p.id}/consents`, { type: 'intake', answers: {}, contraindications: { relative: [], absolute: [] }, signatureName: 'Jane Sample', signedAt: new Date().toISOString() });
+    const s = (await admin.post(`/api/v1/patients/${p.id}/sessions`, { methodology: 'biomagnetism', protocolIds: [], chiefComplaint: 'x', symptoms: [] })).json;
+    const r = await admin.get(`/api/v1/sessions/${s.id}`);
+    assert.equal(r.status, 200);
+    assert.deepEqual({ firstName: r.json.patient.firstName, lastName: r.json.patient.lastName, sex: r.json.patient.sex, dob: r.json.patient.dob },
+      { firstName: 'Jane', lastName: 'Sample', sex: 'female', dob: '1980-01-01' });
+    assert.ok('preferredLanguage' in r.json.patient);
+  } finally { await srv.close(); }
+});

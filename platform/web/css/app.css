@@ -727,7 +727,9 @@ button.chip { font: inherit; font-size: var(--fs-xs); font-weight: 700; }
 .pane-toggle { display: none; position: relative; }
 .badge-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--primary); color: var(--primary-ink); font-size: .72rem; display: inline-grid; place-items: center; }
 .scan-locked { padding: 10px 16px 0; }
-.scan-body { position: relative; display: grid; grid-template-columns: 340px minmax(0, 1fr) 380px; min-height: 0; overflow: hidden; }
+/* always the stretch row: the optional .scan-locked banner (row 2) is absent on drafts, and without explicit
+   placement the body would fall into that auto row and collapse to its content height (blank 3D stage in portrait) */
+.scan-body { grid-row: 3; position: relative; display: grid; grid-template-columns: 340px minmax(0, 1fr) 380px; min-height: 0; overflow: hidden; }
 .scan-left, .scan-right { background: var(--surface); min-height: 0; display: flex; flex-direction: column; z-index: 15; }
 .scan-left { border-right: 1px solid var(--border); padding: 12px 14px; gap: 12px; overflow-y: auto; }
 .scan-right { border-left: 1px solid var(--border); }

@@ -469,11 +469,11 @@ export function register(router, deps) {
   router.get('/sessions/:id', (ctx) => {
     const s = getSession(ctx);
     ctx.audit('session.read', { targetType: 'session', targetId: s.id, detail: { patientId: s.patient_id } });
-    // The scan workspace needs these three demographics to render (body preset, age, report language);
-    // embedding them saves a sequential round trip. Same role gate as the session itself.
+    // The scan workspace needs these demographics to render (header name, body preset, age, report language);
+    // embedding them saves a sequential round trip. clinicalRead ⊂ patientRead, so this exposes nothing new.
     const row = db.get('SELECT * FROM patients WHERE id = ?', s.patient_id);
     const pt = decryptPatient(keyring, row);
-    return { ...sessionView(db, keyring, s), patient: { id: pt.id, sex: pt.sex ?? null, dob: pt.dob ?? null, preferredLanguage: row.preferred_language ?? null } };
+    return { ...sessionView(db, keyring, s), patient: { id: pt.id, firstName: pt.firstName ?? null, lastName: pt.lastName ?? null, mrn: pt.mrn ?? null, sex: pt.sex ?? null, dob: pt.dob ?? null, preferredLanguage: row.preferred_language ?? null } };
   }, { roles: PERM.clinicalRead });
 
   router.patch('/sessions/:id', (ctx) => {
