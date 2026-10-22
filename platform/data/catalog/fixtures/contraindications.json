@@ -1,0 +1,4 @@
+[
+  { "id": "abs-01", "kind": "absolute", "text": { "es": "Portador de marcapasos o dispositivo electrónico implantado", "en": "Pacemaker or implanted electronic device" }, "source": { "doc": "goiz-n1", "page": 8 } },
+  { "id": "rel-01", "kind": "relative", "text": { "es": "Embarazo", "en": "Pregnancy" }, "source": { "doc": "goiz-n1", "page": 8 } }
+]

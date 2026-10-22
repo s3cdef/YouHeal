@@ -1,0 +1,20 @@
+# Licensed source material — never commit
+data/sources/*
+!data/sources/README.md
+# Runtime state — never commit (PHI, keys)
+data/db/
+data/keys/
+data/backups/
+data/tls/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+node_modules/
+.env
+tests/artifacts/
+
+# Translation working files (queue/done chunks); the result lives in data/i18n/packs/
+data/i18n/_work/
+
+# iPad/tablet TEST instance (tools/ipad-test.mjs) — fictitious data, private test CA
+data-ipad-test/

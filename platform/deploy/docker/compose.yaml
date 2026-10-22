@@ -1,0 +1,125 @@
+# YOU HEAL Clinical — Docker Compose (single clinic host).
+#
+# Quick start (from platform/deploy/docker/):
+#   umask 077 && mkdir -p secrets && openssl rand -base64 32 > secrets/master.key
+#   sudo chown 10001:10001 secrets/master.key && sudo chmod 0400 secrets/master.key   # see note on secrets below
+#   docker compose up -d --build
+#   docker compose logs -f youheal
+#   docker compose exec -it youheal node --run create-admin   # first admin (needs a TTY; setup UI is loopback-only)
+#   (npm is deliberately removed from the image; `node --run <script>` runs the same package.json scripts)
+#
+# ESCROW secrets/master.key OFFLINE (two copies, separate locations). Losing it = losing all PHI and backups.
+#
+# Environment overrides (shell env or a .env file next to this file — never put the key in .env):
+#   YH_BIND_ADDR      host address the port is published on   (default 127.0.0.1 = local only)
+#   YH_PUBLISH_PORT   host port                               (default 8443)
+#   YH_TLS_HOSTNAME   CN/SAN for the auto-generated cert      (default: container hostname)
+#   YH_TLS_SAN        extra SANs, e.g. "DNS:clinic.lan,IP:192.168.1.20"
+#   YH_TRUST_PROXY    1 only when a reverse proxy you control is the sole client (deploy/reverse-proxy/)
+#   YH_PUBLIC_ORIGIN  external origin (https://clinic.example.org) when published via a proxy/other port
+#   YH_ALLOWED_HOSTS  Host header allow-list (DNS-rebinding defence), e.g. "clinic.lan,192.168.1.20";
+#                     REQUIRED when users browse by a name/IP other than localhost (the container hostname is random)
+#   YH_TRUSTED_PROXIES  proxy addresses/CIDRs allowed to set X-Forwarded-* — REQUIRED with YH_TRUST_PROXY=1.
+#                     A proxy on the Docker host reaches the app from the bridge gateway, not loopback: find it with
+#                     `docker network inspect youheal_yh_net -f '{{(index .IPAM.Config 0).Gateway}}'` (often 172.18.0.1)
+#   YH_MAX_CONNECTIONS  server-side cap on concurrent connections (default derived from the fd limit; ulimit below)
+#   YH_FIRST_BYTE_MS  time allowed for a client to send request headers (slow-loris defence)
+#   YH_CATALOG_LICENSES  ADR-007 license filter, e.g. "licensed,original,public-domain" (empty = all)
+#   YH_IMAGE          image reference (pin a digest in production)
+#   YH_MASTER_KEY_SECRET_FILE  host path of the master key secret (default ./secrets/master.key)
+#
+# To expose on the LAN: YH_BIND_ADDR=0.0.0.0 (or the NIC address) + a host firewall rule limiting the
+# source subnet. Prefer a reverse proxy with a CA-issued certificate (deploy/reverse-proxy/).
+#
+# First-run setup also needs the one-time setup token (file only, never logged in production):
+#   docker compose exec youheal cat /data/setup-token
+# First-run setup note: POST /api/v1/setup is accepted from loopback only. Inside a container, published
+# traffic does not arrive from 127.0.0.1, so use `docker compose exec -it youheal node --run create-admin`
+# (runs inside the container). Alternative: start once with YH_ALLOW_REMOTE_SETUP=1 while the port is
+# still bound to 127.0.0.1, complete https://localhost:8443/#/setup, then remove the variable and recreate.
+
+name: youheal
+
+services:
+  youheal:
+    image: ${YH_IMAGE:-youheal/clinical:local}
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    restart: unless-stopped
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 1g
+    memswap_limit: 1g
+    cpus: 2.0
+    ulimits:
+      nofile:
+        soft: 8192
+        hard: 8192
+    stop_grace_period: 30s
+    ports:
+      - "${YH_BIND_ADDR:-127.0.0.1}:${YH_PUBLISH_PORT:-8443}:8443"
+    environment:
+      YH_HOST: 0.0.0.0
+      YH_PORT: "8443"
+      YH_DATA_DIR: /data
+      YH_CATALOG_DIR: /app/data/catalog
+      YH_PUBLIC_ORIGIN:
+      YH_TRUST_PROXY: ${YH_TRUST_PROXY:-0}
+      YH_TLS_HOSTNAME: ${YH_TLS_HOSTNAME:-}
+      YH_TLS_SAN: ${YH_TLS_SAN:-}
+      YH_MASTER_KEY_FILE: /run/secrets/yh_master_key
+      YH_AUTO_MIGRATE: "1"
+      YH_AUTO_CATALOG: "1"
+      YH_ALLOW_REMOTE_SETUP: ${YH_ALLOW_REMOTE_SETUP:-0}
+      YH_CATALOG_LICENSES:
+      # Optional settings below have NO value on purpose: Compose passes them through only when they are set
+      # in the shell/.env, and leaves them UNSET otherwise (an empty string is not "unset" — e.g. an empty
+      # YH_TRUSTED_PROXIES with YH_TRUST_PROXY=1 makes the server refuse to start).
+      YH_ALLOWED_HOSTS:
+      YH_TRUSTED_PROXIES:
+      YH_MAX_CONNECTIONS:
+      YH_FIRST_BYTE_MS:
+    secrets:
+      - yh_master_key
+      # Optional CA-issued certificate instead of the self-signed one (uncomment both + the top-level entries):
+      # - yh_tls_cert
+      # - yh_tls_key
+    volumes:
+      - yh_data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - yh_net
+
+networks:
+  yh_net:
+    driver: bridge
+    # No inter-container traffic is needed; the app has no outbound dependencies.
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"
+
+volumes:
+  yh_data:
+    name: youheal_data
+
+# Compose file-based secrets are bind-mounted read-only at /run/secrets/<name> and KEEP HOST OWNERSHIP
+# AND MODE (uid/gid/mode keys are Swarm-only). The container runs as uid 10001, so the host file must be
+# readable by 10001: `chown 10001:10001 secrets/master.key && chmod 0400 secrets/master.key`.
+secrets:
+  yh_master_key:
+    file: ${YH_MASTER_KEY_SECRET_FILE:-./secrets/master.key}
+  # yh_tls_cert:
+  #   file: ./secrets/server.crt
+  # yh_tls_key:
+  #   file: ./secrets/server.key

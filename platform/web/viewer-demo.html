@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Body Viewer Demo — YOU HEAL Clinical</title>
+  <link rel="stylesheet" href="js/viewer3d/viewer.css">
+  <link rel="stylesheet" href="js/viewer3d/demo.css">
+  <script type="module" src="js/viewer3d/demo.js"></script>
+</head>
+<body>
+  <header class="demo-bar">
+    <h1 class="demo-title">YOU HEAL Clinical <span>3D body viewer · demo harness</span></h1>
+    <div class="demo-controls" role="toolbar" aria-label="Viewer controls">
+      <div class="demo-group" role="group" aria-label="View">
+        <button type="button" data-view="anterior">Front</button>
+        <button type="button" data-view="posterior">Back</button>
+        <button type="button" data-view="left">Left</button>
+        <button type="button" data-view="right">Right</button>
+        <button type="button" data-view="superior">Top</button>
+      </div>
+      <label>Body <select id="demo-sex"><option value="neutral">Neutral</option><option value="female">Female</option><option value="male">Male</option></select></label>
+      <label>Tone <select id="demo-tone"><option value="medium">Medium</option><option value="light">Light</option><option value="tan">Tan</option><option value="deep">Deep</option><option value="clinical">Clinical gray</option></select></label>
+      <label>Lang <select id="demo-locale"><option value="en">EN</option><option value="es">ES</option></select></label>
+      <label class="demo-check"><input type="checkbox" id="demo-points" checked> All points</label>
+      <label class="demo-check"><input type="checkbox" id="demo-protocol" checked> Protocol 19</label>
+      <button type="button" id="demo-snap">Snapshot</button>
+    </div>
+  </header>
+  <main class="demo-main">
+    <div id="viewer" class="demo-viewer"></div>
+    <aside class="demo-side">
+      <section>
+        <h2>19. Circulación de Piernas</h2>
+        <ol id="demo-pairs" class="demo-pairs"></ol>
+      </section>
+      <section>
+        <h2>Last event</h2>
+        <pre id="demo-log" class="demo-log">Click a point or the skin.</pre>
+      </section>
+      <section>
+        <h2>Snapshot</h2>
+        <img id="demo-shot" class="demo-shot" alt="Snapshot preview" hidden>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>

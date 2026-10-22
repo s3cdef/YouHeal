@@ -1,0 +1,23 @@
+{
+  "name": "youheal-clinical",
+  "version": "1.0.0",
+  "description": "YOU HEAL Clinical \u2014 secure practitioner platform for Biomagnetic Pair practice (on-prem first).",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "test": "node --disable-warning=ExperimentalWarning --test \"tests/**/*.test.js\" \"tests/**/*.test.mjs\"",
+    "test:server": "node --disable-warning=ExperimentalWarning --test \"tests/server/**/*.test.js\"",
+    "migrate": "node --disable-warning=ExperimentalWarning server/cli/migrate.js",
+    "catalog:load": "node --disable-warning=ExperimentalWarning server/catalog/load.js",
+    "create-admin": "node --disable-warning=ExperimentalWarning server/cli/create-admin.js",
+    "rotate-key": "node --disable-warning=ExperimentalWarning server/cli/rotate-key.js",
+    "backup": "node --disable-warning=ExperimentalWarning server/cli/backup.js",
+    "restore": "node --disable-warning=ExperimentalWarning server/cli/restore.js",
+    "ipad-test": "node tools/ipad-test.mjs"
+  }
+}

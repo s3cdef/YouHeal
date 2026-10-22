@@ -1,0 +1,42 @@
+# Keep PHI, key material, licensed source PDFs and build/test byproducts out of the Docker build context.
+# (The context is sent to the daemon and may be cached/pushed; treat it as a disclosure boundary.)
+
+# Runtime state — PHI and keys (NEVER in an image)
+data/sources
+data/db
+data/keys
+data/backups
+data/tls
+data/i18n/_work
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.key
+*.pem
+*.yhbak
+.env
+.env.*
+**/secrets
+
+# Dependencies / tooling / VCS
+node_modules
+.git
+.gitignore
+.github
+.vscode
+.idea
+*.log
+
+# Tests and their artifacts
+tests/artifacts
+tests
+
+# Build-time-only importer (needs poppler + the licensed PDFs)
+importer
+
+# Deployment tooling is not needed at runtime, except the probe and entrypoint
+deploy
+!deploy/common
+!deploy/docker/entrypoint.sh
+dist
+data-ipad-test

@@ -1,0 +1,30 @@
+{
+  "version": "fixture-2",
+  "generatedAt": "2026-10-21T00:00:00.000Z",
+  "counts": {
+    "contraindications": 2,
+    "entities": 4,
+    "glossary": 3,
+    "pairs": 6,
+    "point-anatomy": 11,
+    "points": 12,
+    "protocols": 3,
+    "recommendations": 6,
+    "regions": 7,
+    "sources": 4,
+    "symptoms": 6
+  },
+  "sha256": {
+    "contraindications.json": "87390b5b4229b457526a24b83ffc5ffa7760a54ee3965074970de436172b2e4f",
+    "entities.json": "eef51b3dcea03847582462877f5fb649fca5794265fa43c4d874a1f4354da3ce",
+    "glossary.json": "fcb8593afb255981024c2a8c371a51095d230818645dca56a7025899e2d272e2",
+    "pairs.json": "48bb34103de29d50c01805e7ff3c985f985352a1ee975bcfde54a2e2f9693a35",
+    "point-anatomy.json": "c6465da99b653bd1a7d5bf22067b59edb2a084fab698848050cac22a0e03e936",
+    "points.json": "483c3f5903d35f12792e67e18ff4e2cd6597b8a41ecacae50ab59e2fd4af31a6",
+    "protocols.json": "875612b412ca7aa490dddd86f77184b6ea823e64d67319b65787f021a58fc037",
+    "recommendations.json": "6bfb70c34816977a13fcdd87402227ac6885be72e5a129e552c8f8753560f329",
+    "regions.json": "a9e22496a6f42288979b4bc0d85e3beacf9a74644b4edb5b138d91134af31952",
+    "sources.json": "dbd03d00b03ca694e789e55e85cca367b05e1e12cf939211ac0b27b9db7ccfdd",
+    "symptoms.json": "19006a2eb7806fd39d6c67cf68ae1b759e35bb60083285e9ffb830a141bce6fd"
+  }
+}

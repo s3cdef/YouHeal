@@ -1,0 +1,5 @@
+[
+  { "abbr": "PB", "meaning": { "es": "Par Biomagnético", "en": "Biomagnetic Pair" } },
+  { "abbr": "D", "meaning": { "es": "Derecho", "en": "Right" } },
+  { "abbr": "I", "meaning": { "es": "Izquierdo", "en": "Left" } }
+]

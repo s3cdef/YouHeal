@@ -1,0 +1,87 @@
+# YOU HEAL Clinical — systemd unit (template; deploy/linux/install.sh renders the @TOKENS@).
+#
+# Installed to /etc/systemd/system/youheal.service. Local overrides belong in a drop-in
+# (systemctl edit youheal) so upgrades never clobber them. Verify the sandbox with:
+#   systemd-analyze security youheal.service
+#
+# Control mapping: AC-6 (least privilege), CM-7 (least functionality), SC-39 (process isolation),
+# SI-16 (memory protection — see MemoryDenyWriteExecute note), AU-12 (journald capture of stderr logs).
+
+[Unit]
+Description=YOU HEAL Clinical (Biomagnetic Pair practitioner platform, PHI)
+Documentation=file://@PREFIX@/current/docs/OPERATIONS.md
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=@USER@
+Group=@GROUP@
+EnvironmentFile=@CONF_DIR@/youheal.env
+WorkingDirectory=@PREFIX@/current
+ExecStart=@NODE_BIN@ --disable-warning=ExperimentalWarning server/index.js
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=90s
+TimeoutStopSec=30s
+KillMode=mixed
+KillSignal=SIGTERM
+SyslogIdentifier=youheal
+# File-descriptor limit; the server derives YH_MAX_CONNECTIONS (75% of it) unless set explicitly.
+LimitNOFILE=8192
+LimitCORE=0
+
+# --- File system --------------------------------------------------------------------------------
+UMask=0077
+ProtectSystem=strict
+ReadWritePaths=@DATA_DIR@
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+DevicePolicy=closed
+ProtectProc=invisible
+ProcSubset=pid
+RemoveIPC=yes
+
+# --- Privileges ---------------------------------------------------------------------------------
+NoNewPrivileges=yes
+# Empty = drop every capability from the bounding set (the app binds an unprivileged port >= 1024).
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictSUIDSGID=yes
+LockPersonality=yes
+
+# --- Kernel / namespaces ------------------------------------------------------------------------
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+KeyringMode=private
+
+# --- Network ------------------------------------------------------------------------------------
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# --- System calls -------------------------------------------------------------------------------
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @mount @debug @cpu-emulation @obsolete @raw-io @reboot @swap @module
+# Denied syscalls fail with EPERM instead of killing the process (Node probes e.g. setrlimit at boot).
+SystemCallErrorNumber=EPERM
+
+# --- Memory -------------------------------------------------------------------------------------
+# MemoryDenyWriteExecute MUST stay "no": V8's JIT compilers (Sparkplug/Maglev/TurboFan) and
+# WebAssembly allocate pages writable, emit machine code, then mprotect() them executable. MDWE=yes
+# installs a seccomp filter that rejects PROT_EXEC on such mappings, and node aborts at startup.
+# If your policy requires MDWE=yes, add "--jitless" to ExecStart via a drop-in (interpreter-only,
+# no WebAssembly; expect a large CPU cost). Compensating controls: NoNewPrivileges, the syscall
+# filter above, no capabilities, read-only code (ProtectSystem=strict, root-owned app dir).
+MemoryDenyWriteExecute=no
+
+[Install]
+WantedBy=multi-user.target

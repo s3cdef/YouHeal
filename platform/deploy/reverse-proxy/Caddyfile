@@ -1,0 +1,100 @@
+# YOU HEAL Clinical — Caddy v2 reverse proxy (>= 2.8 for tls_trust_pool; see note for older).
+# Install as /etc/caddy/Caddyfile (or `import` it). Validate: caddy validate --config /etc/caddy/Caddyfile
+#
+# Backend: sudo ./install.sh --host 127.0.0.1 --trust-proxy --public-origin https://clinic.example.org
+#   -> YH_HOST=127.0.0.1, YH_TRUST_PROXY=1, YH_PUBLIC_ORIGIN=https://clinic.example.org,
+#      YH_ALLOWED_HOSTS includes clinic.example.org. If Caddy runs on another host, also
+#      --trusted-proxies <caddy-ip> (YH_TRUSTED_PROXIES; backend default trusts loopback only).
+# Caddy sets X-Forwarded-For (appending the client address), X-Forwarded-Proto and X-Forwarded-Host
+# by default; with YH_TRUST_PROXY=1 the server trusts exactly this one hop.
+#
+# Cookies: under TLS the session cookie is `__Host-yh_sid` (Secure, Path=/, no Domain). Do not rewrite
+# Set-Cookie (no header_down Set-Cookie edits) — a modified __Host- cookie is rejected by browsers.
+#
+# Copy the backend's PUBLIC certificate, read as the service account (symlink-safe):
+#   sudo -u youheal cat /var/lib/youheal/tls/cert.pem | sudo tee /etc/caddy/youheal-backend.crt >/dev/null
+{
+	# Global options
+	servers {
+		protocols h1 h2
+		timeouts {
+			read_header 15s
+			read_body 30s
+		}
+	}
+	# Air-gapped clinic without public DNS? Use an internal CA instead of ACME:
+	#   local_certs
+}
+
+clinic.example.org {
+	# Certificate: (a) automatic ACME (public DNS name, port 80/443 reachable) — omit the line below;
+	# (b) a CA-issued file pair:
+	tls /etc/ssl/youheal/fullchain.pem /etc/ssl/youheal/privkey.pem {
+		protocols tls1.2 tls1.3
+	}
+	# (c) Caddy's internal CA (distribute its root to clinic workstations): tls internal
+
+	request_body {
+		max_size 5MB
+	}
+
+	header {
+		# Single, proxy-controlled HSTS value (the app's own is replaced). Add "; preload" deliberately.
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		-Server
+		-Via
+	}
+
+	# First-run setup is never reachable through the proxy. Both the exact path and anything below it
+	# (trailing slash, sub-paths) are matched (F-04); Caddy path matching is case-insensitive and runs on
+	# the normalized path. The app also refuses setup when forwarding headers are present.
+	# GET /api/v1/setup/status stays reachable: the SPA calls it (public, read-only) at boot.
+	@setup {
+		path /api/v1/setup /api/v1/setup/*
+		not {
+			path /api/v1/setup/status
+			method GET HEAD
+		}
+	}
+	respond @setup 403
+
+	# Rate limiting: core Caddy has no rate limiter. Either build Caddy with the
+	# github.com/mholt/caddy-ratelimit module and add, e.g.:
+	#   rate_limit {
+	#       zone auth { match { path /api/v1/auth/* } key {remote_host} events 10 window 1m }
+	#   }
+	# or rely on the application's per-IP token buckets + YH_MAX_CONNECTIONS (enabled by default).
+
+	# NOTE: no `encode` directive — compressing API responses that carry CSRF tokens next to reflected
+	# input enables BREACH-style attacks.
+
+	reverse_proxy https://127.0.0.1:8443 {
+		transport http {
+			tls_server_name localhost
+			tls_trust_pool file /etc/caddy/youheal-backend.crt
+			# Caddy < 2.8: replace the line above with
+			#   tls_trusted_ca_certs /etc/caddy/youheal-backend.crt
+			dial_timeout 5s
+			response_header_timeout 60s
+		}
+		header_down -Server
+	}
+
+	# Access log WITHOUT query strings, cookies, auth headers or Referer (F-08).
+	log {
+		output file /var/log/caddy/youheal.access.log {
+			roll_size 50MiB
+			roll_keep 10
+		}
+		format filter {
+			request>uri regexp "\?.*$" "?[redacted]"
+			request>headers>Cookie delete
+			request>headers>Authorization delete
+			request>headers>Referer delete
+			request>headers>X-Csrf-Token delete
+			resp_headers>Set-Cookie delete
+		}
+	}
+}
+
+# HTTP -> HTTPS redirect is automatic for site blocks with a hostname.

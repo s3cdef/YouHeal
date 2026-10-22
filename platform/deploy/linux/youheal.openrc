@@ -1,0 +1,47 @@
+#!/sbin/openrc-run
+# shellcheck shell=sh disable=SC2034  # variables are consumed by openrc-run
+# YOU HEAL Clinical — OpenRC service (Alpine, Gentoo, Artix). Template rendered by install.sh.
+# Installed to /etc/init.d/youheal; enable with: rc-update add youheal default
+#
+# OpenRC has no systemd-style sandbox; least privilege comes from the dedicated non-login user,
+# root-owned read-only code under @PREFIX@, a 0700 data dir and UMask 0077. On Alpine consider
+# running the Docker image instead (read-only rootfs, cap_drop ALL, no-new-privileges).
+
+name="youheal"
+description="YOU HEAL Clinical (Biomagnetic Pair practitioner platform, PHI)"
+
+# The env file is KEY=value lines (no quoting); export everything for the daemon.
+if [ -r "@CONF_DIR@/youheal.env" ]; then
+	set -a
+	# shellcheck disable=SC1091
+	. "@CONF_DIR@/youheal.env"
+	set +a
+fi
+
+command="@NODE_BIN@"
+command_args="--disable-warning=ExperimentalWarning server/index.js"
+command_user="@USER@:@GROUP@"
+directory="@PREFIX@/current"
+supervisor="supervise-daemon"
+respawn_delay=5
+respawn_max=5
+respawn_period=300
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="@LOG_DIR@/youheal.log"
+error_log="@LOG_DIR@/youheal.log"
+umask=077
+# fd limit: the server derives YH_MAX_CONNECTIONS (75% of it) unless set explicitly
+rc_ulimit="-n 8192"
+retry="SIGTERM/30/SIGKILL/5"
+
+depend() {
+	need net localmount
+	after firewall
+	use logger
+}
+
+start_pre() {
+	checkpath --directory --owner "@USER@:@GROUP@" --mode 0700 "@DATA_DIR@"
+	checkpath --directory --owner "@USER@:@GROUP@" --mode 0750 "@LOG_DIR@"
+	checkpath --file --owner "@USER@:@GROUP@" --mode 0600 "@LOG_DIR@/youheal.log"
+}

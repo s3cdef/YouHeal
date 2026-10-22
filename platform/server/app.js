@@ -1,0 +1,282 @@
+// Application assembly: request pipeline (security headers, request id, rate limit, session, RBAC,
+// CSRF/Origin, JSON body) + route modules + static SPA. Used by server/index.js and the tests.
+
+import crypto, { randomUUID } from 'node:crypto';
+import { negotiate, ByteLru } from './lib/compress.js';
+import { Router } from './lib/router.js';
+import {
+  HttpError, applySecurityHeaders, sendJson, sendError, readJsonBody, parseCookies, serializeCookie, DUPES,
+  clientIp, requestProto, createStaticHandler, forbidden, unauthorized, hostAllowed, ipBucketKey, etagMatches,
+  expectedOrigin,
+} from './lib/http.js';
+import { TokenBucket } from './lib/ratelimit.js';
+import { checkOrigin, checkCsrfToken } from './lib/csrf.js';
+import { createAudit } from './lib/audit.js';
+import { createSessionStore, GhostLockout, sessionCookieName } from './lib/auth.js';
+import { ValidationError } from './lib/validate.js';
+import { DecryptError } from './lib/crypto.js';
+import { createCatalogService } from './routes/catalog.js';
+
+import * as healthRoutes from './routes/health.js';
+import * as setupRoutes from './routes/setup.js';
+import * as authRoutes from './routes/auth.js';
+import * as userRoutes from './routes/users.js';
+import * as orgRoutes from './routes/org.js';
+import * as catalogRoutes from './routes/catalog.js';
+import * as patientRoutes from './routes/patients.js';
+import * as sessionRoutes from './routes/sessions.js';
+import * as auditRoutes from './routes/audit.js';
+import * as adminRoutes from './routes/admin.js';
+import * as i18nRoutes from './routes/i18n.js';
+
+export const RAW = Symbol('raw-response');
+const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const CACHEABLE_API = /^\/api\/v1\/(catalog|i18n)\//;
+const DEFAULT_BODY_LIMIT = 1024 * 1024;
+
+export function createApp({ cfg, db, keyring, log }) {
+  const audit = createAudit(db, keyring, log, { anchorFile: cfg.auditAnchorFile });
+  const sessions = createSessionStore(db, cfg);
+  const ghost = new GhostLockout(db, keyring, cfg.lockout);
+  const limits = {
+    api: new TokenBucket({ capacity: cfg.rate.apiBurst, refillPerMin: cfg.rate.apiPerMin }),
+    auth: new TokenBucket({ capacity: cfg.rate.authBurst, refillPerMin: cfg.rate.authPerMin }),
+    // F-01: per-account bucket — at most `maxAttempts` password verifications in flight/within the window
+    account: new TokenBucket({ capacity: cfg.lockout.maxAttempts, refillPerMin: cfg.lockout.maxAttempts / cfg.lockout.windowMin }),
+  };
+  const catalog = createCatalogService(db, { allowedLicenses: cfg.catalogLicenses ? new Set(cfg.catalogLicenses) : null });
+  const router = new Router('/api/v1');
+  const deps = { cfg, db, keyring, log, audit, sessions, ghost, catalog, limits, RAW };
+
+  for (const mod of [healthRoutes, setupRoutes, authRoutes, userRoutes, orgRoutes, catalogRoutes, patientRoutes, sessionRoutes, auditRoutes, adminRoutes, i18nRoutes]) {
+    mod.register(router, deps);
+  }
+  const serveStatic = createStaticHandler({ webDir: cfg.webDir, maxAge: cfg.staticMaxAge, log });
+
+  if (cfg.devNoMfa) log.loud('YH_DEV_INSECURE_NO_MFA=1 — admin MFA enforcement is DISABLED (loopback dev only). Never use with real PHI.');
+
+  // NEW-4: rejected Host values are logged (max once per minute per distinct value, truncated)
+  // NEW-6: plus a global budget (10 lines/min across all values) so distinct Host values cannot flood the log
+  const hostLogAt = new Map();
+  let hostLogWindow = 0, hostLogCount = 0, hostLogSuppressed = 0;
+  function logRejectedHost(req) {
+    const host = String(req.headers.host ?? '(none)').slice(0, 100);
+    const now = Date.now();
+    if (now - hostLogWindow >= 60_000) {
+      if (hostLogSuppressed) log.warn('rejected-Host warnings suppressed in the last minute', { count: hostLogSuppressed });
+      hostLogWindow = now; hostLogCount = 0; hostLogSuppressed = 0;
+    }
+    if (now - (hostLogAt.get(host) || 0) < 60_000) return;
+    if (hostLogCount >= 10) { hostLogSuppressed++; return; }
+    hostLogCount++;
+    if (hostLogAt.size > 1000) hostLogAt.clear();
+    hostLogAt.set(host, now);
+    log.warn('rejected request for a Host that is not allowed (set YH_ALLOWED_HOSTS / YH_PUBLIC_ORIGIN if legitimate)', { host, ip: req.ip, reqId: req.id });
+  }
+
+  // reference-data versioning for ETags: catalog fingerprint (catalog files + pack sha256s) + overrides
+  // revision + license filter + normalized query
+  const bodyCache = new ByteLru(32 * 1024 * 1024);
+  const metaStmt = "SELECT key, value FROM catalog_meta WHERE key IN ('fingerprint', 'i18n_rev')";
+  function referenceEtag(pathname, search) {
+    const meta = Object.fromEntries(db.all(metaStmt).map((r) => [r.key, r.value]));
+    const q = new URLSearchParams(search || '');
+    const norm = [...q.entries()].sort(([a, x], [b, y]) => (a === b ? (x < y ? -1 : 1) : a < b ? -1 : 1)).map(([k, v]) => `${k}=${v}`).join('&');
+    const h = crypto.createHash('sha256').update([cfg.version, meta.fingerprint || '', meta.i18n_rev || '', (cfg.catalogLicenses || []).join(','), pathname, norm].join('\n')).digest('hex');
+    return `"${h.slice(0, 32)}"`;
+  }
+
+  // Refused origins are logged (expected vs received, truncated, ≤ 10 lines/min) so a mis-set public address —
+  // e.g. behind a hosting proxy — is diagnosable from the server log without exposing anything to the client.
+  let originLogWindow = 0, originLogCount = 0;
+  function logRejectedOrigin(req) {
+    const now = Date.now();
+    if (now - originLogWindow >= 60_000) { originLogWindow = now; originLogCount = 0; }
+    if (++originLogCount > 10) return;
+    log.warn('refused a state-changing request: Origin/Referer does not match the expected origin (check YH_PUBLIC_ORIGIN)', {
+      expected: expectedOrigin(req, cfg), origin: String(req.headers.origin ?? '').slice(0, 120),
+      referer: req.headers.referer ? String(req.headers.referer).slice(0, 120) : undefined,
+      secFetchSite: req.headers['sec-fetch-site'], path: req.url?.split('?')[0], reqId: req.id,
+    });
+  }
+
+  function restrictionOf(user) {
+    if (user.must_change_password) return 'password';
+    if (user.role === 'admin' && !user.mfa_enabled && !cfg.devNoMfa) return 'mfa';
+    return null;
+  }
+
+  async function handleApi(req, res, pathname, search) {
+    const ip = req.ip;
+    if (!hostAllowed(req, cfg)) {
+      logRejectedHost(req);
+      throw new HttpError(421, 'MISDIRECTED_REQUEST', 'Host not allowed');
+    }
+    const rl = limits.api.take(ipBucketKey(ip));
+    if (!rl.ok) throw Object.assign(new HttpError(429, 'RATE_LIMITED', 'Too many requests'), { retryAfter: rl.retryAfter });
+
+    const m = router.match(req.method, pathname);
+    if (!m) throw new HttpError(404, 'NOT_FOUND', 'Unknown API endpoint');
+    if (m.allowed) throw Object.assign(new HttpError(405, 'METHOD_NOT_ALLOWED', 'Method not allowed'), { allow: m.allowed });
+    const { route, params } = m;
+    const o = route.opts;
+    req.route = route.pattern;
+
+    if (o.rate === 'auth') {
+      const r = limits.auth.take(ipBucketKey(ip));
+      if (!r.ok) throw Object.assign(new HttpError(429, 'RATE_LIMITED', 'Too many attempts; slow down'), { retryAfter: r.retryAfter });
+    }
+
+    const secure = requestProto(req, cfg) === 'https';
+    const cookieName = sessionCookieName(secure);
+    const ctx = {
+      req, res, cfg, db, keyring, params, ip, reqId: req.id, secure,
+      query: new URLSearchParams(search || ''),
+      user: null, session: null, status: 200, restriction: null,
+      setCookie(value, maxAge) {
+        res.appendHeader('Set-Cookie', serializeCookie(cookieName, value, { secure, maxAge }));
+      },
+      audit(action, a = {}) {
+        return audit.append({
+          orgId: a.orgId ?? ctx.user?.org_id ?? null, actorId: a.actorId ?? ctx.user?.id ?? null,
+          actorRole: a.actorRole ?? ctx.user?.role ?? null, action, targetType: a.targetType, targetId: a.targetId,
+          outcome: a.outcome, ip, requestId: req.id, detail: a.detail,
+        });
+      },
+    };
+
+    // session
+    // F-17: only the cookie name matching this request's security is honored; an ambiguous (duplicated)
+    // session cookie is refused rather than picking one arbitrarily.
+    const jar = parseCookies(req.headers.cookie);
+    const token = jar[DUPES].has(cookieName) ? null : jar[cookieName];
+    if (jar[DUPES].has(cookieName)) { ctx.setCookie('', 0); ctx.staleSession = true; }
+    if (token) {
+      const found = sessions.lookup(token);
+      if (found?.user) {
+        ctx.user = found.user; ctx.session = found.session;
+        ctx.restriction = restrictionOf(found.user);
+      } else {
+        if (found?.expired) {
+          audit.append({ orgId: found.session.org_id, actorId: found.session.user_id, action: 'auth.session.expired', targetType: 'user', targetId: found.session.user_id, ip, requestId: req.id });
+        }
+        ctx.setCookie('', 0);
+        ctx.staleSession = true;
+      }
+    }
+
+    if (!o.public) {
+      if (!ctx.user) throw unauthorized(ctx.staleSession ? 'SESSION_EXPIRED' : 'UNAUTHENTICATED', ctx.staleSession ? 'Your session has expired' : 'Authentication required');
+      if (ctx.restriction && !(o.allowWhen || []).includes(ctx.restriction)) {
+        throw ctx.restriction === 'mfa'
+          ? forbidden('Administrators must enroll in multi-factor authentication before continuing', 'MFA_ENROLLMENT_REQUIRED')
+          : forbidden('You must change your password before continuing', 'PASSWORD_CHANGE_REQUIRED');
+      }
+      if (o.roles && !o.roles.includes(ctx.user.role)) throw forbidden();
+    }
+
+    if (MUTATING.has(req.method)) {
+      try { checkOrigin(req, cfg); } catch (e) { logRejectedOrigin(req); throw e; }
+      const needCsrf = o.public ? Boolean(o.csrfIfSession && ctx.session) : o.csrf !== false;
+      if (needCsrf) checkCsrfToken(req, ctx.session);
+      ctx.body = await readJsonBody(req, o.bodyLimit || DEFAULT_BODY_LIMIT);
+    } else if (req.headers['content-length'] && req.headers['content-length'] !== '0') {
+      req.resume();
+    }
+
+    // Public reference data (catalog / language packs): strong ETag + 304 (after the auth gate above) and an
+    // in-memory body cache; these — and /health — are the ONLY API responses that may be compressed (BREACH:
+    // see lib/compress.js; never /auth/*, PHI, reports, audit).
+    const cacheable = (req.method === 'GET' || req.method === 'HEAD') && CACHEABLE_API.test(pathname) && !/\/export$/.test(pathname);
+    const compressible = cacheable || pathname === '/api/v1/health';
+    let etag = null;
+    if (cacheable) {
+      etag = referenceEtag(pathname, search);
+      res.setHeader('Cache-Control', 'private, no-cache');
+      res.setHeader('Vary', 'Accept-Encoding');
+      if (etagMatches(req.headers['if-none-match'], etag)) {
+        res.setHeader('ETag', etag);
+        res.statusCode = 304;
+        res.end();
+        return;
+      }
+      const hit = bodyCache.get(`${etag}|identity`);
+      if (hit) {
+        sendJson(res, 200, null, { raw: hit, etag, cacheControl: 'private, no-cache', vary: true, encoding: negotiate(req.headers['accept-encoding']), cache: bodyCache });
+        return;
+      }
+    }
+    const result = await route.handler(ctx);
+    if (result === RAW) return;
+    if (compressible && ctx.status === 200) {
+      const raw = Buffer.from(JSON.stringify(result ?? { ok: true }));
+      if (etag) bodyCache.set(`${etag}|identity`, raw);
+      sendJson(res, 200, null, { raw, etag, cacheControl: cacheable ? 'private, no-cache' : 'no-store', vary: true, encoding: negotiate(req.headers['accept-encoding']), cache: etag ? bodyCache : null });
+      return;
+    }
+    sendJson(res, ctx.status, result ?? { ok: true });
+  }
+
+  async function handler(req, res) {
+    const started = process.hrtime.bigint();
+    req.id = randomUUID();
+    req.ip = clientIp(req, cfg);
+    res.req = req;
+    res.setHeader('X-Request-Id', req.id);
+    applySecurityHeaders(res, { hsts: cfg.tls || requestProto(req, cfg) === 'https' });
+
+    const rawUrl = String(req.url || '/');
+    const q = rawUrl.indexOf('?');
+    const pathname = q >= 0 ? rawUrl.slice(0, q) : rawUrl;
+    const search = q >= 0 ? rawUrl.slice(q + 1) : '';
+
+    res.on('finish', () => {
+      const ms = Number(process.hrtime.bigint() - started) / 1e6;
+      // no query string (may carry search terms), only the route pattern for API calls
+      log.info('access', {
+        reqId: req.id, method: req.method, path: req.route || (pathname.startsWith('/api/') ? '/api/?' : pathname.slice(0, 200)),
+        status: res.statusCode, ms: Math.round(ms * 10) / 10, ip: req.ip,
+      });
+    });
+
+    try {
+      if (!pathname.startsWith('/')) throw new HttpError(400, 'BAD_REQUEST', 'Bad request');
+      if (pathname === '/api' || pathname.startsWith('/api/')) await handleApi(req, res, pathname, search);
+      else await serveStatic(req, res, pathname);
+    } catch (err) {
+      handleError(err, req, res);
+    }
+  }
+
+  function handleError(err, req, res) {
+    let e = err;
+    if (err instanceof ValidationError) e = new HttpError(400, 'VALIDATION', err.message, err.fields);
+    else if (err instanceof DecryptError) {
+      log.error('decryption failure (wrong/missing key or tampered ciphertext)', { reqId: req.id, err: err.message });
+      e = new HttpError(500, 'DECRYPT_FAILED', 'Stored data could not be decrypted');
+    } else if (!(err instanceof HttpError)) {
+      const msg = String(err?.message || '');
+      if (/session is finalized and immutable/.test(msg)) e = new HttpError(409, 'SESSION_LOCKED', 'Session is finalized and cannot be modified');
+      else if (/last active admin/.test(msg)) e = new HttpError(409, 'LAST_ADMIN', 'The clinic must keep at least one active administrator');
+      else if (err?.code === 'ECONNRESET' || msg === 'aborted' || req.aborted || req.socket?.destroyed) {
+        // NEW-7: the client went away mid-request; not a server fault
+        log.info('client disconnected before the request completed', { reqId: req.id, err: msg });
+        e = new HttpError(400, 'CLIENT_ABORTED', 'Request aborted');
+      } else {
+        log.error('unhandled error', { reqId: req.id, err: msg, stack: err?.stack?.split('\n').slice(0, 6).join(' | ') });
+        e = new HttpError(500, 'INTERNAL', 'Internal server error');
+      }
+    }
+    if (e.status === 401 || e.status === 403) res.setHeader('Cache-Control', 'no-store');
+    sendError(res, e);
+  }
+
+  function purge() {
+    const n = sessions.purgeExpired();
+    limits.api.prune(); limits.auth.prune(); limits.account.prune();
+    ghost.purge();
+    return n;
+  }
+
+  return { handler, router, audit, sessions, catalog, purge, deps, serveStatic };
+}

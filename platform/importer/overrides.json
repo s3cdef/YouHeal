@@ -1,0 +1,270 @@
+{
+  "_doc": "Manual overrides applied by importer/lib/build.js. Every entry is reported in data/catalog/IMPORT-REPORT.md. Keep entries minimal and justified by the source text.",
+  "blockFixes": [
+    {
+      "doc": "goiz-n2",
+      "page": 190,
+      "titleNumber": 286,
+      "relation": "Lactancia",
+      "number": 288,
+      "title": "Pineal – Mama (D/I)",
+      "reason": "The printed block title repeats '286. Parietal (D/I) – Riñón (Ipsilateral)'; the figure (Pineal / Mama (D/I)), its caption '288. Lactancia' and the index entry '288. Pineal – Mama (Lactancia)' show this block is pair 288."
+    }
+  ],
+  "pairs": {
+    "154": {
+      "category": "dysfunctional",
+      "_why": "Guide p.20 names it 'Par Especial Disfuncional Goiz'."
+    },
+    "294": {
+      "relation": "Reservorio Bacterias",
+      "_why": "Text layer of the 'Relación' line is garbled ('t'); figure caption and index read 'Reservorio Bacterias'."
+    },
+    "282": {
+      "_why": "Four-magnet 'pancreatic belt'. The guide title is 'Páncreas – Páncreas – Páncreas – Páncreas'; the Leal compendium (p.335, Pancreatitis) specifies four magnets around the pancreas with alternating polarity (-,+,-,+) at head, body, tail and tip. tracking/impact keep the generic 'pancreas' point; `magnets` lists the four placements.",
+      "magnets": [
+        {
+          "point": "cabeza-de-pancreas",
+          "side": "C",
+          "polarity": "negative",
+          "order": 1
+        },
+        {
+          "point": "cuerpo-de-pancreas",
+          "side": "C",
+          "polarity": "positive",
+          "order": 2
+        },
+        {
+          "point": "cola-de-pancreas",
+          "side": "C",
+          "polarity": "negative",
+          "order": 3
+        },
+        {
+          "point": "punta-de-pancreas",
+          "side": "C",
+          "polarity": "positive",
+          "order": 4
+        }
+      ],
+      "notes": [
+        "Cinturón pancreático: 4 imanes alrededor del páncreas con polaridad alterna (−, +, −, +) en cabeza, cuerpo, cola y punta (Leal 2018, p.335)."
+      ]
+    },
+    "113": {
+      "title": "Dorso – Lumbar",
+      "_why": "Printed block title reads 'Dorsal – Lumbar' but the figure label and the index (p.6) read 'Dorso – Lumbar'."
+    },
+    "259": {
+      "title": "Estómago – Sacro",
+      "_why": "Block title and figure read 'Colon Transverso – Sacro', but the Level 2 index (p.147), the Level 1 'Top 10 Gastrointestinal' (p.107, item 7 'Estómago – Sacro') and the Leal compendium (Chlamydia Intestinalis: Estómago → Sacro) all give 'Estómago – Sacro'; the block appears to repeat pair 258 (Estómago – Colon Transverso)."
+    },
+    "300": {
+      "title": "Pospineal – Pospineal",
+      "_why": "Block title and figure repeat pair 299 ('Ombligo – Testículo (D/I)'); the index (p.146), the Level 2 psycho-emotional list (p.244) and the Leal compendium (Integridad Moral: Pospineal → Pospineal) give 'Pospineal – Pospineal'."
+    },
+    "222": {
+      "relation": "VSH",
+      "_why": "Block 'Relación' line reads 'Adenovirus 33' (duplicating pair 217); the Level 2 index (p.144: '222. Conducto Deferente – Laringe (VSH)') and the Leal compendium (VSH: Conducto Deferente → Laringe, p.463) both give VSH."
+    },
+    "13": {
+      "tracking": {
+        "qualifiers": [
+          "A"
+        ]
+      },
+      "impact": {
+        "qualifiers": [
+          "P"
+        ]
+      },
+      "_why": "Both magnets go on the left temporal; the block's recommendation specifies 'Imán negativo adelante, imán positivo atrás' (negative anterior, positive posterior)."
+    },
+    "115": {
+      "relation": "Rickettsia Prowazecki",
+      "_why": "Block 'Relación' line reads 'Enterococcus Faecalis' (repeating pair 90); the figure caption, the index (p.8) and both alphabetical lists (p.124, p.129) read 'Rickettsia Prowazecki'."
+    },
+    "253": {
+      "relation": "Listeria Monocytogenes (1)",
+      "_why": "Block 'Relación' line reads 'Campylobacter Jejuni' (repeating pair 247); the figure caption ('253. Listeria Monocytogenes (1)') and the index (p.146) read 'Listeria Monocytogenes'."
+    }
+  },
+  "typeNumberedEntities": [
+    "Herpes Virus",
+    "Herpes",
+    "Adenovirus"
+  ],
+  "entityAliases": {
+    "_doc": "Goiz relation name (slug) -> Leal compendium entity id, when both name the same organism/condition with different spelling.",
+    "adenovirus-33": "adenovirus-serotype-33",
+    "adenovirus-36": "adenovirus-serotype-36",
+    "adenovirus-exantema-subito": "adenovirus",
+    "aftosa-virus": "aftosavirus",
+    "asma-alergico": "asma",
+    "balatidium-coli": "balantidium-coli",
+    "bloqueo-energetico": "desbloqueo-energetico",
+    "bordetella-pertusis": "bordetela-pertussis",
+    "chikungunya-virus": "chikunguna-o-chikungunya",
+    "corona-virus": "coronavirus",
+    "crecimiento-e-integridad-corporal": "crecimiento",
+    "cryptocides-primordialis": "criptoceles-primordialis",
+    "cryptococcus-neoformans": "cryptococcus",
+    "culpa": "culpabilidad",
+    "deficit-de-atencion": "trastorno-por-deficit-de-atencion-con-hiperactividad",
+    "disfuncion-de-la-glandula-pineal": "disfuncion-pineal",
+    "disfuncion-del-sistema-simpatico": "disfuncion-simpatico",
+    "disfuncion-del-timo": "disfuncion-timo",
+    "disfuncion-ovario": "disfuncion-ovarica",
+    "disfuncion-paratiroidea": "disfuncion-paratiroides",
+    "disfuncion-suprarrenal": "disfuncion-suprarrenales",
+    "disfuncion-testicular": "disfuncion-testiculos",
+    "disfuncion-tiroidea": "disfuncion-tiroides",
+    "disfuncion-vejiga": "disfuncion-vejiga-urinaria",
+    "disfuncion-vesicula": "disfuncion-vesicula-biliar",
+    "dolor-codo": "dolor-de-codo",
+    "escherichia-coli": "e-coli",
+    "ebola-virus": "ebola",
+    "encefalitis-viral": "encefalitis",
+    "enterobacter-aerogenes": "aerobacter-aerogenes",
+    "enterococcus-faecalis": "streptococcus-faecalis-o-enterococcus-faecalis",
+    "equinococcus-granulosus": "echinococcus-granulosus",
+    "factor-surfactante": "surfactante",
+    "fiebre-amarilla": "virus-de-la-fiebre-amarilla",
+    "herpes-virus-1": "herpes-1-zoster",
+    "herpes-virus-2": "herpes-2",
+    "herpes-virus-3": "herpes-3",
+    "herpes-virus-4": "herpes-4",
+    "herpes-virus-5": "herpes-5",
+    "influenza-virus": "influenza",
+    "levadura": "levadura-hongo",
+    "listeria-monocytogenes": "listeria",
+    "mycobacterium-tuberculosis": "mycobacterium-tuberculosis-o-bacilo-de-koch",
+    "neocardia-americana": "nocardia-americana",
+    "newcastle-virus": "newcastle",
+    "nilo-virus": "virus-del-nilo",
+    "norwalk-virus": "norwalk",
+    "papiloma-virus": "papiloma",
+    "par-goiz": "goiz",
+    "parotiditis": "mixovirus-parotiditis",
+    "plasmodium-falsiparum": "plasmodium-falciparum",
+    "pneumocystis-carinii": "pneumocystis-carini",
+    "polio-virus": "poliovirus",
+    "polioma": "polioma-virus",
+    "r-40-virus": "virus-r-40",
+    "rabia-virus": "rabia",
+    "radiculopatias": "radiculopatia",
+    "reumatismo-monoarticular": "reumatismo",
+    "ricketssia": "rickettsia",
+    "roseola-virus": "roseola",
+    "rubeola-virus": "rubeola",
+    "sarampion-virus": "sarampion",
+    "sincicial-respiratorio": "sincitial-respiratorio",
+    "staphylococcus-aureus-coag": "staphylococcus-aureus-coagulasa-negativa",
+    "staphylococcus-aureus": "staphylococcus-aureus-coagulasa-positivo",
+    "streptococcus-agalactie": "streptococcus-agalactiae-o-streptococcus-b",
+    "estreptococo-beta-hemolitico": "streptococcus-beta-hemolitico",
+    "streptococcus-pneumoniae": "streptococcus-pneumoniae-o-neumococo",
+    "streptococcus-pyogenes": "streptococcus-pyogenes-o-streptococcus-a-o-streptococcus-alfa",
+    "taenia-saginata": "taenia",
+    "triquina": "trichinella-spiralis",
+    "vaccinia-virus": "vaccinia",
+    "varicela-virus": "varicela-zoster",
+    "veillonela": "veillonella",
+    "viruela-virus": "viruela-o-variola",
+    "virus-de-la-verruga-comun": "verruga-comun",
+    "zika-virus": "zika",
+    "bacillus-anthracis": "antrax",
+    "crisis-convulsivas": "convulsiones"
+  },
+  "categoryByPair": {
+    "_doc": "Explicit categories where the source gives no section header and the automatic rules (see IMPORT-REPORT 'Category assignment') would be wrong. Level 2 index order: viruses 211-227, bacteria 228-259, parasites 260-270, fungi 271-273, special 274-322, then 323-325 added at the end.",
+    "213": "virus",
+    "236": "bacteria",
+    "266": "parasite",
+    "268": "parasite",
+    "270": "parasite",
+    "283": "complex",
+    "286": "complex",
+    "290": "prion",
+    "325": "bacteria"
+  },
+  "protocolIds": {},
+  "protocolAliases": {
+    "Protocolo Básico": "basic-short",
+    "Reservorio Básico": "basic-reservorios",
+    "Top 10 Oncológico": "top10-oncogenico",
+    "Top 5 IVU": "top5-infeccion-de-vias-urinarias",
+    "Top 5 Vías Urinarias": "top5-infeccion-de-vias-urinarias",
+    "Top 5 Intoxicación": "top5-desintoxicacion",
+    "Top 5 Lesiones Deportivas": "top10-lesiones-deportivas",
+    "Top 10 Regulación Intestinal": "top10-regularizacion-intestinal",
+    "Top 5 Memoria (Pérdida de)": "top5-perdida-de-la-memoria",
+    "Top 10 Neurológicos": [
+      "top10-neurologico-adultos",
+      "top10-neurologico-ninos"
+    ]
+  },
+  "protocolItems": {
+    "Rastrear 3 Virus (cualesquiera)": {
+      "notes": [
+        "Rastrear 3 virus (cualesquiera)"
+      ]
+    },
+    "Rastreo dirigido a Pseudomona Aeruginosa, Proteus Mirabilis, Clostridium, E. Coli y Klebsiella": {
+      "notes": [
+        "Rastreo dirigido a Pseudomona Aeruginosa, Proteus Mirabilis, Clostridium, E. Coli y Klebsiella"
+      ]
+    },
+    "Rastrear el punto Pineal": {
+      "notes": [
+        "Rastrear el punto Pineal"
+      ]
+    },
+    "Rastrear la glándula Hipófisis": {
+      "notes": [
+        "Rastrear la glándula Hipófisis"
+      ]
+    },
+    "Rastrear los puntos de Hígado": {
+      "notes": [
+        "Rastrear los puntos de Hígado"
+      ]
+    },
+    "Rastrear problemas psicoemocionales": {
+      "notes": [
+        "Rastrear problemas psicoemocionales"
+      ]
+    },
+    "Nilo Virus": {
+      "notes": [
+        "Nilo Virus (PB 45)"
+      ],
+      "items": [
+        {
+          "pair": "pb-045"
+        }
+      ]
+    }
+  },
+  "pointRefs": {
+    "Pineal & Mano - Palma derecha": {
+      "as": "Palma (D)",
+      "notes": [
+        "imán negativo adicional en Pineal (Pineal & Palma derecha)"
+      ]
+    }
+  },
+  "cxCategory": {},
+  "symptomSplits": {
+    "Faringoamigdalitis recurrente (niños) Disnea": [
+      "Faringoamigdalitis recurrente (niños)",
+      "Disnea"
+    ]
+  },
+  "diseaseNames": {
+    "_doc": "Disease protocol names where the block heading has a typo and the Level 2 index (p.149–153) is correct.",
+    "109": "Lupus Eritematoso Sistémico",
+    "168": "Uretritis"
+  }
+}

@@ -1,0 +1,335 @@
+{
+  "version": "2026.10.0",
+  "generatedAt": "2026-10-21T16:07:37.488Z",
+  "generator": "importer/run.js (poppler pdftotext -bbox-layout)",
+  "counts": {
+    "sources": 5,
+    "points": 287,
+    "pairs": 855,
+    "entities": 949,
+    "protocols": 221,
+    "symptoms": 350,
+    "contraindications": 99,
+    "recommendations": 14,
+    "glossary": 65,
+    "pairsLevel1": 210,
+    "pairsLevel2": 115,
+    "pairsCompendium": 530,
+    "protocolsApplication": 1
+  },
+  "sha256": {
+    "sources.json": "39d4f69795c3f557a630ae5c0757c75d38f489445877482a1742555d4e70d6ce",
+    "points.json": "197f5fa08f527e63b4c78d6c3290df4df96f38349e8c12f3ffc06c6961e6d822",
+    "pairs.json": "b7d50a47d0d17e74f17df041e21b27e9d76b51d0e7fe59e6797aa262876dab70",
+    "entities.json": "54a621d813983574096d2844d30fee0da75fd27f21cab5ab1641269f13e72df4",
+    "protocols.json": "75813258f524ae347d95554b1c27c082c8dbdb2356c504d7dfca989613342d54",
+    "symptoms.json": "d7dbfa228c2ab86bab6e57a7c9a1a828932e59fc7e1fa0e3e1d942d78621387a",
+    "contraindications.json": "fc1201f08601490d4404a1c78ba6a920af2545c4a85fed39c21997723d985c2d",
+    "recommendations.json": "4bce5c329f61c3c3117b000653bc3039900799ee6884501bc0b63ff548e2316d",
+    "glossary.json": "b01b932a4efbaaaef0e179584333b067324666cac0fb6ca3e56ffecf55fa30f1"
+  },
+  "sources": {
+    "goiz-n1": "7143f3cb5ba6927889f5fc51b1d7453203ac4dfc560e4a77e2e5a63627b6c3f8",
+    "goiz-n2": "bd2b6778d5dd672512a7e9c4b72844d127798d666d002cca933e1c734c4a4aaa",
+    "leal-2018": "4e9cd5d1469153f47a4a792d0a13db04973a0cf139f53d92db5cc8283d4949d9"
+  },
+  "vocabularies": {
+    "categories": [
+      {
+        "id": "virus",
+        "name": {
+          "es": "Virus",
+          "en": "Virus"
+        }
+      },
+      {
+        "id": "bacteria",
+        "name": {
+          "es": "Bacteria",
+          "en": "Bacteria"
+        }
+      },
+      {
+        "id": "fungus",
+        "name": {
+          "es": "Hongo",
+          "en": "Fungus"
+        }
+      },
+      {
+        "id": "parasite",
+        "name": {
+          "es": "Parásito",
+          "en": "Parasite"
+        }
+      },
+      {
+        "id": "dysfunctional",
+        "name": {
+          "es": "Disfuncional",
+          "en": "Dysfunctional"
+        }
+      },
+      {
+        "id": "psychoemotional",
+        "name": {
+          "es": "Psicoemocional",
+          "en": "Psycho-emotional"
+        }
+      },
+      {
+        "id": "reservoir",
+        "name": {
+          "es": "Reservorio",
+          "en": "Reservoir"
+        }
+      },
+      {
+        "id": "complex",
+        "name": {
+          "es": "Complejo",
+          "en": "Complex"
+        }
+      },
+      {
+        "id": "special",
+        "name": {
+          "es": "Especial",
+          "en": "Special"
+        }
+      },
+      {
+        "id": "prion",
+        "name": {
+          "es": "Prión",
+          "en": "Prion"
+        }
+      },
+      {
+        "id": "temporary",
+        "name": {
+          "es": "Temporal",
+          "en": "Temporary"
+        }
+      },
+      {
+        "id": "glandular-dysfunction",
+        "name": {
+          "es": "Disfunción glandular",
+          "en": "Glandular dysfunction"
+        }
+      }
+    ],
+    "systems": [
+      {
+        "id": "general",
+        "name": {
+          "es": "Generales",
+          "en": "General"
+        }
+      },
+      {
+        "id": "respiratory",
+        "name": {
+          "es": "Respiratorios",
+          "en": "Respiratory"
+        }
+      },
+      {
+        "id": "gastrointestinal",
+        "name": {
+          "es": "Gastrointestinales",
+          "en": "Gastrointestinal"
+        }
+      },
+      {
+        "id": "neurological",
+        "name": {
+          "es": "Neurológicos",
+          "en": "Neurological"
+        }
+      },
+      {
+        "id": "musculoskeletal",
+        "name": {
+          "es": "Osteomusculares",
+          "en": "Musculoskeletal"
+        }
+      },
+      {
+        "id": "urological",
+        "name": {
+          "es": "Urológicos",
+          "en": "Urological"
+        }
+      },
+      {
+        "id": "cardiological",
+        "name": {
+          "es": "Cardiológicos",
+          "en": "Cardiological"
+        }
+      },
+      {
+        "id": "gynecological",
+        "name": {
+          "es": "Ginecológicos",
+          "en": "Gynecological"
+        }
+      },
+      {
+        "id": "endocrine",
+        "name": {
+          "es": "Endocrinológicos",
+          "en": "Endocrine"
+        }
+      },
+      {
+        "id": "hematological",
+        "name": {
+          "es": "Hematológicos",
+          "en": "Hematological"
+        }
+      },
+      {
+        "id": "dermatological",
+        "name": {
+          "es": "Dermatológicos",
+          "en": "Dermatological"
+        }
+      },
+      {
+        "id": "ophthalmological",
+        "name": {
+          "es": "Oftalmológicos",
+          "en": "Ophthalmological"
+        }
+      },
+      {
+        "id": "auditory",
+        "name": {
+          "es": "Auditivos",
+          "en": "Auditory"
+        }
+      },
+      {
+        "id": "immunological",
+        "name": {
+          "es": "Inmunológicos",
+          "en": "Immunological"
+        }
+      },
+      {
+        "id": "psychiatric",
+        "name": {
+          "es": "Psiquiátricos",
+          "en": "Psychiatric"
+        }
+      },
+      {
+        "id": "oncological",
+        "name": {
+          "es": "Oncológicos",
+          "en": "Oncological"
+        }
+      },
+      {
+        "id": "dental",
+        "name": {
+          "es": "Odontológicos",
+          "en": "Dental"
+        }
+      },
+      {
+        "id": "tropical",
+        "name": {
+          "es": "Tropicales",
+          "en": "Tropical"
+        }
+      },
+      {
+        "id": "toxicological",
+        "name": {
+          "es": "Toxicológicos",
+          "en": "Toxicological"
+        }
+      }
+    ],
+    "sides": [
+      {
+        "id": "R",
+        "source": "D",
+        "name": {
+          "es": "Derecho",
+          "en": "Right"
+        }
+      },
+      {
+        "id": "L",
+        "source": "I",
+        "name": {
+          "es": "Izquierdo",
+          "en": "Left"
+        }
+      },
+      {
+        "id": "C",
+        "source": "C",
+        "name": {
+          "es": "Central / sin especificar",
+          "en": "Central / unspecified"
+        }
+      },
+      {
+        "id": "RL",
+        "source": "D/I",
+        "name": {
+          "es": "Derecho y/o izquierdo",
+          "en": "Right and/or left"
+        }
+      }
+    ],
+    "qualifiers": [
+      {
+        "id": "S",
+        "source": "S",
+        "name": {
+          "es": "Superior",
+          "en": "Superior"
+        }
+      },
+      {
+        "id": "INF",
+        "source": "Inf",
+        "name": {
+          "es": "Inferior",
+          "en": "Inferior"
+        }
+      },
+      {
+        "id": "A",
+        "source": "A",
+        "name": {
+          "es": "Anterior",
+          "en": "Anterior"
+        }
+      },
+      {
+        "id": "P",
+        "source": "P",
+        "name": {
+          "es": "Posterior",
+          "en": "Posterior"
+        }
+      },
+      {
+        "id": "LAT",
+        "source": "Lat",
+        "name": {
+          "es": "Lateral",
+          "en": "Lateral"
+        }
+      }
+    ]
+  }
+}

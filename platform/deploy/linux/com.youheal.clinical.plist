@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  YOU HEAL Clinical — macOS launchd daemon (template; deploy/linux/install.sh renders the @TOKENS@).
+  Installed to /Library/LaunchDaemons/com.youheal.clinical.plist (root:wheel 0644).
+  Control:  sudo launchctl bootstrap system /Library/LaunchDaemons/com.youheal.clinical.plist
+            sudo launchctl kickstart -k system/com.youheal.clinical
+            sudo launchctl bootout system/com.youheal.clinical
+  @ENV_DICT@ is replaced with the KEY/value pairs from @CONF_DIR@/youheal.env.
+  Umask 63 = octal 0077.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>@LABEL@</string>
+  <key>UserName</key>
+  <string>@USER@</string>
+  <key>GroupName</key>
+  <string>@GROUP@</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>@NODE_BIN@</string>
+    <string>--disable-warning=ExperimentalWarning</string>
+    <string>server/index.js</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>@PREFIX@/current</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+@ENV_DICT@
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+  <key>ExitTimeOut</key>
+  <integer>30</integer>
+  <key>SoftResourceLimits</key>
+  <dict>
+    <key>NumberOfFiles</key>
+    <integer>8192</integer>
+  </dict>
+  <key>HardResourceLimits</key>
+  <dict>
+    <key>NumberOfFiles</key>
+    <integer>8192</integer>
+  </dict>
+  <key>Umask</key>
+  <integer>63</integer>
+  <key>ProcessType</key>
+  <string>Standard</string>
+  <key>StandardOutPath</key>
+  <string>@LOG_DIR@/youheal.log</string>
+  <key>StandardErrorPath</key>
+  <string>@LOG_DIR@/youheal.log</string>
+</dict>
+</plist>

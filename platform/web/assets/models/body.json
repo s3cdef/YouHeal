@@ -1,0 +1,446 @@
+{
+ "format": "yh-body-v1",
+ "source": {
+  "repo": "makehumancommunity/makehuman",
+  "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+  "license": "CC0-1.0",
+  "files": {
+   "LICENSE.md": "edd99571ca62698f78c943fd4fffb159a413c315fa0d4819d3cec5cadaf8b4f1",
+   "LICENSE.ASSETS.md": "f6089cba01cb570a24712b41ab8a586ccd3cc5ef53dc266ca50b95c288956d2c",
+   "makehuman/data/3dobjs/base.obj": "8e761e6624b8f54536409135d1636da63b32486a90d4897f84e121d144f6fb4c",
+   "makehuman/data/targets/macrodetails/african-female-young.target": "92d61eeb3c164b421fd5a7c3537ee45e7e1a51de4d49bf312e19c3df2be1d8fc",
+   "makehuman/data/targets/macrodetails/african-male-young.target": "894abc1fbb3d28543a51fef16f89d5d4bdf9aa2e1534413339811a3d47818b7d",
+   "makehuman/data/targets/macrodetails/asian-female-young.target": "095fe79694fa19e1fe98d93009ec116199bd524e081c640351a10eccf2cca1eb",
+   "makehuman/data/targets/macrodetails/asian-male-young.target": "ed2e8c191cb6b87b4a2d97c80486acb2604fa549316c7aa2a738a5d5a14334dc",
+   "makehuman/data/targets/macrodetails/caucasian-female-young.target": "118379f6e8ba9266247fdb8788a20e1df40a239f97ced0b9905bcbcc74f6e820",
+   "makehuman/data/targets/macrodetails/caucasian-male-young.target": "70e228ba7164737dae664454394536fc5935fa48d333c1a97d77e2dc6eacc5f5",
+   "makehuman/data/targets/macrodetails/proportions/female-young-averagemuscle-averageweight-idealproportions.target": "0a3bd099b7a88150d56d68b69c07d3d3538cb57279e0e775d13f19d3dc3e339d",
+   "makehuman/data/targets/macrodetails/proportions/male-young-averagemuscle-averageweight-idealproportions.target": "7bbd790604c908417ff8ca11e566e3577508d92a4f397a2ace0f89f4cc3aa373"
+  }
+ },
+ "frame": "CONTRACT §4.3: metres, feet y=0, vertex 1.75 m, faces +z, +x = patient LEFT",
+ "subdivision": "catmull-clark x1",
+ "presets": {
+  "neutral": {
+   "file": "body-neutral.bin",
+   "sha256": "21f464b721761c138cdeb74878249cca0b3ce1796b38eec92b15b2dfc3e3bd55",
+   "bboxMin": [
+    -0.56202,
+    0,
+    -0.09937
+   ],
+   "bboxMax": [
+    0.56202,
+    1.75,
+    0.35141
+   ],
+   "skeleton": {
+    "head": [
+     0,
+     1.5983,
+     0.0467
+    ],
+    "neck": [
+     0,
+     1.4908,
+     0.0054
+    ],
+    "spine1": [
+     0,
+     1.305,
+     -0.0197
+    ],
+    "spine2": [
+     0,
+     1.1544,
+     -0.01
+    ],
+    "spine3": [
+     0,
+     1.0783,
+     -0.0122
+    ],
+    "spine4": [
+     0,
+     1.0129,
+     -0.0279
+    ],
+    "pelvis": [
+     0,
+     0.9308,
+     0.0127
+    ],
+    "clavicle": [
+     0.0244,
+     1.4148,
+     0.0228
+    ],
+    "scapula": [
+     0.1088,
+     1.432,
+     0.0228
+    ],
+    "shoulderJ": [
+     0.189,
+     1.3906,
+     0.0206
+    ],
+    "elbow": [
+     0.3577,
+     1.2008,
+     0.0212
+    ],
+    "wrist": [
+     0.4868,
+     1.0688,
+     0.1943
+    ],
+    "knuckle": [
+     0.5401,
+     0.9884,
+     0.2952
+    ],
+    "fingertip": [
+     0.5426,
+     0.9426,
+     0.3284
+    ],
+    "thumbTip": [
+     0.4476,
+     1.0194,
+     0.3161
+    ],
+    "hipJ": [
+     0.1056,
+     0.9215,
+     0.0047
+    ],
+    "knee": [
+     0.1479,
+     0.5113,
+     0.0394
+    ],
+    "ankle": [
+     0.1882,
+     0.0715,
+     0.0223
+    ],
+    "toe": [
+     0.1691,
+     0.014,
+     0.2135
+    ],
+    "eye": [
+     0.0305,
+     1.6391,
+     0.1245
+    ],
+    "jaw": [
+     0,
+     1.542,
+     0.1395
+    ],
+    "mouth": [
+     0,
+     1.6051,
+     0.0595
+    ]
+   },
+   "targets": {
+    "makehuman/data/targets/macrodetails/african-female-young.target": 0.16666666666666666,
+    "makehuman/data/targets/macrodetails/asian-female-young.target": 0.16666666666666666,
+    "makehuman/data/targets/macrodetails/caucasian-female-young.target": 0.16666666666666666,
+    "makehuman/data/targets/macrodetails/african-male-young.target": 0.16666666666666666,
+    "makehuman/data/targets/macrodetails/asian-male-young.target": 0.16666666666666666,
+    "makehuman/data/targets/macrodetails/caucasian-male-young.target": 0.16666666666666666,
+    "makehuman/data/targets/macrodetails/proportions/female-young-averagemuscle-averageweight-idealproportions.target": 0.25,
+    "makehuman/data/targets/macrodetails/proportions/male-young-averagemuscle-averageweight-idealproportions.target": 0.25
+   }
+  },
+  "female": {
+   "file": "body-female.bin",
+   "sha256": "fb4c270aaeee7dae89c8e01c052ad0b22dfb29165aa419a31835f9064d674b41",
+   "bboxMin": [
+    -0.53484,
+    0,
+    -0.0992
+   ],
+   "bboxMax": [
+    0.53484,
+    1.75,
+    0.31839
+   ],
+   "skeleton": {
+    "head": [
+     0,
+     1.5974,
+     0.045
+    ],
+    "neck": [
+     0,
+     1.4793,
+     -0.0015
+    ],
+    "spine1": [
+     0,
+     1.3197,
+     0.014
+    ],
+    "spine2": [
+     0,
+     1.1548,
+     0.0106
+    ],
+    "spine3": [
+     0,
+     1.0614,
+     -0.0036
+    ],
+    "spine4": [
+     0,
+     0.9952,
+     -0.0265
+    ],
+    "pelvis": [
+     0,
+     0.9189,
+     0.0232
+    ],
+    "clavicle": [
+     0.0259,
+     1.4028,
+     0.023
+    ],
+    "scapula": [
+     0.1011,
+     1.4231,
+     0.0232
+    ],
+    "shoulderJ": [
+     0.1704,
+     1.3852,
+     0.0228
+    ],
+    "elbow": [
+     0.344,
+     1.1969,
+     0.027
+    ],
+    "wrist": [
+     0.4651,
+     1.0631,
+     0.177
+    ],
+    "knuckle": [
+     0.5147,
+     0.9845,
+     0.2666
+    ],
+    "fingertip": [
+     0.5168,
+     0.9402,
+     0.2956
+    ],
+    "thumbTip": [
+     0.4288,
+     1.012,
+     0.2876
+    ],
+    "hipJ": [
+     0.101,
+     0.9054,
+     0.0183
+    ],
+    "knee": [
+     0.1457,
+     0.5076,
+     0.0526
+    ],
+    "ankle": [
+     0.1752,
+     0.0724,
+     0.0297
+    ],
+    "toe": [
+     0.158,
+     0.0165,
+     0.2126
+    ],
+    "eye": [
+     0.0312,
+     1.637,
+     0.1206
+    ],
+    "jaw": [
+     0,
+     1.5436,
+     0.1365
+    ],
+    "mouth": [
+     0,
+     1.6026,
+     0.0595
+    ]
+   },
+   "targets": {
+    "makehuman/data/targets/macrodetails/african-female-young.target": 0.3333333333333333,
+    "makehuman/data/targets/macrodetails/asian-female-young.target": 0.3333333333333333,
+    "makehuman/data/targets/macrodetails/caucasian-female-young.target": 0.3333333333333333,
+    "makehuman/data/targets/macrodetails/proportions/female-young-averagemuscle-averageweight-idealproportions.target": 0.5
+   }
+  },
+  "male": {
+   "file": "body-male.bin",
+   "sha256": "b73ad0eed47e8692d7aa148103757ce960d55aba3c0734b9a22c24e76636aa74",
+   "bboxMin": [
+    -0.58661,
+    0,
+    -0.09957
+   ],
+   "bboxMax": [
+    0.58661,
+    1.75,
+    0.38154
+   ],
+   "skeleton": {
+    "head": [
+     0,
+     1.5993,
+     0.0482
+    ],
+    "neck": [
+     0,
+     1.5015,
+     0.0117
+    ],
+    "spine1": [
+     0,
+     1.2917,
+     -0.0508
+    ],
+    "spine2": [
+     0,
+     1.1545,
+     -0.0289
+    ],
+    "spine3": [
+     0,
+     1.0944,
+     -0.0201
+    ],
+    "spine4": [
+     0,
+     1.0297,
+     -0.0292
+    ],
+    "pelvis": [
+     0,
+     0.9423,
+     0.0031
+    ],
+    "clavicle": [
+     0.023,
+     1.4262,
+     0.0226
+    ],
+    "scapula": [
+     0.1157,
+     1.4405,
+     0.0224
+    ],
+    "shoulderJ": [
+     0.2059,
+     1.3958,
+     0.0185
+    ],
+    "elbow": [
+     0.3701,
+     1.2048,
+     0.0158
+    ],
+    "wrist": [
+     0.5063,
+     1.0745,
+     0.2101
+    ],
+    "knuckle": [
+     0.5631,
+     0.9926,
+     0.3213
+    ],
+    "fingertip": [
+     0.5659,
+     0.9454,
+     0.3584
+    ],
+    "thumbTip": [
+     0.4646,
+     1.0268,
+     0.3422
+    ],
+    "hipJ": [
+     0.1098,
+     0.9369,
+     -0.0077
+    ],
+    "knee": [
+     0.1498,
+     0.5158,
+     0.0272
+    ],
+    "ankle": [
+     0.2001,
+     0.0721,
+     0.0154
+    ],
+    "toe": [
+     0.1792,
+     0.013,
+     0.2141
+    ],
+    "eye": [
+     0.0297,
+     1.6411,
+     0.1279
+    ],
+    "jaw": [
+     0,
+     1.5408,
+     0.1421
+    ],
+    "mouth": [
+     0,
+     1.6076,
+     0.0594
+    ]
+   },
+   "targets": {
+    "makehuman/data/targets/macrodetails/african-male-young.target": 0.3333333333333333,
+    "makehuman/data/targets/macrodetails/asian-male-young.target": 0.3333333333333333,
+    "makehuman/data/targets/macrodetails/caucasian-male-young.target": 0.3333333333333333,
+    "makehuman/data/targets/macrodetails/proportions/male-young-averagemuscle-averageweight-idealproportions.target": 0.5
+   }
+  }
+ },
+ "vertexCount": 54078,
+ "index": {
+  "file": "body-index.bin",
+  "type": "uint16",
+  "count": 324432,
+  "sha256": "195a5c88bd9044398ab498590d3aa14b9f974593c3893fe754daef9731f1e44d"
+ },
+ "groups": {
+  "skin": {
+   "start": 0,
+   "count": 321072
+  },
+  "eyes": {
+   "start": 321072,
+   "count": 3360
+  }
+ },
+ "position": {
+  "type": "int16-normalised",
+  "note": "p = min + (q + 32768) / 65535 * (max - min)"
+ }
+}

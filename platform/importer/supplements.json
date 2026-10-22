@@ -1,0 +1,64 @@
+{
+  "_doc": "Records that do not come from the three source PDFs. Applied by importer/lib/supplements.js after the PDF build. Every record must cite a source declared here or in run.js.",
+  "sources": [
+    {
+      "id": "clinic-cards",
+      "title": "Clinic application protocol cards (owner-supplied reference images)",
+      "author": "YOU HEAL clinic",
+      "license_status": "internal-use",
+      "notice": "Supplied by the clinic owner as a reference image; provenance of the card artwork to be confirmed before redistribution."
+    }
+  ],
+  "points": [
+    {
+      "id": "gastrocnemio",
+      "name": { "es": "Gastrocnemio", "en": "Gastrocnemius (calf)" },
+      "aliases": ["Gastrocnemio", "Gemelo", "Pantorrilla"],
+      "laterality": "bilateral",
+      "source": { "doc": "clinic-cards", "page": 19 }
+    }
+  ],
+  "pointAliases": {
+    "pliegue-inguinal": ["Ingle"]
+  },
+  "pairs": [
+    {
+      "id": "cx-gastrocnemio--gastrocnemio",
+      "number": null,
+      "level": 0,
+      "name": { "es": "Gastrocnemio (D) – Gastrocnemio (I)", "en": "Gastrocnemius (R) – Gastrocnemius (L)" },
+      "tracking": { "point": "gastrocnemio", "side": "R", "qualifiers": [] },
+      "impact": { "point": "gastrocnemio", "side": "L", "qualifiers": [] },
+      "category": "complex",
+      "relations": [],
+      "ratings": {},
+      "symptoms": [],
+      "recommendations": [{ "es": "Circulación de miembros pélvicos", "en": "Lower-limb circulation" }],
+      "notes": [],
+      "source": { "doc": "clinic-cards", "page": 19 }
+    }
+  ],
+  "protocols": [
+    {
+      "id": "app-19-circulacion-de-piernas",
+      "kind": "application",
+      "number": 19,
+      "name": { "es": "19. Circulación de Piernas", "en": "19. Leg Circulation" },
+      "items": [
+        { "pair": "pb-036", "label": { "es": "Desintoxicación", "en": "Detoxification" } },
+        { "pair": "pb-186", "label": { "es": "Balance hormonal (cortisol)", "en": "Hormonal balance (cortisol)" } },
+        { "pair": "pb-097", "label": { "es": "Desintoxicación", "en": "Detoxification" } },
+        { "pair": "cx-pliegue-inguinal--pliegue-inguinal", "label": { "es": "Circulación MP", "en": "Lower-limb circulation" } },
+        { "pair": "pb-007", "label": { "es": "Circulación MP", "en": "Lower-limb circulation" } },
+        { "pair": "pb-068", "label": { "es": "Circulación MP", "en": "Lower-limb circulation" } },
+        { "pair": "cx-gastrocnemio--gastrocnemio", "label": { "es": "Circulación MP", "en": "Lower-limb circulation" } }
+      ],
+      "dosage": {
+        "acute": { "minutes": [30, 45], "frequency": { "es": "2 a 3 veces al día", "en": "2–3 times per day" } },
+        "chronic": { "minutes": [30, 45], "frequency": { "es": "2 a 3 veces por semana", "en": "2–3 times per week" } }
+      },
+      "notes": [{ "es": "Sigue las indicaciones médicas. Visita a tu médico y biomagnetista.", "en": "Follow medical advice. See your physician and biomagnetist." }],
+      "source": { "doc": "clinic-cards", "page": 19 }
+    }
+  ]
+}

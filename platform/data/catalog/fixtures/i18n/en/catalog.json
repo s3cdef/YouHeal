@@ -1,0 +1,352 @@
+{
+ "contraindications/abs-01/text": {
+  "text": "Pacemaker or implanted electronic device",
+  "srcHash": "443a60f097c74604",
+  "status": "curated"
+ },
+ "contraindications/rel-01/text": {
+  "text": "Pregnancy",
+  "srcHash": "f4223977f9a8870e",
+  "status": "curated"
+ },
+ "entities/e-coli/name": {
+  "text": "E. coli",
+  "srcHash": "1b810097d9f376e9",
+  "status": "curated"
+ },
+ "entities/gastritis/name": {
+  "text": "Gastritis",
+  "srcHash": "c9822c7f9d21f4b2",
+  "status": "curated"
+ },
+ "entities/helicobacter-pylori/name": {
+  "text": "Helicobacter pylori",
+  "srcHash": "a7fff185f5b59c31",
+  "status": "curated"
+ },
+ "entities/vih/contagion": {
+  "text": null,
+  "srcHash": "cf98981d8dbe80fb",
+  "status": "missing"
+ },
+ "entities/vih/description": {
+  "text": null,
+  "srcHash": "a94c1775f3df7319",
+  "status": "missing"
+ },
+ "entities/vih/name": {
+  "text": "HIV",
+  "srcHash": "c71a5b1a3b7a1ab1",
+  "status": "curated"
+ },
+ "glossary/abbr:D/meaning": {
+  "text": "Right",
+  "srcHash": "046c11f37819f580",
+  "status": "curated"
+ },
+ "glossary/abbr:I/meaning": {
+  "text": "Left",
+  "srcHash": "ac2403e6c126e005",
+  "status": "curated"
+ },
+ "glossary/abbr:PB/meaning": {
+  "text": "Biomagnetic Pair",
+  "srcHash": "8542c989f933f7cf",
+  "status": "curated"
+ },
+ "pairs/cx-rinon--vejiga/name": {
+  "text": "Kidney – Bladder",
+  "srcHash": "1459dccf262d7d45",
+  "status": "curated"
+ },
+ "pairs/cx-rinon--vejiga/symptoms[0].text": {
+  "text": "Burning urination",
+  "srcHash": "482dceefb791cfbc",
+  "status": "curated"
+ },
+ "pairs/pb-001/name": {
+  "text": "Thymus – Rectum",
+  "srcHash": "9f66ff146ba8cd53",
+  "status": "curated"
+ },
+ "pairs/pb-001/recommendations[0]": {
+  "text": "Targeted scan and prophylactic impact in: immunodeficiency (AIDS)",
+  "srcHash": "c541db7fc96eaf1a",
+  "status": "curated"
+ },
+ "pairs/pb-001/symptoms[0].text": {
+  "text": "Decreased immune response",
+  "srcHash": "75c9a39512018da5",
+  "status": "curated"
+ },
+ "pairs/pb-001/symptoms[1].text": {
+  "text": "Chronic fatigue",
+  "srcHash": "3f4c4df582fce20c",
+  "status": "curated"
+ },
+ "pairs/pb-010/name": {
+  "text": "Cardia – Adrenal gland",
+  "srcHash": "17534524eaf0c44e",
+  "status": "curated"
+ },
+ "pairs/pb-010/symptoms[0].text": {
+  "text": "Heartburn",
+  "srcHash": "a4dc2f56431e849a",
+  "status": "curated"
+ },
+ "pairs/pb-030/name": {
+  "text": "Pylorus – Liver (outdated)",
+  "srcHash": "deadbeefdeadbeef",
+  "status": "curated"
+ },
+ "pairs/pb-030/recommendations[0]": {
+  "text": "Bland diet",
+  "srcHash": "2b720798b1fc32c2",
+  "status": "curated"
+ },
+ "pairs/pb-030/symptoms[0].text": {
+  "text": "Abdominal pain and nausea",
+  "srcHash": "a3687448652e9767",
+  "status": "curated"
+ },
+ "pairs/pb-030/symptoms[1].text": {
+  "text": "Acid reflux",
+  "srcHash": "c1f6cb7315918936",
+  "status": "curated"
+ },
+ "pairs/pb-045/name": {
+  "text": "Supraspinatus – Supraspinatus",
+  "srcHash": "b8a5bc2bd9584225",
+  "status": "curated"
+ },
+ "pairs/pb-045/recommendations[0]": {
+  "text": "Tropical diseases (Nile virus)",
+  "srcHash": "8d07c787cf02a947",
+  "status": "curated"
+ },
+ "pairs/pb-045/symptoms[0].text": {
+  "text": "Tension headache",
+  "srcHash": "55a8a596822387ae",
+  "status": "curated"
+ },
+ "pairs/pb-045/symptoms[1].text": {
+  "text": "Fever",
+  "srcHash": "d4706d112fb601f5",
+  "status": "curated"
+ },
+ "pairs/pb-212/name": {
+  "text": "Lung – Lung",
+  "srcHash": "dcc6fca1810bbf06",
+  "status": "curated"
+ },
+ "pairs/pb-212/symptoms[0].text": {
+  "text": "Persistent dry cough",
+  "srcHash": "31327fe0819b7a37",
+  "status": "curated"
+ },
+ "pairs/pb-404/name": {
+  "text": "Ghost",
+  "srcHash": "0123456789abcdef",
+  "status": "curated"
+ },
+ "points/bazo/name": {
+  "text": "Spleen",
+  "srcHash": "84fa96102329b9c4",
+  "status": "curated"
+ },
+ "points/cardias/name": {
+  "text": "Cardia",
+  "srcHash": "0b41afa878fd2077",
+  "status": "curated"
+ },
+ "points/higado/name": {
+  "text": "Liver",
+  "srcHash": "7a6b1d0b8e763d5d",
+  "status": "curated"
+ },
+ "points/piloro/name": {
+  "text": "Pylorus",
+  "srcHash": "febddacfa18e25f8",
+  "status": "curated"
+ },
+ "points/pulmon/name": {
+  "text": "Lung",
+  "srcHash": "7fef2266c89c575f",
+  "status": "curated"
+ },
+ "points/recto/name": {
+  "text": "Rectum",
+  "srcHash": "9fcce8ea553fc9e8",
+  "status": "curated"
+ },
+ "points/rinon/name": {
+  "text": "Kidney",
+  "srcHash": "e4dab6e3795394da",
+  "status": "curated"
+ },
+ "points/supraespinoso/name": {
+  "text": "Supraspinatus",
+  "srcHash": "0f79c6608c196ad0",
+  "status": "curated"
+ },
+ "points/suprarrenal/name": {
+  "text": "Adrenal gland",
+  "srcHash": "75110cdc21e6e638",
+  "status": "curated"
+ },
+ "points/timo/name": {
+  "text": "Thymus gland",
+  "srcHash": "b5d0fef13e58b8ff",
+  "status": "machine"
+ },
+ "points/trocanter-menor/name": {
+  "text": "Lesser trochanter",
+  "srcHash": "35f274db00880c10",
+  "status": "curated"
+ },
+ "points/vejiga/name": {
+  "text": "Bladder",
+  "srcHash": "3869b6dcc70c7f2b",
+  "status": "curated"
+ },
+ "protocols/app-19-circulacion-de-piernas/name": {
+  "text": "19. Leg circulation",
+  "srcHash": "689978a0656170b4",
+  "status": "curated"
+ },
+ "protocols/basic-detox/name": {
+  "text": "Basic detox protocol",
+  "srcHash": "ecb17b0b76c95fa7",
+  "status": "curated"
+ },
+ "protocols/top10-gastrointestinal/name": {
+  "text": "Top 10 Gastrointestinal",
+  "srcHash": "b141baeae4d715c0",
+  "status": "curated"
+ },
+ "recommendations/general-short/body": {
+  "text": "1. Change your toothbrush\n2. Strengthen the pillars of health\n3. Stay in touch (second scan in 8 days)",
+  "srcHash": "f15bf35338717a54",
+  "status": "curated"
+ },
+ "recommendations/general-short/title": {
+  "text": "General recommendations (short version)",
+  "srcHash": "fa2f0ef2d59e262b",
+  "status": "curated"
+ },
+ "recommendations/good-eating/body": {
+  "text": null,
+  "srcHash": "50ebf5c65df2ac5d",
+  "status": "missing"
+ },
+ "recommendations/good-eating/title": {
+  "text": "Healthy eating recommendations",
+  "srcHash": "2ed358c331585aca",
+  "status": "curated"
+ },
+ "recommendations/parasitic/body": {
+  "text": null,
+  "srcHash": "63dacff6b197417f",
+  "status": "missing"
+ },
+ "recommendations/parasitic/title": {
+  "text": "Recommendations for parasitic diseases",
+  "srcHash": "c00a85d4f7bf2946",
+  "status": "curated"
+ },
+ "recommendations/sti/body": {
+  "text": null,
+  "srcHash": "d7aca439320de250",
+  "status": "missing"
+ },
+ "recommendations/sti/title": {
+  "text": "Recommendations for sexually transmitted infections (STI)",
+  "srcHash": "9f4575ba5983843c",
+  "status": "curated"
+ },
+ "recommendations/stress-management/body": {
+  "text": null,
+  "srcHash": "79ae9347dc9e6192",
+  "status": "missing"
+ },
+ "recommendations/stress-management/title": {
+  "text": "Stress management recommendations",
+  "srcHash": "66b1a6bb1d5081d0",
+  "status": "curated"
+ },
+ "recommendations/tropical/body": {
+  "text": "Tropical diseases are vector-borne (mosquitoes). Use repellent.",
+  "srcHash": "86c0f0798c09712e",
+  "status": "curated"
+ },
+ "recommendations/tropical/title": {
+  "text": "Recommendations for tropical diseases",
+  "srcHash": "f1ba201242f8a958",
+  "status": "curated"
+ },
+ "regions/abdomen/name": {
+  "text": "Abdomen",
+  "srcHash": "3ba2375490b6e9b6",
+  "status": "curated"
+ },
+ "regions/head/name": {
+  "text": "Head",
+  "srcHash": "bf561398ce6c6d0c",
+  "status": "curated"
+ },
+ "regions/lower-back/name": {
+  "text": "Lower back",
+  "srcHash": "69a309ccba1195d2",
+  "status": "curated"
+ },
+ "regions/neck/name": {
+  "text": "Neck",
+  "srcHash": "f3b78bb69b8f797c",
+  "status": "curated"
+ },
+ "regions/pelvis/name": {
+  "text": "Pelvis",
+  "srcHash": "d8fa661e323babeb",
+  "status": "curated"
+ },
+ "regions/thorax/name": {
+  "text": "Thorax",
+  "srcHash": "282cb320b72a404d",
+  "status": "curated"
+ },
+ "regions/upper-back/name": {
+  "text": "Upper back",
+  "srcHash": "6f4a829a41cc18ed",
+  "status": "curated"
+ },
+ "symptoms/acidez/name": {
+  "text": "Heartburn",
+  "srcHash": "c1f6cb7315918936",
+  "status": "curated"
+ },
+ "symptoms/cefalea/name": {
+  "text": "Headache",
+  "srcHash": "b0687bfb5473cc05",
+  "status": "curated"
+ },
+ "symptoms/dolor-abdominal/name": {
+  "text": "Abdominal pain",
+  "srcHash": "92935d8d29ab8dbf",
+  "status": "curated"
+ },
+ "symptoms/fatiga/name": {
+  "text": "Fatigue",
+  "srcHash": "ce6d03effffdecd9",
+  "status": "curated"
+ },
+ "symptoms/fiebre/name": {
+  "text": "Fever",
+  "srcHash": "d4706d112fb601f5",
+  "status": "curated"
+ },
+ "symptoms/tos/name": {
+  "text": null,
+  "srcHash": "a8e6b7b8deb29727",
+  "status": "missing"
+ }
+}

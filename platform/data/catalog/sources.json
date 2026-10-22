@@ -1,0 +1,49 @@
+[
+  {
+    "id": "goiz-n1",
+    "title": "Guía de Pares Biomagnéticos — 1er Nivel (2017)",
+    "author": "David Goiz Martínez / BRI",
+    "license_status": "internal-use",
+    "notice": "GOIZ ™ Intellectual Property © All rights reserved",
+    "file": "goiz-nivel-1-guia.pdf",
+    "pages": 142,
+    "pageNumbering": "printed page = PDF page (\"Pg. N\" footer)",
+    "sha256": "7143f3cb5ba6927889f5fc51b1d7453203ac4dfc560e4a77e2e5a63627b6c3f8"
+  },
+  {
+    "id": "goiz-n2",
+    "title": "Guía de Pares Biomagnéticos — 2do Nivel (2017)",
+    "author": "David Goiz Martínez / BRI",
+    "license_status": "internal-use",
+    "notice": "GOIZ ™ Intellectual Property © All rights reserved",
+    "file": "goiz-nivel-2-guia.pdf",
+    "pages": 120,
+    "pageNumbering": "printed page = PDF page + 140 (\"P. N\" footer)",
+    "sha256": "bd2b6778d5dd672512a7e9c4b72844d127798d666d002cca933e1c734c4a4aaa"
+  },
+  {
+    "id": "leal-2018",
+    "title": "Biomagnetismo Médico — Padecimientos & Patógenos (2018)",
+    "author": "Oscar Leal (recopilación), basado en las enseñanzas del Dr. Isaac Goiz Durán",
+    "license_status": "internal-use",
+    "notice": "Compilation published at biomagnetismolibre.wordpress.com; redistribution rights not established — internal use only",
+    "file": "leal-padecimientos-patogenos-2018.pdf",
+    "pages": 474,
+    "pageNumbering": "printed page = PDF page",
+    "sha256": "4e9cd5d1469153f47a4a792d0a13db04973a0cf139f53d92db5cc8283d4949d9"
+  },
+  {
+    "id": "youheal",
+    "title": "YOU HEAL Clinical — original content",
+    "author": "YOU HEAL Clinical",
+    "license_status": "original",
+    "notice": "Original content (translations, normalization, vocabularies)"
+  },
+  {
+    "id": "clinic-cards",
+    "title": "Clinic application protocol cards (owner-supplied reference images)",
+    "author": "YOU HEAL clinic",
+    "license_status": "internal-use",
+    "notice": "Supplied by the clinic owner as a reference image; provenance of the card artwork to be confirmed before redistribution."
+  }
+]
