@@ -10,8 +10,13 @@ address. Everything below is done in **Safari on the iPad or iPhone**. Use **fic
    `claude/biomagnetism-medical-platform-cdz2mb` (or `main` once it is merged).
 3. Tap **Code → Codespaces → Create codespace on <branch>**. Wait ~1–2 minutes while it builds.
    A web editor opens; the platform starts automatically in the background.
-4. In the editor, open the **Ports** panel (☰ menu → View → Ports, or the antenna icon in the bottom bar).
-   Port **8080 — "YOU HEAL Clinical (test)"** appears. Tap the 🌐 globe icon to open it in a new Safari tab.
+4. Open the app. **Easiest on iPad/iPhone:** take the editor's address from Safari's address bar,
+   e.g. `https://fuzzy-space-giggle-abc123.github.dev`, and insert **`-8080.app`** before `.github.dev`:
+   `https://fuzzy-space-giggle-abc123-8080.app.github.dev`.
+   Or use the **Ports** panel: it is a tab in the bottom panel next to **TERMINAL** (if the bottom panel is
+   hidden: ☰ menu, top-left → View → Appearance → Panel; or ☰ → View → Command Palette → type
+   `Ports: Focus on Ports View`). Port **8080 — "YOU HEAL Clinical (test)"** is listed; tap the 🌐 globe icon.
+   Or in the Terminal type `cat /tmp/youheal-test.log` — the line "Open on iPad / iPhone" shows the address.
    - Keep that tab: it is your app address (`https://<codespace-name>-8080.app.github.dev`).
    - Share → **Add to Home Screen** for a full-screen app icon.
 5. Sign-in accounts are in the editor's file list at **`platform/data-ipad-test/DEMO-CREDENTIALS.txt`**
