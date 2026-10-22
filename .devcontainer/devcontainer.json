@@ -9,7 +9,7 @@
   "portsAttributes": {
     "8080": { "label": "YOU HEAL Clinical (test)", "onAutoForward": "notify" }
   },
-  "postStartCommand": "cd platform && setsid nohup node tools/ipad-test.mjs --mode codespaces --port 8080 > /tmp/youheal-test.log 2>&1 &",
+  "postStartCommand": "bash platform/tools/codespace-start.sh || true",
   "customizations": {
     "codespaces": { "openFiles": ["platform/docs/CODESPACES.md"] }
   }

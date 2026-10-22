@@ -25,8 +25,15 @@ address. Everything below is done in **Safari on the iPad or iPhone**. Use **fic
    - **Admin** — two-factor is already enrolled; add the printed key to an authenticator app
      (Google/Microsoft Authenticator → add account → enter setup key, time-based).
 
-If the port does not appear, open the Terminal panel and run `cat /tmp/youheal-test.log`, or restart the app
-with `cd platform && node tools/ipad-test.mjs --mode codespaces --port 8080`.
+**White page, or nothing in the port's "Running Process" column?** The app isn't running. Open a terminal
+(☰ menu → Terminal → New Terminal) and run:
+
+```sh
+git pull && bash platform/tools/codespace-start.sh
+```
+It checks Node (switching to Node 22 if the codespace has an older one), (re)starts the app, and prints
+"app is RUNNING" with your address — or the error lines if it could not start. If it says nvm is missing, use
+☰ → View → Command Palette → **Codespaces: Rebuild Container**, then run it again.
 
 ## Next times
 
