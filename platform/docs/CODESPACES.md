@@ -35,6 +35,11 @@ It checks Node (switching to Node 22 if the codespace has an older one), (re)sta
 "app is RUNNING" with your address — or the error lines if it could not start. If it says nvm is missing, use
 ☰ → View → Command Palette → **Codespaces: Rebuild Container**, then run it again.
 
+**"Security check failed" / every account refused?** GitHub's port forwarding rewrites the browser's Origin
+header to `http://localhost:8080`. The Codespaces mode accepts that alias only from GitHub's local proxy and only
+for requests the browser marks same-origin (cross-site requests stay blocked). Make sure you have the latest code:
+`git pull && bash platform/tools/codespace-start.sh`, then reload the app tab.
+
 ## Next times
 
 github.com → profile menu → **Your codespaces** → tap the codespace to resume it. The app restarts

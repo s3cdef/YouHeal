@@ -1,7 +1,7 @@
 // CSRF defenses (CONTRACT §7): per-session token in X-CSRF-Token + SameSite=Strict cookie +
 // Origin/Referer (and Sec-Fetch-Site) checks on every state-changing request.
 
-import { forbidden, expectedOrigin } from './http.js';
+import { forbidden, expectedOrigin, isTrustedPeer } from './http.js';
 
 export const CSRF_HEADER = 'x-csrf-token';
 
@@ -11,8 +11,12 @@ export function checkOrigin(req, cfg) {
   const expected = expectedOrigin(req, cfg);
   const origin = req.headers.origin;
   if (origin !== undefined) {
-    if (origin !== expected) throw forbidden('Request origin not allowed', 'BAD_ORIGIN');
-    return;
+    if (origin === expected) return;
+    // Proxy-rewritten Origin (e.g. GitHub Codespaces → http://localhost:<port>): accept a configured alias only from a
+    // trusted proxy peer, and only if the browser itself declared the request same-origin.
+    const site = req.headers['sec-fetch-site'];
+    if (cfg.proxyOriginAliases?.includes(origin) && isTrustedPeer(req, cfg) && (site === 'same-origin' || site === undefined)) return;
+    throw forbidden('Request origin not allowed', 'BAD_ORIGIN');
   }
   const ref = req.headers.referer;
   if (ref) {

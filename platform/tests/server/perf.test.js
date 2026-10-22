@@ -189,3 +189,28 @@ test('GET /sessions/:id embeds the patient demographics the scan header needs (n
     assert.ok('preferredLanguage' in r.json.patient);
   } finally { await srv.close(); }
 });
+
+test('proxy origin aliases (Codespaces rewrites Origin): accepted only from a trusted proxy and same-origin fetches', async () => {
+  const pub = 'https://cs-demo-8080.app.github.dev';
+  const alias = 'http://localhost:8080';
+  const post = (srv, headers) => new Promise((resolve, reject) => {
+    const u = new URL(srv.url); const body = JSON.stringify({ email: 'nobody@x.test', password: 'wrong-password-1' });
+    const r = http.request({ host: u.hostname, port: u.port, path: '/api/v1/auth/login', method: 'POST', agent: false,
+      headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(body), host: 'cs-demo-8080.app.github.dev', ...headers } },
+    (res) => { res.resume(); res.on('end', () => resolve(res.statusCode)); });
+    r.on('error', reject); r.end(body);
+  });
+  const trusted = await startTestServer({ YH_TRUST_PROXY: '1', YH_PUBLIC_ORIGIN: pub, YH_ALLOWED_HOSTS: 'cs-demo-8080.app.github.dev', YH_PROXY_ORIGIN_ALIASES: `${alias}` });
+  try {
+    assert.equal(await post(trusted, { origin: pub }), 401, 'real public origin passes the origin check (401 = bad credentials)');
+    assert.equal(await post(trusted, { origin: alias, 'sec-fetch-site': 'same-origin' }), 401, 'rewritten origin accepted from trusted proxy');
+    assert.equal(await post(trusted, { origin: alias }), 401, 'no Sec-Fetch-Site (older browsers) still accepted');
+    assert.equal(await post(trusted, { origin: alias, 'sec-fetch-site': 'cross-site' }), 403, 'cross-site never accepted');
+    assert.equal(await post(trusted, { origin: alias, 'sec-fetch-site': 'same-site' }), 403, 'sibling-subdomain request not accepted via alias');
+    assert.equal(await post(trusted, { origin: 'http://localhost:9999', 'sec-fetch-site': 'same-origin' }), 403, 'only listed aliases');
+  } finally { await trusted.close(); }
+  const untrusted = await startTestServer({ YH_PUBLIC_ORIGIN: pub, YH_ALLOWED_HOSTS: 'cs-demo-8080.app.github.dev', YH_PROXY_ORIGIN_ALIASES: `${alias}` });
+  try {
+    assert.equal(await post(untrusted, { origin: alias, 'sec-fetch-site': 'same-origin' }), 403, 'alias ignored when the peer is not a trusted proxy');
+  } finally { await untrusted.close(); }
+});

@@ -101,6 +101,17 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
       publicOrigin = u.origin;
     } catch { throw new ConfigError('YH_PUBLIC_ORIGIN must be an absolute http(s) origin'); }
   }
+  // Some hosting proxies rewrite the browser's Origin header (GitHub Codespaces forwards it as
+  // http://localhost:<port>). Aliases listed here are accepted ONLY from a trusted proxy peer and only when the
+  // browser marked the request same-origin (Sec-Fetch-Site) — see checkOrigin().
+  const proxyOriginAliases = [];
+  for (const raw of String(env.YH_PROXY_ORIGIN_ALIASES || '').split(',').map((x) => x.trim()).filter(Boolean)) {
+    try {
+      const u = new URL(raw);
+      if (!['http:', 'https:'].includes(u.protocol)) throw new Error();
+      proxyOriginAliases.push(u.origin);
+    } catch { throw new ConfigError(`YH_PROXY_ORIGIN_ALIASES entry is not an absolute http(s) origin: ${raw}`); }
+  }
 
   const devNoMfa = bool(env, 'YH_DEV_INSECURE_NO_MFA');
   if (devNoMfa && !isLoopbackHost(host)) throw new ConfigError('YH_DEV_INSECURE_NO_MFA=1 is only allowed when YH_HOST is loopback');
@@ -113,6 +124,7 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
 
   // F-09: X-Forwarded-* are honored only from these peers (IPs or CIDRs). Default: loopback.
   const warnings = [];
+  if (proxyOriginAliases.length && !env.YH_TRUST_PROXY) warnings.push('YH_PROXY_ORIGIN_ALIASES has no effect unless YH_TRUST_PROXY is set');
   // NEW-2: an empty/blank YH_TRUSTED_PROXIES means "unset" (loopback default), never "trust nobody/everybody"
   let trustedProxies = String(env.YH_TRUSTED_PROXIES ?? '').split(',').map((x) => x.trim()).filter(Boolean);
   if (!trustedProxies.length) trustedProxies = ['127.0.0.1', '::1'];
@@ -169,6 +181,7 @@ export function loadConfig(env = process.env, { cwd = process.cwd() } = {}) {
     trustedProxies,
     allowedHosts,
     publicOrigin,
+    proxyOriginAliases,
     maxConnections: int(env, 'YH_MAX_CONNECTIONS', defaultMaxConnections(), 1, 1000000),
     maxConnPerIp: int(env, 'YH_MAX_CONN_PER_IP', 64, 1, 100000),
     firstByteMs: int(env, 'YH_FIRST_BYTE_MS', 10000, 50, 600000),

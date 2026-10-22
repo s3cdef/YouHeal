@@ -202,7 +202,9 @@ if (MODE === 'lan') {
   if (!name || !domain) die('not running inside GitHub Codespaces (CODESPACE_NAME / GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN unset)');
   const pub = `${name}-${PORT}.${domain}`;
   // GitHub's forwarding agent connects over loopback and terminates TLS; trust only loopback as the proxy.
-  Object.assign(env, { YH_HOST: '127.0.0.1', YH_TRUST_PROXY: '1', YH_TRUSTED_PROXIES: '127.0.0.1,::1', YH_ALLOWED_HOSTS: `${pub},localhost`, YH_PUBLIC_ORIGIN: `https://${pub}` });
+  Object.assign(env, { YH_HOST: '127.0.0.1', YH_TRUST_PROXY: '1', YH_TRUSTED_PROXIES: '127.0.0.1,::1', YH_ALLOWED_HOSTS: `${pub},localhost`, YH_PUBLIC_ORIGIN: `https://${pub}`,
+    // GitHub's port forwarding rewrites the browser's Origin header to the local port
+    YH_PROXY_ORIGIN_ALIASES: `http://localhost:${PORT},https://localhost:${PORT}` });
   publicBase = `https://${pub}`;
   banner = [
     `Open on iPad / iPhone (Safari, signed in to github.com as the codespace owner): ${publicBase}`,
